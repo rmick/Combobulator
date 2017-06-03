@@ -1,0 +1,245 @@
+#include "Players.h"
+#include <QDebug>
+
+Players playerInfo[25];
+
+Players::Players()
+{
+    for (int x= 0; x<25; x++)
+    {
+        Handicap        = 0;
+        PlayerName      = "";
+        Reloads         = 100;        // 100 = Unlimited
+        HealthTags      = 99;
+        ShieldTime      = 60;
+        MegaTags        = 15;
+        SlowTags        = false;
+        TeamTags        = false;
+        MedicMode       = false;
+        PackedFlags1    = 20;
+        PackedFlags2    = 1;
+    }
+}
+
+int Players::getHandicap() const
+{
+    return Handicap;
+}
+
+void Players::setHandicap(int value)
+{
+    Handicap = value;
+}
+
+QString Players::getPlayerName() const
+{
+    return PlayerName;
+}
+
+void Players::setPlayerName(const QString &value)
+{
+    PlayerName = value;
+}
+
+int Players::getReloads() const
+{
+    return Reloads;
+}
+
+void Players::setReloads(int value)
+{
+    Reloads = value;
+}
+
+QString Players::getReloadsTx() const
+{
+    QString _reloads = QString::number(Reloads, 10).toUpper();
+    if (Reloads == 100) _reloads = "FF";
+    if (_reloads.length() == 1) _reloads.prepend('0');
+    return _reloads;
+}
+
+int Players::getHealthTags() const
+{
+    return HealthTags;
+}
+
+void Players::setHealthTags(int value)
+{
+    HealthTags = value;
+}
+
+QString Players::getHealthTagsTx() const
+{
+    QString _healthTags = QString::number(HealthTags, 10).toUpper();
+    if (_healthTags.length() == 1) _healthTags.prepend('0');
+    return _healthTags;
+}
+
+int Players::getShieldTime() const
+{
+    return ShieldTime;
+}
+
+void Players::setShieldTime(int value)
+{
+    ShieldTime = value;
+}
+
+QString Players::getShieldTimeTx() const
+{
+    QString _shieldTime = QString::number(ShieldTime, 10).toUpper();
+    if (_shieldTime.length() == 1) _shieldTime.prepend('0');
+    return _shieldTime;
+}
+
+int Players::getMegaTags() const
+{
+    return MegaTags;
+}
+
+void Players::setMegaTags(int value)
+{
+    MegaTags = value;
+}
+
+QString Players::getMegaTagsTx() const
+{
+    QString _megatags = QString::number(MegaTags, 10).toUpper();
+    if (MegaTags == 100) _megatags = "FF";
+    if (_megatags.length() == 1) _megatags.prepend('0');
+    return _megatags;
+}
+
+bool Players::getSlowTags() const
+{
+    return SlowTags;
+}
+
+void Players::setSlowTags(bool value)
+{
+    SlowTags = value;
+}
+
+bool Players::getTeamTags() const
+{
+    return TeamTags;
+}
+
+void Players::setTeamTags(bool value)
+{
+    TeamTags = value;
+}
+
+bool Players::getMedicMode() const
+{
+    return MedicMode;
+}
+
+void Players::setMedicMode(bool value)
+{
+    MedicMode = value;
+}
+
+void Players::streamToFile(QTextStream &out)
+{
+    out << "------------------------" << endl;
+    for (int x = 0; x<25; x++)
+    {
+        out << "PlayerID:" << x << endl;
+        out << "Handicap: "     << playerInfo[x].Handicap << endl;
+        out << "HealthTags: "   << playerInfo[x].HealthTags << endl;
+        out << "MedicMode: "    << playerInfo[x].MedicMode << endl;
+        out << "MegaTags: "     << playerInfo[x].MegaTags << endl;
+        out << "PlayerName: "   << playerInfo[x].PlayerName << endl;
+        out << "Reloads: "      << playerInfo[x].Reloads << endl;
+        out << "ShieldTime: "   << playerInfo[x].ShieldTime << endl;
+        out << "SlowTags: "     << playerInfo[x].SlowTags << endl;
+        out << "TeamTags: "     << playerInfo[x].TeamTags << endl;
+        out << "------------------------" << endl;
+    }
+    out << "END_OF_PLAYER_SETTINGS" << endl;
+}
+
+
+void Players::streamFromFile(QTextStream &in)
+{
+    QString descriptorP;
+    int playerID;
+
+    do
+    {
+            descriptorP = in.readLine();
+            //qDebug() << descriptorP;
+            if      (descriptorP.contains("PlayerID:") )        playerID                         = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
+            else if (descriptorP.contains("Handicap:") )        playerInfo[playerID].Handicap    = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
+            else if (descriptorP.contains("HealthTags:") )      playerInfo[playerID].HealthTags  = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
+            else if (descriptorP.contains("MegaTags:") )        playerInfo[playerID].MegaTags    = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
+            else if (descriptorP.contains("ShieldTime:") )      playerInfo[playerID].ShieldTime  = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
+            else if (descriptorP.contains("MedicMode:") )       playerInfo[playerID].MedicMode   = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
+            else if (descriptorP.contains("SlowTags:") )        playerInfo[playerID].SlowTags    = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
+            else if (descriptorP.contains("TeamTags:") )        playerInfo[playerID].TeamTags    = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
+            else if (descriptorP.contains("PlayerName:") )      playerInfo[playerID].PlayerName  = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
+            else if (descriptorP.contains("Reloads:") )         playerInfo[playerID].Reloads     = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
+    }   while (descriptorP != "END_OF_PLAYER_SETTINGS");
+
+    for (int x=0; x< 25; x++)
+    {
+        qDebug() << "PlayerID:"     << x;
+        qDebug() << "Handicap:"     << playerInfo[x].Handicap;
+        qDebug() << "HealthTags:"   << playerInfo[x].HealthTags;
+        qDebug() << "MegaTags:"     << playerInfo[x].MegaTags;
+        qDebug() << "Reloads:"      << playerInfo[x].Reloads;
+        qDebug() << "ShieldTime:"   << playerInfo[x].ShieldTime;
+        qDebug() << "MedicMode:"    << playerInfo[x].MedicMode;
+        qDebug() << "SlowTags:"     << playerInfo[x].SlowTags;
+        qDebug() << "TeamTags:"     << playerInfo[x].TeamTags;
+        qDebug() << "PlayerName:"   << playerInfo[x].PlayerName << endl;
+    }
+    qDebug() << "Players::StreamFromFile has left the building" << endl << endl;
+}
+
+int Players::getPackedFlags1() const
+{
+    return PackedFlags1;
+}
+
+void Players::setPackedFlags1(int value)
+{
+    PackedFlags1 = value;
+}
+
+QString Players::getPackedFlags1Tx() const
+{
+    QString _packedFlags1 = QString::number(PackedFlags1, 16).toUpper();
+    if (_packedFlags1.length() == 1) _packedFlags1.prepend('0');
+    return _packedFlags1;
+}
+
+int Players::getPackedFlags2() const
+{
+    return PackedFlags2;
+}
+
+void Players::setPackedFlags2(int value)
+{
+    PackedFlags2 = value;
+}
+
+QString Players::getPackedFlags2Tx() const
+{
+    QString _packedFlags2 = QString::number(PackedFlags2, 16).toUpper();
+    if (_packedFlags2.length() == 1) _packedFlags2.prepend('0');
+    return _packedFlags2;
+}
+
+int Players::getTaggerID() const
+{
+    return TaggerID;
+}
+
+void Players::setTaggerID(int value)
+{
+    TaggerID = value;
+}
+
