@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QtSerialPort/QSerialPortInfo>
 #include "LazerSwarm.h"
-#include "hashdefines.h"
+#include "Defines.h"
 
 class SerialComms : public QObject
 {

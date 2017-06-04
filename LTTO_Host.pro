@@ -34,7 +34,7 @@ HEADERS  += lttomainwindow.h \
 	    SerialComms.h \
 	    PortConnect.h \
 	    TCPComms.h \
-    hashDefines.h
+    Defines.h
 
 FORMS    += lttomainwindow.ui \
             PlayersWindow.ui \

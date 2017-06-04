@@ -6,7 +6,7 @@
 #include "Game.h"
 #include "Players.h"
 #include "SerialComms.h"
-#include "hashDefines.h"
+#include "Defines.h"
 
 
 HostGameWindow::HostGameWindow(QWidget *parent) :
@@ -41,8 +41,8 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
     countDownTimeRemaining = 30;
 
     //TODO: The following is temp testing code - REMOVE IT!!
-    //gameInfo.setIsThisPlayerInTheGame(5, true);
-    gameInfo.setIsThisPlayerInTheGame(21, true);
+    gameInfo.setIsThisPlayerInTheGame(5, true);
+    //gameInfo.setIsThisPlayerInTheGame(21, true);
     //end Temp code
 }
 
@@ -152,15 +152,15 @@ int HostGameWindow::calculatePlayerTeam5bits()
 }
 
 
-void HostGameWindow::AssignPlayer(int Game, int Tagger, int Flags)
+void HostGameWindow::AssignPlayer(int Game, int Tagger, int Flags)      //TODO: Does not reset when starting new game !!!!!
 
 {
     qDebug() << "HostGameWindow::AssignPlayer()";
     InsertToListWidget("   AssignPlayer()");
 
     qDebug() << gameInfo.getGameID() << Game;
-    if(gameInfo.getGameID() == Game)
-    {
+//    if(gameInfo.getGameID() == Game)
+//    {
         qDebug() << "HostGameWindow::AssignPlayer() - GameID & TaggerID matched";
 
 
@@ -179,7 +179,7 @@ void HostGameWindow::AssignPlayer(int Game, int Tagger, int Flags)
             serialComms.sendPacket(DATA,    QString::number(calculatePlayerTeam5bits() , 16).toUpper() );
             serialComms.sendPacket(CHECKSUM);
         }
-    }
+//    }
 }
 
 void HostGameWindow::AddPlayerToGame(int Game, int Tagger)
@@ -218,6 +218,12 @@ int HostGameWindow::getCurrentPlayer() const
 void HostGameWindow::setCurrentPlayer(int value)
 {
     currentPlayer = value;
+}
+
+void HostGameWindow::resetPlayersForNewGame()
+{
+    currentPlayer = 1;
+    for(int players= 1; players < 25; players++) isThisPlayerHosted[players] = false;
 }
 
 bool HostGameWindow::getIsThisPlayerHosted(int playerNumber) const

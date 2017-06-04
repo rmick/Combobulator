@@ -211,7 +211,7 @@ void Players::setPackedFlags1(int value)
 
 QString Players::getPackedFlags1Tx() const
 {
-    QString _packedFlags1 = QString::number(PackedFlags1, 16).toUpper();
+    QString _packedFlags1 = QString::number(PackedFlags1, 10).toUpper();
     if (_packedFlags1.length() == 1) _packedFlags1.prepend('0');
     return _packedFlags1;
 }
@@ -228,7 +228,7 @@ void Players::setPackedFlags2(int value)
 
 QString Players::getPackedFlags2Tx() const
 {
-    QString _packedFlags2 = QString::number(PackedFlags2, 16).toUpper();
+    QString _packedFlags2 = QString::number(PackedFlags2, 10).toUpper();
     if (_packedFlags2.length() == 1) _packedFlags2.prepend('0');
     return _packedFlags2;
 }

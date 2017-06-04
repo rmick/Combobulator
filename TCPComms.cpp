@@ -21,9 +21,6 @@ TCPComms::TCPComms(QWidget *parent) :
 
     socket->connectToHost("192.168.2.1",8000);
     ui->listWidget_TCP->addItem("Connecting to LTTO_host");
-
-
-
 }
 
 TCPComms::~TCPComms()
@@ -36,7 +33,7 @@ void TCPComms::connected()
     qDebug() << "Connected!";
     ui->listWidget_TCP->addItem("Connected :-)");
 
-    socket->write("CMD 10 0C 12 14 78 64");
+    //socket->write("CMD 10 0C 12 14 78 64");
 }
 
 
@@ -67,7 +64,7 @@ void TCPComms::sendData(QByteArray data)
 {
     if (socket->isOpen() )socket->write(data);
     ui->listWidget_TCP->addItem(data);
-    qDebug() << "TCPComms::sendData()" << data;
+    //qDebug() << "TCPComms::sendData()\t " << data;
 }
 
 void TCPComms::on_btn_Connect_clicked()

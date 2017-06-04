@@ -29,6 +29,8 @@ public:
     int getCurrentPlayer() const;
     void setCurrentPlayer(int value);
 
+    void resetPlayersForNewGame();
+
 public slots:
 
     void AssignPlayer(int Game, int Tagger, int Flags);   //Connects to RequestJoinGame signal
@@ -70,7 +72,7 @@ private:
     bool    serialUSBactive;
     bool    wiFiActive;
     bool    useLazerSwarm;
-    bool    isThisPlayerHosted[24];
+    bool    isThisPlayerHosted[25];
     bool    isThisPlayerInTheGame = false;
     int     currentPlayer;
     bool    noMorePlayers;

@@ -11,7 +11,7 @@ Game::Game()
     GameLength      = 10;
     NumberOfPlayers = 24;
     GameName        ="LTTO";
-    CountDownTime   = 10;
+    CountDownTime   = 5;
     isThisPlayerInTheGame[0] = true;        //this is required so that Announce continues after all Taggers are hosted.
     for (int x= 1; x<25; x++)
     {
@@ -31,7 +31,7 @@ void Game::setGameType(int value)
 
 QString Game::getGameTypeTx() const
 {
-    QString _gameType = QString::number(GameType, 16).toUpper();
+    QString _gameType = QString::number(GameType, 10).toUpper();
     if (_gameType.length() == 1) _gameType.prepend('0');
     return _gameType;
 }
@@ -48,7 +48,7 @@ void Game::setGameID(int value)
 
 QString Game::getGameIdTx() const
 {
-    QString _gameID = QString::number(GameID, 16).toUpper();
+    QString _gameID = QString::number(GameID, 10).toUpper();
     if (_gameID.length() == 1) _gameID.prepend('0');
     return _gameID;
 }

@@ -21,34 +21,12 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
     gameInfo.setGameType(gameInfo.Ltag0);
     ui->btn_NoTeams->setChecked(true);
     gameInfo.setNumberOfTeams(0);
-    //hostGameWindow = new HostGameWindow(this);
 
     QWidget::move(0,0);
 }
 
 LttoMainWindow::~LttoMainWindow()
 {
-    if (playersWindow != NULL)
-    {
-        //delete playersWindow;
-        playersWindow = NULL;
-    }
-    if (bluetoothWindow != NULL)
-    {
-        delete bluetoothWindow;
-        bluetoothWindow = NULL;
-    }
-    if (hostGameWindow != NULL)
-    {
-        delete hostGameWindow;
-        hostGameWindow = NULL;
-    }
-    if (portConnect != NULL)
-    {
-        delete portConnect;
-        portConnect = NULL;
-    }
-
     delete ui;
 }
 
@@ -98,7 +76,7 @@ void LttoMainWindow::setSlowTags(bool value)
 void LttoMainWindow::on_btn_StartGame_clicked()
 {
     hostGameWindow = new HostGameWindow(this);
-    hostGameWindow->setCurrentPlayer(1);
+    hostGameWindow->resetPlayersForNewGame();
     hostGameWindow->show();
 }
 

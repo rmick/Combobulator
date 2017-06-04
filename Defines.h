@@ -1,5 +1,5 @@
-#ifndef HASHDEFINES_H
-#define HASHDEFINES_H
+#ifndef DEFINES_H
+#define DEFINES_H
 
 const char  PACKET      = 'P';
 const char  DATA        = 'D';
@@ -9,4 +9,4 @@ const char  BEACON      = 'B';
 
 
 
-#endif // HASHDEFINES_H
+#endif // DEFINES_H

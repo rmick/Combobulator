@@ -113,16 +113,16 @@ bool SerialComms::sendPacket(char type, QString data)
         qDebug() << "  packetSent->" << packetToTranslate << "\t" << packet;
     }
 
-    if (serialUSB->isOpen() && serialUSB->isWritable())
-    {
+//    if (serialUSB->isOpen() && serialUSB->isWritable())
+//    {
         //qDebug() << "  packetSent->" << packet;
         serialUSB->write(packet);
         serialUSB->flush();
-        //emit sendSerialData(packet);
+        emit sendSerialData(packet);
         result = true;
-        QThread::msleep(80);
+        QThread::msleep(50);
 
-    }
+//    }
     return result;
 }
 
@@ -144,7 +144,7 @@ void SerialComms::receivePacket()
         else
         {
             rxPacketList.append(lazerswarm.decodeCommand(irDataIn));
-            qDebug() << "SerialComms::receivePacket() " << lazerswarm.decodeCommand(irDataIn);
+            //qDebug() << "SerialComms::receivePacket() " << lazerswarm.decodeCommand(irDataIn);
             processed = true;
         }
     }
