@@ -195,10 +195,31 @@ void LttoMainWindow::on_btn_TwoTeams_clicked()
 {
     gameInfo.setNumberOfTeams(2);
     qDebug() << "Current Game is: " << gameInfo.getGameType();
-    if (gameInfo.getGameType() >= gameInfo.Ltag0      && gameInfo.getGameType() <= gameInfo.Ltag3)      gameInfo.setGameType(gameInfo.Ltag2);
-    if (gameInfo.getGameType() >= gameInfo.HideSeek2  && gameInfo.getGameType() <= gameInfo.HideSeek3)  gameInfo.setGameType(gameInfo.HideSeek2);
-    if (gameInfo.getGameType() >= gameInfo.Kings2     && gameInfo.getGameType() <= gameInfo.Kings3)     gameInfo.setGameType(gameInfo.Kings2);
-    if (gameInfo.getGameType() >= gameInfo.OwnZone0   && gameInfo.getGameType() <= gameInfo.OwnZone3)   gameInfo.setGameType(gameInfo.OwnZone2);
+    switch(gameInfo.getGameType() )
+    {
+    case Game::Ltag0:
+    case Game::Ltag2:
+    case Game::Ltag3:
+        gameInfo.setGameType(Game::Ltag2);
+        break;
+    case Game::HideSeek2:
+    case Game::HideSeek3:
+        gameInfo.setGameType(Game::HideSeek2);
+        break;
+    case Game::Kings2:
+    case Game::Kings3:
+        gameInfo.setGameType(Game::Kings2);
+        break;
+    case Game::OwnZone0:
+    case Game::OwnZone2:
+    case Game::OwnZone3:
+        gameInfo.setGameType(Game::OwnZone2);
+        break;
+    }
+//    if (gameInfo.getGameType() >= gameInfo.Ltag0      && gameInfo.getGameType() <= gameInfo.Ltag3)      gameInfo.setGameType(gameInfo.Ltag2);
+//    if (gameInfo.getGameType() >= gameInfo.HideSeek2  && gameInfo.getGameType() <= gameInfo.HideSeek3)  gameInfo.setGameType(gameInfo.HideSeek2);
+//    if (gameInfo.getGameType() >= gameInfo.Kings2     && gameInfo.getGameType() <= gameInfo.Kings3)     gameInfo.setGameType(gameInfo.Kings2);
+//    if (gameInfo.getGameType() >= gameInfo.OwnZone0   && gameInfo.getGameType() <= gameInfo.OwnZone3)   gameInfo.setGameType(gameInfo.OwnZone2);
     qDebug() << "New Game is:" << gameInfo.getGameType();
 }
 
@@ -211,29 +232,25 @@ void LttoMainWindow::on_btn_ThreeTeams_clicked()
         case Game::Ltag0:
         case Game::Ltag2:
         case Game::Ltag3:
-            gameInfo.setGameType(gameInfo.Ltag3);
+            gameInfo.setGameType(Game::Ltag3);
             break;
         case Game::HideSeek2:
         case Game::HideSeek3:
-            gameInfo.setGameType(gameInfo.HideSeek3);
+            gameInfo.setGameType(Game::HideSeek3);
             break;
         case Game::Kings2:
         case Game::Kings3:
-            gameInfo.setGameType(gameInfo.Kings3);
+            gameInfo.setGameType(Game::Kings3);
             break;
         case Game::OwnZone0:
         case Game::OwnZone2:
         case Game::OwnZone3:
-            gameInfo.setGameType(gameInfo.OwnZone3);
+            gameInfo.setGameType(Game::OwnZone3);
             break;
         case Game::Special:
-            gameInfo.setGameType(gameInfo.Special);
+            gameInfo.setGameType(Game::Special);
             break;
     }
-//    if (gameInfo.getGameType() >= gameInfo.Ltag0      && gameInfo.getGameType() <= gameInfo.Ltag3)      gameInfo.setGameType(gameInfo.Ltag3);
-//    if (gameInfo.getGameType() >= gameInfo.HideSeek2  && gameInfo.getGameType() <= gameInfo.HideSeek3)  gameInfo.setGameType(gameInfo.HideSeek3);
-//    if (gameInfo.getGameType() >= gameInfo.Kings2     && gameInfo.getGameType() <= gameInfo.Kings3)     gameInfo.setGameType(gameInfo.Kings3);
-//    if (gameInfo.getGameType() >= gameInfo.OwnZone0   && gameInfo.getGameType() <= gameInfo.OwnZone3)   gameInfo.setGameType(gameInfo.OwnZone3);
      qDebug() << "New Game is:" << gameInfo.getGameType();
 }
 
@@ -251,11 +268,13 @@ void LttoMainWindow::on_slider_Health_valueChanged(int value)
 void LttoMainWindow::on_slider_Reloads_valueChanged(int value)
 {
     if  (value == 100) ui->label_Reloads->setText("Reloads : Unlimited");
-    else ui->label_Reloads->setText("Reloads : " + QString::number(value) );
+    else               ui->label_Reloads->setText("Reloads : " + QString::number(value) );
 
     for (int x=0; x<25;x++)
     {
-         playerInfo[x].setReloads(value);
+        if (value == 100) playerInfo[x].setPackedFlag1_LimitedReloads(false);
+        else              playerInfo[x].setPackedFlag1_LimitedReloads(true);
+        playerInfo[x].setReloads(value);
     }
 }
 
@@ -472,8 +491,8 @@ void LttoMainWindow::on_btn_CustomGame_clicked()
 {
     gameInfo.setGameType(12);
     gameInfo.setGameID(44);
-    playerInfo[0].setPackedFlags1(28);
-    playerInfo[0].setPackedFlags2(162);
+//    playerInfo[0].setPackedFlags1(28);
+//    playerInfo[0].setPackedFlags2(162);
 }
 
 void LttoMainWindow::on_actionPorts_triggered()
@@ -485,7 +504,13 @@ void LttoMainWindow::on_actionPorts_triggered()
 void LttoMainWindow::on_actionSet_CountDown_Time_triggered()
 {
     bool ok = false;
-    //QInputDialog::IntInput;
     int time = QInputDialog::getInt(this, "CountDown Time", "Enter Countdown Time (5-30 sec)", gameInfo.getCountDownTime(), 5, 30, 1, &ok);
     if(ok) gameInfo.setCountDownTime(time);
 }
+
+void LttoMainWindow::on_actionuse_LazerSwarm_triggered()
+{
+    if(ui->actionuse_LazerSwarm->isChecked() ) serialComms.setUseLazerSwarm(true);
+    else                                       serialComms.setUseLazerSwarm(false);
+}
+

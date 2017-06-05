@@ -17,16 +17,11 @@ PlayersWindow::PlayersWindow(QWidget *parent) :
 {
     SelectedPlayer = 0;
     ui->setupUi(this);
-        //qDebug() << "Opening Players Window";
     signalMapper = new QSignalMapper(this);
     SetUpPlayerButtonMapping();
-        //qDebug() << "Completed Button Mapping";
     LoadPlayersForTeams();
-        //qDebug() << "Players For Teams Loaded";
     LoadPlayerSettings(0);      // 0 = Global Player
-        //qDebug() << "Setting Active Player Buttons";
     SetActivePlayers();
-        //qDebug() << "That's all folks";
 }
 
 PlayersWindow::~PlayersWindow()
@@ -39,12 +34,6 @@ PlayersWindow::~PlayersWindow()
 void PlayersWindow::SetUpPlayerButtonMapping()
 {
     PlayerButtons.append(0);    // Fake button for Player 0
-
-    qDebug() << "Button Children:";
-    qDebug() << findChildren<QPushButton*>("btn_Player");       //TODO: Make this code auto-populate the PlayerButtons array.
-    qDebug() << "------------------";
-    //PlayerButtons.append(findChildren<QPushButton*>() )
-
     PlayerButtons.append(ui->btn_Player1);
     PlayerButtons.append(ui->btn_Player2);
     PlayerButtons.append(ui->btn_Player3);
@@ -111,8 +100,6 @@ bool PlayersWindow::eventFilter(QObject *obj, QEvent *event)
 
 void PlayersWindow::LoadPlayersForTeams()
 {
-    //qDebug() << "Number of Teams in this game = " << gameInfo.getNumberOfTeams() ;
-
     switch (gameInfo.getNumberOfTeams() )
     {
         case 0:
@@ -138,26 +125,22 @@ void PlayersWindow::LoadPlayersForTeams()
 void PlayersWindow::LoadPlayerSettings(int PlayerID)
 {
     // Index 0 is the global setting.
-    //qDebug() << "Commence Loading PlayerSettings for PlayerID: " << PlayerID;
     ui->slider_Health               ->setValue  (playerInfo[PlayerID].getHealthTags() );
     ui->slider_Shields              ->setValue  (playerInfo[PlayerID].getShieldTime() );
     ui->slider_MegaTags             ->setValue  (playerInfo[PlayerID].getMegaTags() );
-    //qDebug() << "Commence Loading tags";
     ui->btn_SelectedPlayerSlowTags  ->setChecked(playerInfo[PlayerID].getSlowTags() );
+
     if (playerInfo[PlayerID].getSlowTags() == false)    ui->btn_SelectedPlayerSlowTags  ->setText("OFF");
     else                                                ui->btn_SelectedPlayerSlowTags  ->setText("ON");
 
     ui->btn_SelectedPlayerTeamTags  ->setChecked(playerInfo[PlayerID].getTeamTags() );
     if (playerInfo[PlayerID].getTeamTags() == false)    ui->btn_SelectedPlayerTeamTags  ->setText("OFF");
     else                                                ui->btn_SelectedPlayerTeamTags  ->setText("ON");
-//qDebug() << "Commence Loading ReLoads";
     int reLoads;
     if (playerInfo[PlayerID].getReloads() == 0) reLoads = 100;
     else reLoads = playerInfo[PlayerID].getReloads();
     ui->slider_Reloads              ->setValue(reLoads);
-//qDebug() << "Commence Loading Handicap";
     ui->slider_Handicap             ->setValue  (playerInfo[PlayerID].getHandicap() ); // Do this last !!!
-    //qDebug() << "All Player Settings Locked and Loaded :-)";
 }
 
 void PlayersWindow::SetActivePlayers()

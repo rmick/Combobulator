@@ -6,6 +6,7 @@
 #include "BluetoothWindow.h"
 #include "HostGameWindow.h"
 #include "PortConnect.h"
+#include "SerialComms.h"
 
 namespace Ui {
 class LttoMainWindow;
@@ -104,6 +105,8 @@ private slots:
     void on_actionPorts_triggered();
 
     void on_actionSet_CountDown_Time_triggered();
+
+    void on_actionuse_LazerSwarm_triggered();
 
 private:
     Ui::LttoMainWindow  *ui;

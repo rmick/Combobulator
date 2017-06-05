@@ -17,23 +17,22 @@ public:
 
     int getReloads() const;
     void setReloads(int value);
-    QString getReloadsTx() const;               //returns Reloads as QString as 8bit-BCD  (converts 100 -> FF = Unlimited)
+    QString getReloadsTx() const;		    //returns Reloads as QString as 8bit-BCD  (converts 100 -> FF = Unlimited)
 
     int getHealthTags() const;
     void setHealthTags(int value);
-    QString  getHealthTagsTx() const;            //returns HealthTags as QString as 8bit-BCD
+    QString  getHealthTagsTx() const;		    //returns HealthTags as QString as 8bit-BCD
 
     int getShieldTime() const;
     void setShieldTime(int value);
-    QString getShieldTimeTx() const;                  //returns HealthTags as QString as 8bit-BCD
+    QString getShieldTimeTx() const;                //returns HealthTags as QString as 8bit-BCD
 
     int getMegaTags() const;
     void setMegaTags(int value);
-    QString getMegaTagsTx() const;                    //returns HealthTags as QString as 8bit-BCD (converts 100 -> FF = Unlimited)
+    QString getMegaTagsTx() const;                  //returns HealthTags as QString as 8bit-BCD (converts 100 -> FF = Unlimited)
 
     bool getSlowTags() const;
     void setSlowTags(bool value);
-    //QString getSlowTagsTx()
 
     bool getTeamTags() const;
     void setTeamTags(bool value);
@@ -44,16 +43,28 @@ public:
     void streamToFile(QTextStream &out);
     void streamFromFile(QTextStream &in);
 
-    int getPackedFlags1() const;
+    int  getPackedFlags1() const;
+    void setPackedFlag1_NeutraliseWhenTagged(bool state);
+    void setPackedFlag1_LimitedReloads(bool state);
+    void setPackedFlag1_LimitedMegaTags(bool state);
+    void setPackedFlag1_TeamTags(bool state);
+    void setPackedFlag1_MedicMode(bool state);
+    void setPackedFlag1_SlowTags(bool state);
+    void setPackedFlag1_HuntThePrey(bool state);
+    void setPackedFlag1_HuntDirection(bool state);
     void setPackedFlags1(int value);
     QString getPackedFlags1Tx() const;
 
     int getPackedFlags2() const;
+
     void setPackedFlags2(int value);
     QString getPackedFlags2Tx() const;
 
     int getTaggerID() const;
     void setTaggerID(int value);
+
+    bool getIsInTheGame() const;
+    void setIsInTheGame(bool value);
 
 private:
     int     Handicap;
@@ -68,7 +79,6 @@ private:
     int     PackedFlags1;
     int     PackedFlags2;
     int     TaggerID;
-
 };
 
 extern Players playerInfo[25];

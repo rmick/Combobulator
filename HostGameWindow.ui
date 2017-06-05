@@ -152,6 +152,26 @@ Game</string>
     <string>Test Message</string>
    </property>
   </widget>
+  <widget class="QPushButton" name="btn_Rehost">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>230</y>
+     <width>113</width>
+     <height>71</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>ReHost
+Tagger</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>

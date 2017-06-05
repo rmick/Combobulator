@@ -10,7 +10,7 @@ SerialComms::SerialComms(QObject *parent) : QObject(parent)
     serialUSB = new QSerialPort(this);
     QObject::connect(serialUSB, SIGNAL(readyRead()), this, SLOT(receivePacket()) );
 
-    useLazerSwarm = true;          //TODO: Set this up in Preferences.
+    //useLazerSwarm = true;          //TODO: Set this up in Preferences.
 
 }
 
@@ -23,7 +23,7 @@ void SerialComms::findSerialPort()
             serialUSB->setPortName(info.portName() );
             emit SerialPortFound(info.portName() );
         }
-        qDebug() << "\n-----------\nPortToUse=" << info.portName() << info.manufacturer() << info.description();
+        //qDebug() << "\n-----------\nPortToUse=" << info.portName() << info.manufacturer() << info.description();
     }
 }
 
@@ -110,12 +110,12 @@ bool SerialComms::sendPacket(char type, QString data)
         packet.clear();
         packet.append(lazerswarm.translateCommand(packetToTranslate) );
         packet.append(" \r\n");
-        qDebug() << "  packetSent->" << packetToTranslate << "\t" << packet;
     }
+    else packet.append(":");
 
 //    if (serialUSB->isOpen() && serialUSB->isWritable())
 //    {
-        //qDebug() << "  packetSent->" << packet;
+        qDebug() << "  packetSent->" << packet;
         serialUSB->write(packet);
         serialUSB->flush();
         emit sendSerialData(packet);
@@ -130,7 +130,7 @@ bool SerialComms::sendPacket(char type, QString data)
 
 void SerialComms::receivePacket()
 {
-    //emit TimerBlock(true);
+    emit TimerBlock(true);
     bool processed = false;
 
     if (useLazerSwarm)
@@ -151,7 +151,7 @@ void SerialComms::receivePacket()
     else
     {
         irDataIn.append(serialUSB->readAll() );
-        //TODO: Check for full packet/s (eg. "C86")
+        //TODO: Check for full packet/s (eg. "C86:")
         rxPacketList.append(irDataIn);
         qDebug() << "SerialComms::receivePacket() - This code is not yet written";
         processed = true;
@@ -166,9 +166,19 @@ void SerialComms::receivePacket()
             {
                 processPacket(rxPacketList);
             }
-            //emit TimerBlock(false);
+            emit TimerBlock(false);
         }
     }
+}
+
+bool SerialComms::getUseLazerSwarm() const
+{
+    return useLazerSwarm;
+}
+
+void SerialComms::setUseLazerSwarm(bool value)
+{
+    useLazerSwarm = value;
 }
 
 bool SerialComms::isCheckSumCorrect(int _command, int _game, int _tagger, int _flags, int _checksum)
@@ -180,7 +190,7 @@ bool SerialComms::isCheckSumCorrect(int _command, int _game, int _tagger, int _f
     calculatedCheckSumRx += _flags;
     calculatedCheckSumRx = calculatedCheckSumRx%256;
     if (calculatedCheckSumRx ==  (_checksum%256) ) result = true;
-    qDebug() << "   SerialComms::isCheckSumCorrect()" << calculatedCheckSumRx << ":" << _checksum%256 << "Result = " << result;
+    //qDebug() << "   SerialComms::isCheckSumCorrect()" << calculatedCheckSumRx << ":" << _checksum%256 << "Result = " << result;
     return result;
 }
 
@@ -194,7 +204,7 @@ void SerialComms::processPacket(QList<QByteArray> data)
     int flags   = 0;
     int checksum= 0;
 
-    qDebug() << "SerialComms::processPacket()" << command;
+    //qDebug() << "SerialComms::processPacket()" << command;
 
     switch (command)
     {
@@ -204,8 +214,13 @@ void SerialComms::processPacket(QList<QByteArray> data)
             flags    = extract(data);
             checksum = extract(data);
             if(isCheckSumCorrect(command, game, tagger, flags, checksum) == false) break;
+
+            game = ConvertBCDtoDec(game);
+            //tagger =
+
+
             emit RequestJoinGame(game, tagger, flags);
-            qDebug() << "emit RequestJoinGame()" << game << tagger << flags << checksum;
+            //qDebug() << "emit RequestJoinGame()" << game << tagger << flags << checksum;
             break;
         case 0x11:
             game     = extract(data);
@@ -213,7 +228,7 @@ void SerialComms::processPacket(QList<QByteArray> data)
             checksum = extract(data);
             if(isCheckSumCorrect(command, game, tagger, flags, checksum) == false) break;
             emit AckPlayerAssignment(game, tagger);
-            qDebug() << "emit AckPlayerAssignment()" << game << tagger << checksum;
+            //qDebug() << "emit AckPlayerAssignment()" << game << tagger << checksum;
             break;
         //Other cases will be required for DeBrief. Maybe create a funciton for each one to make code more easily readable.
 

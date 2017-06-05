@@ -32,8 +32,6 @@ void TCPComms::connected()
 {
     qDebug() << "Connected!";
     ui->listWidget_TCP->addItem("Connected :-)");
-
-    //socket->write("CMD 10 0C 12 14 78 64");
 }
 
 
@@ -62,9 +60,12 @@ void TCPComms::readyRead()
 
 void TCPComms::sendData(QByteArray data)
 {
-    if (socket->isOpen() )socket->write(data);
-    ui->listWidget_TCP->addItem(data);
-    //qDebug() << "TCPComms::sendData()\t " << data;
+    if (socket->isOpen() )
+    {
+        socket->write(data);
+        ui->listWidget_TCP->addItem(data);
+        //qDebug() << "TCPComms::sendData()\t " << data;
+    }
 }
 
 void TCPComms::on_btn_Connect_clicked()

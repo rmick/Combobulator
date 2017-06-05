@@ -24,12 +24,6 @@ public:
         Special     = 0x0C
     };
 
-    const char PACKET   = 'P';
-    const char DATA     = 'D';
-    const char CHECKSUM = 'C';
-    const char TAG      = 'T';
-    const char BEACON   = 'B';
-
     int getGameType() const;
     void setGameType(int value);
     QString getGameTypeTx() const;              //returns GameType as QString in Hex
@@ -84,7 +78,6 @@ private:
     int     CountDownTime;
 
     int     extractInteger(QString &dG);
-    //int     calculatePlayersInGameByte();
 };
 
 extern Game gameInfo;

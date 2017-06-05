@@ -17,10 +17,12 @@ public:
 
     bool        sendPacket(char type, QString data = 0);
     void        testSerialPort();
-    bool        useLazerSwarm;
     void        setUpSerialPort();
     void        closeSerialPort();
     int         getRxPacket();
+
+    bool getUseLazerSwarm() const;
+    void setUseLazerSwarm(bool value);
 
 signals:
     void    RequestJoinGame(int Game, int Tagger, int Flags);
@@ -33,14 +35,14 @@ private slots:
     void        receivePacket();
 
 private:
-    //QSerialPortInfo portToUse[25];
     QSerialPort     *serialUSB;
 
     int             calculatedCheckSumTx;
     int             calculatedCheckSumRx;
-
     QByteArray      irDataIn;
     QByteArrayList  rxPacketList;
+    bool            useLazerSwarm;
+
     void            processPacket(QList<QByteArray> data);
     int             extract(QList<QByteArray> &data);
     void            findSerialPort();

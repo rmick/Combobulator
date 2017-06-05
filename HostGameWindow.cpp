@@ -35,15 +35,13 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
     #endif
 
     for (int x = 0; x<25;x++) isThisPlayerHosted[x] = false;
-    isThisPlayerInTheGame = false;
     currentPlayer = 1;
     noMorePlayers = false;
     countDownTimeRemaining = 30;
+    ui->btn_Cancel->setText("Cancel");
+    ui->btn_Rehost->setEnabled(false);
 
-    //TODO: The following is temp testing code - REMOVE IT!!
-    gameInfo.setIsThisPlayerInTheGame(5, true);
-    //gameInfo.setIsThisPlayerInTheGame(21, true);
-    //end Temp code
+    announceGame();             // this kicks it over immediately, rather than waiting for the first timeout of the 1.5s timer to trigger
 }
 
 HostGameWindow::~HostGameWindow()
@@ -66,7 +64,7 @@ void HostGameWindow::on_btn_Cancel_clicked()
     timerAnnounce->stop();
     timerCountDown->stop();
     serialComms.closeSerialPort();
-    hide();
+    deleteLater();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -74,7 +72,6 @@ void HostGameWindow::on_btn_Cancel_clicked()
 void HostGameWindow::SetAnnounceTimerBlock(bool state)
 {
     timerAnnounce->blockSignals(state);
-    qDebug() << "timerBlocking is " << state;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -103,7 +100,7 @@ void HostGameWindow::announceGame()
 
 void HostGameWindow::hostCurrentPlayer()
 {
-    qDebug() << "\nAnnounce Game : Player " << currentPlayer;
+    //qDebug() << "\nAnnounce Game : Player " << currentPlayer;
     InsertToListWidget("Announce Game : Player " + QString::number(currentPlayer));
 
     serialComms.sendPacket(PACKET,  gameInfo.getGameTypeTx() );
@@ -115,13 +112,13 @@ void HostGameWindow::hostCurrentPlayer()
     serialComms.sendPacket(DATA,    playerInfo[currentPlayer].getMegaTagsTx() );   //BCD    //TODO: FF = Unlimited
     serialComms.sendPacket(DATA,    playerInfo[currentPlayer].getPackedFlags1Tx() );
     serialComms.sendPacket(DATA,    playerInfo[currentPlayer].getPackedFlags2Tx() );
-
-//        serialComms.sendPacket('D', "32");  // 2
-//        serialComms.sendPacket('D', "5A");  // Z
-//        serialComms.sendPacket('D', "4F");  // O
-//        serialComms.sendPacket('D', "4E");  // N
-        //serialComms.sendPacket('D', gameInfo.getGameName() );      //TODO: Overload the sendData function, or suck out the char/s
-
+    if (gameInfo.getGameType() == 0x0C)
+    {
+        serialComms.sendPacket(DATA, "43");  // C
+        serialComms.sendPacket(DATA, "55");  // U
+        serialComms.sendPacket(DATA, "53");  // S
+        serialComms.sendPacket(DATA, "54");  // T
+    }
     serialComms.sendPacket(CHECKSUM);
 }
 
@@ -131,37 +128,41 @@ int HostGameWindow::calculatePlayerTeam5bits()
 
     if (gameInfo.getNumberOfTeams() == 0)   //Players 1 to 24, no teams
     {
-        if(currentPlayer < 9)
-        {
-            playerTeam5bits = 8 + (currentPlayer-1);
-        }
-        else
-        {
-            playerTeam5bits = 16 + (currentPlayer-1);
-        }
+        playerTeam5bits = 8 + (currentPlayer-1);
     }
     else                                    //2bits for Team, 3 bits for PlayerID
     {
-        if      (currentPlayer > 0  && currentPlayer < 9)  playerTeam5bits = 1;
-        else if (currentPlayer > 8  && currentPlayer < 17) playerTeam5bits = 2;
-        else if (currentPlayer > 18 && currentPlayer < 24) playerTeam5bits = 3;
-        playerTeam5bits = playerTeam5bits << 3;
-        playerTeam5bits += currentPlayer-1;
+        if      (currentPlayer > 0  && currentPlayer < 9)
+        {
+            playerTeam5bits = 1 << 3;
+            playerTeam5bits += (currentPlayer - 1);
+        }
+        else if (currentPlayer > 8  && currentPlayer < 17)
+        {
+            playerTeam5bits = 2 << 3;
+            playerTeam5bits += (currentPlayer - 9);
+        }
+        else if (currentPlayer > 18 && currentPlayer < 24)
+        {
+            playerTeam5bits = 3 << 3;
+            playerTeam5bits += (currentPlayer - 17);
+        }
     }
+    //qDebug() << "   HostGameWindow::calculatePlayerTeam5bits()"  << currentPlayer << displayBinary(playerTeam5bits, 8);
     return playerTeam5bits;
 }
 
 
-void HostGameWindow::AssignPlayer(int Game, int Tagger, int Flags)      //TODO: Does not reset when starting new game !!!!!
+void HostGameWindow::AssignPlayer(int Game, int Tagger, int Flags)
 
 {
-    qDebug() << "HostGameWindow::AssignPlayer()";
-    InsertToListWidget("   AssignPlayer()");
+    //qDebug() << "HostGameWindow::AssignPlayer()" << currentPlayer;
+    InsertToListWidget("   AssignPlayer()" + QString::number(currentPlayer));
 
     qDebug() << gameInfo.getGameID() << Game;
 //    if(gameInfo.getGameID() == Game)
 //    {
-        qDebug() << "HostGameWindow::AssignPlayer() - GameID & TaggerID matched";
+//        qDebug() << "HostGameWindow::AssignPlayer() - GameID & TaggerID matched";
 
 
 
@@ -187,7 +188,7 @@ void HostGameWindow::AddPlayerToGame(int Game, int Tagger)
     //TODO:check Game is correct
     //TODO:check Tagger is correct  if(gameInfo.getGameID() == Game && playerInfo[currentPlayer].getTaggerID() == Tagger)
 
-    qDebug() << "HostGameWindow::AddPlayerToGame()";
+    //qDebug() << "HostGameWindow::AddPlayerToGame()" << currentPlayer;
     InsertToListWidget("   AddPlayerToGame()");
     isThisPlayerHosted[currentPlayer] = true;
     if (currentPlayer != 0) currentPlayer++;
@@ -208,8 +209,6 @@ void HostGameWindow::on_btn_Start_clicked()
     else timerAnnounce->stop();
 }
 
-
-
 int HostGameWindow::getCurrentPlayer() const
 {
     return currentPlayer;
@@ -223,7 +222,11 @@ void HostGameWindow::setCurrentPlayer(int value)
 void HostGameWindow::resetPlayersForNewGame()
 {
     currentPlayer = 1;
-    for(int players= 1; players < 25; players++) isThisPlayerHosted[players] = false;
+    for(int players= 0; players < 25; players++)
+    {
+        isThisPlayerHosted[players] = false;
+    }
+    noMorePlayers = false;
 }
 
 bool HostGameWindow::getIsThisPlayerHosted(int playerNumber) const
@@ -239,7 +242,7 @@ void HostGameWindow::setIsThisPlayerHosted(int playerNumber, bool value)
 void HostGameWindow::on_btn_StartGame_clicked()
 {
     timerAnnounce->stop();
-    timerCountDown->start(1050);
+    timerCountDown->start(1100);
     countDownTimeRemaining = gameInfo.getCountDownTime();
 }
 
@@ -250,6 +253,8 @@ void HostGameWindow::sendCountDown()
         timerCountDown->stop();
         InsertToListWidget("Game has started !!!");
         ui->label->setText("Game Underway !!!");
+        ui->btn_Cancel->setText("Close");
+        ui->btn_Rehost->setEnabled(true);
         //TODO:Change the form to show the DeBrief stuff - use a State Machine?
         return;
     }
@@ -268,7 +273,7 @@ void HostGameWindow::sendCountDown()
     serialComms.sendPacket(DATA, "08");   //TODO:Team3 PlayerCount
     serialComms.sendPacket(CHECKSUM);
     InsertToListWidget("CountDownTime = " + QString::number(countDownTimeRemaining));
-    qDebug() << "CountDownTime = " << countDownTimeRemaining << _countDownTime << ":" << _gameID << gameInfo.getGameIdTx();
+    //qDebug() << "CountDownTime = " << countDownTimeRemaining << _countDownTime << ":" << _gameID << gameInfo.getGameIdTx();
 }
 
 int HostGameWindow::ConvertDecToBCD(int dec)
@@ -428,4 +433,18 @@ void HostGameWindow::on_btn_TestMessage_clicked()
             serialComms.sendPacket('D', name4);
         }
         serialComms.sendPacket('C');
+}
+
+
+
+QString HostGameWindow::displayBinary(int number, int digits)
+{
+    QString output = QString::number(number, 2);
+    int padding = digits - output.length();
+    while (padding > 0)
+    {
+        output.prepend('0');
+        padding--;
+    }
+    return output;
 }

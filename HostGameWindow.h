@@ -31,6 +31,8 @@ public:
 
     void resetPlayersForNewGame();
 
+    int getDisplay8digitBinary() const;
+
 public slots:
 
     void AssignPlayer(int Game, int Tagger, int Flags);   //Connects to RequestJoinGame signal
@@ -73,7 +75,6 @@ private:
     bool    wiFiActive;
     bool    useLazerSwarm;
     bool    isThisPlayerHosted[25];
-    bool    isThisPlayerInTheGame = false;
     int     currentPlayer;
     bool    noMorePlayers;
     int     countDownTimeRemaining;
@@ -82,6 +83,7 @@ private:
     int     calculatePlayerTeam5bits();
     int     ConvertDecToBCD(int dec);
     int     ConvertBCDtoDec(int bcd);
+    QString displayBinary(int number, int digits);
 
 };
 

@@ -7,7 +7,7 @@ Game        gameInfo;
 Game::Game()
 {
     GameType        = 0x02;
-    GameID          = 0x7C;
+    GameID          = 0x42;
     GameLength      = 10;
     NumberOfPlayers = 24;
     GameName        ="LTTO";

@@ -574,6 +574,7 @@ QSlider::groove:horizontal {
     <addaction name="actionLoad"/>
     <addaction name="separator"/>
     <addaction name="actionSet_CountDown_Time"/>
+    <addaction name="actionuse_LazerSwarm"/>
     <addaction name="actionPorts"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
@@ -606,6 +607,8 @@ QSlider::groove:horizontal {
    <addaction name="separator"/>
    <addaction name="actionPorts"/>
    <addaction name="separator"/>
+   <addaction name="actionuse_LazerSwarm"/>
+   <addaction name="separator"/>
    <addaction name="actionExit"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -632,6 +635,14 @@ QSlider::groove:horizontal {
   <action name="actionSet_CountDown_Time">
    <property name="text">
     <string>Set CountDown Time</string>
+   </property>
+  </action>
+  <action name="actionuse_LazerSwarm">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>use LazerSwarm</string>
    </property>
   </action>
  </widget>
