@@ -130,7 +130,7 @@ int HostGameWindow::calculatePlayerTeam5bits()
     {
         playerTeam5bits = 8 + (currentPlayer-1);
     }
-    else                                    //2bits for Team, 3 bits for PlayerID
+    else                                    //2 bits for Team, 3 bits for PlayerID
     {
         if      (currentPlayer > 0  && currentPlayer < 9)
         {
@@ -159,7 +159,7 @@ void HostGameWindow::AssignPlayer(int Game, int Tagger, int Flags)
     //qDebug() << "HostGameWindow::AssignPlayer()" << currentPlayer;
     InsertToListWidget("   AssignPlayer()" + QString::number(currentPlayer));
 
-    qDebug() << gameInfo.getGameID() << Game;
+    qDebug() << "HostGameWindow::AssignPlayer() " << gameInfo.getGameID() << ConvertDecToBCD( Game);
 //    if(gameInfo.getGameID() == Game)
 //    {
 //        qDebug() << "HostGameWindow::AssignPlayer() - GameID & TaggerID matched";
@@ -198,7 +198,6 @@ void HostGameWindow::AddSerialPortToListWidget(QString value)
 {
     QString portFound = QObject::tr("") + value;
     qDebug() << portFound;
-    //ui->listWidget_Status->addItem(portFound);
     InsertToListWidget(portFound);
 }
 

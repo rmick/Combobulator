@@ -214,6 +214,14 @@ void Players::setPackedFlag1_NeutraliseWhenTagged(bool state)
 void Players::setPackedFlag1_LimitedReloads(bool state)
 {
     //qDebug() << "setPackedFlag1_LimitedReloads()" << state << QString::number(PackedFlags1, 2);
+
+//    Setting the nth bit to either 1 or 0 can be achieved with the following:
+//    number ^= (-x ^ number) & (1 << n);
+//    Bit n will be set if x is 1, and cleared if x is 0.
+
+//    PackedFlags1 ^= (-x ^ number) & (1 << n);
+
+
     if (state == true) PackedFlags1 = PackedFlags1 |= 1 << 6;
     else               PackedFlags1 = PackedFlags1 &= ~(1 << 6);
     //qDebug() << QString::number(PackedFlags1, 2);

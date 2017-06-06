@@ -2,6 +2,7 @@
 #define LAZERSWARM_H
 
 #include "QString"
+#include "Defines.h"
 
 class LazerSwarm
 {

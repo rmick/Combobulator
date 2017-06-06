@@ -17,33 +17,32 @@ QString LazerSwarm::translateCommand(QString messageOut)
     char packetType = QString(messageOut)[0].unicode();
     switch(char(packetType))
     {
-        case 'P':
+        case PACKET:
             numberOfBits = " 9";       //last bit must be 0
             isBeacon     = " 0";
         break;
 
-        case 'D':
+        case DATA:
             numberOfBits = " 8";
             isBeacon     = " 0";
         break;
 
-        case 'C':
+        case CHECKSUM:
             numberOfBits = " 9";       //last bit must be 1
             isBeacon     = " 0";
         break;
 
-        case 'T':
+        case TAG:
             numberOfBits = " 7";
             isBeacon     = " 0";
         break;
 
-        case 'B':
+        case BEACON:
             numberOfBits = " 5";
             isBeacon     = " 1";
         break;
     }
-    command = messageOut.remove(0,1);
-    //qDebug() << "LZ trans= " << command << numberOfBits << isBeacon;
+    command = messageOut.remove(0,1);   //Remove the char packetType
     QString translated = "CMD 10 ";
     translated.append(command);
     translated.append(numberOfBits);
@@ -60,32 +59,27 @@ QByteArray LazerSwarm::decodeCommand(QString messageIn)
     {
         char packetTypeIn;
         int  packetDataIn;
-        int numberOfBitsIn;
-        int isBeaconIn;
+        int  numberOfBitsIn;
+        int  isBeaconIn;
 
         messageIn.trimmed();                                                //removes the \r\n from the end
         messageParts = messageIn.split(" ");
 
         bool ok = 0;
-        if(!messageParts.empty()) messageParts.removeFirst();                 //Discard the RCV
-
+        if(!messageParts.empty()) messageParts.removeFirst();               //Discard the RCV
         if(!messageParts.empty()) packetDataIn   = messageParts.takeFirst().toInt(&ok, 16); else packetDataIn   = -1;
-        if (!ok) qDebug() << "LazerSwarm::decodeCommand() - error toInt(16)";
         if(!messageParts.empty()) numberOfBitsIn = messageParts.takeFirst().toInt(&ok, 16); else numberOfBitsIn = -1;
-        if (!ok) qDebug() << "LazerSwarm::decodeCommand() - error toInt(16)";
         if(!messageParts.empty()) isBeaconIn     = messageParts.takeFirst().toInt(&ok, 16); else isBeaconIn     = -1;
-        if (!ok) qDebug() << "LazerSwarm::decodeCommand() - error toInt(16)";
-        if(!messageParts.empty()) qDebug() << "SPARE DATA !!!!  LazerSwarm::decodeCommand()" << messageParts.takeFirst();
 
         //qDebug() << "LazerSwarm::decodeCommand(QString messageIn)" << messageIn << ":" << packetDataIn << ":" << numberOfBitsIn << ":" << isBeaconIn;
 
         //assemble message
-        if      (numberOfBitsIn == 9 && packetDataIn < 256)     packetTypeIn = 'P';
-        else if (numberOfBitsIn == 9 && packetDataIn > 256)     packetTypeIn = 'C';
-        else if (numberOfBitsIn == 8 && !isBeaconIn)            packetTypeIn = 'D';
-        else if (numberOfBitsIn == 5 &&  isBeaconIn)            packetTypeIn = 'B';
-        else if (numberOfBitsIn == 7 && !isBeaconIn)            packetTypeIn = 'T';
-        else                                                    packetTypeIn = '_';
+        if      (numberOfBitsIn == 9 && packetDataIn < 256)     packetTypeIn = PACKET;
+        else if (numberOfBitsIn == 9 && packetDataIn > 256)     packetTypeIn = CHECKSUM;
+        else if (numberOfBitsIn == 8 && !isBeaconIn)            packetTypeIn = DATA;
+        else if (numberOfBitsIn == 5 &&  isBeaconIn)            packetTypeIn = BEACON;
+        else if (numberOfBitsIn == 7 && !isBeaconIn)            packetTypeIn = TAG;
+        else                                                    packetTypeIn = '_';     // Indicates an error.
 
         decodedMessage.append(packetTypeIn);
         decodedMessage.append(QString::number(packetDataIn, 16).toUpper() );

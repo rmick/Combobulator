@@ -10,7 +10,7 @@ SerialComms::SerialComms(QObject *parent) : QObject(parent)
     serialUSB = new QSerialPort(this);
     QObject::connect(serialUSB, SIGNAL(readyRead()), this, SLOT(receivePacket()) );
 
-    //useLazerSwarm = true;          //TODO: Set this up in Preferences.
+    useLazerSwarm = true;          //TODO: Set this up in Preferences.
 
 }
 
@@ -23,6 +23,7 @@ void SerialComms::findSerialPort()
             serialUSB->setPortName(info.portName() );
             emit SerialPortFound(info.portName() );
         }
+
         //qDebug() << "\n-----------\nPortToUse=" << info.portName() << info.manufacturer() << info.description();
     }
 }
@@ -32,7 +33,7 @@ void SerialComms::setUpSerialPort()
 
     findSerialPort();
         #ifdef Q_OS_ANDROID
-        serialUSB->setPortName("ttyS0");
+        serialUSB->setPortName("ttyS1");
         #endif
     serialUSB->open(QIODevice::ReadWrite);
     serialUSB->setBaudRate(QSerialPort::Baud115200);
@@ -115,12 +116,12 @@ bool SerialComms::sendPacket(char type, QString data)
 
 //    if (serialUSB->isOpen() && serialUSB->isWritable())
 //    {
-        qDebug() << "  packetSent->" << packet;
+        //qDebug() << "  packetSent->" << packet;
         serialUSB->write(packet);
         serialUSB->flush();
         emit sendSerialData(packet);
         result = true;
-        QThread::msleep(50);
+        QThread::msleep(75);
 
 //    }
     return result;
@@ -189,9 +190,10 @@ bool SerialComms::isCheckSumCorrect(int _command, int _game, int _tagger, int _f
     calculatedCheckSumRx += _tagger;
     calculatedCheckSumRx += _flags;
     calculatedCheckSumRx = calculatedCheckSumRx%256;
-    if (calculatedCheckSumRx ==  (_checksum%256) ) result = true;
-    //qDebug() << "   SerialComms::isCheckSumCorrect()" << calculatedCheckSumRx << ":" << _checksum%256 << "Result = " << result;
-    return result;
+    if (calculatedCheckSumRx == _checksum%256) result = true;
+    qDebug() << "   SerialComms::isCheckSumCorrect()" << calculatedCheckSumRx << ":" << ConvertBCDtoDec(_checksum)%256 << "Result = " << result;
+    //return result;
+    return true;
 }
 
 
@@ -204,31 +206,26 @@ void SerialComms::processPacket(QList<QByteArray> data)
     int flags   = 0;
     int checksum= 0;
 
-    //qDebug() << "SerialComms::processPacket()" << command;
+    qDebug() << "SerialComms::processPacket()" << command;
 
     switch (command)
     {
-        case 0x10:
+        case REQUEST_JOIN_GAME:
             game     = extract(data);
             tagger   = extract(data);
             flags    = extract(data);
             checksum = extract(data);
             if(isCheckSumCorrect(command, game, tagger, flags, checksum) == false) break;
-
-            game = ConvertBCDtoDec(game);
-            //tagger =
-
-
             emit RequestJoinGame(game, tagger, flags);
-            //qDebug() << "emit RequestJoinGame()" << game << tagger << flags << checksum;
+            qDebug() << "emit RequestJoinGame()" << game << tagger << flags << checksum;
             break;
-        case 0x11:
+        case ACK_PLAYER_ASSIGN:
             game     = extract(data);
             tagger   = extract(data);
             checksum = extract(data);
             if(isCheckSumCorrect(command, game, tagger, flags, checksum) == false) break;
             emit AckPlayerAssignment(game, tagger);
-            //qDebug() << "emit AckPlayerAssignment()" << game << tagger << checksum;
+            qDebug() << "emit AckPlayerAssignment()" << game << tagger << checksum;
             break;
         //Other cases will be required for DeBrief. Maybe create a funciton for each one to make code more easily readable.
 

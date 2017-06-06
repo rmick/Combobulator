@@ -23,6 +23,11 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
     gameInfo.setNumberOfTeams(0);
 
     QWidget::move(0,0);
+
+    //TODO: Get rid of this, it is just debug until I store/recall this setting
+    ui->actionuse_LazerSwarm->setChecked(true);
+
+
 }
 
 LttoMainWindow::~LttoMainWindow()

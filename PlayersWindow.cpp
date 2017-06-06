@@ -33,6 +33,26 @@ PlayersWindow::~PlayersWindow()
 
 void PlayersWindow::SetUpPlayerButtonMapping()
 {
+//    QList<QPushButton*> PlayerButtons = findChildren<QPushButton*>(QRegExp("btn_Player*"));
+//// They will be found in any order so need to gather together into a vector.
+//    QSignalMapper* signalMapper = new QSignalMapper(this);
+
+//    for (int i=0; i<formButtons.count(); i++)
+//    {
+//           QPushButton *btn = formButtons.at(i);
+//           int id = btn->objectName().mid(QString("btn_Player").length()).toInt() - 1;
+//           PlayerButtons[id] = btn;
+//           MAP_BTN_TO_ACTION(btn, id);
+//    }
+//    for (int index=0; index<sizeofArray(lastSwitchStates); index++)
+//    {
+//           lastSwitchStates[index] = lastLedStates[index] = 0;
+//    }
+//    connect(signalMapper,  SIGNAL(mapped(int)), this, SIGNAL(btnClicked(int)));
+//    connect(this,  SIGNAL(btnClicked(int)), SLOT(buttonPushed(int)));
+
+
+
     PlayerButtons.append(0);    // Fake button for Player 0
     PlayerButtons.append(ui->btn_Player1);
     PlayerButtons.append(ui->btn_Player2);
