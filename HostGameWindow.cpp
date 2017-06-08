@@ -41,7 +41,8 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
     ui->btn_Cancel->setText("Cancel");
     ui->btn_Rehost->setEnabled(false);
 
-    announceGame();             // this kicks it over immediately, rather than waiting for the first timeout of the 1.5s timer to trigger
+    // Kick start the process, otherwise there is a 2.0s delay until the timer first triggers.
+    announceGame();
 }
 
 HostGameWindow::~HostGameWindow()
@@ -92,10 +93,7 @@ void HostGameWindow::announceGame()
             currentPlayer = 0;
         }
     }
-    else
-    {
-        hostCurrentPlayer();
-    }
+    hostCurrentPlayer();
 }
 
 void HostGameWindow::hostCurrentPlayer()
@@ -255,24 +253,26 @@ void HostGameWindow::sendCountDown()
         ui->btn_Cancel->setText("Close");
         ui->btn_Rehost->setEnabled(true);
         //TODO:Change the form to show the DeBrief stuff - use a State Machine?
-        return;
     }
-    serialComms.sendPacket(PACKET , "0");   //CountDown
+    else
+    {
+        serialComms.sendPacket(PACKET , "0");   //CountDown
 
-    QString _gameID = QString::number(ConvertDecToBCD(gameInfo.getGameID() )).toUpper();
-    //serialComms.sendPacket(DATA, _gameID);
+        QString _gameID = QString::number(ConvertDecToBCD(gameInfo.getGameID() )).toUpper();
+        //serialComms.sendPacket(DATA, _gameID);
 
-    serialComms.sendPacket(DATA, gameInfo.getGameIdTx() );
+        serialComms.sendPacket(DATA, gameInfo.getGameIdTx() );
 
-    QString _countDownTime = QString::number(ConvertDecToBCD(countDownTimeRemaining--));
-    serialComms.sendPacket(DATA, _countDownTime);
-    //serialComms.sendPacket(DATA, QString::number(countDownTimeRemaining, 16).toUpper() );
-    serialComms.sendPacket(DATA, "08");   //TODO:Team1 PlayerCount
-    serialComms.sendPacket(DATA, "08");   //TODO:Team2 PlayerCount
-    serialComms.sendPacket(DATA, "08");   //TODO:Team3 PlayerCount
-    serialComms.sendPacket(CHECKSUM);
-    InsertToListWidget("CountDownTime = " + QString::number(countDownTimeRemaining));
-    //qDebug() << "CountDownTime = " << countDownTimeRemaining << _countDownTime << ":" << _gameID << gameInfo.getGameIdTx();
+        QString _countDownTime = QString::number(ConvertDecToBCD(countDownTimeRemaining--));
+        serialComms.sendPacket(DATA, _countDownTime);
+        //serialComms.sendPacket(DATA, QString::number(countDownTimeRemaining, 16).toUpper() );
+        serialComms.sendPacket(DATA, "08");   //TODO:Team1 PlayerCount
+        serialComms.sendPacket(DATA, "08");   //TODO:Team2 PlayerCount
+        serialComms.sendPacket(DATA, "08");   //TODO:Team3 PlayerCount
+        serialComms.sendPacket(CHECKSUM);
+        InsertToListWidget("CountDownTime = " + QString::number(countDownTimeRemaining));
+        //qDebug() << "CountDownTime = " << countDownTimeRemaining << _countDownTime << ":" << _gameID << gameInfo.getGameIdTx();
+    }
 }
 
 int HostGameWindow::ConvertDecToBCD(int dec)
@@ -305,7 +305,18 @@ void HostGameWindow::InsertToListWidget(QString lineText)
 
 void HostGameWindow::on_btn_TestMessage_clicked()
 {
-        const int Game = 0;
+    //P80:D48:D45:D4C:D4C:D4F:CF4:
+    serialComms.sendPacket(PACKET,  "80");
+    serialComms.sendPacket(DATA,    "72");
+    serialComms.sendPacket(DATA,    "69");
+    serialComms.sendPacket(DATA,    "76");
+    serialComms.sendPacket(DATA,    "76");
+    serialComms.sendPacket(DATA,    "79");
+    serialComms.sendPacket(CHECKSUM);
+    return;
+
+
+    const int Game = 0;
 
         ////--------------------------------------------------
         //  Host 2TeamRespawn Roonka Game (captured packets from LTTO host)     - WORKS - Tagger screen shows 2TRS
@@ -415,23 +426,23 @@ void HostGameWindow::on_btn_TestMessage_clicked()
         }
 
 
-        serialComms.sendPacket('P', hostedGameType);
-        serialComms.sendPacket('D', hostedGameID);
-        serialComms.sendPacket('D', hostedGameTime);
-        serialComms.sendPacket('D', hostedTagsAvailable);
-        serialComms.sendPacket('D', hostedReloadsAvailable);
-        serialComms.sendPacket('D', hostedShieldTime);
-        serialComms.sendPacket('D', hostedMegaTags);
-        serialComms.sendPacket('D', hostedPackedFlags1);
-        serialComms.sendPacket('D', hostedPackedFlags2);
-        if (name1 != "00")
+        serialComms.sendPacket(PACKET,  hostedGameType);
+        serialComms.sendPacket(DATA,    hostedGameID);
+        serialComms.sendPacket(DATA,    hostedGameTime);
+        serialComms.sendPacket(DATA,    hostedTagsAvailable);
+        serialComms.sendPacket(DATA,    hostedReloadsAvailable);
+        serialComms.sendPacket(DATA,    hostedShieldTime);
+        serialComms.sendPacket(DATA,    hostedMegaTags);
+        serialComms.sendPacket(DATA,    hostedPackedFlags1);
+        serialComms.sendPacket(DATA,    hostedPackedFlags2);
+        if (hostedGameType == 0x0C)
         {
-            serialComms.sendPacket('D', name1);
-            serialComms.sendPacket('D', name2);
-            serialComms.sendPacket('D', name3);
-            serialComms.sendPacket('D', name4);
+            serialComms.sendPacket(DATA, name1);
+            serialComms.sendPacket(DATA, name2);
+            serialComms.sendPacket(DATA, name3);
+            serialComms.sendPacket(DATA, name4);
         }
-        serialComms.sendPacket('C');
+        serialComms.sendPacket(CHECKSUM);
 }
 
 

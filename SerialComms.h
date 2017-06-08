@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QtSerialPort/QSerialPortInfo>
+#include <QTimer>
 #include "LazerSwarm.h"
 #include "Defines.h"
 
@@ -21,21 +22,22 @@ public:
     void        closeSerialPort();
     int         getRxPacket();
 
-    bool getUseLazerSwarm() const;
-    void setUseLazerSwarm(bool value);
+    bool        getUseLazerSwarm() const;
+    void        setUseLazerSwarm(bool value);
 
 signals:
-    void    RequestJoinGame(int Game, int Tagger, int Flags);
-    void    AckPlayerAssignment(int Game, int Tagger);
-    void    SerialPortFound(QString portDetails);
-    void    TimerBlock(bool StartStop);
-    void    sendSerialData(QByteArray dataToSend);
+    void        RequestJoinGame(int Game, int Tagger, int Flags);
+    void        AckPlayerAssignment(int Game, int Tagger);
+    void        SerialPortFound(QString portDetails);
+    void        TimerBlock(bool StartStop);
+    void        sendSerialData(QByteArray dataToSend);
 
 private slots:
     void        receivePacket();
 
 private:
     QSerialPort     *serialUSB;
+    QTimer          *delayTimer;
 
     int             calculatedCheckSumTx;
     int             calculatedCheckSumRx;
@@ -49,6 +51,7 @@ private:
     bool            isCheckSumCorrect(int _command, int _game, int _tagger, int _flags, int _checksum);
     int             ConvertDecToBCD(int dec);
     int             ConvertBCDtoDec(int bcd);
+    void            blockingDelay(int mSec);
 
     struct          RxPacket
     {

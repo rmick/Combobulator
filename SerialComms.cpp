@@ -8,9 +8,11 @@ SerialComms::SerialComms(QObject *parent) : QObject(parent)
 {
 
     serialUSB = new QSerialPort(this);
+    delayTimer      = new QTimer(this);
+
     QObject::connect(serialUSB, SIGNAL(readyRead()), this, SLOT(receivePacket()) );
 
-    useLazerSwarm = true;          //TODO: Set this up in Preferences.
+    //useLazerSwarm = true;          //TODO: Set this up in Preferences.
 
 }
 
@@ -121,7 +123,9 @@ bool SerialComms::sendPacket(char type, QString data)
         serialUSB->flush();
         emit sendSerialData(packet);
         result = true;
-        QThread::msleep(75);
+        //QThread::msleep(75);
+        blockingDelay(50);
+
 
 //    }
     return result;
@@ -154,9 +158,12 @@ void SerialComms::receivePacket()
         irDataIn.append(serialUSB->readAll() );
         //TODO: Check for full packet/s (eg. "C86:")
         rxPacketList.append(irDataIn);
-        qDebug() << "SerialComms::receivePacket() - This code is not yet written";
+        //qDebug() << "SerialComms::receivePacket() - This code is not yet written";
+        qDebug() << "SerialComms::receivePacket() - " << irDataIn;
         processed = true;
     }
+
+
 
     if (processed)
     {
@@ -255,5 +262,13 @@ int SerialComms::ConvertBCDtoDec(int bcd)
   return (int) (((bcd >> 4) & 0xF) *10) + (bcd & 0xF);
 }
 
-
-
+void SerialComms::blockingDelay(int mSec)
+{
+    delayTimer->setSingleShot(true);
+    delayTimer->start(mSec);
+    qDebug() << "SerialComms::blockingDelay()";
+    while (delayTimer->isActive() )
+    {
+          QCoreApplication::processEvents();
+    }
+}

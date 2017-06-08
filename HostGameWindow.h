@@ -84,7 +84,7 @@ private:
     int     ConvertDecToBCD(int dec);
     int     ConvertBCDtoDec(int bcd);
     QString displayBinary(int number, int digits);
-
+    void    blockingDelay(int mSec);
 };
 
 #endif // HOSTGAMEWINDOW_H

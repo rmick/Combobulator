@@ -6,7 +6,7 @@
 
 QT       += core gui
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets bluetooth serialport network
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets network serialport bluetooth
 
 TARGET = LTTO_Host
 TEMPLATE = app
@@ -34,7 +34,7 @@ HEADERS  += lttomainwindow.h \
 	    SerialComms.h \
 	    PortConnect.h \
 	    TCPComms.h \
-    Defines.h
+	    Defines.h
 
 FORMS    += lttomainwindow.ui \
             PlayersWindow.ui \

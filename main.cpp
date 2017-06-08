@@ -1,7 +1,7 @@
 #include "lttomainwindow.h"
 #include <QApplication>
 #include "Game.h"
-#include "players.h"
+#include "Players.h"
 
 int main(int argc, char *argv[])
 {
