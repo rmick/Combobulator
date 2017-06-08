@@ -208,7 +208,7 @@ int Players::getPackedFlags1() const
 
 void Players::setPackedFlag1_NeutraliseWhenTagged(bool state)
 {
-
+    state = false;  //TODO: add some real code here
 }
 
 void Players::setPackedFlag1_LimitedReloads(bool state)
@@ -220,7 +220,6 @@ void Players::setPackedFlag1_LimitedReloads(bool state)
 //    Bit n will be set if x is 1, and cleared if x is 0.
 
 //    PackedFlags1 ^= (-x ^ number) & (1 << n);
-
 
     if (state == true) PackedFlags1 = PackedFlags1 |= 1 << 6;
     else               PackedFlags1 = PackedFlags1 &= ~(1 << 6);

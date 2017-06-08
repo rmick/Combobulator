@@ -123,8 +123,8 @@ bool SerialComms::sendPacket(char type, QString data)
         serialUSB->flush();
         emit sendSerialData(packet);
         result = true;
-        //QThread::msleep(75);
-        blockingDelay(50);
+        QThread::msleep(75);
+        //blockingDelay(50);
 
 
 //    }
