@@ -116,18 +116,20 @@ bool SerialComms::sendPacket(char type, QString data)
     }
     else packet.append(":");
 
-//    if (serialUSB->isOpen() && serialUSB->isWritable())
-//    {
+    if (serialUSB->isOpen() && serialUSB->isWritable())
+    {
         //qDebug() << "  packetSent->" << packet;
         serialUSB->write(packet);
         serialUSB->flush();
-        emit sendSerialData(packet);
         result = true;
-        QThread::msleep(75);
-        //blockingDelay(50);
+        //QThread::msleep(75);
 
 
-//    }
+
+    }
+    emit sendSerialData(packet);
+    blockingDelay(100);
+
     return result;
 }
 
@@ -264,11 +266,15 @@ int SerialComms::ConvertBCDtoDec(int bcd)
 
 void SerialComms::blockingDelay(int mSec)
 {
-    delayTimer->setSingleShot(true);
-    delayTimer->start(mSec);
-    qDebug() << "SerialComms::blockingDelay()";
-    while (delayTimer->isActive() )
-    {
-          QCoreApplication::processEvents();
-    }
+    QEventLoop loop;
+    QTimer::singleShot(mSec, &loop, SLOT(quit()));
+    loop.exec();
+
+//    delayTimer->setSingleShot(true);
+//    delayTimer->start(mSec);
+//    qDebug() << "SerialComms::blockingDelay()";
+//    while (delayTimer->isActive() )
+//    {
+//          QCoreApplication::processEvents();
+//    }
 }
