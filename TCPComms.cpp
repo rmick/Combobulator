@@ -64,7 +64,7 @@ void TCPComms::sendData(QByteArray data)
     {
         socket->write(data);
         ui->listWidget_TCP->addItem(data);
-        qDebug() << "TCPComms::sendData()\t " << data;
+        //qDebug() << "TCPComms::sendData()\t " << data;
     }
 }
 

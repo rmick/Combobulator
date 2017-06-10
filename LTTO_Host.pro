@@ -6,14 +6,12 @@
 
 QT       += core gui
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets network serialport bluetooth
-
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets network bluetooth serialport
 TARGET = LTTO_Host
 TEMPLATE = app
 
 
 SOURCES +=  main.cpp\
-            lttomainwindow.cpp \
             PlayersWindow.cpp \
             Game.cpp \
             Players.cpp \
@@ -22,9 +20,10 @@ SOURCES +=  main.cpp\
 	    LazerSwarm.cpp \
 	    SerialComms.cpp \
 	    PortConnect.cpp \
-	    TCPComms.cpp
+	    TCPComms.cpp \
+    LttoMainWindow.cpp
 
-HEADERS  += lttomainwindow.h \
+HEADERS  += \
             PlayersWindow.h \
             Game.h \
             Players.h \
@@ -34,7 +33,8 @@ HEADERS  += lttomainwindow.h \
 	    SerialComms.h \
 	    PortConnect.h \
 	    TCPComms.h \
-	    Defines.h
+	    Defines.h \
+    LttoMainWindow.h
 
 FORMS    += lttomainwindow.ui \
             PlayersWindow.ui \

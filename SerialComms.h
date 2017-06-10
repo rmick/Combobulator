@@ -17,6 +17,7 @@ public:
     explicit SerialComms(QObject *parent = 0);
 
     bool        sendPacket(char type, QString data = 0);
+    bool        sendPacket(char type, int     data = 0, bool dataFormat = 'D');
     void        testSerialPort();
     void        setUpSerialPort();
     void        closeSerialPort();

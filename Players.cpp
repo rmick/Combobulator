@@ -237,12 +237,30 @@ QString Players::getPackedFlags1Tx() const
     QString _packedFlags1 = QString::number(PackedFlags1, 10).toUpper();
     if (_packedFlags1.length() == 1) _packedFlags1.prepend('0');
     return _packedFlags1;
+
+
+//    var flags1 = (byte) ((gameDefinition.ExtendedTagging ? 1 : 0) << 7 |
+//                                     (gameDefinition.LimitedReloads ? 1 : 0) << 6 |
+//                                     (gameDefinition.LimitedMega ? 1 : 0) << 5 |
+//                                     (gameDefinition.TeamTags ? 1 : 0) << 4 |
+//                                     (gameDefinition.MedicMode ? 1 : 0) << 3 |
+//                                     (gameDefinition.SlowTags ? 1 : 0) << 2 |
+//                                     (gameDefinition.GameTypeInfo.HuntThePrey ? 1 : 0) << 1 |
+//                                     (gameDefinition.GameTypeInfo.ReverseHuntDirection ? 1 : 0) << 0);
 }
 
 int Players::getPackedFlags2() const
 {
     //qDebug() << "Players::getPackedFlags2() " + QString::number(PackedFlags2, 2);
     return PackedFlags2;
+
+//    var flags2 = (byte) ((gameDefinition.GameTypeInfo.Zones ? 1 : 0) << 7 |
+//                         (gameDefinition.GameTypeInfo.TeamZones ? 1 : 0) << 6 |
+//                         (gameDefinition.GameTypeInfo.NeutralizePlayersTaggedInZone ? 1 : 0) << 5 |
+//                         (gameDefinition.GameTypeInfo.ZonesRevivePlayers ? 1 : 0) << 4 |
+//                         (gameDefinition.GameTypeInfo.HospitalZones ? 1 : 0) << 3 |
+//                         (gameDefinition.GameTypeInfo.ZonesTagPlayers ? 1 : 0) << 2 |
+//                         (gameDefinition.TeamCount & 0x03));
 }
 
 void Players::setPackedFlags2(int value)

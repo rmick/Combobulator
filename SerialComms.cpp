@@ -1,3 +1,5 @@
+
+
 #include "SerialComms.h"
 #include <QtSerialPort>
 #include "HostGameWindow.h"
@@ -12,7 +14,7 @@ SerialComms::SerialComms(QObject *parent) : QObject(parent)
 
     QObject::connect(serialUSB, SIGNAL(readyRead()), this, SLOT(receivePacket()) );
 
-    //useLazerSwarm = true;          //TODO: Set this up in Preferences.
+    useLazerSwarm = true;          //TODO: Set this up in Preferences.
 
 }
 
@@ -65,8 +67,81 @@ int SerialComms::getRxPacket()
 
 ////////////////////////////////////////////////////////////////////
 
+bool SerialComms::sendPacket(char type, int data, bool dataFormat)
+{
+    bool result = false;
+    //bool ok;    //dummy
+    QByteArray packet;
+
+    //Calculating the CheckSum.
+    //This is here because it always does my head in !!!!!
+    //The Data is BCD Hex (whatever that means).        It means it is 2 x 4bit numbers in a single Byte
+    //                                                  Therefore 10 is actually 0001 0000 (which is 0x16)
+    //                                                  and       42 is actually 0100 0010 (which is 0x64)
+    //                                                  and       79 is actually 0111 1001 (which is 0x121)
+    //                                                  and      255 is actually 1111 1111 (which is 0xFF)
+    //This means that '10' is actually 0x16,
+    //and the CheckSum is the Sum of the Hex values, not the BCD.
+    //This is confusing as 10 minutes in GameTime is sent as '10'
+    //but is actually 0x16 as far as the CheckSum is concerned.
+
+    switch (type)
+    {
+        case PACKET:
+            calculatedCheckSumTx = data;
+            packet.append("P" + QString::number(data, 16));
+            break;
+        case DATA:
+            calculatedCheckSumTx += ConvertDecToBCD(data);
+            if (dataFormat == BCD) data = ConvertDecToBCD(data);
+            packet.append("D" + QString::number(data, 16));
+            break;
+        case CHECKSUM:
+            calculatedCheckSumTx = calculatedCheckSumTx % 256;      // CheckSum is the remainder of dividing by 256.
+            calculatedCheckSumTx = calculatedCheckSumTx | 256;      // Set the required 9th MSB bit to 1 to indicate it is a checksum
+            packet.append("C" + QString::number(calculatedCheckSumTx, 16).toUpper() );
+            break;
+        case TAG:
+            packet.append("T" + QString::number(data, 16));
+            break;
+        case BEACON:
+            packet.append("B" + QString::number(data, 16));
+            break;
+    }
+
+    if (useLazerSwarm)
+    {
+        QByteArray packetToTranslate;
+        packetToTranslate.append(packet);
+        packet.clear();
+        packet.append(lazerswarm.translateCommand(packetToTranslate) );
+        packet.append(" \r\n");
+    }
+    else packet.append(":");
+
+    if(type == CHECKSUM && useLazerSwarm == false) packet.append("\r\n");  //TODO: Remove this, it is just to make the Serial Debug easier to read.
+
+    if (serialUSB->isOpen() && serialUSB->isWritable())
+    {
+        serialUSB->write(packet);
+        serialUSB->flush();
+        result = true;
+    }
+    //qDebug() << "  packetSent->" << packet;
+    emit sendSerialData(packet);
+    QThread::msleep(75);
+    //blockingDelay(75);
+
+    return result;
+}
+
+
+
 bool SerialComms::sendPacket(char type, QString data)
 {
+    qDebug() << "DO NOT USE !!!!!!!  SerialComms::sendPacket(char type, QString data)";
+    return false;
+
     bool result = false;
     QByteArray packet;
     bool ok; // Dummy
@@ -116,18 +191,17 @@ bool SerialComms::sendPacket(char type, QString data)
     }
     else packet.append(":");
 
+    if(type == CHECKSUM) packet.append("\r\n");  //TODO: Remove this, it is just to make the Serial Debug easier to read.
+
     if (serialUSB->isOpen() && serialUSB->isWritable())
     {
-        //qDebug() << "  packetSent->" << packet;
         serialUSB->write(packet);
         serialUSB->flush();
         result = true;
-        //QThread::msleep(75);
-
-
-
     }
+    //qDebug() << "  packetSent->" << packet;
     emit sendSerialData(packet);
+    //QThread::msleep(75);
     blockingDelay(100);
 
     return result;
@@ -200,9 +274,8 @@ bool SerialComms::isCheckSumCorrect(int _command, int _game, int _tagger, int _f
     calculatedCheckSumRx += _flags;
     calculatedCheckSumRx = calculatedCheckSumRx%256;
     if (calculatedCheckSumRx == _checksum%256) result = true;
-    qDebug() << "   SerialComms::isCheckSumCorrect()" << calculatedCheckSumRx << ":" << ConvertBCDtoDec(_checksum)%256 << "Result = " << result;
-    //return result;
-    return true;
+    //qDebug() << "   SerialComms::isCheckSumCorrect()" << calculatedCheckSumRx << ":" << _checksum%256 << "Result = " << result;
+    return result;
 }
 
 
@@ -215,7 +288,7 @@ void SerialComms::processPacket(QList<QByteArray> data)
     int flags   = 0;
     int checksum= 0;
 
-    qDebug() << "SerialComms::processPacket()" << command;
+    //qDebug() << "SerialComms::processPacket()" << command;
 
     switch (command)
     {
@@ -225,17 +298,28 @@ void SerialComms::processPacket(QList<QByteArray> data)
             flags    = extract(data);
             checksum = extract(data);
             if(isCheckSumCorrect(command, game, tagger, flags, checksum) == false) break;
+
+            game    = ConvertBCDtoDec(game);
+            tagger  = ConvertBCDtoDec(tagger);
+            flags   = ConvertDecToBCD(flags);
+
             emit RequestJoinGame(game, tagger, flags);
-            qDebug() << "emit RequestJoinGame()" << game << tagger << flags << checksum;
+            //qDebug() << "emit RequestJoinGame()" << game << tagger << flags << checksum;
             break;
+
         case ACK_PLAYER_ASSIGN:
             game     = extract(data);
             tagger   = extract(data);
             checksum = extract(data);
             if(isCheckSumCorrect(command, game, tagger, flags, checksum) == false) break;
+
+            game    = ConvertBCDtoDec(game);
+            tagger  = ConvertBCDtoDec(tagger);
+
             emit AckPlayerAssignment(game, tagger);
             qDebug() << "emit AckPlayerAssignment()" << game << tagger << checksum;
             break;
+
         //Other cases will be required for DeBrief. Maybe create a funciton for each one to make code more easily readable.
 
     }
@@ -254,7 +338,7 @@ int SerialComms::extract(QList<QByteArray> &data)
 
 int SerialComms::ConvertDecToBCD(int dec)
 {
-  if (dec == 0xFF) return dec;
+  if (dec == 100) return 0xFF;
   return (int) (((dec/10) << 4) | (dec %10) );
 }
 

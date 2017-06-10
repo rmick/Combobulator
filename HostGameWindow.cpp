@@ -27,7 +27,6 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
     connect(&serialComms,   SIGNAL(TimerBlock(bool)),               this, SLOT(SetAnnounceTimerBlock(bool)) );
 
     serialComms.setUpSerialPort();
-
     timerAnnounce->start(2000);
 
     #ifdef Q_OS_ANDROID
@@ -98,26 +97,52 @@ void HostGameWindow::announceGame()
 
 void HostGameWindow::hostCurrentPlayer()
 {
-    //qDebug() << "\nAnnounce Game : Player " << currentPlayer;
+    qDebug() << "\nAnnounce Game : Player " << currentPlayer;
     InsertToListWidget("Announce Game : Player " + QString::number(currentPlayer));
 
-    serialComms.sendPacket(PACKET,  gameInfo.getGameTypeTx() );
-    serialComms.sendPacket(DATA,    gameInfo.getGameIdTx() );
-    serialComms.sendPacket(DATA,    gameInfo.getGameLengthTx() );
-    serialComms.sendPacket(DATA,    playerInfo[currentPlayer].getHealthTagsTx() ); //BCD
-    serialComms.sendPacket(DATA,    playerInfo[currentPlayer].getReloadsTx() );    //BCD     //TODO: FF = Unlimited
-    serialComms.sendPacket(DATA,    playerInfo[currentPlayer].getShieldTimeTx() ); //BCD
-    serialComms.sendPacket(DATA,    playerInfo[currentPlayer].getMegaTagsTx() );   //BCD    //TODO: FF = Unlimited
-    serialComms.sendPacket(DATA,    playerInfo[currentPlayer].getPackedFlags1Tx() );
-    serialComms.sendPacket(DATA,    playerInfo[currentPlayer].getPackedFlags2Tx() );
+    bool TestBCD = false;
+
+    TestBCD = true;
+
+if (TestBCD){
+    serialComms.sendPacket(PACKET, gameInfo.getGameType()                        );
+    serialComms.sendPacket(DATA,   gameInfo.getGameID()                          );
+    serialComms.sendPacket(DATA,   gameInfo.getGameLength(),                  BCD);
+    serialComms.sendPacket(DATA,   playerInfo[currentPlayer].getHealthTags(), BCD);
+    serialComms.sendPacket(DATA,   playerInfo[currentPlayer].getReloads(),    BCD);
+    serialComms.sendPacket(DATA,   playerInfo[currentPlayer].getShieldTime(), BCD);
+    serialComms.sendPacket(DATA,   playerInfo[currentPlayer].getMegaTags(),   BCD);
+    serialComms.sendPacket(DATA,   playerInfo[currentPlayer].getPackedFlags1() );
+    serialComms.sendPacket(DATA,   playerInfo[currentPlayer].getPackedFlags2() );
     if (gameInfo.getGameType() == 0x0C)
     {
-        serialComms.sendPacket(DATA, "43");  // C
-        serialComms.sendPacket(DATA, "55");  // U
-        serialComms.sendPacket(DATA, "53");  // S
-        serialComms.sendPacket(DATA, "54");  // T
+        serialComms.sendPacket(DATA, 43);  // C
+        serialComms.sendPacket(DATA, 55);  // U
+        serialComms.sendPacket(DATA, 53);  // S
+        serialComms.sendPacket(DATA, 54);  // T
     }
-    serialComms.sendPacket(CHECKSUM);
+    serialComms.sendPacket(CHECKSUM, 0);
+    qDebug() << "-------------------";
+
+    return;
+}
+//    serialComms.sendPacket(PACKET,  gameInfo.getGameTypeTx() );
+//    serialComms.sendPacket(DATA,    gameInfo.getGameIdTx() );
+//    serialComms.sendPacket(DATA,    gameInfo.getGameLengthTx() );
+//    serialComms.sendPacket(DATA,    playerInfo[currentPlayer].getHealthTagsTx() ); //BCD
+//    serialComms.sendPacket(DATA,    playerInfo[currentPlayer].getReloadsTx() );    //BCD     //TODO: FF = Unlimited
+//    serialComms.sendPacket(DATA,    playerInfo[currentPlayer].getShieldTimeTx() ); //BCD
+//    serialComms.sendPacket(DATA,    playerInfo[currentPlayer].getMegaTagsTx() );   //BCD    //TODO: FF = Unlimited
+//    serialComms.sendPacket(DATA,    playerInfo[currentPlayer].getPackedFlags1Tx() );
+//    serialComms.sendPacket(DATA,    playerInfo[currentPlayer].getPackedFlags2Tx() );
+//    if (gameInfo.getGameType() == 0x0C)
+//    {
+//        serialComms.sendPacket(DATA, "43");  // C
+//        serialComms.sendPacket(DATA, "55");  // U
+//        serialComms.sendPacket(DATA, "53");  // S
+//        serialComms.sendPacket(DATA, "54");  // T
+//    }
+//    serialComms.sendPacket(CHECKSUM, 0);
 }
 
 int HostGameWindow::calculatePlayerTeam5bits()
@@ -154,39 +179,40 @@ int HostGameWindow::calculatePlayerTeam5bits()
 void HostGameWindow::AssignPlayer(int Game, int Tagger, int Flags)
 
 {
-    //qDebug() << "HostGameWindow::AssignPlayer()" << currentPlayer;
-    InsertToListWidget("   AssignPlayer()" + QString::number(currentPlayer));
+    qDebug() << "HostGameWindow::AssignPlayer()" << currentPlayer;
+    InsertToListWidget("   AssignPlayer()" + QString::number(currentPlayer) + ", Tagger ID:" + QString::number(Tagger) );
 
-    qDebug() << "HostGameWindow::AssignPlayer() " << gameInfo.getGameID() << ConvertDecToBCD( Game);
-//    if(gameInfo.getGameID() == Game)
-//    {
-//        qDebug() << "HostGameWindow::AssignPlayer() - GameID & TaggerID matched";
+    if(gameInfo.getGameID() != Game) return;
+    //qDebug() << "HostGameWindow::AssignPlayer() - GameID & TaggerID matched";
 
-
-
-        //TODO: Use Flags to see if they requested a specific Team/Player and action it.
+    //TODO: Use Flags to see if they requested a specific Team/Player and action it.
 
 
+    if(isThisPlayerHosted[currentPlayer] == false)
+    {
+        playerInfo[currentPlayer].setTaggerID(Tagger);
 
-        if(isThisPlayerHosted[currentPlayer] == false)
-        {
-            playerInfo[currentPlayer].setTaggerID(Tagger);
+        serialComms.sendPacket(PACKET,  ASSIGN_PLAYER);
 
-            serialComms.sendPacket(PACKET,  "01");
-            serialComms.sendPacket(DATA,    QString::number(Game,   16).toUpper() );
-            serialComms.sendPacket(DATA,    QString::number(Tagger, 16).toUpper() );
-            serialComms.sendPacket(DATA,    QString::number(calculatePlayerTeam5bits() , 16).toUpper() );
-            serialComms.sendPacket(CHECKSUM);
-        }
-//    }
+        //serialComms.sendPacket(DATA,    QString::number(Game,   16).toUpper() );
+        serialComms.sendPacket(DATA,    Game);
+
+        //serialComms.sendPacket(DATA,    QString::number(Tagger, 16).toUpper() );
+        serialComms.sendPacket(DATA,    Tagger);
+
+        //serialComms.sendPacket(DATA,    QString::number(calculatePlayerTeam5bits() , 16).toUpper() );
+        serialComms.sendPacket(DATA,    calculatePlayerTeam5bits() );
+
+        serialComms.sendPacket(CHECKSUM, 0);
+        qDebug() << "HostGameWindow::AssignPlayer() " << ASSIGN_PLAYER << Game << Tagger, calculatePlayerTeam5bits();
+    }
 }
 
 void HostGameWindow::AddPlayerToGame(int Game, int Tagger)
-{
-    //TODO:check Game is correct
-    //TODO:check Tagger is correct  if(gameInfo.getGameID() == Game && playerInfo[currentPlayer].getTaggerID() == Tagger)
+{    
+    if(gameInfo.getGameID() == Game && playerInfo[currentPlayer].getTaggerID() == Tagger) qDebug() << "HostGameWindow::AddPlayerToGame() - All settings match !";
 
-    //qDebug() << "HostGameWindow::AddPlayerToGame()" << currentPlayer;
+    qDebug() << "HostGameWindow::AddPlayerToGame()" << currentPlayer;
     InsertToListWidget("   AddPlayerToGame()");
     isThisPlayerHosted[currentPlayer] = true;
     if (currentPlayer != 0) currentPlayer++;
@@ -256,20 +282,20 @@ void HostGameWindow::sendCountDown()
     }
     else
     {
-        serialComms.sendPacket(PACKET , "0");   //CountDown
+        serialComms.sendPacket(PACKET , COUNTDOWN);
 
-        QString _gameID = QString::number(ConvertDecToBCD(gameInfo.getGameID() )).toUpper();
-        //serialComms.sendPacket(DATA, _gameID);
+        //QString _gameID = QString::number(ConvertDecToBCD(gameInfo.getGameID() )).toUpper();
+        serialComms.sendPacket(DATA, gameInfo.getGameID() );
 
-        serialComms.sendPacket(DATA, gameInfo.getGameIdTx() );
+        //serialComms.sendPacket(DATA, gameInfo.getGameIdTx() );
 
-        QString _countDownTime = QString::number(ConvertDecToBCD(countDownTimeRemaining--));
-        serialComms.sendPacket(DATA, _countDownTime);
+        //QString _countDownTime = QString::number(ConvertDecToBCD(countDownTimeRemaining--));
+        serialComms.sendPacket(DATA, countDownTimeRemaining--);
         //serialComms.sendPacket(DATA, QString::number(countDownTimeRemaining, 16).toUpper() );
-        serialComms.sendPacket(DATA, "08");   //TODO:Team1 PlayerCount
-        serialComms.sendPacket(DATA, "08");   //TODO:Team2 PlayerCount
-        serialComms.sendPacket(DATA, "08");   //TODO:Team3 PlayerCount
-        serialComms.sendPacket(CHECKSUM);
+        serialComms.sendPacket(DATA, 8);   //TODO:Team1 PlayerCount
+        serialComms.sendPacket(DATA, 8);   //TODO:Team2 PlayerCount
+        serialComms.sendPacket(DATA, 8);   //TODO:Team3 PlayerCount
+        serialComms.sendPacket(CHECKSUM, 0);
         InsertToListWidget("CountDownTime = " + QString::number(countDownTimeRemaining));
         //qDebug() << "CountDownTime = " << countDownTimeRemaining << _countDownTime << ":" << _gameID << gameInfo.getGameIdTx();
     }
@@ -306,13 +332,23 @@ void HostGameWindow::InsertToListWidget(QString lineText)
 void HostGameWindow::on_btn_TestMessage_clicked()
 {
     //P80:D48:D45:D4C:D4C:D4F:CF4:
+//    serialComms.sendPacket(PACKET,  "80");
+//    serialComms.sendPacket(DATA,    "72");
+//    serialComms.sendPacket(DATA,    "69");
+//    serialComms.sendPacket(DATA,    "76");
+//    serialComms.sendPacket(DATA,    "76");
+//    serialComms.sendPacket(DATA,    "79");
+//    serialComms.sendPacket(CHECKSUM, 0);
+//    return;
+
+    //P80:D48:D45:D4C:D4C:D4F:CF4:
     serialComms.sendPacket(PACKET,  "80");
-    serialComms.sendPacket(DATA,    "72");
-    serialComms.sendPacket(DATA,    "69");
-    serialComms.sendPacket(DATA,    "76");
-    serialComms.sendPacket(DATA,    "76");
-    serialComms.sendPacket(DATA,    "79");
-    serialComms.sendPacket(CHECKSUM);
+    serialComms.sendPacket(DATA,    "48");
+    serialComms.sendPacket(DATA,    "45");
+    serialComms.sendPacket(DATA,    "4C");
+    serialComms.sendPacket(DATA,    "4C");
+    serialComms.sendPacket(DATA,    "4F");
+    serialComms.sendPacket(CHECKSUM, 0);
     return;
 
 
@@ -442,7 +478,7 @@ void HostGameWindow::on_btn_TestMessage_clicked()
             serialComms.sendPacket(DATA, name3);
             serialComms.sendPacket(DATA, name4);
         }
-        serialComms.sendPacket(CHECKSUM);
+        serialComms.sendPacket(CHECKSUM, 0);
 }
 
 

@@ -5,7 +5,7 @@
 #include "PlayersWindow.h"
 #include "BluetoothWindow.h"
 #include "HostGameWindow.h"
-#include "PortConnect.h"
+//#include "PortConnect.h"
 #include "SerialComms.h"
 
 namespace Ui {
@@ -113,7 +113,7 @@ private:
     PlayersWindow       *playersWindow;
     BluetoothWindow     *bluetoothWindow;
     HostGameWindow      *hostGameWindow;
-    PortConnect         *portConnect;
+    //PortConnect         *portConnect;
 
     bool    SlowTags;
     bool    MedicMode;

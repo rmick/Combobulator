@@ -1,4 +1,4 @@
-#include "lttomainwindow.h"
+#include "LttoMainWindow.h"
 #include <QApplication>
 #include "Game.h"
 #include "Players.h"

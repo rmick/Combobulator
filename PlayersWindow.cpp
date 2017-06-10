@@ -6,7 +6,7 @@
 #include <QElapsedTimer>
 #include <QInputDialog>
 
-#include "lttomainwindow.h"
+#include "LttoMainWindow.h"
 #include "Game.h"
 #include "Players.h"
 
@@ -168,7 +168,7 @@ void PlayersWindow::SetActivePlayers()
     for (int x = 1; x < 25; x++)
     {
         if      (gameInfo.getIsThisPlayerInTheGame(x) == true) PlayerButtons[x]->setChecked(true);
-        else                                                PlayerButtons[x]->setChecked(false);
+        else                                                   PlayerButtons[x]->setChecked(false);
     }
 }
 

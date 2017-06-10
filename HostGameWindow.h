@@ -3,7 +3,9 @@
 
 #include <QDialog>
 #include <QTimer>
-#include <QSerialPort>
+#ifdef NOT_IOS
+    #include <QSerialPort>
+#endif
 #include "TCPComms.h"
 
 
@@ -20,9 +22,9 @@ public:
     ~HostGameWindow();
 
     void hideEvent(QHideEvent *hideEvent);
-
+#ifdef NOT_IOS
     void setSerialPort(QSerialPort portName);
-
+#endif
     bool getIsThisPlayerHosted(int playerNumber) const;
     void setIsThisPlayerHosted(int playerNumber, bool value);
 

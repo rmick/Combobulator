@@ -1,4 +1,4 @@
-#include "lttomainwindow.h"
+#include "LttoMainWindow.h"
 #include "ui_lttomainwindow.h"
 #include <QMessageBox>
 #include <QDebug>
@@ -13,8 +13,8 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
     ui(new Ui::LttoMainWindow),
     playersWindow(NULL),
     bluetoothWindow(NULL),
-    hostGameWindow(NULL),
-    portConnect(NULL)
+    hostGameWindow(NULL)
+    //portConnect(NULL)
 
 {
     ui->setupUi(this);
@@ -27,7 +27,9 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
     //TODO: Get rid of this, it is just debug until I store/recall this setting
     ui->actionuse_LazerSwarm->setChecked(true);
 
-
+    gameInfo.setIsThisPlayerInTheGame(3, true);
+    gameInfo.setIsThisPlayerInTheGame(13, true);
+    gameInfo.setIsThisPlayerInTheGame(24, true);
 }
 
 LttoMainWindow::~LttoMainWindow()
@@ -502,8 +504,8 @@ void LttoMainWindow::on_btn_CustomGame_clicked()
 
 void LttoMainWindow::on_actionPorts_triggered()
 {
-    portConnect = new PortConnect(this);
-    portConnect->show();
+    //portConnect = new PortConnect(this);
+    //portConnect->show();
 }
 
 void LttoMainWindow::on_actionSet_CountDown_Time_triggered()
