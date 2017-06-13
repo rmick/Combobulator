@@ -14,10 +14,9 @@ class SerialComms : public QObject
     struct RxPacket;
 
 public:
-    explicit SerialComms(QObject *parent = 0);
+    explicit    SerialComms(QObject *parent = 0);
 
-    bool        sendPacket(char type, QString data = 0);
-    bool        sendPacket(char type, int     data = 0, bool dataFormat = 'D');
+    bool        sendPacket(char type, int data = 0, bool dataFormat = false);
     void        testSerialPort();
     void        setUpSerialPort();
     void        closeSerialPort();
@@ -52,6 +51,8 @@ private:
     bool            isCheckSumCorrect(int _command, int _game, int _tagger, int _flags, int _checksum);
     int             ConvertDecToBCD(int dec);
     int             ConvertBCDtoDec(int bcd);
+    int             ConvertHexToDec(int hex);
+    int             ConvertDecToHex(int dec);
     void            blockingDelay(int mSec);
 
     struct          RxPacket

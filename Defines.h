@@ -8,6 +8,7 @@ const char  TAG         = 'T';
 const char  BEACON      = 'B';
 
 
+
 const int   ANNOUNCE    = 0x00;
 
 const int   COUNTDOWN               = 0x00;
@@ -23,7 +24,19 @@ const int   REQUEST_ASSISTANCE      = 0x20;
 const int   TEXT_MESSAGE            = 0x80;
 const int   SPECIAL_ATTACK          = 0x90;
 
-const bool  DECIMAL     = false;
-const bool  BCD         = true;
+const bool  DECIMAL                 = false;
+const bool  BCD                     = true;
+
+const int   DEFAULT_GAME_TYPE       = 0x02;
+const int   DEFAULT_GAME_ID         = 42;
+const int   DEFAULT_GAME_LENGTH     = 10;
+const int   DEFAULT_COUNTDOWN_TIME  = 5;
+const int   DEFAULT_RELOADS         = 100;        // 100 = Unlimited
+const int   DEFAULT_HEALTH          = 25;
+const int   DEFAULT_SHEILDS         = 15;
+const int   DEFAULT_MEGAS           = 10;
+const int   DEFAULT_FLAGS1          = 20;
+const int   DEFAULT_FLAGS2          = 1;
+
 
 #endif // DEFINES_H

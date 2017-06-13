@@ -1,5 +1,6 @@
 #include "Players.h"
 #include <QDebug>
+#include "Defines.h"
 
 Players playerInfo[25];
 
@@ -9,15 +10,15 @@ Players::Players()
     {
         Handicap        = 0;
         PlayerName      = "";
-        Reloads         = 100;        // 100 = Unlimited
-        HealthTags      = 99;
-        ShieldTime      = 60;
-        MegaTags        = 15;
+        Reloads         = DEFAULT_RELOADS;
+        HealthTags      = DEFAULT_HEALTH;
+        ShieldTime      = DEFAULT_SHEILDS;
+        MegaTags        = DEFAULT_MEGAS;
         SlowTags        = false;
         TeamTags        = false;
         MedicMode       = false;
-        PackedFlags1    = 20;
-        PackedFlags2    = 1;
+        PackedFlags1    = DEFAULT_FLAGS1;
+        PackedFlags2    = DEFAULT_FLAGS2;
     }
 }
 
@@ -284,5 +285,15 @@ int Players::getTaggerID() const
 void Players::setTaggerID(int value)
 {
     TaggerID = value;
+}
+
+int Players::getSpyNumber() const
+{
+    return SpyNumber;
+}
+
+void Players::setSpyNumber(int value)
+{
+    SpyNumber = value;
 }
 

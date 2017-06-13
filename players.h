@@ -66,6 +66,9 @@ public:
     bool getIsInTheGame() const;
     void setIsInTheGame(bool value);
 
+    int getSpyNumber() const;
+    void setSpyNumber(int value);
+
 private:
     int     Handicap;
     QString PlayerName;
@@ -79,6 +82,7 @@ private:
     int     PackedFlags1;
     int     PackedFlags2;
     int     TaggerID;
+    int     SpyNumber;
 };
 
 extern Players playerInfo[25];

@@ -26,26 +26,20 @@ public:
 
     int getGameType() const;
     void setGameType(int value);
-    QString getGameTypeTx() const;              //returns GameType as QString in Hex
-    //void setGameTypeRx(QString value);          //accepts QString Hex and converts to Int
 
     int getGameID() const;
     void setGameID(int value);
-    QString getGameIdTx() const;                //returns 8bit GameID as QString
 
     int getGameLength() const;
     void setGameLength(int value);
-    QString getGameLengthTx() const;            //returns GameLength as QString in BCD
-    //void setGameLengthRx(QString value);        //accepts QString BCD and converts as Dec Int
 
     QString getGameName() const;
     void setGameName(QString value);
 
     bool getIsThisPlayerInTheGame(int index) const;
     void setIsThisPlayerInTheGame(int index, int value);
-    int getPlayersInTeamTx(int TeamNumber) const;            //returns PlayersInTeam1 as a PackedByte - used in CountDown
-    //int getPlayersInTeam2Tx() const;            //returns PlayersInTeam2 as a PackedByte - used in CountDown
-    //int getPlayersInTeam3Tx() const;            //returns PlayersInTeam3 as a PackedByte - used in CountDown
+
+    int getPlayersInTeam(int TeamNumber) const;             //returns PlayersInTeam1 as a PackedByte - used in CountDown
 
     int getNumberOfTeams() const;
     void setNumberOfTeams(int value);

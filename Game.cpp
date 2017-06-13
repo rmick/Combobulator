@@ -1,17 +1,18 @@
 #include "Game.h"
 #include<QDebug>
 #include <QString>
+#include "Defines.h"
 
 Game        gameInfo;
 
 Game::Game()
 {
-    GameType        = 0x02;
-    GameID          = 0x42;
-    GameLength      = 10;
+    GameType        = DEFAULT_GAME_TYPE;
+    GameID          = DEFAULT_GAME_ID;
+    GameLength      = DEFAULT_GAME_LENGTH;
     NumberOfPlayers = 24;
     GameName        ="LTTO";
-    CountDownTime   = 5;
+    CountDownTime   = DEFAULT_COUNTDOWN_TIME;
     isThisPlayerInTheGame[0] = true;        //this is required so that Announce continues after all Taggers are hosted.
     for (int x= 1; x<25; x++)
     {
@@ -29,13 +30,6 @@ void Game::setGameType(int value)
     GameType = value;
 }
 
-QString Game::getGameTypeTx() const
-{
-    QString _gameType = QString::number(GameType, 10).toUpper();
-    if (_gameType.length() == 1) _gameType.prepend('0');
-    return _gameType;
-}
-
 int Game::getGameID() const
 {
     return GameID;
@@ -46,13 +40,6 @@ void Game::setGameID(int value)
     GameID = value;
 }
 
-QString Game::getGameIdTx() const
-{
-    QString _gameID = QString::number(GameID, 10).toUpper();
-    if (_gameID.length() == 1) _gameID.prepend('0');
-    return _gameID;
-}
-
 int Game::getGameLength() const
 {
     return GameLength;
@@ -61,11 +48,6 @@ int Game::getGameLength() const
 void Game::setGameLength(int value)
 {
     GameLength = value;
-}
-
-QString Game::getGameLengthTx() const
-{
-    return QString::number(GameLength);
 }
 
 int Game::getNumberOfPlayers() const
@@ -118,7 +100,7 @@ void Game::setIsThisPlayerInTheGame(int index, int value)
     isThisPlayerInTheGame[index] = value;
 }
 
-int Game::getPlayersInTeamTx(int TeamNumber) const
+int Game::getPlayersInTeam(int TeamNumber) const
 {
     int PlayersPackedByte = 0;
     PlayersPackedByte = PlayersPackedByte << isThisPlayerInTheGame[(8*TeamNumber)];

@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QFileDialog>
 #include <QInputDialog>
+#include <QTime>
 #include "Game.h"
 #include "Players.h"
 
@@ -26,6 +27,8 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
 
     //TODO: Get rid of this, it is just debug until I store/recall this setting
     ui->actionuse_LazerSwarm->setChecked(true);
+
+    qsrand(static_cast<uint>(QTime::currentTime().msec()));
 
     gameInfo.setIsThisPlayerInTheGame(3, true);
     gameInfo.setIsThisPlayerInTheGame(13, true);
@@ -223,10 +226,6 @@ void LttoMainWindow::on_btn_TwoTeams_clicked()
         gameInfo.setGameType(Game::OwnZone2);
         break;
     }
-//    if (gameInfo.getGameType() >= gameInfo.Ltag0      && gameInfo.getGameType() <= gameInfo.Ltag3)      gameInfo.setGameType(gameInfo.Ltag2);
-//    if (gameInfo.getGameType() >= gameInfo.HideSeek2  && gameInfo.getGameType() <= gameInfo.HideSeek3)  gameInfo.setGameType(gameInfo.HideSeek2);
-//    if (gameInfo.getGameType() >= gameInfo.Kings2     && gameInfo.getGameType() <= gameInfo.Kings3)     gameInfo.setGameType(gameInfo.Kings2);
-//    if (gameInfo.getGameType() >= gameInfo.OwnZone0   && gameInfo.getGameType() <= gameInfo.OwnZone3)   gameInfo.setGameType(gameInfo.OwnZone2);
     qDebug() << "New Game is:" << gameInfo.getGameType();
 }
 
@@ -332,7 +331,7 @@ void LttoMainWindow::on_btn_Spies_clicked()
     }
 }
 
-//////////////////////////////////////////////////////////////////                      // Here we are !!!!!!
+//////////////////////////////////////////////////////////////////
 
 void LttoMainWindow::UpdateGameControlSettings()
 {
@@ -500,12 +499,6 @@ void LttoMainWindow::on_btn_CustomGame_clicked()
     gameInfo.setGameID(44);
 //    playerInfo[0].setPackedFlags1(28);
 //    playerInfo[0].setPackedFlags2(162);
-}
-
-void LttoMainWindow::on_actionPorts_triggered()
-{
-    //portConnect = new PortConnect(this);
-    //portConnect->show();
 }
 
 void LttoMainWindow::on_actionSet_CountDown_Time_triggered()

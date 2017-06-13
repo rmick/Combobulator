@@ -3,9 +3,7 @@
 
 #include <QDialog>
 #include <QTimer>
-#ifdef NOT_IOS
-    #include <QSerialPort>
-#endif
+#include <QSerialPort>
 #include "TCPComms.h"
 
 
@@ -22,9 +20,7 @@ public:
     ~HostGameWindow();
 
     void hideEvent(QHideEvent *hideEvent);
-#ifdef NOT_IOS
     void setSerialPort(QSerialPort portName);
-#endif
     bool getIsThisPlayerHosted(int playerNumber) const;
     void setIsThisPlayerHosted(int playerNumber, bool value);
 
@@ -87,6 +83,7 @@ private:
     int     ConvertBCDtoDec(int bcd);
     QString displayBinary(int number, int digits);
     void    blockingDelay(int mSec);
+    void    assignSpies();
 };
 
 #endif // HOSTGAMEWINDOW_H

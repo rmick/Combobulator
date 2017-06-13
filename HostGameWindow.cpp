@@ -1,8 +1,6 @@
 #include "HostGameWindow.h"
 #include "ui_HostGameWindow.h"
 #include <QDebug>
-
-
 #include "Game.h"
 #include "Players.h"
 #include "SerialComms.h"
@@ -36,7 +34,7 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
     for (int x = 0; x<25;x++) isThisPlayerHosted[x] = false;
     currentPlayer = 1;
     noMorePlayers = false;
-    countDownTimeRemaining = 30;
+    countDownTimeRemaining = DEFAULT_COUNTDOWN_TIME;
     ui->btn_Cancel->setText("Cancel");
     ui->btn_Rehost->setEnabled(false);
 
@@ -97,14 +95,14 @@ void HostGameWindow::announceGame()
 
 void HostGameWindow::hostCurrentPlayer()
 {
-    qDebug() << "\nAnnounce Game : Player " << currentPlayer;
     InsertToListWidget("Announce Game : Player " + QString::number(currentPlayer));
+    qDebug() << "HostGameWindow::hostCurrentPlayer() - GameID:" + QString::number(gameInfo.getGameID());
 
-    bool TestBCD = false;
+    if(playerInfo[currentPlayer].getSpyNumber() != 0)
+    {
+        qDebug() << "HostGameWindow::hostCurrentPlayer() - This is a SPY !!!";
+    }
 
-    TestBCD = true;
-
-if (TestBCD){
     serialComms.sendPacket(PACKET, gameInfo.getGameType()                        );
     serialComms.sendPacket(DATA,   gameInfo.getGameID()                          );
     serialComms.sendPacket(DATA,   gameInfo.getGameLength(),                  BCD);
@@ -112,8 +110,8 @@ if (TestBCD){
     serialComms.sendPacket(DATA,   playerInfo[currentPlayer].getReloads(),    BCD);
     serialComms.sendPacket(DATA,   playerInfo[currentPlayer].getShieldTime(), BCD);
     serialComms.sendPacket(DATA,   playerInfo[currentPlayer].getMegaTags(),   BCD);
-    serialComms.sendPacket(DATA,   playerInfo[currentPlayer].getPackedFlags1() );
-    serialComms.sendPacket(DATA,   playerInfo[currentPlayer].getPackedFlags2() );
+    serialComms.sendPacket(DATA,   playerInfo[currentPlayer].getPackedFlags1()   );
+    serialComms.sendPacket(DATA,   playerInfo[currentPlayer].getPackedFlags2()   );
     if (gameInfo.getGameType() == 0x0C)
     {
         serialComms.sendPacket(DATA, 43);  // C
@@ -121,28 +119,9 @@ if (TestBCD){
         serialComms.sendPacket(DATA, 53);  // S
         serialComms.sendPacket(DATA, 54);  // T
     }
-    serialComms.sendPacket(CHECKSUM, 0);
-    qDebug() << "-------------------";
+    serialComms.sendPacket(CHECKSUM     );
 
     return;
-}
-//    serialComms.sendPacket(PACKET,  gameInfo.getGameTypeTx() );
-//    serialComms.sendPacket(DATA,    gameInfo.getGameIdTx() );
-//    serialComms.sendPacket(DATA,    gameInfo.getGameLengthTx() );
-//    serialComms.sendPacket(DATA,    playerInfo[currentPlayer].getHealthTagsTx() ); //BCD
-//    serialComms.sendPacket(DATA,    playerInfo[currentPlayer].getReloadsTx() );    //BCD     //TODO: FF = Unlimited
-//    serialComms.sendPacket(DATA,    playerInfo[currentPlayer].getShieldTimeTx() ); //BCD
-//    serialComms.sendPacket(DATA,    playerInfo[currentPlayer].getMegaTagsTx() );   //BCD    //TODO: FF = Unlimited
-//    serialComms.sendPacket(DATA,    playerInfo[currentPlayer].getPackedFlags1Tx() );
-//    serialComms.sendPacket(DATA,    playerInfo[currentPlayer].getPackedFlags2Tx() );
-//    if (gameInfo.getGameType() == 0x0C)
-//    {
-//        serialComms.sendPacket(DATA, "43");  // C
-//        serialComms.sendPacket(DATA, "55");  // U
-//        serialComms.sendPacket(DATA, "53");  // S
-//        serialComms.sendPacket(DATA, "54");  // T
-//    }
-//    serialComms.sendPacket(CHECKSUM, 0);
 }
 
 int HostGameWindow::calculatePlayerTeam5bits()
@@ -179,32 +158,25 @@ int HostGameWindow::calculatePlayerTeam5bits()
 void HostGameWindow::AssignPlayer(int Game, int Tagger, int Flags)
 
 {
-    qDebug() << "HostGameWindow::AssignPlayer()" << currentPlayer;
     InsertToListWidget("   AssignPlayer()" + QString::number(currentPlayer) + ", Tagger ID:" + QString::number(Tagger) );
+    qDebug() << "   AssignPlayer()" << currentPlayer << ", Tagger ID:" << Tagger;
+    //Check if the gameID from the tagger is correct.
 
-    if(gameInfo.getGameID() != Game) return;
-    //qDebug() << "HostGameWindow::AssignPlayer() - GameID & TaggerID matched";
+    //if(gameInfo.getGameID() != Game) return;
 
     //TODO: Use Flags to see if they requested a specific Team/Player and action it.
-
 
     if(isThisPlayerHosted[currentPlayer] == false)
     {
         playerInfo[currentPlayer].setTaggerID(Tagger);
 
         serialComms.sendPacket(PACKET,  ASSIGN_PLAYER);
-
-        //serialComms.sendPacket(DATA,    QString::number(Game,   16).toUpper() );
         serialComms.sendPacket(DATA,    Game);
-
-        //serialComms.sendPacket(DATA,    QString::number(Tagger, 16).toUpper() );
         serialComms.sendPacket(DATA,    Tagger);
-
-        //serialComms.sendPacket(DATA,    QString::number(calculatePlayerTeam5bits() , 16).toUpper() );
         serialComms.sendPacket(DATA,    calculatePlayerTeam5bits() );
+        serialComms.sendPacket(CHECKSUM);
 
-        serialComms.sendPacket(CHECKSUM, 0);
-        qDebug() << "HostGameWindow::AssignPlayer() " << ASSIGN_PLAYER << Game << Tagger, calculatePlayerTeam5bits();
+        qDebug() << "HostGameWindow::AssignPlayer() " << currentPlayer << Game << Tagger, calculatePlayerTeam5bits();
     }
 }
 
@@ -213,7 +185,7 @@ void HostGameWindow::AddPlayerToGame(int Game, int Tagger)
     if(gameInfo.getGameID() == Game && playerInfo[currentPlayer].getTaggerID() == Tagger) qDebug() << "HostGameWindow::AddPlayerToGame() - All settings match !";
 
     qDebug() << "HostGameWindow::AddPlayerToGame()" << currentPlayer;
-    InsertToListWidget("   AddPlayerToGame()");
+    InsertToListWidget("   AddPlayerToGame()" + QString::number(currentPlayer));
     isThisPlayerHosted[currentPlayer] = true;
     if (currentPlayer != 0) currentPlayer++;
 }
@@ -250,6 +222,7 @@ void HostGameWindow::resetPlayersForNewGame()
         isThisPlayerHosted[players] = false;
     }
     noMorePlayers = false;
+    assignSpies();
 }
 
 bool HostGameWindow::getIsThisPlayerHosted(int playerNumber) const
@@ -342,143 +315,143 @@ void HostGameWindow::on_btn_TestMessage_clicked()
 //    return;
 
     //P80:D48:D45:D4C:D4C:D4F:CF4:
-    serialComms.sendPacket(PACKET,  "80");
-    serialComms.sendPacket(DATA,    "48");
-    serialComms.sendPacket(DATA,    "45");
-    serialComms.sendPacket(DATA,    "4C");
-    serialComms.sendPacket(DATA,    "4C");
-    serialComms.sendPacket(DATA,    "4F");
-    serialComms.sendPacket(CHECKSUM, 0);
+    serialComms.sendPacket(PACKET,  0x80);
+    serialComms.sendPacket(DATA,    0x48);
+    serialComms.sendPacket(DATA,    0x45);
+    serialComms.sendPacket(DATA,    0x4C);
+    serialComms.sendPacket(DATA,    0x4C);
+    serialComms.sendPacket(DATA,    0x4F);
+    serialComms.sendPacket(CHECKSUM     );
     return;
 
 
-    const int Game = 0;
+//    const int Game = 0;
 
-        ////--------------------------------------------------
-        //  Host 2TeamRespawn Roonka Game (captured packets from LTTO host)     - WORKS - Tagger screen shows 2TRS
-        QString hostedGameType         = "0C";
-        QString hostedGameID           = "42";
-        QString hostedGameTime         = "15";
-        QString hostedTagsAvailable    = "99";
-        QString hostedReloadsAvailable = "FF";
-        QString hostedShieldTime       = "60";
-        QString hostedMegaTags         = "15";
-        QString hostedPackedFlags1     = "A8";
-        QString hostedPackedFlags2     = "32";
-        QString name1                  = "32";
-        QString name2                  = "54";
-        QString name3                  = "52";
-        QString name4                  = "53";
-        QString checkSum               = "00";
+//        ////--------------------------------------------------
+//        //  Host 2TeamRespawn Roonka Game (captured packets from LTTO host)     - WORKS - Tagger screen shows 2TRS
+//        QString hostedGameType         = "0C";
+//        QString hostedGameID           = "42";
+//        QString hostedGameTime         = "15";
+//        QString hostedTagsAvailable    = "99";
+//        QString hostedReloadsAvailable = "FF";
+//        QString hostedShieldTime       = "60";
+//        QString hostedMegaTags         = "15";
+//        QString hostedPackedFlags1     = "A8";
+//        QString hostedPackedFlags2     = "32";
+//        QString name1                  = "32";
+//        QString name2                  = "54";
+//        QString name3                  = "52";
+//        QString name4                  = "53";
+//        QString checkSum               = "00";
 
-        if      (Game == 0) qDebug() << endl << "Sending Roonka Game";
+//        if      (Game == 0) qDebug() << endl << "Sending Roonka Game";
 
-        else if (Game ==1)
-        {
-            qDebug() << endl << "Sending Patent Game";
-            ////--------------------------------------------------
-            //  Game info from Patent                                           - WORKS - Tagger screen shows 2ZON
-            hostedGameType         = "0C";  //HEX
-            hostedGameID           = "2C";  //HEX
-            hostedGameTime         = "15";  //DEC
-            hostedTagsAvailable    = "50";  //DEC
-            hostedReloadsAvailable = "FF";  //DEC
-            hostedShieldTime       = "45";  //DEC
-            hostedMegaTags         = "12";  //DEC
-            hostedPackedFlags1     = "28";  //HEX
-            hostedPackedFlags2     = "A2";  //HEX
-            name1                  = "32";  //HEX
-            name2                  = "5A";  //HEX
-            name3                  = "4F";  //HEX
-            name4                  = "4E";  //HEX
-            checkSum               = "ZZ";
-            //checkSum               = "E6";  //HEX
-        }
+//        else if (Game ==1)
+//        {
+//            qDebug() << endl << "Sending Patent Game";
+//            ////--------------------------------------------------
+//            //  Game info from Patent                                           - WORKS - Tagger screen shows 2ZON
+//            hostedGameType         = "0C";  //HEX
+//            hostedGameID           = "2C";  //HEX
+//            hostedGameTime         = "15";  //DEC
+//            hostedTagsAvailable    = "50";  //DEC
+//            hostedReloadsAvailable = "FF";  //DEC
+//            hostedShieldTime       = "45";  //DEC
+//            hostedMegaTags         = "12";  //DEC
+//            hostedPackedFlags1     = "28";  //HEX
+//            hostedPackedFlags2     = "A2";  //HEX
+//            name1                  = "32";  //HEX
+//            name2                  = "5A";  //HEX
+//            name3                  = "4F";  //HEX
+//            name4                  = "4E";  //HEX
+//            checkSum               = "ZZ";
+//            //checkSum               = "E6";  //HEX
+//        }
 
-        else if (Game ==2)
-        {
-            qDebug() << endl << "Sending LazerSwarm Game";
-            ////--------------------------------------------------
-            //  Game info from Patent                                           - WORKS - Tagger responds with RequestJoinGame
-            hostedGameType         = "02";  //HEX
-            hostedGameID           = "7C";  //HEX
-            hostedGameTime         = "10";  //DEC
-            hostedTagsAvailable    = "10";  //DEC
-            hostedReloadsAvailable = "FF";  //DEC
-            hostedShieldTime       = "15";  //DEC
-            hostedMegaTags         = "10";  //DEC
-            hostedPackedFlags1     = "20";  //HEX
-            hostedPackedFlags2     = "01";  //HEX
-            name1                  = "00";  //HEX
-            name2                  = "00";  //HEX
-            name3                  = "00";  //HEX
-            name4                  = "00";  //HEX
-            checkSum               = "ZZ";
-            //checkSum               = "E3";  //HEX
-        }
+//        else if (Game ==2)
+//        {
+//            qDebug() << endl << "Sending LazerSwarm Game";
+//            ////--------------------------------------------------
+//            //  Game info from Patent                                           - WORKS - Tagger responds with RequestJoinGame
+//            hostedGameType         = "02";  //HEX
+//            hostedGameID           = "7C";  //HEX
+//            hostedGameTime         = "10";  //DEC
+//            hostedTagsAvailable    = "10";  //DEC
+//            hostedReloadsAvailable = "FF";  //DEC
+//            hostedShieldTime       = "15";  //DEC
+//            hostedMegaTags         = "10";  //DEC
+//            hostedPackedFlags1     = "20";  //HEX
+//            hostedPackedFlags2     = "01";  //HEX
+//            name1                  = "00";  //HEX
+//            name2                  = "00";  //HEX
+//            name3                  = "00";  //HEX
+//            name4                  = "00";  //HEX
+//            checkSum               = "ZZ";
+//            //checkSum               = "E3";  //HEX
+//        }
 
-        else if (Game ==3)
-        {
-            qDebug() << endl << "Sending LTTO default Game";
-            ////--------------------------------------------------
-            //  Game info from Patent                                               - WORKS - Tagger responds with RequestJoinGame
-            hostedGameType         = "02";  //HEX
-            hostedGameID           = "A1";  //HEX
-            hostedGameTime         = "10";  //DEC
-            hostedTagsAvailable    = "10";  //DEC
-            hostedReloadsAvailable = "FF";  //DEC
-            hostedShieldTime       = "15";  //DEC
-            hostedMegaTags         = "10";  //DEC
-            hostedPackedFlags1     = "20";  //HEX
-            hostedPackedFlags2     = "01";  //HEX
-            name1                  = "00";  //HEX
-            name2                  = "00";  //HEX
-            name3                  = "00";  //HEX
-            name4                  = "00";  //HEX
-            checkSum               = "ZZ";
-            //checkSum               = "08";  //HEX
-        }
+//        else if (Game ==3)
+//        {
+//            qDebug() << endl << "Sending LTTO default Game";
+//            ////--------------------------------------------------
+//            //  Game info from Patent                                               - WORKS - Tagger responds with RequestJoinGame
+//            hostedGameType         = "02";  //HEX
+//            hostedGameID           = "A1";  //HEX
+//            hostedGameTime         = "10";  //DEC
+//            hostedTagsAvailable    = "10";  //DEC
+//            hostedReloadsAvailable = "FF";  //DEC
+//            hostedShieldTime       = "15";  //DEC
+//            hostedMegaTags         = "10";  //DEC
+//            hostedPackedFlags1     = "20";  //HEX
+//            hostedPackedFlags2     = "01";  //HEX
+//            name1                  = "00";  //HEX
+//            name2                  = "00";  //HEX
+//            name3                  = "00";  //HEX
+//            name4                  = "00";  //HEX
+//            checkSum               = "ZZ";
+//            //checkSum               = "08";  //HEX
+//        }
 
-        else if (Game ==4)
-        {
-            qDebug() << endl << "Sending Copy of saved LazerSwarm";
-            ////--------------------------------------------------
-            //  Game info from Patent                                               - NoGo !
-            hostedGameType         = "02";
-            hostedGameID           = "3B";
-            hostedGameTime         = "10";
-            hostedTagsAvailable    = "0A";
-            hostedReloadsAvailable = "FF";
-            hostedShieldTime       = "0F";  //DEC
-            hostedMegaTags         = "0A";  //DEC
-            hostedPackedFlags1     = "14";  //HEX
-            hostedPackedFlags2     = "01";  //HEX
-            name1                  = "00";  //HEX
-            name2                  = "00";  //HEX
-            name3                  = "00";  //HEX
-            name4                  = "00";  //HEX
-            checkSum               = "ZZ";
-            //checkSum               = "08";  //HEX
-        }
+//        else if (Game ==4)
+//        {
+//            qDebug() << endl << "Sending Copy of saved LazerSwarm";
+//            ////--------------------------------------------------
+//            //  Game info from Patent                                               - NoGo !
+//            hostedGameType         = "02";
+//            hostedGameID           = "3B";
+//            hostedGameTime         = "10";
+//            hostedTagsAvailable    = "0A";
+//            hostedReloadsAvailable = "FF";
+//            hostedShieldTime       = "0F";  //DEC
+//            hostedMegaTags         = "0A";  //DEC
+//            hostedPackedFlags1     = "14";  //HEX
+//            hostedPackedFlags2     = "01";  //HEX
+//            name1                  = "00";  //HEX
+//            name2                  = "00";  //HEX
+//            name3                  = "00";  //HEX
+//            name4                  = "00";  //HEX
+//            checkSum               = "ZZ";
+//            //checkSum               = "08";  //HEX
+//        }
 
 
-        serialComms.sendPacket(PACKET,  hostedGameType);
-        serialComms.sendPacket(DATA,    hostedGameID);
-        serialComms.sendPacket(DATA,    hostedGameTime);
-        serialComms.sendPacket(DATA,    hostedTagsAvailable);
-        serialComms.sendPacket(DATA,    hostedReloadsAvailable);
-        serialComms.sendPacket(DATA,    hostedShieldTime);
-        serialComms.sendPacket(DATA,    hostedMegaTags);
-        serialComms.sendPacket(DATA,    hostedPackedFlags1);
-        serialComms.sendPacket(DATA,    hostedPackedFlags2);
-        if (hostedGameType == 0x0C)
-        {
-            serialComms.sendPacket(DATA, name1);
-            serialComms.sendPacket(DATA, name2);
-            serialComms.sendPacket(DATA, name3);
-            serialComms.sendPacket(DATA, name4);
-        }
-        serialComms.sendPacket(CHECKSUM, 0);
+//        serialComms.sendPacket(PACKET,  hostedGameType);
+//        serialComms.sendPacket(DATA,    hostedGameID);
+//        serialComms.sendPacket(DATA,    hostedGameTime);
+//        serialComms.sendPacket(DATA,    hostedTagsAvailable);
+//        serialComms.sendPacket(DATA,    hostedReloadsAvailable);
+//        serialComms.sendPacket(DATA,    hostedShieldTime);
+//        serialComms.sendPacket(DATA,    hostedMegaTags);
+//        serialComms.sendPacket(DATA,    hostedPackedFlags1);
+//        serialComms.sendPacket(DATA,    hostedPackedFlags2);
+//        if (hostedGameType == 0x0C)
+//        {
+//            serialComms.sendPacket(DATA, name1);
+//            serialComms.sendPacket(DATA, name2);
+//            serialComms.sendPacket(DATA, name3);
+//            serialComms.sendPacket(DATA, name4);
+//        }
+//        serialComms.sendPacket(CHECKSUM, 0);
 }
 
 
@@ -493,4 +466,33 @@ QString HostGameWindow::displayBinary(int number, int digits)
         padding--;
     }
     return output;
+}
+
+void HostGameWindow::assignSpies()
+{
+    InsertToListWidget("HostGameWindow::assignSpies()" + QString::number(gameInfo.getNumberOfSpies()));
+
+    //Assign all players Spy = 0
+    for (int x = 0; x < 25; x++)
+    {
+        playerInfo[x].setSpyNumber(0);
+    }
+
+    if(gameInfo.getNumberOfSpies() == 0) return;
+
+    //add some checking so that NumberOfSpies is !> number of players in any team.
+
+
+    //get random number
+
+//    int GetRandomNumber(const int Min, const int Max)
+//    {
+//        return ((qrand() % ((Max + 1) - Min)) + Min);
+//    }
+
+    //assign that player as Spy in each time (Spy = 1, Spy = 2)
+
+    //Chck this value when hosting a player, if (Spy != 0) swap teams.
+    //Not sure how to do 3 teams yet, 1>2,2>3,3>1
+    //Turn on Team Tags for Spies ??
 }

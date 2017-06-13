@@ -5,7 +5,6 @@
 #include "PlayersWindow.h"
 #include "BluetoothWindow.h"
 #include "HostGameWindow.h"
-//#include "PortConnect.h"
 #include "SerialComms.h"
 
 namespace Ui {
@@ -24,19 +23,19 @@ private:
 
 
 public:
-    struct PlayerStructure
-    {
-        int     PlayerID;
-        QString PlayerName;
-        int     HealthNumberofTags;
-        int     ShieldsTime;
-        int     MegaCount;
-        bool    SlowTagsEnabled;
-        bool    MediModeEnabled;
-        bool    TeamTagsEnabled;
-        int     TeamAssignment;
-        int     Handicap;
-    };
+//    struct PlayerStructure
+//    {
+//        int     PlayerID;
+//        QString PlayerName;
+//        int     HealthNumberofTags;
+//        int     ShieldsTime;
+//        int     MegaCount;
+//        bool    SlowTagsEnabled;
+//        bool    MediModeEnabled;
+//        bool    TeamTagsEnabled;
+//        int     TeamAssignment;
+//        int     Handicap;
+//    };
 
     bool getSlowTags() const;
     void setSlowTags(bool value);
@@ -49,8 +48,6 @@ public:
 
     int getNumberOfTeams() const;
     void setNumberOfTeams(int value);
-
-    //HostGameWindow      *hostGameWindow;
 
 private slots:
 
@@ -101,8 +98,6 @@ private slots:
     void on_actionExit_triggered();
 
     void on_btn_CustomGame_clicked();
-
-    void on_actionPorts_triggered();
 
     void on_actionSet_CountDown_Time_triggered();
 
