@@ -73,59 +73,63 @@ bool SerialComms::sendPacket(char type, int data, bool dataFormat)
     //bool ok;    //dummy
     QByteArray packet;
 
-    //Calculating the CheckSum.
+    //Calculating BCD and the CheckSum.
     //This is here because it always does my head in !!!!!
-    //The Data is BCD Hex (whatever that means).        It means it is 2 x 4bit numbers in a single Byte
-    //                                                  Therefore 10 is actually 0001 0000 (which is 0x16)
-    //                                                  and       42 is actually 0100 0010 (which is 0x64)
-    //                                                  and       79 is actually 0111 1001 (which is 0x121)
-    //                                                  and      255 is actually 1111 1111 (which is 0xFF)
-    //This means that '10' is actually 0x16,
-    //and the CheckSum is the Sum of the Hex values, not the BCD.
-    //This is confusing as 10 minutes in GameTime is sent as '10'
-    //but is actually 0x16 as far as the CheckSum is concerned.
+    //Certain Data is BCD Hex (whatever that means).        It means it is 2 x 4bit numbers in a single Byte
+    //                                                      Therefore 10 is actually 0001 0000 (which is 0x16)
+    //                                                      and       42 is actually 0100 0010 (which is 0x64)
+    //                                                      and       79 is actually 0111 1001 (which is 0x121)
+    //                                                      and      255 is actually 1111 1111 (which is 0xFF)
+    //This means that '10' is actually 0x16.
+    //However other data (taggerID, GameID, Flags, etc) are just plain Hex/Dec all the time.
+    //The LazerSwarm then needs aal data sent as actual Hex, whereas the LTTO library expects the Dec '10'.
+    //The CheckSum is the Sum of the final Hex values or Decimal values AFTER conversion (where applicable) to BCD.
 
-    QString packetString;
     switch (type)
     {
         case PACKET:
             calculatedCheckSumTx = data;
-            packetString = QString::number(data, 16).toUpper();
-            if(packetString.length() == 1) packetString.prepend('0');
+            packetString = createIRstring(data);
             packetString.prepend('P');
             packet.append(packetString);
             qDebug() << "SerialComms::sendPacket() - Packet =    " << data << "\t:" << packetString;
             break;
         case DATA:
-            calculatedCheckSumTx += ConvertDecToBCD(data);
             if (dataFormat == BCD)
             {
-                //calculatedCheckSumTx += ConvertDecToBCD(data);
+                calculatedCheckSumTx += ConvertDecToBCD(data);
                 data = ConvertDecToBCD(data);
-                QString packetString = QString::number(data,16).toUpper();
-                if (packetString.length() == 1) packetString.prepend('0');
+                packetString = createIRstring(data);
                 packetString.prepend('D');
                 packet.append(packetString);
                 qDebug() << "SerialComms::sendPacket() - BCD Data = " << data << "\t:" << packetString << "\tBCD=" << dataFormat;
             }
             else
             {
-                //calculatedCheckSumTx += ConvertHexToDec(data);
-                packet.append("D" + QString::number(data,10).toUpper());
-                qDebug() << "SerialComms::sendPacket() - HEX Data = " << data << "\t:" << "D" + QString::number(data,16).toUpper() << "\tBCD=" << dataFormat;
+                calculatedCheckSumTx += data;
+                packetString = createIRstring(data);
+                packetString.prepend('D');
+                packet.append(packetString);
+                qDebug() << "SerialComms::sendPacket() - Dec Data = " << data << "\t:" << packetString << "\tBCD=" << dataFormat;
             }
             break;
         case CHECKSUM:
             calculatedCheckSumTx = calculatedCheckSumTx % 256;      // CheckSum is the remainder of dividing by 256.
             calculatedCheckSumTx = calculatedCheckSumTx | 256;      // Set the required 9th MSB bit to 1 to indicate it is a checksum
-            packet.append("C" + QString::number(calculatedCheckSumTx,16).toUpper());
-            qDebug() << "SerialComms::sendPacket() - CheckSum = \t" << calculatedCheckSumTx;
+            packetString = createIRstring(calculatedCheckSumTx);
+            packetString.prepend('C');
+            packet.append(packetString);
+            qDebug() << "SerialComms::sendPacket() - CheckSum = \t" << packetString;
             break;
         case TAG:
-            packet.append("T" + QString::number(data,16));
+            packetString = createIRstring(data);
+            packetString.prepend('T');
+            packet.append(packetString);
             break;
         case BEACON:
-            packet.append("B" + QString::number(data,16));
+            packetString = createIRstring(data);
+            packetString.prepend('B');
+            packet.append(packetString);
             break;
     }
 
@@ -155,6 +159,17 @@ bool SerialComms::sendPacket(char type, int data, bool dataFormat)
     return result;
 }
 
+
+QString SerialComms::createIRstring(int data)
+{
+    QString createdPacket;
+    if (useLazerSwarm) createdPacket = QString::number(data,16).toUpper();
+    else               createdPacket = QString::number(data,10);
+    if (createdPacket.length() == 1) createdPacket.prepend('0');
+    //qDebug() << "SerialComms::createIRstring()" << createdPacket;
+    return createdPacket;
+}
+
 ////////////////////////////////////////////////////////////////////
 
 void SerialComms::receivePacket()
@@ -173,7 +188,7 @@ void SerialComms::receivePacket()
         else
         {
             rxPacketList.append(lazerswarm.decodeCommand(irDataIn));
-            //qDebug() << "SerialComms::receivePacket() " << lazerswarm.decodeCommand(irDataIn);
+            qDebug() << "SerialComms::receivePacket() " << lazerswarm.decodeCommand(irDataIn);
             processed = true;
         }
     }
@@ -194,7 +209,7 @@ void SerialComms::receivePacket()
         irDataIn.clear();
         if (!rxPacketList.empty())
         {
-            if (rxPacketList.last().startsWith("C1") )
+            if (rxPacketList.last().startsWith("C") )
             {
                 processPacket(rxPacketList);
             }
@@ -246,12 +261,8 @@ void SerialComms::processPacket(QList<QByteArray> data)
             checksum = extract(data);
             if(isCheckSumCorrect(command, game, tagger, flags, checksum) == false) break;
 
-            game    = ConvertHexToDec(game);
-            tagger  = ConvertHexToDec(tagger);
-            flags   = ConvertHexToDec(flags);
-
             emit RequestJoinGame(game, tagger, flags);
-            qDebug() << "emit RequestJoinGame()" << game << tagger << flags << checksum;
+            //qDebug() << "emit RequestJoinGame()" << game << tagger << flags << checksum;
             break;
 
         case ACK_PLAYER_ASSIGN:
@@ -260,11 +271,8 @@ void SerialComms::processPacket(QList<QByteArray> data)
             checksum = extract(data);
             if(isCheckSumCorrect(command, game, tagger, flags, checksum) == false) break;
 
-            //game    = ConvertBCDtoDec(game);
-            //tagger  = ConvertBCDtoDec(tagger);
-
             emit AckPlayerAssignment(game, tagger);
-            qDebug() << "emit AckPlayerAssignment()" << game << tagger << checksum;
+            //qDebug() << "emit AckPlayerAssignment()" << game << tagger << checksum;
             break;
 
         //Other cases will be required for DeBrief. Maybe create a funciton for each one to make code more easily readable.
@@ -279,7 +287,7 @@ int SerialComms::extract(QList<QByteArray> &data)
     QString command = data.takeFirst();
     command = command.mid(1 , (command.length()-1) );
     bool ok = false;
-    return command.toInt(&ok, 16);              //use Base16 to make the Checksum work - All numbers are now Decimal !!!
+    return command.toInt(&ok, 10);
 }
 
 int SerialComms::ConvertDecToBCD(int dec)
@@ -294,28 +302,28 @@ int SerialComms::ConvertBCDtoDec(int bcd)
   return (int) (((bcd >> 4) & 0xF) *10) + (bcd & 0xF);
 }
 
-int SerialComms::ConvertHexToDec(int hex)
-{
-    int firstDigit = hex/16;
-    int secondDigit = hex%16;
-    int theAnswer = (firstDigit*10) + secondDigit;
-    //qDebug() << "SerialComms::ConvertHexToDec = " << theAnswer;
-    return theAnswer;
-}
+//int SerialComms::ConvertHexToDec(int hex)
+//{
+//    int firstDigit = hex/16;
+//    int secondDigit = hex%16;
+//    int theAnswer = (firstDigit*10) + secondDigit;
+//    //qDebug() << "SerialComms::ConvertHexToDec = " << theAnswer;
+//    return theAnswer;
+//}
 
-int SerialComms::ConvertDecToHex(int dec)
-{
-    //239
-    int theAnswer = -1;
-    QString test = QString::number(dec, 16);
-    bool ok;
-    theAnswer = test.toInt();
-    //int firstDigit = dec/16;  //14.93
-    //int secondDigit = dec%10;
-    //int theAnswer = (firstDigit*10) + secondDigit;
-    qDebug() << "SerialComms::ConvertDecToHex = " << test << theAnswer << "ok: " << ok;
-    return theAnswer;
-}
+//int SerialComms::ConvertDecToHex(int dec)
+//{
+//    //239
+//    int theAnswer = -1;
+//    QString test = QString::number(dec, 16);
+//    bool ok;
+//    theAnswer = test.toInt();
+//    //int firstDigit = dec/16;  //14.93
+//    //int secondDigit = dec%10;
+//    //int theAnswer = (firstDigit*10) + secondDigit;
+//    qDebug() << "SerialComms::ConvertDecToHex = " << test << theAnswer << "ok: " << ok;
+//    return theAnswer;
+//}
 
 void SerialComms::blockingDelay(int mSec)
 {

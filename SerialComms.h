@@ -43,6 +43,7 @@ private:
     int             calculatedCheckSumRx;
     QByteArray      irDataIn;
     QByteArrayList  rxPacketList;
+    QString         packetString;  //temp, may not be needed.
     bool            useLazerSwarm;
 
     void            processPacket(QList<QByteArray> data);
@@ -51,8 +52,9 @@ private:
     bool            isCheckSumCorrect(int _command, int _game, int _tagger, int _flags, int _checksum);
     int             ConvertDecToBCD(int dec);
     int             ConvertBCDtoDec(int bcd);
-    int             ConvertHexToDec(int hex);
-    int             ConvertDecToHex(int dec);
+    //int             ConvertHexToDec(int hex);
+    //int             ConvertDecToHex(int dec);
+    QString         createIRstring(int data);
     void            blockingDelay(int mSec);
 
     struct          RxPacket

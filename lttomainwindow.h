@@ -3,7 +3,6 @@
 
 #include <QMainWindow>
 #include "PlayersWindow.h"
-#include "BluetoothWindow.h"
 #include "HostGameWindow.h"
 #include "SerialComms.h"
 
@@ -85,15 +84,11 @@ private slots:
 
     void on_slider_GameTime_valueChanged(int value);
 
-    void on_btn_Quit_clicked();
-
     void on_btn_Spies_clicked();
 
     void on_btnSave_clicked();
 
     void on_btnLoad_clicked();
-
-    void on_btn_Bluetooth_clicked();
 
     void on_actionExit_triggered();
 
@@ -106,7 +101,6 @@ private slots:
 private:
     Ui::LttoMainWindow  *ui;
     PlayersWindow       *playersWindow;
-    BluetoothWindow     *bluetoothWindow;
     HostGameWindow      *hostGameWindow;
     //PortConnect         *portConnect;
 

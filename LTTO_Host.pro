@@ -15,7 +15,6 @@ SOURCES +=  main.cpp\
             PlayersWindow.cpp \
             Game.cpp \
             Players.cpp \
-            BluetoothWindow.cpp \
             HostGameWindow.cpp \
 	    LazerSwarm.cpp \
 	    SerialComms.cpp \
@@ -27,7 +26,6 @@ HEADERS  += \
             PlayersWindow.h \
             Game.h \
             Players.h \
-            BluetoothWindow.h \
             HostGameWindow.h \
 	    LazerSwarm.h \
 	    SerialComms.h \
@@ -39,7 +37,6 @@ HEADERS  += \
 FORMS    += lttomainwindow.ui \
             PlayersWindow.ui \
             synctaggers.ui \
-            BluetoothWindow.ui \
 	    HostGameWindow.ui \
 	    PortConnect.ui \
 	    TCPComms.ui

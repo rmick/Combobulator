@@ -13,10 +13,7 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::LttoMainWindow),
     playersWindow(NULL),
-    bluetoothWindow(NULL),
     hostGameWindow(NULL)
-    //portConnect(NULL)
-
 {
     ui->setupUi(this);
     gameInfo.setGameType(gameInfo.Ltag0);
@@ -75,7 +72,7 @@ bool LttoMainWindow::getSlowTags() const
 
 void LttoMainWindow::setSlowTags(bool value)
 {
-    for (int x=1; x<25;x++)
+    for (int x=0; x<25;x++)
     {
          playerInfo[x].setSlowTags(value);
     }
@@ -190,6 +187,13 @@ void LttoMainWindow::on_btn_OwnTheZone_clicked()
     qDebug() << "OwnTheZone: " << gameInfo.getGameType();
 }
 
+void LttoMainWindow::on_btn_CustomGame_clicked()        //TODO: Add all the team options, etc
+{
+    gameInfo.setGameType(12);
+    gameInfo.setGameID(44);
+//    playerInfo[0].setPackedFlags1(28);
+//    playerInfo[0].setPackedFlags2(162);
+}
 //////////////////////////////////////////////////////////////////////////////////
 
 void LttoMainWindow::on_btn_NoTeams_clicked()
@@ -306,11 +310,6 @@ void LttoMainWindow::on_slider_GameTime_valueChanged(int value)
 {
     ui->label_GameTime ->setText("Game Time : " + QString::number(value) + " minutes");
     gameInfo.setGameLength(value);
-}
-
-void LttoMainWindow::on_btn_Quit_clicked()
-{
-    QApplication::quit();
 }
 
 
@@ -436,6 +435,7 @@ qDebug() << "All Player Settings Locked and Loaded :-)";
 ///
 ///
 //////////////////////////////////////////////////////////////////
+
 void LttoMainWindow::on_btnSave_clicked()
 {
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save Game Configuration"), "", tr("Ltto Game (*.lto);; All Files (*)"));
@@ -481,24 +481,9 @@ void LttoMainWindow::on_btnLoad_clicked()
     }
 }
 
-
-
-void LttoMainWindow::on_btn_Bluetooth_clicked()
-{
-    bluetoothWindow->show();
-}
-
 void LttoMainWindow::on_actionExit_triggered()
 {
     QApplication::quit();
-}
-
-void LttoMainWindow::on_btn_CustomGame_clicked()
-{
-    gameInfo.setGameType(12);
-    gameInfo.setGameID(44);
-//    playerInfo[0].setPackedFlags1(28);
-//    playerInfo[0].setPackedFlags2(162);
 }
 
 void LttoMainWindow::on_actionSet_CountDown_Time_triggered()

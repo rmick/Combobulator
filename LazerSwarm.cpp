@@ -43,6 +43,7 @@ QString LazerSwarm::translateCommand(QString messageOut)
         break;
     }
     command = messageOut.remove(0,1);   //Remove the char packetType
+    //translate command from DEC to HEX
     QString translated = "CMD 10 ";
     translated.append(command);
     translated.append(numberOfBits);
@@ -82,7 +83,8 @@ QByteArray LazerSwarm::decodeCommand(QString messageIn)
         else                                                    packetTypeIn = '_';     // Indicates an error.
 
         decodedMessage.append(packetTypeIn);
-        decodedMessage.append(QString::number(packetDataIn, 16).toUpper() );
+        decodedMessage.append(QString::number(packetDataIn, 10).toUpper() );
+        //qDebug() << decodedMessage;
     }
     else decodedMessage = "xxx";
 

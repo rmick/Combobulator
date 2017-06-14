@@ -28,15 +28,15 @@ const bool  DECIMAL                 = false;
 const bool  BCD                     = true;
 
 const int   DEFAULT_GAME_TYPE       = 0x02;
-const int   DEFAULT_GAME_ID         = 42;
+const int   DEFAULT_GAME_ID         = 0x64;
 const int   DEFAULT_GAME_LENGTH     = 10;
 const int   DEFAULT_COUNTDOWN_TIME  = 5;
 const int   DEFAULT_RELOADS         = 100;        // 100 = Unlimited
 const int   DEFAULT_HEALTH          = 25;
 const int   DEFAULT_SHEILDS         = 15;
-const int   DEFAULT_MEGAS           = 10;
-const int   DEFAULT_FLAGS1          = 20;
-const int   DEFAULT_FLAGS2          = 1;
+const int   DEFAULT_MEGAS           = 20;
+const int   DEFAULT_FLAGS1          = 0x20;
+const int   DEFAULT_FLAGS2          = 0x1;
 
 
 #endif // DEFINES_H
