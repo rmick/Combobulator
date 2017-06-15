@@ -37,13 +37,13 @@ private slots:
 
 private:
     QSerialPort     *serialUSB;
-    QTimer          *delayTimer;
+    //QTimer          *delayTimer;
 
     int             calculatedCheckSumTx;
     int             calculatedCheckSumRx;
     QByteArray      irDataIn;
     QByteArrayList  rxPacketList;
-    QString         packetString;  //temp, may not be needed.
+    QString         packetString;
     bool            useLazerSwarm;
 
     void            processPacket(QList<QByteArray> data);

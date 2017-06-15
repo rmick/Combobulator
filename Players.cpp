@@ -50,14 +50,8 @@ int Players::getReloads() const
 void Players::setReloads(int value)
 {
     Reloads = value;
-}
-
-QString Players::getReloadsTx() const
-{
-    QString _reloads = QString::number(Reloads, 10).toUpper();
-    if (Reloads == 100) _reloads = "FF";
-    if (_reloads.length() == 1) _reloads.prepend('0');
-    return _reloads;
+    if (Reloads == 100) setBitFlags1(LIMITED_RELOADS_FLAG, false);
+    else                setBitFlags1(LIMITED_RELOADS_FLAG, true);
 }
 
 int Players::getHealthTags() const
@@ -70,13 +64,6 @@ void Players::setHealthTags(int value)
     HealthTags = value;
 }
 
-QString Players::getHealthTagsTx() const
-{
-    QString _healthTags = QString::number(HealthTags, 10).toUpper();
-    if (_healthTags.length() == 1) _healthTags.prepend('0');
-    return _healthTags;
-}
-
 int Players::getShieldTime() const
 {
     return ShieldTime;
@@ -85,13 +72,6 @@ int Players::getShieldTime() const
 void Players::setShieldTime(int value)
 {
     ShieldTime = value;
-}
-
-QString Players::getShieldTimeTx() const
-{
-    QString _shieldTime = QString::number(ShieldTime, 10).toUpper();
-    if (_shieldTime.length() == 1) _shieldTime.prepend('0');
-    return _shieldTime;
 }
 
 int Players::getMegaTags() const
@@ -104,14 +84,6 @@ void Players::setMegaTags(int value)
     MegaTags = value;
 }
 
-QString Players::getMegaTagsTx() const
-{
-    QString _megatags = QString::number(MegaTags, 10).toUpper();
-    if (MegaTags == 100) _megatags = "FF";
-    if (_megatags.length() == 1) _megatags.prepend('0');
-    return _megatags;
-}
-
 bool Players::getSlowTags() const
 {
     return SlowTags;
@@ -120,6 +92,7 @@ bool Players::getSlowTags() const
 void Players::setSlowTags(bool value)
 {
     SlowTags = value;
+    setBitFlags1(SLOW_TAG_FLAG, value);
 }
 
 bool Players::getTeamTags() const
@@ -130,6 +103,7 @@ bool Players::getTeamTags() const
 void Players::setTeamTags(bool value)
 {
     TeamTags = value;
+    setBitFlags1(TEAM_TAGS_FLAG, value);
 }
 
 bool Players::getMedicMode() const
@@ -140,6 +114,7 @@ bool Players::getMedicMode() const
 void Players::setMedicMode(bool value)
 {
     MedicMode = value;
+    setBitFlags1(MEDIC_MODE_FLAG, value);
 }
 
 void Players::streamToFile(QTextStream &out)
@@ -207,24 +182,11 @@ int Players::getPackedFlags1() const
     return PackedFlags1;
 }
 
-void Players::setPackedFlag1_NeutraliseWhenTagged(bool state)
+void Players::setBitFlags1(int bitNumber, bool state)
 {
-    state = false;  //TODO: add some real code here
-}
-
-void Players::setPackedFlag1_LimitedReloads(bool state)
-{
-    //qDebug() << "setPackedFlag1_LimitedReloads()" << state << QString::number(PackedFlags1, 2);
-
-//    Setting the nth bit to either 1 or 0 can be achieved with the following:
-//    number ^= (-x ^ number) & (1 << n);
-//    Bit n will be set if x is 1, and cleared if x is 0.
-
-//    PackedFlags1 ^= (-x ^ number) & (1 << n);
-
-    if (state == true) PackedFlags1 = PackedFlags1 |= 1 << 6;
-    else               PackedFlags1 = PackedFlags1 &= ~(1 << 6);
+    PackedFlags1 ^= (-state ^ PackedFlags1) & (1 << bitNumber);
     //qDebug() << QString::number(PackedFlags1, 2);
+    qDebug() << displayBinary(PackedFlags1, 8);
 }
 
 void Players::setPackedFlags1(int value)
@@ -232,36 +194,9 @@ void Players::setPackedFlags1(int value)
     PackedFlags1 = value;
 }
 
-QString Players::getPackedFlags1Tx() const
-{
-    //qDebug() << "Players::getPackedFlags1Tx() " + QString::number(PackedFlags1, 2);
-    QString _packedFlags1 = QString::number(PackedFlags1, 10).toUpper();
-    if (_packedFlags1.length() == 1) _packedFlags1.prepend('0');
-    return _packedFlags1;
-
-
-//    var flags1 = (byte) ((gameDefinition.ExtendedTagging ? 1 : 0) << 7 |
-//                                     (gameDefinition.LimitedReloads ? 1 : 0) << 6 |
-//                                     (gameDefinition.LimitedMega ? 1 : 0) << 5 |
-//                                     (gameDefinition.TeamTags ? 1 : 0) << 4 |
-//                                     (gameDefinition.MedicMode ? 1 : 0) << 3 |
-//                                     (gameDefinition.SlowTags ? 1 : 0) << 2 |
-//                                     (gameDefinition.GameTypeInfo.HuntThePrey ? 1 : 0) << 1 |
-//                                     (gameDefinition.GameTypeInfo.ReverseHuntDirection ? 1 : 0) << 0);
-}
-
 int Players::getPackedFlags2() const
 {
-    //qDebug() << "Players::getPackedFlags2() " + QString::number(PackedFlags2, 2);
     return PackedFlags2;
-
-//    var flags2 = (byte) ((gameDefinition.GameTypeInfo.Zones ? 1 : 0) << 7 |
-//                         (gameDefinition.GameTypeInfo.TeamZones ? 1 : 0) << 6 |
-//                         (gameDefinition.GameTypeInfo.NeutralizePlayersTaggedInZone ? 1 : 0) << 5 |
-//                         (gameDefinition.GameTypeInfo.ZonesRevivePlayers ? 1 : 0) << 4 |
-//                         (gameDefinition.GameTypeInfo.HospitalZones ? 1 : 0) << 3 |
-//                         (gameDefinition.GameTypeInfo.ZonesTagPlayers ? 1 : 0) << 2 |
-//                         (gameDefinition.TeamCount & 0x03));
 }
 
 void Players::setPackedFlags2(int value)
@@ -269,12 +204,10 @@ void Players::setPackedFlags2(int value)
     PackedFlags2 = value;
 }
 
-QString Players::getPackedFlags2Tx() const
+void Players::setBitFlags2(int bitNumber, bool state)
 {
-    //qDebug() << "Players::getPackedFlags2Tx() " + QString::number(PackedFlags2, 2);
-    QString _packedFlags2 = QString::number(PackedFlags2, 10).toUpper();
-    if (_packedFlags2.length() == 1) _packedFlags2.prepend('0');
-    return _packedFlags2;
+    PackedFlags2 ^= (-state ^ PackedFlags2) & (1 << bitNumber);
+    qDebug() << QString::number(PackedFlags2, 2);
 }
 
 int Players::getTaggerID() const
@@ -297,3 +230,14 @@ void Players::setSpyNumber(int value)
     SpyNumber = value;
 }
 
+QString Players::displayBinary(int number, int digits)
+{
+    QString output = QString::number(number, 2);
+    int padding = digits - output.length();
+    while (padding > 0)
+    {
+        output.prepend('0');
+        padding--;
+    }
+    return output;
+}

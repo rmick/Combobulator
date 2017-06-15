@@ -20,16 +20,21 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
     ui->btn_NoTeams->setChecked(true);
     gameInfo.setNumberOfTeams(0);
 
-    QWidget::move(0,0);
-
     //TODO: Get rid of this, it is just debug until I store/recall this setting
     ui->actionuse_LazerSwarm->setChecked(true);
 
     qsrand(static_cast<uint>(QTime::currentTime().msec()));
 
-    gameInfo.setIsThisPlayerInTheGame(3, true);
-    gameInfo.setIsThisPlayerInTheGame(13, true);
+    //TODO: Remove these, they are for testing only.
+    QWidget::move(0,0);
+
+    gameInfo.setIsThisPlayerInTheGame(1, true);
+    gameInfo.setIsThisPlayerInTheGame(8, true);
+    gameInfo.setIsThisPlayerInTheGame(9, true);
+    gameInfo.setIsThisPlayerInTheGame(16, true);
+    gameInfo.setIsThisPlayerInTheGame(17, true);
     gameInfo.setIsThisPlayerInTheGame(24, true);
+    //End of test/debug code.
 }
 
 LttoMainWindow::~LttoMainWindow()
@@ -282,8 +287,8 @@ void LttoMainWindow::on_slider_Reloads_valueChanged(int value)
 
     for (int x=0; x<25;x++)
     {
-        if (value == 100) playerInfo[x].setPackedFlag1_LimitedReloads(false);
-        else              playerInfo[x].setPackedFlag1_LimitedReloads(true);
+        if (value == 100) playerInfo[x].setBitFlags1(LIMITED_RELOADS_FLAG, false);
+        else              playerInfo[x].setBitFlags1(LIMITED_RELOADS_FLAG, true);
         playerInfo[x].setReloads(value);
     }
 }
@@ -436,7 +441,7 @@ qDebug() << "All Player Settings Locked and Loaded :-)";
 ///
 //////////////////////////////////////////////////////////////////
 
-void LttoMainWindow::on_btnSave_clicked()
+void LttoMainWindow::saveFile()
 {
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save Game Configuration"), "", tr("Ltto Game (*.lto);; All Files (*)"));
     if (fileName.isEmpty()) return;
@@ -458,7 +463,7 @@ void LttoMainWindow::on_btnSave_clicked()
 
 }
 
-void LttoMainWindow::on_btnLoad_clicked()
+void LttoMainWindow::loadFile()
 {
     qDebug() << "Loading show file";
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open Ltto Game"), "", tr("Ltto Game (*.lto);; All Files (*)") );
@@ -499,3 +504,13 @@ void LttoMainWindow::on_actionuse_LazerSwarm_triggered()
     else                                       serialComms.setUseLazerSwarm(false);
 }
 
+
+void LttoMainWindow::on_actionSave_triggered()
+{
+    saveFile();
+}
+
+void LttoMainWindow::on_actionLoad_triggered()
+{
+    loadFile();
+}

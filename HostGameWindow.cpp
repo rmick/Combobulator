@@ -25,7 +25,7 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
     connect(&serialComms,   SIGNAL(TimerBlock(bool)),               this, SLOT(SetAnnounceTimerBlock(bool)) );
 
     serialComms.setUpSerialPort();
-    timerAnnounce->start(2000);
+    timerAnnounce->start(HOST_TIMER_MSEC);
 
     #ifdef Q_OS_ANDROID
     InsertToListWidget("This is Android");
@@ -96,6 +96,7 @@ void HostGameWindow::announceGame()
 void HostGameWindow::hostCurrentPlayer()
 {
     InsertToListWidget("Announce Game : Player " + QString::number(currentPlayer));
+    qDebug() << "";
     qDebug() << "HostGameWindow::hostCurrentPlayer() - GameID:" + QString::number(gameInfo.getGameID());
 
     if(playerInfo[currentPlayer].getSpyNumber() != 0)
@@ -304,15 +305,11 @@ void HostGameWindow::InsertToListWidget(QString lineText)
 
 void HostGameWindow::on_btn_TestMessage_clicked()
 {
-    //P80:D48:D45:D4C:D4C:D4F:CF4:
-//    serialComms.sendPacket(PACKET,  "80");
-//    serialComms.sendPacket(DATA,    "72");
-//    serialComms.sendPacket(DATA,    "69");
-//    serialComms.sendPacket(DATA,    "76");
-//    serialComms.sendPacket(DATA,    "76");
-//    serialComms.sendPacket(DATA,    "79");
-//    serialComms.sendPacket(CHECKSUM, 0);
+
+//    serialComms.sendPacket(TAG,  0x00);
 //    return;
+
+
 
     //P80:D48:D45:D4C:D4C:D4F:CF4:
     serialComms.sendPacket(PACKET,  0x80);
@@ -452,20 +449,6 @@ void HostGameWindow::on_btn_TestMessage_clicked()
 //            serialComms.sendPacket(DATA, name4);
 //        }
 //        serialComms.sendPacket(CHECKSUM, 0);
-}
-
-
-
-QString HostGameWindow::displayBinary(int number, int digits)
-{
-    QString output = QString::number(number, 2);
-    int padding = digits - output.length();
-    while (padding > 0)
-    {
-        output.prepend('0');
-        padding--;
-    }
-    return output;
 }
 
 void HostGameWindow::assignSpies()

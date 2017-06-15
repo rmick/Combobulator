@@ -10,7 +10,7 @@ SerialComms::SerialComms(QObject *parent) : QObject(parent)
 {
 
     serialUSB = new QSerialPort(this);
-    delayTimer      = new QTimer(this);
+    //delayTimer      = new QTimer(this);
 
     QObject::connect(serialUSB, SIGNAL(readyRead()), this, SLOT(receivePacket()) );
 
@@ -92,7 +92,7 @@ bool SerialComms::sendPacket(char type, int data, bool dataFormat)
             packetString = createIRstring(data);
             packetString.prepend('P');
             packet.append(packetString);
-            qDebug() << "SerialComms::sendPacket() - Packet =    " << data << "\t:" << packetString;
+            //qDebug() << "SerialComms::sendPacket() - Packet =    " << data << "\t:" << packetString;
             break;
         case DATA:
             if (dataFormat == BCD)
@@ -102,7 +102,7 @@ bool SerialComms::sendPacket(char type, int data, bool dataFormat)
                 packetString = createIRstring(data);
                 packetString.prepend('D');
                 packet.append(packetString);
-                qDebug() << "SerialComms::sendPacket() - BCD Data = " << data << "\t:" << packetString << "\tBCD=" << dataFormat;
+                //qDebug() << "SerialComms::sendPacket() - BCD Data = " << data << "\t:" << packetString << "\tBCD=" << dataFormat;
             }
             else
             {
@@ -110,7 +110,7 @@ bool SerialComms::sendPacket(char type, int data, bool dataFormat)
                 packetString = createIRstring(data);
                 packetString.prepend('D');
                 packet.append(packetString);
-                qDebug() << "SerialComms::sendPacket() - Dec Data = " << data << "\t:" << packetString << "\tBCD=" << dataFormat;
+                //qDebug() << "SerialComms::sendPacket() - Dec Data = " << data << "\t:" << packetString << "\tBCD=" << dataFormat;
             }
             break;
         case CHECKSUM:
@@ -119,7 +119,7 @@ bool SerialComms::sendPacket(char type, int data, bool dataFormat)
             packetString = createIRstring(calculatedCheckSumTx);
             packetString.prepend('C');
             packet.append(packetString);
-            qDebug() << "SerialComms::sendPacket() - CheckSum = \t" << packetString;
+            //qDebug() << "SerialComms::sendPacket() - CheckSum = \t" << packetString;
             break;
         case TAG:
             packetString = createIRstring(data);
@@ -143,22 +143,19 @@ bool SerialComms::sendPacket(char type, int data, bool dataFormat)
     }
     else packet.append(":");
 
-    if(type == CHECKSUM && useLazerSwarm == false) packet.append("\r\n");  //TODO: Remove this, it is just to make the Serial Debug easier to read.
-
     if (serialUSB->isOpen() && serialUSB->isWritable())
     {
         serialUSB->write(packet);
-        serialUSB->flush();
+        //serialUSB->flush();
         result = true;
     }
-    //qDebug() << "  packetSent->" << packet;
-    emit sendSerialData(packet);
-    //QThread::msleep(60);
-    blockingDelay(50);
+    qDebug() << "SerialComms::sendPacket  USBpacketSent->" << packet;
+    emit sendSerialData(packet);            //Connects to TCPComms::sendData slot && USBComms::sendData slot
+    //QThread::msleep(INTERPACKET_DELAY_MSEC);
+    blockingDelay(INTERPACKET_DELAY_MSEC);
 
     return result;
 }
-
 
 QString SerialComms::createIRstring(int data)
 {
@@ -188,17 +185,19 @@ void SerialComms::receivePacket()
         else
         {
             rxPacketList.append(lazerswarm.decodeCommand(irDataIn));
-            qDebug() << "SerialComms::receivePacket() " << lazerswarm.decodeCommand(irDataIn);
+            qDebug() << "SerialComms::receivePacket() LazerSwarm mode - " << lazerswarm.decodeCommand(irDataIn);
             processed = true;
         }
     }
     else
     {
         irDataIn.append(serialUSB->readAll() );
-        //TODO: Check for full packet/s (eg. "C86:")
+        if (irDataIn.endsWith(":") == false)
+        {
+            irDataIn.append(serialUSB->readAll() );
+        }
         rxPacketList.append(irDataIn);
-        //qDebug() << "SerialComms::receivePacket() - This code is not yet written";
-        qDebug() << "SerialComms::receivePacket() - " << irDataIn;
+        qDebug() << "SerialComms::receivePacket() LTTO library mode - " << irDataIn;
         processed = true;
     }
 
@@ -284,10 +283,13 @@ void SerialComms::processPacket(QList<QByteArray> data)
 
 int SerialComms::extract(QList<QByteArray> &data)
 {
-    QString command = data.takeFirst();
-    command = command.mid(1 , (command.length()-1) );
-    bool ok = false;
-    return command.toInt(&ok, 10);
+    if (data.empty() == false)
+    {
+        QString command = data.takeFirst();
+        command = command.mid(1 , (command.length()-1) );
+        bool ok = false;
+        return command.toInt(&ok, 10);
+    }
 }
 
 int SerialComms::ConvertDecToBCD(int dec)
@@ -302,33 +304,9 @@ int SerialComms::ConvertBCDtoDec(int bcd)
   return (int) (((bcd >> 4) & 0xF) *10) + (bcd & 0xF);
 }
 
-//int SerialComms::ConvertHexToDec(int hex)
-//{
-//    int firstDigit = hex/16;
-//    int secondDigit = hex%16;
-//    int theAnswer = (firstDigit*10) + secondDigit;
-//    //qDebug() << "SerialComms::ConvertHexToDec = " << theAnswer;
-//    return theAnswer;
-//}
-
-//int SerialComms::ConvertDecToHex(int dec)
-//{
-//    //239
-//    int theAnswer = -1;
-//    QString test = QString::number(dec, 16);
-//    bool ok;
-//    theAnswer = test.toInt();
-//    //int firstDigit = dec/16;  //14.93
-//    //int secondDigit = dec%10;
-//    //int theAnswer = (firstDigit*10) + secondDigit;
-//    qDebug() << "SerialComms::ConvertDecToHex = " << test << theAnswer << "ok: " << ok;
-//    return theAnswer;
-//}
-
 void SerialComms::blockingDelay(int mSec)
 {
     QEventLoop loop;
     QTimer::singleShot(mSec, &loop, SLOT(quit()));
     loop.exec();
-
 }

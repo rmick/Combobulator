@@ -17,19 +17,15 @@ public:
 
     int getReloads() const;
     void setReloads(int value);
-    QString getReloadsTx() const;		    //returns Reloads as QString as 8bit-BCD  (converts 100 -> FF = Unlimited)
 
     int getHealthTags() const;
     void setHealthTags(int value);
-    QString  getHealthTagsTx() const;		    //returns HealthTags as QString as 8bit-BCD
 
     int getShieldTime() const;
     void setShieldTime(int value);
-    QString getShieldTimeTx() const;                //returns HealthTags as QString as 8bit-BCD
 
     int getMegaTags() const;
     void setMegaTags(int value);
-    QString getMegaTagsTx() const;                  //returns HealthTags as QString as 8bit-BCD (converts 100 -> FF = Unlimited)
 
     bool getSlowTags() const;
     void setSlowTags(bool value);
@@ -44,21 +40,12 @@ public:
     void streamFromFile(QTextStream &in);
 
     int  getPackedFlags1() const;
-    void setPackedFlag1_NeutraliseWhenTagged(bool state);
-    void setPackedFlag1_LimitedReloads(bool state);
-    void setPackedFlag1_LimitedMegaTags(bool state);
-    void setPackedFlag1_TeamTags(bool state);
-    void setPackedFlag1_MedicMode(bool state);
-    void setPackedFlag1_SlowTags(bool state);
-    void setPackedFlag1_HuntThePrey(bool state);
-    void setPackedFlag1_HuntDirection(bool state);
     void setPackedFlags1(int value);
-    QString getPackedFlags1Tx() const;
+    void setBitFlags1(int bitNumber, bool state);
 
     int getPackedFlags2() const;
-
-    void setPackedFlags2(int value);
-    QString getPackedFlags2Tx() const;
+    void setPackedFlags2(int value);;
+    void setBitFlags2(int bitNumber, bool state);
 
     int getTaggerID() const;
     void setTaggerID(int value);
@@ -68,6 +55,9 @@ public:
 
     int getSpyNumber() const;
     void setSpyNumber(int value);
+
+    QString displayBinary(int number, int digits);
+
 
 private:
     int     Handicap;

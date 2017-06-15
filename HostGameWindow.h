@@ -29,7 +29,7 @@ public:
 
     void resetPlayersForNewGame();
 
-    int getDisplay8digitBinary() const;
+//    int getDisplay8digitBinary() const;
 
 public slots:
 
@@ -81,7 +81,6 @@ private:
     int     calculatePlayerTeam5bits();
     int     ConvertDecToBCD(int dec);
     int     ConvertBCDtoDec(int bcd);
-    QString displayBinary(int number, int digits);
     void    blockingDelay(int mSec);
     void    assignSpies();
 };

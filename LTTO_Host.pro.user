@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 4.2.1, 2017-06-14T21:31:24. -->
+<!-- Written by QtCreator 4.2.1, 2017-06-15T12:49:12. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -64,7 +64,7 @@
    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName">Desktop Qt 5.8.0 clang 64bit</value>
    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">Desktop Qt 5.8.0 clang 64bit</value>
    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">qt.58.clang_64_kit</value>
-   <value type="int" key="ProjectExplorer.Target.ActiveBuildConfiguration">0</value>
+   <value type="int" key="ProjectExplorer.Target.ActiveBuildConfiguration">1</value>
    <value type="int" key="ProjectExplorer.Target.ActiveDeployConfiguration">0</value>
    <value type="int" key="ProjectExplorer.Target.ActiveRunConfiguration">0</value>
    <valuemap type="QVariantMap" key="ProjectExplorer.Target.BuildConfiguration.0">
@@ -128,7 +128,7 @@
     <value type="bool" key="Qt4ProjectManager.Qt4BuildConfiguration.UseShadowBuild">true</value>
    </valuemap>
    <valuemap type="QVariantMap" key="ProjectExplorer.Target.BuildConfiguration.1">
-    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/Users/Richie/Documents/Dropbox/Qt projects/build-LTTO_Host-Desktop_Qt_5_8_0_clang_64bit-Release</value>
+    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/Users/Richie/Documents/Dropbox/Qt_projects/build-LTTO_Host-Desktop_Qt_5_8_0_clang_64bit-Release</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
       <value type="bool" key="ProjectExplorer.BuildStep.Enabled">true</value>
@@ -188,7 +188,7 @@
     <value type="bool" key="Qt4ProjectManager.Qt4BuildConfiguration.UseShadowBuild">true</value>
    </valuemap>
    <valuemap type="QVariantMap" key="ProjectExplorer.Target.BuildConfiguration.2">
-    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/Users/Richie/Documents/Dropbox/Qt projects/build-LTTO_Host-Desktop_Qt_5_8_0_clang_64bit-Profile</value>
+    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/Users/Richie/Documents/Dropbox/Qt_projects/build-LTTO_Host-Desktop_Qt_5_8_0_clang_64bit-Profile</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
       <value type="bool" key="ProjectExplorer.BuildStep.Enabled">true</value>
@@ -312,7 +312,7 @@
     <value type="QString" key="Qt4ProjectManager.Qt4RunConfiguration.ProFile">LTTO_Host.pro</value>
     <value type="bool" key="Qt4ProjectManager.Qt4RunConfiguration.UseDyldImageSuffix">false</value>
     <value type="QString" key="Qt4ProjectManager.Qt4RunConfiguration.UserWorkingDirectory"></value>
-    <value type="QString" key="Qt4ProjectManager.Qt4RunConfiguration.UserWorkingDirectory.default">/Users/Richie/Documents/Dropbox/Qt_projects/build-LTTO_Host-Desktop_Qt_5_8_0_clang_64bit-Debug/LTTO_Host.app/Contents/MacOS</value>
+    <value type="QString" key="Qt4ProjectManager.Qt4RunConfiguration.UserWorkingDirectory.default">/Users/Richie/Documents/Dropbox/Qt_projects/build-LTTO_Host-Desktop_Qt_5_8_0_clang_64bit-Release/LTTO_Host.app/Contents/MacOS</value>
     <value type="uint" key="RunConfiguration.QmlDebugServerPort">3768</value>
     <value type="bool" key="RunConfiguration.UseCppDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
@@ -329,11 +329,11 @@
    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName">Android for armeabi-v7a (GCC 4.9, Qt 5.8.0)</value>
    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">Android for armeabi-v7a (GCC 4.9, Qt 5.8.0)</value>
    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">{2100e20b-6c60-4209-9ac6-d6897a1c4b84}</value>
-   <value type="int" key="ProjectExplorer.Target.ActiveBuildConfiguration">1</value>
+   <value type="int" key="ProjectExplorer.Target.ActiveBuildConfiguration">0</value>
    <value type="int" key="ProjectExplorer.Target.ActiveDeployConfiguration">0</value>
    <value type="int" key="ProjectExplorer.Target.ActiveRunConfiguration">-1</value>
    <valuemap type="QVariantMap" key="ProjectExplorer.Target.BuildConfiguration.0">
-    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/Users/Richie/Documents/Dropbox/Qt projects/build-LTTO_Host-Android_for_armeabi_v7a_GCC_4_9_Qt_5_8_0_2100e2-Debug</value>
+    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/Users/Richie/Documents/Dropbox/Qt_projects/build-LTTO_Host-Android_for_armeabi_v7a_GCC_4_9_Qt_5_8_0_2100e2-Debug</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
       <value type="bool" key="ProjectExplorer.BuildStep.Enabled">true</value>
@@ -410,7 +410,7 @@
     <value type="bool" key="Qt4ProjectManager.Qt4BuildConfiguration.UseShadowBuild">true</value>
    </valuemap>
    <valuemap type="QVariantMap" key="ProjectExplorer.Target.BuildConfiguration.1">
-    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/Users/Richie/Documents/Dropbox/Qt projects/build-LTTO_Host-Android_for_armeabi_v7a_GCC_4_9_Qt_5_8_0_2100e2-Release</value>
+    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/Users/Richie/Documents/Dropbox/Qt_projects/build-LTTO_Host-Android_for_armeabi_v7a_GCC_4_9_Qt_5_8_0_2100e2-Release</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
       <value type="bool" key="ProjectExplorer.BuildStep.Enabled">true</value>
@@ -487,7 +487,7 @@
     <value type="bool" key="Qt4ProjectManager.Qt4BuildConfiguration.UseShadowBuild">true</value>
    </valuemap>
    <valuemap type="QVariantMap" key="ProjectExplorer.Target.BuildConfiguration.2">
-    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/Users/Richie/Documents/Dropbox/Qt projects/build-LTTO_Host-Android_for_armeabi_v7a_GCC_4_9_Qt_5_8_0_2100e2-Profile</value>
+    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/Users/Richie/Documents/Dropbox/Qt_projects/build-LTTO_Host-Android_for_armeabi_v7a_GCC_4_9_Qt_5_8_0_2100e2-Profile</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
       <value type="bool" key="ProjectExplorer.BuildStep.Enabled">true</value>
@@ -596,7 +596,7 @@
    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName">iphoneos-clang Qt 5.8.0 for iOS</value>
    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">iphoneos-clang Qt 5.8.0 for iOS</value>
    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">{d8081877-21ab-4d2e-93d9-c93a6046a6b2}</value>
-   <value type="int" key="ProjectExplorer.Target.ActiveBuildConfiguration">0</value>
+   <value type="int" key="ProjectExplorer.Target.ActiveBuildConfiguration">1</value>
    <value type="int" key="ProjectExplorer.Target.ActiveDeployConfiguration">0</value>
    <value type="int" key="ProjectExplorer.Target.ActiveRunConfiguration">0</value>
    <valuemap type="QVariantMap" key="ProjectExplorer.Target.BuildConfiguration.0">
@@ -865,7 +865,7 @@
    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName">iphonesimulator-clang Qt 5.8.0 for iOS</value>
    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">iphonesimulator-clang Qt 5.8.0 for iOS</value>
    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">{64d48af3-bb87-4092-93df-79ca2944db1b}</value>
-   <value type="int" key="ProjectExplorer.Target.ActiveBuildConfiguration">0</value>
+   <value type="int" key="ProjectExplorer.Target.ActiveBuildConfiguration">1</value>
    <value type="int" key="ProjectExplorer.Target.ActiveDeployConfiguration">0</value>
    <value type="int" key="ProjectExplorer.Target.ActiveRunConfiguration">0</value>
    <valuemap type="QVariantMap" key="ProjectExplorer.Target.BuildConfiguration.0">

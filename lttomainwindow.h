@@ -86,10 +86,6 @@ private slots:
 
     void on_btn_Spies_clicked();
 
-    void on_btnSave_clicked();
-
-    void on_btnLoad_clicked();
-
     void on_actionExit_triggered();
 
     void on_btn_CustomGame_clicked();
@@ -97,6 +93,10 @@ private slots:
     void on_actionSet_CountDown_Time_triggered();
 
     void on_actionuse_LazerSwarm_triggered();
+
+    void on_actionSave_triggered();
+
+    void on_actionLoad_triggered();
 
 private:
     Ui::LttoMainWindow  *ui;
@@ -110,6 +110,8 @@ private:
 
     void    UpdateGlobalPlayerControlSettings();
     void    UpdateGameControlSettings();
+    void    saveFile();
+    void    loadFile();
 };
 
 #endif // LTTOMAINWINDOW_H

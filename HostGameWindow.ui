@@ -78,7 +78,8 @@
     </rect>
    </property>
    <property name="text">
-    <string>Start/Stop</string>
+    <string>Start/Stop
+(DeBug)</string>
    </property>
    <property name="checkable">
     <bool>true</bool>
@@ -136,20 +137,8 @@ Game</string>
     </rect>
    </property>
    <property name="text">
-    <string>TCP Comms</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="btn_TestMessage">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>170</y>
-     <width>113</width>
-     <height>32</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Test Message</string>
+    <string>TCP Comms
+(DeBug)</string>
    </property>
   </widget>
   <widget class="QPushButton" name="btn_Rehost">
@@ -170,6 +159,19 @@ Tagger</string>
    </property>
    <property name="autoDefault">
     <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btn_TestMessage">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>150</y>
+     <width>113</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Test 1,2,3</string>
    </property>
   </widget>
  </widget>

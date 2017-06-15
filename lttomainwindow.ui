@@ -241,6 +241,9 @@
       <property name="autoExclusive">
        <bool>true</bool>
       </property>
+      <attribute name="buttonGroup">
+       <string notr="true">buttonGroup_GameType</string>
+      </attribute>
      </widget>
     </item>
     <item row="2" column="5">
@@ -310,6 +313,9 @@
       <property name="flat">
        <bool>false</bool>
       </property>
+      <attribute name="buttonGroup">
+       <string notr="true">buttonGroup_GameType</string>
+      </attribute>
      </widget>
     </item>
     <item row="0" column="3">
@@ -329,6 +335,9 @@
       <property name="autoExclusive">
        <bool>true</bool>
       </property>
+      <attribute name="buttonGroup">
+       <string notr="true">buttonGroup_GameType</string>
+      </attribute>
      </widget>
     </item>
     <item row="0" column="4">
@@ -348,6 +357,9 @@
       <property name="autoExclusive">
        <bool>true</bool>
       </property>
+      <attribute name="buttonGroup">
+       <string notr="true">buttonGroup_GameType</string>
+      </attribute>
      </widget>
     </item>
     <item row="10" column="4" colspan="2">
@@ -521,6 +533,9 @@ QSlider::groove:horizontal {
       <property name="text">
        <string>Custom</string>
       </property>
+      <attribute name="buttonGroup">
+       <string notr="true">buttonGroup_GameType</string>
+      </attribute>
      </widget>
     </item>
    </layout>
@@ -543,7 +558,6 @@ QSlider::groove:horizontal {
     <addaction name="separator"/>
     <addaction name="actionSet_CountDown_Time"/>
     <addaction name="actionuse_LazerSwarm"/>
-    <addaction name="actionPorts"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
@@ -573,11 +587,11 @@ QSlider::groove:horizontal {
    <addaction name="separator"/>
    <addaction name="actionSet_CountDown_Time"/>
    <addaction name="separator"/>
-   <addaction name="actionPorts"/>
    <addaction name="separator"/>
    <addaction name="actionuse_LazerSwarm"/>
    <addaction name="separator"/>
    <addaction name="actionExit"/>
+   <addaction name="separator"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionSave">
@@ -619,5 +633,6 @@ QSlider::groove:horizontal {
  <connections/>
  <buttongroups>
   <buttongroup name="buttonGroup_NumberOfTeams"/>
+  <buttongroup name="buttonGroup_GameType"/>
  </buttongroups>
 </ui>
