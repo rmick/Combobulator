@@ -736,6 +736,9 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="maximum">
+        <number>100</number>
+       </property>
        <property name="value">
         <number>10</number>
        </property>

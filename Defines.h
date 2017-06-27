@@ -1,6 +1,18 @@
 #ifndef DEFINES_H
 #define DEFINES_H
 
+//macdeployqt terminal command (copy into terminal window to build a .dmg)
+//          Source - https://dragly.org/2012/01/13/deploy-qt-applications-for-mac-os-x/
+//      Navigate to the QT Build directory for the App.
+//      Right click on the folder and go to 'services', then 'Open terminal at folder'.
+//      Copy/paste the following line into the terminal window and wait.....
+//              /Users/Richie/Qt5.8.0/5.8/clang_64/bin/macdeployqt LTTO_Host.app -dmg
+//
+//      Here is the current build directory
+// /build-LTTO_Host-Desktop_Qt_5_8_0_clang_64bit-Release Richie$
+
+#define INCLUDE_SERIAL_USB
+
 //LTTO library packet type indentifiers
 const char  PACKET      = 'P';
 const char  DATA        = 'D';

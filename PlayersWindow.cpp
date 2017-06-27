@@ -360,9 +360,12 @@ void PlayersWindow::AdjustSettingsForHandicap(int value)
     }
     ui->label_Health  ->setText("Health : "   + (QString::number(health)) + " tags");
     ui->label_Shields ->setText("Shields : "  + (QString::number(shields)) + " seconds");
-    ui->label_MegaTags->setText("MegaTags : " + (QString::number(shields)) );
-    if (reloads == 0)  ui->label_Reloads->setText("Reloads : Unlimited");
-    else ui->label_Reloads->setText("Reloads : " + (QString::number(reloads)) );
+
+    if  (megas == 100) ui->label_MegaTags->setText("MegaTags : Unlimited");
+    else               ui->label_MegaTags->setText("MegaTags : " + QString::number(megas) );
+
+    if (reloads == 100) ui->label_Reloads->setText("Reloads : Unlimited");
+    else                ui->label_Reloads->setText("Reloads : " + (QString::number(reloads)) );
 }
 
 void PlayersWindow::HandicapAdjust(const QString type, int &value)
@@ -387,17 +390,6 @@ void PlayersWindow::on_btn_EditMode_clicked()
         setPlayerControls(true);
         ui->btn_EditMode->setText("Edit Handicap");
         ui->PlayerButtonGroup->setExclusive(true);
-//        ui->label_Health->setEnabled(true);
-//        ui->label_MegaTags->setEnabled(true);
-//        ui->label_Reloads->setEnabled(true);
-//        ui->label_Shields->setEnabled(true);
-//        ui->slider_Health->setEnabled(true);
-//        ui->slider_MegaTags->setEnabled(true);
-//        ui->slider_Reloads->setEnabled(true);
-//        ui->slider_Shields->setEnabled(true);
-//        SetPlayerButtons(false);
-//        ui->label_Handicap->setEnabled(false);
-//        ui->slider_Handicap->setEnabled(false);
 
     }
     else if (ui->btn_EditMode->isChecked() == false)
@@ -405,34 +397,8 @@ void PlayersWindow::on_btn_EditMode_clicked()
         setPlayerControls(false);
         ui->btn_EditMode->setText("Edit Settings");
         ui->PlayerButtonGroup->setExclusive(false);
-//        ui->label_Health->setEnabled(false);
-//        ui->label_MegaTags->setEnabled(false);
-//        ui->label_Reloads->setEnabled(false);
-//        ui->label_Shields->setEnabled(false);
-//        ui->slider_Health->setEnabled(false);
-//        ui->slider_MegaTags->setEnabled(false);
-//        ui->slider_Reloads->setEnabled(false);
-//        ui->slider_Shields->setEnabled(false);
-//        setPlayerControls(true);
-//        SetPlayerButtons(false);
-//        ui->label_Handicap->setEnabled(true);
-//        ui->slider_Handicap->setEnabled(true);
     }
 }
-
-//void PlayersWindow::on_btn_HandicapEnabled_clicked()
-//{
-//    if (ui->btn_HandicapEnabled->isChecked() == true)
-//    {
-//        ui->btn_HandicapEnabled->setText("Handicap Mode ON");
-//        setPlayerControls(false);
-//    }
-//    else if (ui->btn_HandicapEnabled->isChecked() == false)
-//    {
-//        ui->btn_HandicapEnabled->setText("Handicap Mode OFF");
-//        setPlayerControls(true);
-//    }
-//}
 
 void PlayersWindow::on_slider_Handicap_valueChanged(int value)
 {
@@ -462,7 +428,8 @@ void PlayersWindow::on_slider_Shields_valueChanged(int value)
 
 void PlayersWindow::on_slider_MegaTags_valueChanged(int value)
 {
-     ui->label_MegaTags->setText("MegaTags : " + QString::number(value) );
+     if  (value == 100) ui->label_MegaTags->setText("MegaTags : Unlimited");
+     else               ui->label_MegaTags->setText("MegaTags : " + QString::number(value) );
      playerInfo[SelectedPlayer].setMegaTags(value);
 }
 

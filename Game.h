@@ -6,6 +6,7 @@
 
 class Game
 {
+
 public:
     Game();
 
@@ -58,6 +59,9 @@ public:
 
     int getCountDownTime() const;
     void setCountDownTime(int value);
+
+signals:
+    void NumberOfTeamsHasChanged(int NumTeams);
 
 private:
     int     GameType;

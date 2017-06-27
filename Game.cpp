@@ -1,11 +1,12 @@
 #include "Game.h"
-#include<QDebug>
+#include <QDebug>
 #include <QString>
 #include "Defines.h"
+#include "Players.h"
 
-Game        gameInfo;
+Game    gameInfo;
 
-Game::Game()
+Game::Game()    // (QObject *parent)
 {
     GameType        = DEFAULT_GAME_TYPE;
     GameID          = DEFAULT_GAME_ID;
@@ -68,6 +69,35 @@ int Game::getNumberOfTeams() const
 void Game::setNumberOfTeams(int value)
 {
     NumberOfTeams = value;
+    //if (NumberOfTeams == 0) emit NumberOfTeamsHasChanged(NumberOfTeams);
+    bool msb, lsb;
+    switch (value)
+    {
+        case 0:
+            msb = 0;
+            lsb = 0;
+            break;
+        case 1:
+            msb = 0;
+            lsb = 1;
+            break;
+        case 2:
+            msb = 1;
+            lsb = 0;
+            break;
+        case 3:
+            msb = 1;
+            lsb = 1;
+            break;
+        default:
+            msb = 0;
+            lsb = 0;
+    }
+    for(int x=0;x<25;x++)
+    {
+        playerInfo[0].setBitFlags2(TEAM_COUNT_MSB, msb);
+        playerInfo[0].setBitFlags2(TEAM_COUNT_LSB, lsb);
+    }
 }
 
 int Game::getNumberOfSpies() const

@@ -1,73 +1,20 @@
+#include "LttoComms.h"
+#include <QEventLoop>
+#include <QDebug>
 
+LttoComms lttoComms;
 
-#include "SerialComms.h"
-#include <QtSerialPort>
-#include "HostGameWindow.h"
-
-SerialComms serialComms;
-
-SerialComms::SerialComms(QObject *parent) : QObject(parent)
+LttoComms::LttoComms(QObject *parent) : QObject(parent)
 {
-
-    serialUSB = new QSerialPort(this);
-    //delayTimer      = new QTimer(this);
-
-    QObject::connect(serialUSB, SIGNAL(readyRead()), this, SLOT(receivePacket()) );
+    //connect(&serialUSBcomms, SIGNAL(newSerialUSBdata(QByteArray)), this, SLOT(receivePacket(QByteArray)) );
+    //connect(&tcpComms,       SIGNAL(newTCPdata(QByteArray)),       this, SLOT(receivePacket(QByteArray)) );
 
     useLazerSwarm = true;          //TODO: Set this up in Preferences.
-
-}
-
-void SerialComms::findSerialPort()
-{
-    foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts())
-    {
-        if (info.manufacturer().contains("Spark") || info.manufacturer().contains("Arduino") || info.portName().contains("tty") )
-        {
-            serialUSB->setPortName(info.portName() );
-            emit SerialPortFound(info.portName() );
-        }
-
-        //qDebug() << "\n-----------\nPortToUse=" << info.portName() << info.manufacturer() << info.description();
-    }
-}
-
-void SerialComms::setUpSerialPort()
-{
-
-    findSerialPort();
-        #ifdef Q_OS_ANDROID
-        serialUSB->setPortName("ttyS1");
-        #endif
-    serialUSB->open(QIODevice::ReadWrite);
-    serialUSB->setBaudRate(QSerialPort::Baud115200);
-    serialUSB->setDataBits(QSerialPort::Data8);
-    serialUSB->setParity(QSerialPort::NoParity);
-    serialUSB->setStopBits(QSerialPort::OneStop);
-    serialUSB->setFlowControl(QSerialPort::NoFlowControl);
-
-    if (serialUSB->isOpen() && serialUSB->isWritable())
-    {
-        qDebug() << "SerialPort is Ready..." << endl;
-    }
-    else
-        qDebug() << "SerialPort failed to open..." << endl;
-}
-
-void SerialComms::closeSerialPort()
-{
-    serialUSB->close();
-    qDebug() << "SerialPort has left the building";
-}
-
-int SerialComms::getRxPacket()
-{
-    return rxPacket.command;
 }
 
 ////////////////////////////////////////////////////////////////////
 
-bool SerialComms::sendPacket(char type, int data, bool dataFormat)
+bool LttoComms::sendPacket(char type, int data, bool dataFormat)
 {
     bool result = false;
     //bool ok;    //dummy
@@ -75,14 +22,15 @@ bool SerialComms::sendPacket(char type, int data, bool dataFormat)
 
     //Calculating BCD and the CheckSum.
     //This is here because it always does my head in !!!!!
-    //Certain Data is BCD Hex (whatever that means).        It means it is 2 x 4bit numbers in a single Byte
+    //Certain Data is BCD Hex                               It means it is 2 x 4bit numbers in a single Byte
     //                                                      Therefore 10 is actually 0001 0000 (which is 0x16)
     //                                                      and       42 is actually 0100 0010 (which is 0x64)
     //                                                      and       79 is actually 0111 1001 (which is 0x121)
-    //                                                      and      255 is actually 1111 1111 (which is 0xFF)
+    //                                                      and      100 becomes     1111 1111 (which is 0xFF)
     //This means that '10' is actually 0x16.
     //However other data (taggerID, GameID, Flags, etc) are just plain Hex/Dec all the time.
-    //The LazerSwarm then needs aal data sent as actual Hex, whereas the LTTO library expects the Dec '10'.
+    //****** Now comes the nasty part!!!!! ******
+    //The LazerSwarm then needs all data sent as actual Hex, whereas the LTTO library expects it as Dec '10'.
     //The CheckSum is the Sum of the final Hex values or Decimal values AFTER conversion (where applicable) to BCD.
 
     switch (type)
@@ -92,7 +40,7 @@ bool SerialComms::sendPacket(char type, int data, bool dataFormat)
             packetString = createIRstring(data);
             packetString.prepend('P');
             packet.append(packetString);
-            //qDebug() << "SerialComms::sendPacket() - Packet =    " << data << "\t:" << packetString;
+            //qDebug() << "lttoComms::sendPacket() - Packet =    " << data << "\t:" << packetString;
             break;
         case DATA:
             if (dataFormat == BCD)
@@ -102,7 +50,7 @@ bool SerialComms::sendPacket(char type, int data, bool dataFormat)
                 packetString = createIRstring(data);
                 packetString.prepend('D');
                 packet.append(packetString);
-                //qDebug() << "SerialComms::sendPacket() - BCD Data = " << data << "\t:" << packetString << "\tBCD=" << dataFormat;
+                //qDebug() << "lttoComms::sendPacket() - BCD Data = " << data << "\t:" << packetString << "\tBCD=" << dataFormat;
             }
             else
             {
@@ -110,7 +58,7 @@ bool SerialComms::sendPacket(char type, int data, bool dataFormat)
                 packetString = createIRstring(data);
                 packetString.prepend('D');
                 packet.append(packetString);
-                //qDebug() << "SerialComms::sendPacket() - Dec Data = " << data << "\t:" << packetString << "\tBCD=" << dataFormat;
+                //qDebug() << "lttoComms::sendPacket() - Dec Data = " << data << "\t:" << packetString << "\tBCD=" << dataFormat;
             }
             break;
         case CHECKSUM:
@@ -119,7 +67,7 @@ bool SerialComms::sendPacket(char type, int data, bool dataFormat)
             packetString = createIRstring(calculatedCheckSumTx);
             packetString.prepend('C');
             packet.append(packetString);
-            //qDebug() << "SerialComms::sendPacket() - CheckSum = \t" << packetString;
+            //qDebug() << "lttoComms::sendPacket() - CheckSum = \t" << packetString;
             break;
         case TAG:
             packetString = createIRstring(data);
@@ -143,13 +91,13 @@ bool SerialComms::sendPacket(char type, int data, bool dataFormat)
     }
     else packet.append(":");
 
-    if (serialUSB->isOpen() && serialUSB->isWritable())
-    {
-        serialUSB->write(packet);
-        //serialUSB->flush();
-        result = true;
-    }
-    qDebug() << "SerialComms::sendPacket  USBpacketSent->" << packet;
+//    if (serialUSB->isOpen() && serialUSB->isWritable())
+//    {
+//        serialUSB->write(packet);
+//        serialUSB->flush();
+//        result = true;
+//    }
+    qDebug() << "lttoComms::sendPacket  USBpacketSent->" << packet;
     emit sendSerialData(packet);            //Connects to TCPComms::sendData slot && USBComms::sendData slot
     //QThread::msleep(INTERPACKET_DELAY_MSEC);
     blockingDelay(INTERPACKET_DELAY_MSEC);
@@ -157,53 +105,48 @@ bool SerialComms::sendPacket(char type, int data, bool dataFormat)
     return result;
 }
 
-QString SerialComms::createIRstring(int data)
+QString LttoComms::createIRstring(int data)
 {
     QString createdPacket;
     if (useLazerSwarm) createdPacket = QString::number(data,16).toUpper();
     else               createdPacket = QString::number(data,10);
     if (createdPacket.length() == 1) createdPacket.prepend('0');
-    //qDebug() << "SerialComms::createIRstring()" << createdPacket;
+    //qDebug() << "lttoComms::createIRstring()" << createdPacket;
     return createdPacket;
 }
 
 ////////////////////////////////////////////////////////////////////
 
-void SerialComms::receivePacket()
+void LttoComms::receivePacket(QByteArray RxData)
 {
     emit TimerBlock(true);
-    bool processed = false;
+    bool isPacketComplete = false;
+
+    qDebug() << "LttoComms::receivePacket() triggered";
 
     if (useLazerSwarm)
     {
-        irDataIn.append(serialUSB->readAll() );
+        irDataIn.append(RxData);
 
-        if (irDataIn.endsWith("\n") == false)
-        {
-            irDataIn.append(serialUSB->readAll() );
-        }
-        else
+        if(irDataIn.endsWith("\n"))
         {
             rxPacketList.append(lazerswarm.decodeCommand(irDataIn));
-            qDebug() << "SerialComms::receivePacket() LazerSwarm mode - " << lazerswarm.decodeCommand(irDataIn);
-            processed = true;
+            qDebug() << "LttoComms::receivePacket() LazerSwarm mode - " << lazerswarm.decodeCommand(irDataIn);
+            isPacketComplete = true;
         }
     }
     else
     {
-        irDataIn.append(serialUSB->readAll() );
-        if (irDataIn.endsWith(":") == false)
+        irDataIn.append(RxData);
+        if (irDataIn.endsWith(":"))
         {
-            irDataIn.append(serialUSB->readAll() );
+            rxPacketList.append(irDataIn);
+            qDebug() << "LttoComms::receivePacket() LTTO library mode - " << irDataIn;
+            isPacketComplete = true;
         }
-        rxPacketList.append(irDataIn);
-        qDebug() << "SerialComms::receivePacket() LTTO library mode - " << irDataIn;
-        processed = true;
     }
 
-
-
-    if (processed)
+    if (isPacketComplete)
     {
         irDataIn.clear();
         if (!rxPacketList.empty())
@@ -217,17 +160,18 @@ void SerialComms::receivePacket()
     }
 }
 
-bool SerialComms::getUseLazerSwarm() const
+bool LttoComms::getUseLazerSwarm() const
 {
     return useLazerSwarm;
 }
 
-void SerialComms::setUseLazerSwarm(bool value)
+void LttoComms::setUseLazerSwarm(bool value)
 {
+    qDebug() <<"LttoComms::setUseLazerSwarm = " << value;
     useLazerSwarm = value;
 }
 
-bool SerialComms::isCheckSumCorrect(int _command, int _game, int _tagger, int _flags, int _checksum)
+bool LttoComms::isCheckSumCorrect(int _command, int _game, int _tagger, int _flags, int _checksum)
 {
     bool result = false;
     calculatedCheckSumRx =  _command;
@@ -240,7 +184,7 @@ bool SerialComms::isCheckSumCorrect(int _command, int _game, int _tagger, int _f
 }
 
 
-void SerialComms::processPacket(QList<QByteArray> data)
+void LttoComms::processPacket(QList<QByteArray> data)
 {
 
     int command = extract(data);
@@ -249,7 +193,7 @@ void SerialComms::processPacket(QList<QByteArray> data)
     int flags   = 0;
     int checksum= 0;
 
-    qDebug() << "\nSerialComms::processPacket()" << command;
+    qDebug() << "\nLttoComms::processPacket()" << command;
 
     switch (command)
     {
@@ -281,30 +225,31 @@ void SerialComms::processPacket(QList<QByteArray> data)
 }
 
 
-int SerialComms::extract(QList<QByteArray> &data)
+int LttoComms::extract(QList<QByteArray> &data)
 {
+    QString command;
     if (data.empty() == false)
     {
-        QString command = data.takeFirst();
+        command = data.takeFirst();
         command = command.mid(1 , (command.length()-1) );
-        bool ok = false;
-        return command.toInt(&ok, 10);
     }
+    bool ok = false;
+    return command.toInt(&ok, 10);
 }
 
-int SerialComms::ConvertDecToBCD(int dec)
+int LttoComms::ConvertDecToBCD(int dec)
 {
   if (dec == 100) return 0xFF;
   return (int) (((dec/10) << 4) | (dec %10) );
 }
 
-int SerialComms::ConvertBCDtoDec(int bcd)
+int LttoComms::ConvertBCDtoDec(int bcd)
 {
   if (bcd == 0xFF) return bcd;
   return (int) (((bcd >> 4) & 0xF) *10) + (bcd & 0xF);
 }
 
-void SerialComms::blockingDelay(int mSec)
+void LttoComms::blockingDelay(int mSec)
 {
     QEventLoop loop;
     QTimer::singleShot(mSec, &loop, SLOT(quit()));

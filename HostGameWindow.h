@@ -3,9 +3,6 @@
 
 #include <QDialog>
 #include <QTimer>
-#include <QSerialPort>
-#include "TCPComms.h"
-
 
 namespace Ui {
 class HostGameWindow;
@@ -19,8 +16,9 @@ public:
     explicit HostGameWindow(QWidget *parent = 0);
     ~HostGameWindow();
 
-    void hideEvent(QHideEvent *hideEvent);
-    void setSerialPort(QSerialPort portName);
+    void hideEvent(QHideEvent *hideEvent);  //Used to disable SerialPort when the window is hidden instead of closed
+    //void setSerialPort(QSerialPort portName);
+
     bool getIsThisPlayerHosted(int playerNumber) const;
     void setIsThisPlayerHosted(int playerNumber, bool value);
 
@@ -28,8 +26,6 @@ public:
     void setCurrentPlayer(int value);
 
     void resetPlayersForNewGame();
-
-//    int getDisplay8digitBinary() const;
 
 public slots:
 
@@ -63,10 +59,8 @@ private slots:
 
 private:
     Ui::HostGameWindow  *ui;
-    TCPComms            *tcpComms;
-
-    QTimer  *timerAnnounce;
-    QTimer  *timerCountDown;
+    QTimer              *timerAnnounce;
+    QTimer              *timerCountDown;
 
     bool    bluetoothActive;
     bool    serialUSBactive;
@@ -78,11 +72,13 @@ private:
     int     countDownTimeRemaining;
 
     void    hostCurrentPlayer();
-    int     calculatePlayerTeam5bits();
+    int     calculatePlayerTeam5bits(int requestedTeam);
     int     ConvertDecToBCD(int dec);
     int     ConvertBCDtoDec(int bcd);
     void    blockingDelay(int mSec);
     void    assignSpies();
+    void    OpenPorts();
+    void    ClosePorts();
 };
 
 #endif // HOSTGAMEWINDOW_H

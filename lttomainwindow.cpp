@@ -1,5 +1,5 @@
 #include "LttoMainWindow.h"
-#include "ui_lttomainwindow.h"
+#include "ui_LttoMainWindow.h"
 #include <QMessageBox>
 #include <QDebug>
 #include <QFileDialog>
@@ -7,21 +7,33 @@
 #include <QTime>
 #include "Game.h"
 #include "Players.h"
+#include "Defines.h"
+#include "LttoComms.h"
 
 
 LttoMainWindow::LttoMainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::LttoMainWindow),
     playersWindow(NULL),
-    hostGameWindow(NULL)
+    hostGameWindow(NULL),
+    flagsWindow(NULL)
+
 {
     ui->setupUi(this);
     gameInfo.setGameType(gameInfo.Ltag0);
     ui->btn_NoTeams->setChecked(true);
     gameInfo.setNumberOfTeams(0);
+    ui->btn_Spies->setEnabled(false);
+
+
 
     //TODO: Get rid of this, it is just debug until I store/recall this setting
     ui->actionuse_LazerSwarm->setChecked(true);
+    serialUSBactive = true;
+    tcpCommsActive = true;
+
+
+
 
     qsrand(static_cast<uint>(QTime::currentTime().msec()));
 
@@ -57,6 +69,12 @@ void LttoMainWindow::setTeamTags(bool value)
     }
 }
 
+void LttoMainWindow::SetSpiesButtonState(int NumTeams)
+{
+    if (NumTeams == 0) ui->btn_Spies->setEnabled(false);
+    else               ui->btn_Spies->setEnabled(true);
+}
+
 bool LttoMainWindow::getMedicMode() const
 {
     return playerInfo[0].getMedicMode();
@@ -87,7 +105,10 @@ void LttoMainWindow::setSlowTags(bool value)
 
 void LttoMainWindow::on_btn_StartGame_clicked()
 {
-    hostGameWindow = new HostGameWindow(this);
+    if (hostGameWindow == NULL)
+    {
+        hostGameWindow = new HostGameWindow(this);
+    }
     hostGameWindow->resetPlayersForNewGame();
     hostGameWindow->show();
 }
@@ -205,6 +226,7 @@ void LttoMainWindow::on_btn_NoTeams_clicked()
 {
     gameInfo.setNumberOfTeams(0);
     qDebug() << "Current Game is: " << gameInfo.getGameType();
+    ui->btn_Spies->setEnabled(false);
     if (gameInfo.getGameType() >= gameInfo.Ltag0      && gameInfo.getGameType() <= gameInfo.Ltag3)      gameInfo.setGameType(gameInfo.Ltag0);
     if (gameInfo.getGameType() >= gameInfo.OwnZone0   && gameInfo.getGameType() <= gameInfo.OwnZone3)   gameInfo.setGameType(gameInfo.OwnZone0);
     qDebug() << "New Game is:" << gameInfo.getGameType();
@@ -213,6 +235,7 @@ void LttoMainWindow::on_btn_NoTeams_clicked()
 void LttoMainWindow::on_btn_TwoTeams_clicked()
 {
     gameInfo.setNumberOfTeams(2);
+    ui->btn_Spies->setEnabled(true);
     qDebug() << "Current Game is: " << gameInfo.getGameType();
     switch(gameInfo.getGameType() )
     {
@@ -241,6 +264,7 @@ void LttoMainWindow::on_btn_TwoTeams_clicked()
 void LttoMainWindow::on_btn_ThreeTeams_clicked()
 {
     gameInfo.setNumberOfTeams(3);
+    ui->btn_Spies->setEnabled(true);
     qDebug() << "Current Game is: " << gameInfo.getGameType();
     switch(gameInfo.getGameType() )
     {
@@ -287,8 +311,6 @@ void LttoMainWindow::on_slider_Reloads_valueChanged(int value)
 
     for (int x=0; x<25;x++)
     {
-        if (value == 100) playerInfo[x].setBitFlags1(LIMITED_RELOADS_FLAG, false);
-        else              playerInfo[x].setBitFlags1(LIMITED_RELOADS_FLAG, true);
         playerInfo[x].setReloads(value);
     }
 }
@@ -304,7 +326,9 @@ void LttoMainWindow::on_slider_Shields_valueChanged(int value)
 
 void LttoMainWindow::on_slider_MegaTags_valueChanged(int value)
 {
-    ui->label_MegaTags->setText("MegaTags : " + QString::number(value) );
+    if  (value == 100) ui->label_MegaTags->setText("MegaTags : Unlimited");
+    else               ui->label_MegaTags->setText("MegaTags : " + QString::number(value) );
+
     for (int x=0; x<25;x++)
     {
          playerInfo[x].setMegaTags(value);
@@ -500,8 +524,8 @@ void LttoMainWindow::on_actionSet_CountDown_Time_triggered()
 
 void LttoMainWindow::on_actionuse_LazerSwarm_triggered()
 {
-    if(ui->actionuse_LazerSwarm->isChecked() ) serialComms.setUseLazerSwarm(true);
-    else                                       serialComms.setUseLazerSwarm(false);
+    if(ui->actionuse_LazerSwarm->isChecked() ) lttoComms.setUseLazerSwarm(true);
+    else                                       lttoComms.setUseLazerSwarm(false);
 }
 
 
@@ -513,4 +537,21 @@ void LttoMainWindow::on_actionSave_triggered()
 void LttoMainWindow::on_actionLoad_triggered()
 {
     loadFile();
+}
+
+void LttoMainWindow::on_actionUSB_Serial_triggered()
+{
+    if(ui->actionUSB_Serial->isChecked()) serialUSBactive = true;
+    else                                  serialUSBactive = false;
+}
+
+void LttoMainWindow::on_actionWi_Fi_triggered()
+{
+
+}
+
+void LttoMainWindow::on_btn_Flags_clicked()
+{
+    if(flagsWindow==NULL) flagsWindow = new FlagsWindow;
+    flagsWindow->show();
 }

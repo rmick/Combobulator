@@ -1,23 +1,22 @@
 #ifndef TCPCOMMS_H
 #define TCPCOMMS_H
 
-#include <QDialog>
+#include <QObject>
 #include <QDebug>
 #include <QTcpSocket>
 #include <QAbstractSocket>
+#include "Defines.h"
 
 namespace Ui {
 class TCPComms;
 }
 
-class TCPComms : public QDialog
+class TCPComms : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit TCPComms(QWidget *parent = 0);
-    ~TCPComms();
-    //void Test();
+    explicit TCPComms(QObject *parent = 0);
 
 public slots:
     void connected();
@@ -26,12 +25,18 @@ public slots:
     void readyRead();
     void sendData(QByteArray data);
 
+signals:
+    void newTCPdata(QByteArray dataReceived);
+
 private slots:
-    void on_btn_Connect_clicked();
 
 private:
-    Ui::TCPComms    *ui;
+    //Ui::TCPComms    *ui;
     QTcpSocket      *socket;
+
+    bool            isConnected;
 };
+
+extern TCPComms tcpComms;
 
 #endif // TCPCOMMS_H

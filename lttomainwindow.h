@@ -2,9 +2,11 @@
 #define LTTOMAINWINDOW_H
 
 #include <QMainWindow>
+#include "Defines.h"
 #include "PlayersWindow.h"
 #include "HostGameWindow.h"
-#include "SerialComms.h"
+#include "FlagsWindow.h"
+#include "LttoComms.h"
 
 namespace Ui {
 class LttoMainWindow;
@@ -18,24 +20,6 @@ public:
     explicit LttoMainWindow(QWidget *parent = 0);
     ~LttoMainWindow();
 
-private:
-
-
-public:
-//    struct PlayerStructure
-//    {
-//        int     PlayerID;
-//        QString PlayerName;
-//        int     HealthNumberofTags;
-//        int     ShieldsTime;
-//        int     MegaCount;
-//        bool    SlowTagsEnabled;
-//        bool    MediModeEnabled;
-//        bool    TeamTagsEnabled;
-//        int     TeamAssignment;
-//        int     Handicap;
-//    };
-
     bool getSlowTags() const;
     void setSlowTags(bool value);
 
@@ -47,6 +31,9 @@ public:
 
     int getNumberOfTeams() const;
     void setNumberOfTeams(int value);
+
+public slots:
+    void SetSpiesButtonState(int NumTeams);
 
 private slots:
 
@@ -98,15 +85,23 @@ private slots:
 
     void on_actionLoad_triggered();
 
+    void on_actionUSB_Serial_triggered();
+
+    void on_actionWi_Fi_triggered();
+
+    void on_btn_Flags_clicked();
+
 private:
     Ui::LttoMainWindow  *ui;
     PlayersWindow       *playersWindow;
     HostGameWindow      *hostGameWindow;
-    //PortConnect         *portConnect;
+    FlagsWindow         *flagsWindow;
 
     bool    SlowTags;
     bool    MedicMode;
     bool    TeamTags;
+    bool    serialUSBactive;
+    bool    tcpCommsActive;
 
     void    UpdateGlobalPlayerControlSettings();
     void    UpdateGameControlSettings();

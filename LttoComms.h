@@ -1,27 +1,21 @@
-#ifndef SERIALCOMMS_H
-#define SERIALCOMMS_H
+#ifndef LTTOCOMMS_H
+#define LTTOCOMMS_H
 
 #include <QObject>
-#include <QtSerialPort/QSerialPortInfo>
 #include <QTimer>
-#include "LazerSwarm.h"
 #include "Defines.h"
+#include "LazerSwarm.h"
 
-class SerialComms : public QObject
+#include "SerialUSBcomms.h"
+
+class LttoComms : public QObject
 {
     Q_OBJECT
 
-    struct RxPacket;
-
 public:
-    explicit    SerialComms(QObject *parent = 0);
+    explicit    LttoComms(QObject *parent = 0);
 
     bool        sendPacket(char type, int data = 0, bool dataFormat = false);
-    void        testSerialPort();
-    void        setUpSerialPort();
-    void        closeSerialPort();
-    int         getRxPacket();
-
     bool        getUseLazerSwarm() const;
     void        setUseLazerSwarm(bool value);
 
@@ -33,10 +27,10 @@ signals:
     void        sendSerialData(QByteArray dataToSend);
 
 private slots:
-    void        receivePacket();
+    void        receivePacket(QByteArray RxData);
 
 private:
-    QSerialPort     *serialUSB;
+    //QSerialPort     *serialUSB;
     //QTimer          *delayTimer;
 
     int             calculatedCheckSumTx;
@@ -52,18 +46,16 @@ private:
     bool            isCheckSumCorrect(int _command, int _game, int _tagger, int _flags, int _checksum);
     int             ConvertDecToBCD(int dec);
     int             ConvertBCDtoDec(int bcd);
-    //int             ConvertHexToDec(int hex);
-    //int             ConvertDecToHex(int dec);
     QString         createIRstring(int data);
     void            blockingDelay(int mSec);
 
-    struct          RxPacket
-    {
-        char command;
-        int  data;
-    } rxPacket;
+//    struct          RxPacket
+//    {
+//        char command;
+//        int  data;
+//    } rxPacket;
 };
 
-extern SerialComms serialComms;
+extern LttoComms lttoComms;
 
-#endif // SERIALCOMMS_H
+#endif // LTTOCOMMS_H
