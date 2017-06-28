@@ -22,7 +22,6 @@ public:
 signals:
     void        RequestJoinGame(int Game, int Tagger, int Flags);
     void        AckPlayerAssignment(int Game, int Tagger);
-    void        SerialPortFound(QString portDetails);
     void        TimerBlock(bool StartStop);
     void        sendSerialData(QByteArray dataToSend);
 
@@ -30,8 +29,6 @@ private slots:
     void        receivePacket(QByteArray RxData);
 
 private:
-    //QSerialPort     *serialUSB;
-    //QTimer          *delayTimer;
 
     int             calculatedCheckSumTx;
     int             calculatedCheckSumRx;
@@ -48,12 +45,6 @@ private:
     int             ConvertBCDtoDec(int bcd);
     QString         createIRstring(int data);
     void            blockingDelay(int mSec);
-
-//    struct          RxPacket
-//    {
-//        char command;
-//        int  data;
-//    } rxPacket;
 };
 
 extern LttoComms lttoComms;

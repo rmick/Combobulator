@@ -6,9 +6,6 @@ LttoComms lttoComms;
 
 LttoComms::LttoComms(QObject *parent) : QObject(parent)
 {
-    //connect(&serialUSBcomms, SIGNAL(newSerialUSBdata(QByteArray)), this, SLOT(receivePacket(QByteArray)) );
-    //connect(&tcpComms,       SIGNAL(newTCPdata(QByteArray)),       this, SLOT(receivePacket(QByteArray)) );
-
     useLazerSwarm = true;          //TODO: Set this up in Preferences.
 }
 
@@ -91,14 +88,8 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
     }
     else packet.append(":");
 
-//    if (serialUSB->isOpen() && serialUSB->isWritable())
-//    {
-//        serialUSB->write(packet);
-//        serialUSB->flush();
-//        result = true;
-//    }
-    qDebug() << "lttoComms::sendPacket  USBpacketSent->" << packet;
-    emit sendSerialData(packet);            //Connects to TCPComms::sendData slot && USBComms::sendData slot
+    //qDebug() << "lttoComms::sendPacket  USBpacketSent->" << packet;
+    emit sendSerialData(packet);            //Connects to TCPComms::sendPacket slot && SerialUSBcomms::sendPacket slot
     //QThread::msleep(INTERPACKET_DELAY_MSEC);
     blockingDelay(INTERPACKET_DELAY_MSEC);
 
@@ -111,7 +102,6 @@ QString LttoComms::createIRstring(int data)
     if (useLazerSwarm) createdPacket = QString::number(data,16).toUpper();
     else               createdPacket = QString::number(data,10);
     if (createdPacket.length() == 1) createdPacket.prepend('0');
-    //qDebug() << "lttoComms::createIRstring()" << createdPacket;
     return createdPacket;
 }
 
@@ -119,7 +109,7 @@ QString LttoComms::createIRstring(int data)
 
 void LttoComms::receivePacket(QByteArray RxData)
 {
-    emit TimerBlock(true);
+    //emit TimerBlock(true);
     bool isPacketComplete = false;
 
     qDebug() << "LttoComms::receivePacket() triggered";
@@ -155,7 +145,7 @@ void LttoComms::receivePacket(QByteArray RxData)
             {
                 processPacket(rxPacketList);
             }
-            emit TimerBlock(false);
+            //emit TimerBlock(false);
         }
     }
 }

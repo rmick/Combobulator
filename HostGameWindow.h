@@ -53,8 +53,6 @@ private slots:
 
     void on_btn_SkipPlayer_clicked();
 
-    void on_btn_ShowTCP_clicked();
-
     void on_btn_TestMessage_clicked();
 
 private:

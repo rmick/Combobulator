@@ -21,7 +21,7 @@ const char  TAG         = 'T';
 const char  BEACON      = 'B';
 
 //Internal timers
-const int   INTERPACKET_DELAY_MSEC  = 50;
+const int   INTERPACKET_DELAY_MSEC  = 75;
 const int   HOST_TIMER_MSEC         = 1800;
 
 

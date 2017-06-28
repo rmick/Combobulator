@@ -2,14 +2,9 @@
 #define TCPCOMMS_H
 
 #include <QObject>
-#include <QDebug>
 #include <QTcpSocket>
 #include <QAbstractSocket>
 #include "Defines.h"
-
-namespace Ui {
-class TCPComms;
-}
 
 class TCPComms : public QObject
 {
@@ -22,18 +17,14 @@ public slots:
     void connected();
     void disconnected();
     void bytesWritten (qint64 bytes);
-    void readyRead();
-    void sendData(QByteArray data);
+    void receivePacket();
+    void sendPacket(QByteArray data);
 
 signals:
     void newTCPdata(QByteArray dataReceived);
 
-private slots:
-
 private:
-    //Ui::TCPComms    *ui;
-    QTcpSocket      *socket;
-
+    QTcpSocket      *tcpSocket;
     bool            isConnected;
 };
 

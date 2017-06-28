@@ -1,56 +1,60 @@
 #include "TCPComms.h"
 #include "LttoComms.h"
 
-TCPComms tcpComms;
+//TCPComms tcpComms;
 
 TCPComms::TCPComms(QObject *parent) :
     QObject(parent)
 {
-    socket = new QTcpSocket(this);
+    tcpSocket = new QTcpSocket(this);
     isConnected = false;
 
-    connect(socket,     SIGNAL(connected()),                this, SLOT(connected()));
-    connect(socket,     SIGNAL(disconnected()),             this, SLOT(disconnected()));
-    connect(socket,     SIGNAL(readyRead()),                this, SLOT(readyRead()));
-    connect(socket,     SIGNAL(bytesWritten(qint64)),       this, SLOT(bytesWritten(qint64)));
-  //connect(&lttoComms, SIGNAL(sendSerialData(QByteArray)), this, SLOT(sendData(QByteArray)));
-  //  connect(this,       SIGNAL(newTCPdata(QByteArray)),     &lttoComms, SLOT(receivePacket(QByteArray)) );
+    connect(tcpSocket,     SIGNAL(connected()),             this,       SLOT(connected()) );
+    connect(tcpSocket,     SIGNAL(disconnected()),          this,       SLOT(disconnected()) );
+    connect(tcpSocket,     SIGNAL(readyRead()),             this,       SLOT(receivePacket()) );
+    connect(tcpSocket,     SIGNAL(bytesWritten(qint64)),    this,       SLOT(bytesWritten(qint64)) );
 
-    socket->connectToHost("192.168.2.1",8000);
-    qDebug() << "TCP Connecting to LTTO_host";
+    connect(&lttoComms, SIGNAL(sendSerialData(QByteArray)), this,       SLOT(sendPacket(QByteArray)) );
+    connect(this,       SIGNAL(newTCPdata(QByteArray)),     &lttoComms, SLOT(receivePacket(QByteArray)) );
+
+
+
+    //TODO: Move this to a function that is called when the HostGameWindow is opened.
+    tcpSocket->connectToHost("192.168.2.1",8000);
+    //qDebug() << "TCPComms::TCPComms() - TCP Connecting to LTTO_host";
 }
 
 void TCPComms::connected()
 {
-    qDebug() << "TCP Connected :-)";
+    qDebug() << "\n\tTCPComms::connected !!!!        :-)\n";
     isConnected = true;
 }
 
 void TCPComms::disconnected()
 {
-    qDebug() << "TCP Disconnected :-(";
+    qDebug() << "TCPComms::disconnected :-(";
     isConnected = false;
 }
 
 void TCPComms::bytesWritten (qint64 bytes)
 {
-    qDebug() << "TCP Bytes Written = " << bytes;
+   if(bytes == 0) qDebug() << "Impossible";
+    // qDebug() << "TCPComms::bytesWritten() = " << bytes;
 }
 
-void TCPComms::readyRead()
+void TCPComms::receivePacket()
 {
     QByteArray rX;
-    rX = socket->readAll();
-    qDebug() << rX;
+    rX = tcpSocket->readAll();
     emit newTCPdata(rX);
-    qDebug() << "Reading TCP: " + rX;
+    qDebug() << "TCPComms::receivePacket() - " + rX;
 }
 
-void TCPComms::sendData(QByteArray data)
+void TCPComms::sendPacket(QByteArray data)
 {
-    if (socket->isOpen() )
+    if (isConnected)
     {
-        socket->write(data);
-        qDebug() << "Data Sent: " + data;
+        tcpSocket->write(data);
+        qDebug() << "TCPComms::sendPacket() - " + data;
     }
 }

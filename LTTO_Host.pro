@@ -45,8 +45,6 @@ FORMS    += \
             PlayersWindow.ui \
 	    HostGameWindow.ui \
 	    PortConnect.ui \
-	    TCPComms.ui \
 	    LttoMainWindow.ui \
 	    SyncTaggers.ui \
-	    SerialUSBcomms.ui \
 	    FlagsWindow.ui

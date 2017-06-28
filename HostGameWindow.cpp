@@ -15,12 +15,12 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
     timerAnnounce   = new QTimer(this);
     timerCountDown  = new QTimer(this);
 
-    connect(timerAnnounce,  SIGNAL(timeout() ),                  this, SLOT(announceGame()) );
-    connect(timerCountDown, SIGNAL(timeout() ),                  this, SLOT(sendCountDown()) );
-    connect(&lttoComms,   SIGNAL(RequestJoinGame(int,int,int) ),  this, SLOT(AssignPlayer(int,int,int)) );
-    connect(&lttoComms,   SIGNAL(AckPlayerAssignment(int,int) ),  this, SLOT(AddPlayerToGame(int,int)) );
-    connect(&lttoComms,   SIGNAL(SerialPortFound(QString) ),      this, SLOT(AddSerialPortToListWidget(QString)) );
-    connect(&lttoComms,   SIGNAL(TimerBlock(bool)),               this, SLOT(SetAnnounceTimerBlock(bool)) );
+    connect(timerAnnounce,  SIGNAL(timeout() ),                     this, SLOT(announceGame()) );
+    connect(timerCountDown, SIGNAL(timeout() ),                     this, SLOT(sendCountDown()) );
+    connect(&lttoComms,     SIGNAL(RequestJoinGame(int,int,int) ),  this, SLOT(AssignPlayer(int,int,int)) );
+    connect(&lttoComms,     SIGNAL(AckPlayerAssignment(int,int) ),  this, SLOT(AddPlayerToGame(int,int)) );
+    connect(&serialUSBcomms, SIGNAL(SerialPortFound(QString)),      this, SLOT(AddSerialPortToListWidget(QString)) );
+    //connect(&lttoComms,     SIGNAL(TimerBlock(bool)),               this, SLOT(SetAnnounceTimerBlock(bool)) );
 
     timerAnnounce->start(HOST_TIMER_MSEC);
 
@@ -35,7 +35,7 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
     ui->btn_Cancel->setText("Cancel");
     ui->btn_Rehost->setEnabled(false);
 
-    serialUSBcomms.findSerialPort();
+    //serialUSBcomms.findSerialPort();
     serialUSBcomms.setUpSerialPort();
 
     // Kick start the process, otherwise there is a 2.0s delay until the timer first triggers.
@@ -103,7 +103,7 @@ void HostGameWindow::hostCurrentPlayer()
 {
     InsertToListWidget("Announce Game : Player " + QString::number(currentPlayer));
     qDebug() << "";
-    qDebug() << "HostGameWindow::hostCurrentPlayer() - GameID:" + QString::number(gameInfo.getGameID());
+    qDebug() << "\tHostGameWindow::hostCurrentPlayer() - GameID:" + QString::number(gameInfo.getGameID());
 
     if(playerInfo[currentPlayer].getSpyNumber() != 0)
     {
@@ -127,7 +127,6 @@ void HostGameWindow::hostCurrentPlayer()
         lttoComms.sendPacket(DATA, 54);  // T
     }
     lttoComms.sendPacket(CHECKSUM);
-    //InsertToListWidget("");
     return;
 }
 
@@ -290,11 +289,6 @@ int HostGameWindow::ConvertBCDtoDec(int bcd)
 void HostGameWindow::on_btn_SkipPlayer_clicked()
 {
     currentPlayer++;
-}
-
-void HostGameWindow::on_btn_ShowTCP_clicked()
-{
-    //tcpComms->show();
 }
 
 void HostGameWindow::InsertToListWidget(QString lineText)

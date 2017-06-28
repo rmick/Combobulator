@@ -1,38 +1,33 @@
 #include "SerialUSBcomms.h"
-#include "ui_SerialUSBcomms.h"
-#include <QtSerialPort>
 #include "LttoComms.h"
+//#include "LttoMainWindow.h"
 
 SerialUSBcomms serialUSBcomms;
 
 SerialUSBcomms::SerialUSBcomms(QObject *parent) :
     QObject(parent)
-    //ui(new Ui::SerialUSBcomms)
 {
-    //ui->setupUi(this);
     serialUSB = new QSerialPort(this);
+    connect(serialUSB,  SIGNAL(readyRead()),                    this,       SLOT(receivePacket()) );
 
-    connect(serialUSB,  SIGNAL(readyRead()),                    this, SLOT(receivePacket()) );
-    connect(&lttoComms, SIGNAL(sendSerialData(QByteArray)),     this, SLOT(sendPacket(QByteArray)));
+    connect(&lttoComms, SIGNAL(sendSerialData(QByteArray)),     this,       SLOT(sendPacket(QByteArray)) );
     connect(this,       SIGNAL(newSerialUSBdata(QByteArray)),   &lttoComms, SLOT(receivePacket(QByteArray)) );
-}
 
-//SerialUSBcomms::~SerialUSBcomms()
-//{
-//    delete ui;
-//}
+    //connect(this,       SIGNAL(AddToHostWindowListWidget(QString)), &hostGameWindow, SLOT(InsertToListWidget(QString)) );
+}
 
 void SerialUSBcomms::findSerialPort()
 {
     foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts())
     {
-        if (info.manufacturer().contains("Spark") || info.manufacturer().contains("Arduino") || info.portName().contains("tty") )
+        if (info.manufacturer().contains("Spark") || info.manufacturer().contains("Arduino") ) // || info.portName().contains("tty") )
         {
             serialUSB->setPortName(info.portName() );
             emit SerialPortFound(info.portName() );
+            qDebug() << "SerialUSBcomms::findSerialPort() - Using serial port " << info.portName();
         }
-
-        qDebug() << "\n-----------\nPortToUse=" << info.portName() << info.manufacturer() << info.description();
+        QString Rhubarb = "SerialUSBcomms::findSerialPort() - Using serial port " + info.portName();
+        emit AddToHostWindowListWidget(Rhubarb);
     }
 }
 
@@ -52,34 +47,33 @@ void SerialUSBcomms::setUpSerialPort()
 
     if (serialUSB->isOpen() && serialUSB->isWritable())
     {
-        qDebug() << "SerialPort is Ready..." << endl;
+        qDebug() << "SerialUSBcomms::setUpSerialPort()" << serialUSB->portName() << " is Ready..." << endl;
     }
     else
-        qDebug() << "SerialPort failed to open..." << endl;
+        qDebug() << "SerialUSBcomms::setUpSerialPort()" << serialUSB->portName() << " failed to open..." << endl;
 }
 
 void SerialUSBcomms::closeSerialPort()
 {
     serialUSB->close();
-    qDebug() << "SerialPort has left the building";
+    qDebug() << "erialUSBcomms::closeSerialPort() has left the building";
 }
 
 void SerialUSBcomms::receivePacket()
 {
     QByteArray rX;
     rX = serialUSB->readAll();
-    qDebug() << "SerialUSBcomms::receivePacket " << rX;
+    qDebug() << "SerialUSBcomms::receivePacket() " << rX;
     emit newSerialUSBdata(rX);
 }
 
 void SerialUSBcomms::sendPacket(QByteArray packet)
 {
-    bool result = false;
     if (serialUSB->isOpen() && serialUSB->isWritable())
     {
         serialUSB->write(packet);
         serialUSB->flush();
-        result = true;
+        qDebug() << "SerialUSBcomms::sendPacket() - " << packet;
     }
-    else qDebug() << "SerialUSBcomms::sendPacket() - FAILED !!!";
+    //else qDebug() << "SerialUSBcomms::sendPacket() - FAILED !!!";
 }
