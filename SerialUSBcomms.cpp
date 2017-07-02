@@ -20,7 +20,7 @@ void SerialUSBcomms::findSerialPort()
 {
     foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts())
     {
-        if (info.manufacturer().contains("Spark") || info.manufacturer().contains("Arduino") ) // || info.portName().contains("tty") )
+        if (info.manufacturer().contains("Spark") || info.manufacturer().contains("Arduino") || info.portName().contains("tty") )
         {
             serialUSB->setPortName(info.portName() );
             emit SerialPortFound(info.portName() );
@@ -33,6 +33,9 @@ void SerialUSBcomms::findSerialPort()
 
 void SerialUSBcomms::setUpSerialPort()
 {
+
+   return;
+
 
     findSerialPort();
         #ifdef Q_OS_ANDROID

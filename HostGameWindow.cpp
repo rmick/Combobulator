@@ -99,6 +99,8 @@ void HostGameWindow::announceGame()
     hostCurrentPlayer();
 }
 
+int playerDebugNum = 0;
+
 void HostGameWindow::hostCurrentPlayer()
 {
     InsertToListWidget("Announce Game : Player " + QString::number(currentPlayer));
@@ -127,6 +129,23 @@ void HostGameWindow::hostCurrentPlayer()
         lttoComms.sendPacket(DATA, 54);  // T
     }
     lttoComms.sendPacket(CHECKSUM);
+
+    if(playerDebugNum != currentPlayer)
+    {
+        playerDebugNum = currentPlayer;
+        QString playerDebugData;
+        playerDebugData = "Debug...Player #" + QString::number(currentPlayer)
+                            + ", Tags=" + QString::number(playerInfo[currentPlayer].getHealthTags())
+                            + ", Reloads=" + QString::number(playerInfo[currentPlayer].getReloads())
+                            + ", Shields=" + QString::number(playerInfo[currentPlayer].getShieldTime())
+                            + ", Megas=" + QString::number(playerInfo[currentPlayer].getMegaTags())
+                            + ", MedicMode:" + QString::number(playerInfo[currentPlayer].getMedicMode())
+                            + ", SlowTags:" + QString::number(playerInfo[currentPlayer].getSlowTags())
+                            + ", TeamTags:" + QString::number(playerInfo[currentPlayer].getTeamTags())
+                            + ", Spy#:" + QString::number(playerInfo[currentPlayer].getSpyNumber());
+        InsertToListWidget(playerDebugData);
+    }
+
     return;
 }
 
