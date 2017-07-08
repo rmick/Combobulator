@@ -48,11 +48,11 @@ private slots:
 
     void playerButtonPressed(int value);
 
-    void on_btn_DeBug_clicked();
-
 private:
     Ui::PlayersWindow   *ui;
     QSignalMapper       *signalMapper;
+    QPalette            *paletteRed;
+    QPalette            *paletteGreen;
 
     int SelectedPlayer;
     void SetUpPlayerButtonMapping();
@@ -63,8 +63,8 @@ private:
     void setPlayerControls(bool state);
     void SetPlayerButtons(bool state);
     void renamePlayer(int player);
-    void AdjustSettingsForHandicap(int value);
-    void HandicapAdjust(const QString type, int &value);
+    void AdjustSettingsForHandicap(int currentPlayer);
+    //void HandicapAdjust(const QString type, int &value);
 
     bool eventFilter(QObject *obj, QEvent *event);
     void mousePressEvent(QMouseEvent *me);

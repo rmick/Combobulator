@@ -72,7 +72,7 @@ QByteArray LazerSwarm::decodeCommand(QString messageIn)
         if(!messageParts.empty()) numberOfBitsIn = messageParts.takeFirst().toInt(&ok, 16); else numberOfBitsIn = -1;
         if(!messageParts.empty()) isBeaconIn     = messageParts.takeFirst().toInt(&ok, 16); else isBeaconIn     = -1;
 
-        //qDebug() << "LazerSwarm::decodeCommand(QString messageIn)" << messageIn << ":" << packetDataIn << ":" << numberOfBitsIn << ":" << isBeaconIn;
+        qDebug() << "LazerSwarm::decodeCommand()" << messageIn << "--" << packetDataIn << ":" << numberOfBitsIn << ":" << isBeaconIn;
 
         //assemble message
         if      (numberOfBitsIn == 9 && packetDataIn < 256)     packetTypeIn = PACKET;
@@ -84,7 +84,7 @@ QByteArray LazerSwarm::decodeCommand(QString messageIn)
 
         decodedMessage.append(packetTypeIn);
         decodedMessage.append(QString::number(packetDataIn, 10).toUpper() );
-        //qDebug() << decodedMessage;
+        qDebug() << "LazerSwarm::decodeCommand() - Decoded Message = " << decodedMessage;
     }
     else decodedMessage = "xxx";
 

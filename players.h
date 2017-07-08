@@ -58,6 +58,7 @@ public:
 
     QString displayBinary(int number, int digits);
 
+    int handicapAdjust(int value);
 
 private:
     int     Handicap;

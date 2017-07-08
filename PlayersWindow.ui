@@ -60,6 +60,9 @@
        <property name="autoExclusive">
         <bool>false</bool>
        </property>
+       <property name="autoDefault">
+        <bool>false</bool>
+       </property>
        <property name="default">
         <bool>false</bool>
        </property>
@@ -198,6 +201,9 @@
         <bool>true</bool>
        </property>
        <property name="autoExclusive">
+        <bool>false</bool>
+       </property>
+       <property name="autoDefault">
         <bool>false</bool>
        </property>
        <property name="default">
@@ -799,8 +805,11 @@
        <property name="text">
         <string>Close</string>
        </property>
+       <property name="autoDefault">
+        <bool>false</bool>
+       </property>
        <property name="default">
-        <bool>true</bool>
+        <bool>false</bool>
        </property>
       </widget>
      </item>

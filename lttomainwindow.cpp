@@ -24,6 +24,7 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
     ui->btn_NoTeams->setChecked(true);
     gameInfo.setNumberOfTeams(0);
     ui->btn_Spies->setEnabled(false);
+    ui->btn_StartGame->setEnabled(false);
 
 
 
@@ -40,12 +41,12 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
     //TODO: Remove these, they are for testing only.
     QWidget::move(0,0);
 
-    gameInfo.setIsThisPlayerInTheGame(1, true);
-    gameInfo.setIsThisPlayerInTheGame(8, true);
-    gameInfo.setIsThisPlayerInTheGame(9, true);
-    gameInfo.setIsThisPlayerInTheGame(16, true);
-    gameInfo.setIsThisPlayerInTheGame(17, true);
-    gameInfo.setIsThisPlayerInTheGame(24, true);
+//    gameInfo.setIsThisPlayerInTheGame(1, true);
+//    gameInfo.setIsThisPlayerInTheGame(8, true);
+//    gameInfo.setIsThisPlayerInTheGame(9, true);
+//    gameInfo.setIsThisPlayerInTheGame(16, true);
+//    gameInfo.setIsThisPlayerInTheGame(17, true);
+//    gameInfo.setIsThisPlayerInTheGame(24, true);
     //End of test/debug code.
 }
 
@@ -105,10 +106,11 @@ void LttoMainWindow::setSlowTags(bool value)
 
 void LttoMainWindow::on_btn_StartGame_clicked()
 {
-    if (hostGameWindow == NULL)
-    {
+    //if (hostGameWindow != NULL) return;
+//    if (hostGameWindow == NULL)
+//    {
         hostGameWindow = new HostGameWindow(this);
-    }
+//    }
     hostGameWindow->resetPlayersForNewGame();
     hostGameWindow->show();
 }
@@ -117,6 +119,7 @@ void LttoMainWindow::on_btn_SelectPlayers_clicked()
 {
     playersWindow = new PlayersWindow(this);
     playersWindow->show();
+    ui->btn_StartGame->setEnabled(true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////

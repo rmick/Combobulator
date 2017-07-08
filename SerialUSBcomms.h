@@ -1,12 +1,14 @@
 #ifndef SERIALUSBCOMMS_H
 #define SERIALUSBCOMMS_H
 
+
 #include <QObject>
-#include <QtSerialPort/QSerialPortInfo>
-#include <QtSerialPort>
 #include "Defines.h"
 
 #ifdef  INCLUDE_SERIAL_USB
+    #include <QtSerialPort/QSerialPortInfo>
+    #include <QtSerialPort>
+#endif
 
 class SerialUSBcomms : public QObject
 {
@@ -29,11 +31,11 @@ public slots:
     void        sendPacket(QByteArray packet);
 
 private:
+#ifdef INCLUDE_SERIAL_USB
         QSerialPort     *serialUSB;
+#endif
 };
 
 extern SerialUSBcomms serialUSBcomms;
-
-#endif // INCLUDE_SERIAL_USB
 
 #endif // SERIALUSBCOMMS_H

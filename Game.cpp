@@ -13,6 +13,11 @@ Game::Game()    // (QObject *parent)
     GameLength      = DEFAULT_GAME_LENGTH;
     NumberOfPlayers = 24;
     GameName        ="LTTO";
+    NameChar1       = 43;  // C
+    NameChar2       = 55;  // U
+    NameChar3       = 53;  // S
+    NameChar4       = 54;  // T
+
     CountDownTime   = DEFAULT_COUNTDOWN_TIME;
     isThisPlayerInTheGame[0] = true;        //this is required so that Announce continues after all Taggers are hosted.
     for (int x= 1; x<25; x++)
@@ -221,6 +226,46 @@ int Game::getCountDownTime() const
 void Game::setCountDownTime(int value)
 {
     CountDownTime = value;
+}
+
+char Game::getNameChar1() const
+{
+    return NameChar1;
+}
+
+void Game::setNameChar1(char value)
+{
+    NameChar1 = value;
+}
+
+char Game::getNameChar2() const
+{
+    return NameChar2;
+}
+
+void Game::setNameChar2(char value)
+{
+    NameChar2 = value;
+}
+
+char Game::getNameChar3() const
+{
+    return NameChar3;
+}
+
+void Game::setNameChar3(char value)
+{
+    NameChar3 = value;
+}
+
+char Game::getNameChar4() const
+{
+    return NameChar4;
+}
+
+void Game::setNameChar4(char value)
+{
+    NameChar4 = value;
 }
 
 int Game::extractInteger(QString &dG)

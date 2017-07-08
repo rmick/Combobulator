@@ -99,10 +99,13 @@ void HostGameWindow::announceGame()
     hostCurrentPlayer();
 }
 
+
 int playerDebugNum = 0;
 
 void HostGameWindow::hostCurrentPlayer()
 {
+    if(lttoComms.getDontAnnounceGame() == true ) return;
+
     InsertToListWidget("Announce Game : Player " + QString::number(currentPlayer));
     qDebug() << "";
     qDebug() << "\tHostGameWindow::hostCurrentPlayer() - GameID:" + QString::number(gameInfo.getGameID());
@@ -115,36 +118,65 @@ void HostGameWindow::hostCurrentPlayer()
     lttoComms.sendPacket(PACKET, gameInfo.getGameType()                        );
     lttoComms.sendPacket(DATA,   gameInfo.getGameID()                          );
     lttoComms.sendPacket(DATA,   gameInfo.getGameLength(),                  BCD);
-    lttoComms.sendPacket(DATA,   playerInfo[currentPlayer].getHealthTags(), BCD);
-    lttoComms.sendPacket(DATA,   playerInfo[currentPlayer].getReloads(),    BCD);
-    lttoComms.sendPacket(DATA,   playerInfo[currentPlayer].getShieldTime(), BCD);
-    lttoComms.sendPacket(DATA,   playerInfo[currentPlayer].getMegaTags(),   BCD);
+    lttoComms.sendPacket(DATA,   playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getHealthTags()), BCD);
+    lttoComms.sendPacket(DATA,   playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getReloads()),    BCD);
+    lttoComms.sendPacket(DATA,   playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getShieldTime()), BCD);
+    lttoComms.sendPacket(DATA,   playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getMegaTags()),   BCD);
+
+    //  Set the Reloads flag to match handicapped values
+    if      (playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getReloads())  <  100)
+    {
+        playerInfo[currentPlayer].setBitFlags1(LIMITED_RELOADS_FLAG, true);
+    }
+    else if (playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getReloads())  == 100)
+    {
+        playerInfo[currentPlayer].setBitFlags1(LIMITED_RELOADS_FLAG, false);
+    }
+
+    //  Set the MegaTags flag to match handicapped values
+    if      (playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getMegaTags()) < 100)
+    {
+        playerInfo[currentPlayer].setBitFlags1(LIMITED_MEGAS_FLAG,   true);
+    }
+    else if (playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getMegaTags()) == 100)
+    {
+        playerInfo[currentPlayer].setBitFlags1(LIMITED_MEGAS_FLAG,   false);
+    }
+
     lttoComms.sendPacket(DATA,   playerInfo[currentPlayer].getPackedFlags1()   );
     lttoComms.sendPacket(DATA,   playerInfo[currentPlayer].getPackedFlags2()   );
+
+    //  Add a name for Custom Game Types, otherwise skip.
     if (gameInfo.getGameType() == 0x0C)
     {
-        lttoComms.sendPacket(DATA, 43);  // C
-        lttoComms.sendPacket(DATA, 55);  // U
-        lttoComms.sendPacket(DATA, 53);  // S
-        lttoComms.sendPacket(DATA, 54);  // T
+        lttoComms.sendPacket(DATA, gameInfo.getNameChar1() );
+        lttoComms.sendPacket(DATA, gameInfo.getNameChar2() );
+        lttoComms.sendPacket(DATA, gameInfo.getNameChar3() );
+        lttoComms.sendPacket(DATA, gameInfo.getNameChar4() );
     }
     lttoComms.sendPacket(CHECKSUM);
+
+
+
 
     if(playerDebugNum != currentPlayer)
     {
         playerDebugNum = currentPlayer;
         QString playerDebugData;
         playerDebugData = "Debug...Player #" + QString::number(currentPlayer)
-                            + ", Tags=" + QString::number(playerInfo[currentPlayer].getHealthTags())
-                            + ", Reloads=" + QString::number(playerInfo[currentPlayer].getReloads())
-                            + ", Shields=" + QString::number(playerInfo[currentPlayer].getShieldTime())
-                            + ", Megas=" + QString::number(playerInfo[currentPlayer].getMegaTags())
-                            + ", MedicMode:" + QString::number(playerInfo[currentPlayer].getMedicMode())
-                            + ", SlowTags:" + QString::number(playerInfo[currentPlayer].getSlowTags())
-                            + ", TeamTags:" + QString::number(playerInfo[currentPlayer].getTeamTags())
-                            + ", Spy#:" + QString::number(playerInfo[currentPlayer].getSpyNumber());
+                            + ", Tags=" + QString::number(playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getHealthTags() ))
+                            + ", Reloads=" + QString::number(playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getReloads() ))
+                            + ", Shields=" + QString::number(playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getShieldTime() ))
+                            + ", Megas=" + QString::number(playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getMegaTags() ))
+                            + ", MedicMode:" + QString::number(playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getMedicMode() ))
+                            + ", SlowTags:" + QString::number(playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getSlowTags() ))
+                            + ", TeamTags:" + QString::number(playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getTeamTags() ))
+                            + ", Spy#:" + QString::number(playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getSpyNumber() ));
         InsertToListWidget(playerDebugData);
     }
+
+
+
 
     return;
 }
@@ -153,7 +185,10 @@ int HostGameWindow::calculatePlayerTeam5bits(int requestedTeam)
 {
     int playerTeam5bits = 0;
 
-    qDebug() << "HostGameWindow::calculatePlayerTeam5bit() - Requested Team = " << requestedTeam;
+    if(requestedTeam !=0)   //
+        ;                   //To silence compiler warning.
+
+    //qDebug() << "HostGameWindow::calculatePlayerTeam5bit() - Requested Team = " << requestedTeam;
 
     if (gameInfo.getNumberOfTeams() == 0)   //Players 1 to 24, no teams
     {
@@ -209,12 +244,15 @@ void HostGameWindow::AssignPlayer(int Game, int Tagger, int Flags)
 
 void HostGameWindow::AddPlayerToGame(int Game, int Tagger)
 {    
-    if(gameInfo.getGameID() != Game || playerInfo[currentPlayer].getTaggerID() != Tagger) return;
-
     qDebug() << "HostGameWindow::AddPlayerToGame()" << currentPlayer;
+    //return;
+
+    if(gameInfo.getGameID() != Game || playerInfo[currentPlayer].getTaggerID() != Tagger) return;
     InsertToListWidget("   AddPlayerToGame()" + QString::number(currentPlayer));
     isThisPlayerHosted[currentPlayer] = true;
     if (currentPlayer != 0) currentPlayer++;
+
+    bool expectingAckPlayerAssignment = true;
 }
 
 void HostGameWindow::AddSerialPortToListWidget(QString value)

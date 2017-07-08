@@ -7,6 +7,7 @@ LttoComms lttoComms;
 LttoComms::LttoComms(QObject *parent) : QObject(parent)
 {
     useLazerSwarm = true;          //TODO: Set this up in Preferences.
+    dontAnnounceGame = false;
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -109,7 +110,7 @@ QString LttoComms::createIRstring(int data)
 
 void LttoComms::receivePacket(QByteArray RxData)
 {
-    //emit TimerBlock(true);
+    dontAnnounceGame = true;
     bool isPacketComplete = false;
 
     qDebug() << "LttoComms::receivePacket() triggered";
@@ -145,9 +146,19 @@ void LttoComms::receivePacket(QByteArray RxData)
             {
                 processPacket(rxPacketList);
             }
-            //emit TimerBlock(false);
+            dontAnnounceGame = false;
         }
     }
+}
+
+bool LttoComms::getDontAnnounceGame() const
+{
+    return dontAnnounceGame;
+}
+
+void LttoComms::setDontAnnounceGame(bool value)
+{
+    dontAnnounceGame = value;
 }
 
 bool LttoComms::getUseLazerSwarm() const
@@ -195,7 +206,8 @@ void LttoComms::processPacket(QList<QByteArray> data)
             if(isCheckSumCorrect(command, game, tagger, flags, checksum) == false) break;
 
             emit RequestJoinGame(game, tagger, flags);
-            //qDebug() << "emit RequestJoinGame()" << game << tagger << flags << checksum;
+            qDebug() << "emit RequestJoinGame()" << game << tagger << flags << checksum;
+
             break;
 
         case ACK_PLAYER_ASSIGN:
@@ -205,7 +217,7 @@ void LttoComms::processPacket(QList<QByteArray> data)
             if(isCheckSumCorrect(command, game, tagger, flags, checksum) == false) break;
 
             emit AckPlayerAssignment(game, tagger);
-            //qDebug() << "emit AckPlayerAssignment()" << game << tagger << checksum;
+            qDebug() << "emit AckPlayerAssignment()" << game << tagger << checksum;
             break;
 
         //Other cases will be required for DeBrief. Maybe create a funciton for each one to make code more easily readable.

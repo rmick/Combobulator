@@ -60,6 +60,18 @@ public:
     int getCountDownTime() const;
     void setCountDownTime(int value);
 
+    char getNameChar1() const;
+    void setNameChar1(char value);
+
+    char getNameChar2() const;
+    void setNameChar2(char value);
+
+    char getNameChar3() const;
+    void setNameChar3(char value);
+
+    char getNameChar4() const;
+    void setNameChar4(char value);
+
 signals:
     void NumberOfTeamsHasChanged(int NumTeams);
 
@@ -74,6 +86,10 @@ private:
     int     NumberOfSpies;
     int     PlayersInGameByte;
     int     CountDownTime;
+    char    NameChar1;
+    char    NameChar2;
+    char    NameChar3;
+    char    NameChar4;
 
     int     extractInteger(QString &dG);
 };

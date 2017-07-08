@@ -55,6 +55,6 @@ void TCPComms::sendPacket(QByteArray data)
     if (isConnected)
     {
         tcpSocket->write(data);
-        qDebug() << "TCPComms::sendPacket() - " + data;
+        //qDebug() << "TCPComms::sendPacket() - " + data;
     }
 }

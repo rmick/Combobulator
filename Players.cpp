@@ -244,3 +244,12 @@ QString Players::displayBinary(int number, int digits)
     }
     return output;
 }
+
+int Players::handicapAdjust(int value)
+{
+    value += value * (static_cast<float>(Handicap)/10);
+    if (value > 100) value = 100;
+    if (value <0)   value = 0;
+
+    return value;
+}

@@ -16,8 +16,12 @@ public:
     explicit    LttoComms(QObject *parent = 0);
 
     bool        sendPacket(char type, int data = 0, bool dataFormat = false);
+
     bool        getUseLazerSwarm() const;
     void        setUseLazerSwarm(bool value);
+
+    bool getDontAnnounceGame() const;
+    void setDontAnnounceGame(bool value);
 
 signals:
     void        RequestJoinGame(int Game, int Tagger, int Flags);
@@ -36,6 +40,7 @@ private:
     QByteArrayList  rxPacketList;
     QString         packetString;
     bool            useLazerSwarm;
+    bool            dontAnnounceGame;
 
     void            processPacket(QList<QByteArray> data);
     int             extract(QList<QByteArray> &data);

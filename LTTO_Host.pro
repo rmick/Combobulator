@@ -6,7 +6,7 @@
 
 QT       += core gui
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets network serialport
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets network
 TARGET = LTTO_Host
 TEMPLATE = app
 
@@ -21,9 +21,10 @@ SOURCES +=  main.cpp\
 	    TCPComms.cpp \
             LttoMainWindow.cpp \
 	    QObjectClass.cpp \
-	    LttoComms.cpp\
-	    SerialUSBcomms.cpp \
-	    FlagsWindow.cpp
+	    LttoComms.cpp \
+	    FlagsWindow.cpp \
+	    SerialUSBcomms.cpp
+
 
 
 HEADERS  += \
@@ -36,10 +37,10 @@ HEADERS  += \
 	    TCPComms.h \
 	    Defines.h \
 	    LttoMainWindow.h \
-	    QObjectClass.h \
 	    LttoComms.h \
+	    FlagsWindow.h \
 	    SerialUSBcomms.h \
-	    FlagsWindow.h
+
 
 FORMS    += \
             PlayersWindow.ui \
