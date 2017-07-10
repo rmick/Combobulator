@@ -21,7 +21,6 @@ public:
 
     int getSelectedPlayer() const;
     void setSelectedPlayer(int value);
-    QVector <QPushButton*> PlayerButtons;
 
 private slots:
     void on_btn_ClosePlayerWindow_clicked();
@@ -54,6 +53,7 @@ private:
     QPalette            *paletteRed;
     QPalette            *paletteGreen;
 
+    QVector <QPushButton*> PlayerButtons;
     int SelectedPlayer;
     void SetUpPlayerButtonMapping();
     void LoadPlayersForTeams();
@@ -64,7 +64,6 @@ private:
     void SetPlayerButtons(bool state);
     void renamePlayer(int player);
     void AdjustSettingsForHandicap(int currentPlayer);
-    //void HandicapAdjust(const QString type, int &value);
 
     bool eventFilter(QObject *obj, QEvent *event);
     void mousePressEvent(QMouseEvent *me);

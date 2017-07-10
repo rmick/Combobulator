@@ -1,5 +1,6 @@
 #include "HostGameWindow.h"
 #include "ui_HostGameWindow.h"
+#include <QMessageBox>
 #include <QDebug>
 #include "Defines.h"
 #include "Game.h"
@@ -20,12 +21,11 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
     connect(&lttoComms,     SIGNAL(RequestJoinGame(int,int,int) ),  this, SLOT(AssignPlayer(int,int,int)) );
     connect(&lttoComms,     SIGNAL(AckPlayerAssignment(int,int) ),  this, SLOT(AddPlayerToGame(int,int)) );
     connect(&serialUSBcomms, SIGNAL(SerialPortFound(QString)),      this, SLOT(AddSerialPortToListWidget(QString)) );
-    //connect(&lttoComms,     SIGNAL(TimerBlock(bool)),               this, SLOT(SetAnnounceTimerBlock(bool)) );
 
     timerAnnounce->start(HOST_TIMER_MSEC);
 
     #ifdef Q_OS_ANDROID
-    InsertToListWidget("This is Android");
+        InsertToListWidget("This is Android");
     #endif
 
     for (int x = 0; x<25;x++) isThisPlayerHosted[x] = false;
@@ -35,7 +35,6 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
     ui->btn_Cancel->setText("Cancel");
     ui->btn_Rehost->setEnabled(false);
 
-    //serialUSBcomms.findSerialPort();
     serialUSBcomms.setUpSerialPort();
 
     // Kick start the process, otherwise there is a 2.0s delay until the timer first triggers.
@@ -46,9 +45,9 @@ HostGameWindow::~HostGameWindow()
 {
     timerAnnounce->stop();
     timerCountDown->stop();
-//    #ifdef  INCLUDE_SERIAL_USB
-//        serialUSBcomms->closeSerialPort();
-//    #endif
+    #ifdef  INCLUDE_SERIAL_USB
+        serialUSBcomms.closeSerialPort();
+    #endif
     delete ui;
 }
 
@@ -56,18 +55,18 @@ void HostGameWindow::hideEvent(QHideEvent *)
 {
     timerAnnounce->stop();
     timerCountDown->stop();
-//    #ifdef  INCLUDE_SERIAL_USB
-//        serialUSBcomms->closeSerialPort();
-//    #endif
+    #ifdef  INCLUDE_SERIAL_USB
+        serialUSBcomms.closeSerialPort();
+    #endif
 }
 
 void HostGameWindow::on_btn_Cancel_clicked()
 {
     timerAnnounce->stop();
     timerCountDown->stop();
-//    #ifdef  INCLUDE_SERIAL_USB
-//        serialUSBcomms->closeSerialPort();
-//    #endif
+    #ifdef  INCLUDE_SERIAL_USB
+        serialUSBcomms.closeSerialPort();
+    #endif
     deleteLater();
 }
 
@@ -82,29 +81,35 @@ void HostGameWindow::SetAnnounceTimerBlock(bool state)
 
 void HostGameWindow::announceGame()
 {
-    if (gameInfo.getIsThisPlayerInTheGame(currentPlayer) == false)  // DO I add this in?? It stops reuse of player numbers, but is needed if I use the requested team flag  // && isThisPlayerHosted[currentPlayer] == false)
-    {
+    //if (gameInfo.getIsThisPlayerInTheGame(currentPlayer) == false)  // DO I add this in?? It stops reuse of player numbers, but is needed if I use the requested team flag  // && isThisPlayerHosted[currentPlayer] == false)
+    //{
         if (currentPlayer != 0)
         {
             while (gameInfo.getIsThisPlayerInTheGame(currentPlayer) == false) currentPlayer++;
+            ui->label->setText("Prepare to Host Tagger : " + QString::number(currentPlayer));
         }
-        ui->label->setText("Prepare to Host Tagger : " + QString::number(currentPlayer));
         if (currentPlayer >24)
         {
             ui->label->setText("All players are hosted, press START ");
             ui->btn_StartGame->setEnabled(true);
             currentPlayer = 0;
         }
-    }
+    //}
     hostCurrentPlayer();
 }
 
 
 int playerDebugNum = 0;
-
 void HostGameWindow::hostCurrentPlayer()
 {
-    if(lttoComms.getDontAnnounceGame() == true ) return;
+
+    if(lttoComms.getDontAnnounceGame() == true )
+    {
+        lttoComms.setMissedAnnounceCount(lttoComms.getMissedAnnounceCount()+1);
+        qDebug() << "HostGameWindow::hostCurrentPlayer() - Missed count = " << lttoComms.getMissedAnnounceCount();
+        if (lttoComms.getMissedAnnounceCount() < 3) return;
+        else lttoComms.setDontAnnounceGame(false);
+    }
 
     InsertToListWidget("Announce Game : Player " + QString::number(currentPlayer));
     qDebug() << "";
@@ -230,6 +235,7 @@ void HostGameWindow::AssignPlayer(int Game, int Tagger, int Flags)
 
     if(isThisPlayerHosted[currentPlayer] == false)
     {
+        lttoComms.setDontAnnounceGame(true);
         playerInfo[currentPlayer].setTaggerID(Tagger);
 
         lttoComms.sendPacket(PACKET,  ASSIGN_PLAYER);
@@ -238,6 +244,9 @@ void HostGameWindow::AssignPlayer(int Game, int Tagger, int Flags)
         lttoComms.sendPacket(DATA,    calculatePlayerTeam5bits(preferedTeam) );
         lttoComms.sendPacket(CHECKSUM);
 
+
+        bool expectingAckPlayerAssignment = true;
+
         qDebug() << "HostGameWindow::AssignPlayer() " << currentPlayer << Game << Tagger, calculatePlayerTeam5bits(Flags);
     }
 }
@@ -245,14 +254,12 @@ void HostGameWindow::AssignPlayer(int Game, int Tagger, int Flags)
 void HostGameWindow::AddPlayerToGame(int Game, int Tagger)
 {    
     qDebug() << "HostGameWindow::AddPlayerToGame()" << currentPlayer;
-    //return;
 
     if(gameInfo.getGameID() != Game || playerInfo[currentPlayer].getTaggerID() != Tagger) return;
     InsertToListWidget("   AddPlayerToGame()" + QString::number(currentPlayer));
     isThisPlayerHosted[currentPlayer] = true;
     if (currentPlayer != 0) currentPlayer++;
-
-    bool expectingAckPlayerAssignment = true;
+    lttoComms.setDontAnnounceGame(false);
 }
 
 void HostGameWindow::AddSerialPortToListWidget(QString value)
@@ -302,9 +309,22 @@ void HostGameWindow::setIsThisPlayerHosted(int playerNumber, bool value)
 
 void HostGameWindow::on_btn_StartGame_clicked()
 {
-    timerAnnounce->stop();
-    timerCountDown->start(1000);
-    countDownTimeRemaining = gameInfo.getCountDownTime();
+    if(ui->btn_StartGame->text() == "Start\nthe\nGame")
+    {
+        timerAnnounce->stop();
+        timerCountDown->start(1000);
+        countDownTimeRemaining = gameInfo.getCountDownTime();
+        ui->btn_StartGame->setEnabled(false);
+    }
+    else
+    {
+        //SendEndGame();
+        //ui->btn_StartGame->setText("Debrief");
+        ui->btn_StartGame->setText("Start\nthe\nGame");
+
+
+    }
+
 }
 
 void HostGameWindow::sendCountDown()
@@ -316,18 +336,21 @@ void HostGameWindow::sendCountDown()
         ui->label->setText("Game Underway !!!");
         ui->btn_Cancel->setText("Close");
         ui->btn_Rehost->setEnabled(true);
+        ui->btn_StartGame->setText("End\nGame");
+        ui->btn_StartGame->setEnabled(true);
         //TODO:Change the form to show the DeBrief stuff - use a State Machine?
     }
     else
     {
         lttoComms.sendPacket(PACKET , COUNTDOWN);
         lttoComms.sendPacket(DATA, gameInfo.getGameID() );
-        lttoComms.sendPacket(DATA, ConvertDecToBCD(countDownTimeRemaining--));
+        lttoComms.sendPacket(DATA, ConvertDecToBCD(countDownTimeRemaining));
         lttoComms.sendPacket(DATA, 8);   //TODO:Team1 PlayerCount
         lttoComms.sendPacket(DATA, 8);   //TODO:Team2 PlayerCount
         lttoComms.sendPacket(DATA, 8);   //TODO:Team3 PlayerCount
         lttoComms.sendPacket(CHECKSUM);
         InsertToListWidget("CountDownTime = " + QString::number(countDownTimeRemaining));
+        countDownTimeRemaining--;
     }
 }
 
@@ -346,6 +369,7 @@ int HostGameWindow::ConvertBCDtoDec(int bcd)
 void HostGameWindow::on_btn_SkipPlayer_clicked()
 {
     currentPlayer++;
+    lttoComms.setDontAnnounceGame(false);
 }
 
 void HostGameWindow::InsertToListWidget(QString lineText)
@@ -515,20 +539,51 @@ void HostGameWindow::assignSpies()
     if(gameInfo.getNumberOfSpies() == 0) return;
 
     //add some checking so that NumberOfSpies is !> number of players in any team.
-
-
-    //get random number
-
-//    int GetRandomNumber(const int Min, const int Max)
-//    {
-//        return ((qrand() % ((Max + 1) - Min)) + Min);
-//    }
+    int numberOfPlayersInTeam1 = 0;
+    int numberOfPlayersInTeam2 = 0;
+    int numberOfPlayersInTeam3 = 0;
+    for (int x = 1; x < 9; x++)
+    {
+        if (gameInfo.getIsThisPlayerInTheGame(x))       numberOfPlayersInTeam1++;
+        if (gameInfo.getIsThisPlayerInTheGame(x+8))     numberOfPlayersInTeam2++;
+        if (gameInfo.getIsThisPlayerInTheGame(x+16))    numberOfPlayersInTeam3++;
+    }
+    if(     (gameInfo.getNumberOfSpies() *2) >= numberOfPlayersInTeam1 ||
+            (gameInfo.getNumberOfSpies() *2) >= numberOfPlayersInTeam2 ||
+            (gameInfo.getNumberOfSpies() *2) >= numberOfPlayersInTeam3  )
+            {
+                int action = QMessageBox::warning(this,tr("Are you sure?"), tr("More than 50% of your players are spies. This will make the game <i>'interesting'</i> ! \nPress OK to continue, or Cancel to set Spies to Zero."), QMessageBox::Ok | QMessageBox::Cancel);
+                if (action == QMessageBox::Cancel) gameInfo.setNumberOfSpies(0);
+            }
 
     //assign that player as Spy in each time (Spy = 1, Spy = 2)
+    int randomNumber;
+    for (int s = 1; s <= gameInfo.getNumberOfSpies(); s++)
+    {
+        bool loop = true;
+        while (loop == true)
+        {
+            randomNumber = GetRandomnumber(1, 8);
+            qDebug() <<"Random Number is " << randomNumber;
 
-    //Chck this value when hosting a player, if (Spy != 0) swap teams.
+            if (playerInfo[randomNumber].getSpyNumber() == 0)
+            {
+                playerInfo[randomNumber   ].setSpyNumber(s);
+                playerInfo[randomNumber+8 ].setSpyNumber(s);
+                playerInfo[randomNumber+16].setSpyNumber(s);
+                if(gameInfo.getIsSpiesTeamTagActive() )
+                {
+                    playerInfo[randomNumber   ].setTeamTags(true);
+                    playerInfo[randomNumber+8 ].setTeamTags(true);
+                    playerInfo[randomNumber+16].setTeamTags(true);
+                }
+                loop = false;
+            }
+        }
+    }
+
+    //Check this value when hosting a player, if (Spy != 0) swap teams.
     //Not sure how to do 3 teams yet, 1>2,2>3,3>1
-    //Turn on Team Tags for Spies ??
 }
 
 void HostGameWindow::OpenPorts()
@@ -539,4 +594,15 @@ void HostGameWindow::OpenPorts()
 void HostGameWindow::ClosePorts()
 {
 
+}
+
+int HostGameWindow::GetRandomnumber(int min, int max)
+{
+    return ((qrand() % ((max + 1) - min)) + min);
+}
+
+void HostGameWindow::on_btn_Rehost_clicked()
+{
+    reHostTagger = new ReHostTagger(this);
+    reHostTagger->show();
 }

@@ -6,7 +6,7 @@
 
 QT       += core gui
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets network
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets network #serialport
 TARGET = LTTO_Host
 TEMPLATE = app
 
@@ -20,10 +20,10 @@ SOURCES +=  main.cpp\
 	    PortConnect.cpp \
 	    TCPComms.cpp \
             LttoMainWindow.cpp \
-	    QObjectClass.cpp \
 	    LttoComms.cpp \
 	    FlagsWindow.cpp \
-	    SerialUSBcomms.cpp
+	    SerialUSBcomms.cpp \
+    ReHostTagger.cpp
 
 
 
@@ -40,6 +40,7 @@ HEADERS  += \
 	    LttoComms.h \
 	    FlagsWindow.h \
 	    SerialUSBcomms.h \
+    ReHostTagger.h
 
 
 FORMS    += \
@@ -48,4 +49,5 @@ FORMS    += \
 	    PortConnect.ui \
 	    LttoMainWindow.ui \
 	    SyncTaggers.ui \
-	    FlagsWindow.ui
+	    FlagsWindow.ui \
+    ReHostTagger.ui

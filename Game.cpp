@@ -18,6 +18,8 @@ Game::Game()    // (QObject *parent)
     NameChar3       = 53;  // S
     NameChar4       = 54;  // T
 
+    isSpiesTeamTagActive = true;
+
     CountDownTime   = DEFAULT_COUNTDOWN_TIME;
     isThisPlayerInTheGame[0] = true;        //this is required so that Announce continues after all Taggers are hosted.
     for (int x= 1; x<25; x++)
@@ -266,6 +268,16 @@ char Game::getNameChar4() const
 void Game::setNameChar4(char value)
 {
     NameChar4 = value;
+}
+
+bool Game::getIsSpiesTeamTagActive() const
+{
+    return isSpiesTeamTagActive;
+}
+
+void Game::setIsSpiesTeamTagActive(bool value)
+{
+    isSpiesTeamTagActive = value;
 }
 
 int Game::extractInteger(QString &dG)

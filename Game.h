@@ -72,6 +72,9 @@ public:
     char getNameChar4() const;
     void setNameChar4(char value);
 
+    bool getIsSpiesTeamTagActive() const;
+    void setIsSpiesTeamTagActive(bool value);
+
 signals:
     void NumberOfTeamsHasChanged(int NumTeams);
 
@@ -90,6 +93,7 @@ private:
     char    NameChar2;
     char    NameChar3;
     char    NameChar4;
+    bool    isSpiesTeamTagActive;
 
     int     extractInteger(QString &dG);
 };

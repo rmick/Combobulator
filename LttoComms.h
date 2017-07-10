@@ -23,6 +23,9 @@ public:
     bool getDontAnnounceGame() const;
     void setDontAnnounceGame(bool value);
 
+    int getMissedAnnounceCount() const;
+    void setMissedAnnounceCount(int value);
+
 signals:
     void        RequestJoinGame(int Game, int Tagger, int Flags);
     void        AckPlayerAssignment(int Game, int Tagger);
@@ -41,6 +44,7 @@ private:
     QString         packetString;
     bool            useLazerSwarm;
     bool            dontAnnounceGame;
+    int             missedAnnounceCount;
 
     void            processPacket(QList<QByteArray> data);
     int             extract(QList<QByteArray> &data);

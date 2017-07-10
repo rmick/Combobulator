@@ -111,9 +111,10 @@ QString LttoComms::createIRstring(int data)
 void LttoComms::receivePacket(QByteArray RxData)
 {
     dontAnnounceGame = true;
+    missedAnnounceCount = 0;
     bool isPacketComplete = false;
 
-    qDebug() << "LttoComms::receivePacket() triggered";
+    //qDebug() << "LttoComms::receivePacket() triggered";
 
     if (useLazerSwarm)
     {
@@ -122,7 +123,7 @@ void LttoComms::receivePacket(QByteArray RxData)
         if(irDataIn.endsWith("\n"))
         {
             rxPacketList.append(lazerswarm.decodeCommand(irDataIn));
-            qDebug() << "LttoComms::receivePacket() LazerSwarm mode - " << lazerswarm.decodeCommand(irDataIn);
+            //qDebug() << "LttoComms::receivePacket() LazerSwarm mode - " << lazerswarm.decodeCommand(irDataIn);
             isPacketComplete = true;
         }
     }
@@ -132,7 +133,7 @@ void LttoComms::receivePacket(QByteArray RxData)
         if (irDataIn.endsWith(":"))
         {
             rxPacketList.append(irDataIn);
-            qDebug() << "LttoComms::receivePacket() LTTO library mode - " << irDataIn;
+            //qDebug() << "LttoComms::receivePacket() LTTO library mode - " << irDataIn;
             isPacketComplete = true;
         }
     }
@@ -146,9 +147,18 @@ void LttoComms::receivePacket(QByteArray RxData)
             {
                 processPacket(rxPacketList);
             }
-            dontAnnounceGame = false;
         }
     }
+}
+
+int LttoComms::getMissedAnnounceCount() const
+{
+    return missedAnnounceCount;
+}
+
+void LttoComms::setMissedAnnounceCount(int value)
+{
+    missedAnnounceCount = value;
 }
 
 bool LttoComms::getDontAnnounceGame() const
@@ -159,6 +169,7 @@ bool LttoComms::getDontAnnounceGame() const
 void LttoComms::setDontAnnounceGame(bool value)
 {
     dontAnnounceGame = value;
+    if (value == true) missedAnnounceCount = 0;
 }
 
 bool LttoComms::getUseLazerSwarm() const
@@ -194,7 +205,7 @@ void LttoComms::processPacket(QList<QByteArray> data)
     int flags   = 0;
     int checksum= 0;
 
-    qDebug() << "\nLttoComms::processPacket()" << command;
+   // qDebug() << "\nLttoComms::processPacket()" << command;
 
     switch (command)
     {
@@ -206,7 +217,7 @@ void LttoComms::processPacket(QList<QByteArray> data)
             if(isCheckSumCorrect(command, game, tagger, flags, checksum) == false) break;
 
             emit RequestJoinGame(game, tagger, flags);
-            qDebug() << "emit RequestJoinGame()" << game << tagger << flags << checksum;
+            //qDebug() << "emit RequestJoinGame()" << game << tagger << flags << checksum;
 
             break;
 
@@ -217,7 +228,7 @@ void LttoComms::processPacket(QList<QByteArray> data)
             if(isCheckSumCorrect(command, game, tagger, flags, checksum) == false) break;
 
             emit AckPlayerAssignment(game, tagger);
-            qDebug() << "emit AckPlayerAssignment()" << game << tagger << checksum;
+            //qDebug() << "emit AckPlayerAssignment()" << game << tagger << checksum;
             break;
 
         //Other cases will be required for DeBrief. Maybe create a funciton for each one to make code more easily readable.

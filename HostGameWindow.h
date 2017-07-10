@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QTimer>
+#include "ReHostTagger.h"
 
 namespace Ui {
 class HostGameWindow;
@@ -17,7 +18,6 @@ public:
     ~HostGameWindow();
 
     void hideEvent(QHideEvent *hideEvent);  //Used to disable SerialPort when the window is hidden instead of closed
-    //void setSerialPort(QSerialPort portName);
 
     bool getIsThisPlayerHosted(int playerNumber) const;
     void setIsThisPlayerHosted(int playerNumber, bool value);
@@ -55,10 +55,13 @@ private slots:
 
     void on_btn_TestMessage_clicked();
 
+    void on_btn_Rehost_clicked();
+
 private:
     Ui::HostGameWindow  *ui;
     QTimer              *timerAnnounce;
     QTimer              *timerCountDown;
+    ReHostTagger        *reHostTagger;
 
     bool    bluetoothActive;
     bool    serialUSBactive;
@@ -77,6 +80,7 @@ private:
     void    assignSpies();
     void    OpenPorts();
     void    ClosePorts();
+    int     GetRandomnumber(int min, int max);
 };
 
 #endif // HOSTGAMEWINDOW_H

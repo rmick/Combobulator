@@ -23,11 +23,11 @@ PlayersWindow::PlayersWindow(QWidget *parent) :
     LoadPlayerSettings(0);      // 0 = Global Player
     SetActivePlayers();
 
-    paletteRed = new QPalette();
-    paletteRed->setColor(QPalette::Button,Qt::red);
+//    paletteRed = new QPalette();
+//    paletteRed->setColor(QPalette::Button,Qt::red);
 
-    paletteGreen = new QPalette();
-    paletteGreen->setColor(QPalette::Button,Qt::green);
+//    paletteGreen = new QPalette();
+//    paletteGreen->setColor(QPalette::Button,Qt::green);
 }
 
 PlayersWindow::~PlayersWindow()
@@ -205,8 +205,7 @@ void PlayersWindow::SetPlayerButtons(bool state)
     {
          PlayerButtons[x]->setChecked(state);
          gameInfo.setIsThisPlayerInTheGame(x, state);
-         if (state) PlayerButtons[x]->setPalette(*paletteRed);
-         else PlayerButtons[x]->setPalette(*paletteGreen);
+
     }
 }
 
@@ -379,19 +378,6 @@ void PlayersWindow::AdjustSettingsForHandicap(int currentPlayer)
     else                ui->label_Reloads->setText("Reloads : " + (QString::number(reloads)) );
 }
 
-//void PlayersWindow::HandicapAdjust(const QString type, int &value)
-//{
-
-//    //Formula = value + (value * (static_cast<float>(Handicap)/10) )
-//    value += value * (static_cast<float>(playerInfo[SelectedPlayer].getHandicap() ) /10);
-//    if (value > 100) value = 100;
-//    if (value <0)   value = 0;
-////    if (type == "Reloads")
-////    {
-////        if (value == 100) value = 0;
-////    }
-//}
-
 //////////////////////////////////////////////////////////////////////////////////
 
 void PlayersWindow::on_btn_EditMode_clicked()
@@ -443,19 +429,3 @@ void PlayersWindow::on_slider_MegaTags_valueChanged(int value)
      else               ui->label_MegaTags->setText("MegaTags : " + QString::number(value) );
      playerInfo[SelectedPlayer].setMegaTags(value);
 }
-
-//void PlayersWindow::on_btn_DeBug_clicked()
-//{
-//    for (int x=0; x < 25; x++)
-//    {
-//        qDebug()    << "Player ("    << playerInfo[x].getPlayerName() << ") " << x
-//                    << " in Game="   << gameInfo.getIsThisPlayerInTheGame(x)
-//                    << " - Handicap:"<< playerInfo[x].getHandicap()
-//                    << " - Health:"  << playerInfo[x].getHealthTags()
-//                    << " - Reloads:" << playerInfo[x].getReloads()
-//                    << " - Shields:" << playerInfo[x].getShieldTime()
-//                    << " - Megas:"   << playerInfo[x].getMegaTags()
-//                    << " - SlwTags:" << playerInfo[x].getSlowTags()
-//                    << " - TmTags:"  << playerInfo[x].getTeamTags();
-//    }
-//}

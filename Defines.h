@@ -11,7 +11,11 @@
 //      Here is the current build directory
 // /build-LTTO_Host-Desktop_Qt_5_8_0_clang_64bit-Release Richie$
 
-//#define INCLUDE_SERIAL_USB      0
+
+// If enabling this #define, also remove the # from the command 'serialport' in line 9 of the LTTO_host.pro file
+//#define INCLUDE_SERIAL_USB
+
+
 
 //LTTO library packet type indentifiers
 const char  PACKET      = 'P';
@@ -22,7 +26,7 @@ const char  BEACON      = 'B';
 
 //Internal timers
 const int   INTERPACKET_DELAY_MSEC  = 75;
-const int   HOST_TIMER_MSEC         = 1500;
+const int   HOST_TIMER_MSEC         = 1000;
 
 
 //Packet Header Type Codes
