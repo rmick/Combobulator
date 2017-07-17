@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AboutForm</class>
+ <widget class="QDialog" name="AboutForm">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>508</width>
+    <height>353</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <widget class="QPushButton" name="btn_Ok">
+   <property name="geometry">
+    <rect>
+     <x>370</x>
+     <y>281</y>
+     <width>113</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>OK</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>20</y>
+     <width>461</width>
+     <height>281</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>(C) 2017  S Richie Mickan
+
+Created in Qt 5.8
+
+Free for personal use.
+Commercial use requires a license.
+
+richie@bushandbeyond.com.au
+
+www.github.com/rmick
+
+
+Thanks to A. Faucher and R. McArdyle for
+their work in reverse engineering the LTTO IR codes.
+Visit wiki.lazerswarm.com for all the info.</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

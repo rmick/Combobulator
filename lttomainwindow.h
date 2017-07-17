@@ -91,6 +91,8 @@ private slots:
 
     void on_btn_Flags_clicked();
 
+    void on_actionAbout_triggered();
+
 private:
     Ui::LttoMainWindow  *ui;
     PlayersWindow       *playersWindow;

@@ -50,8 +50,8 @@ public:
     int getTaggerID() const;
     void setTaggerID(int value);
 
-    bool getIsInTheGame() const;
-    void setIsInTheGame(bool value);
+//    bool getIsInTheGame() const;
+//    void setIsInTheGame(bool value);
 
     int getSpyNumber() const;
     void setSpyNumber(int value);

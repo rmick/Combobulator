@@ -75,6 +75,8 @@ public:
     bool getIsSpiesTeamTagActive() const;
     void setIsSpiesTeamTagActive(bool value);
 
+    int getTotalNumberOfPlayersInGame() const;
+
 signals:
     void NumberOfTeamsHasChanged(int NumTeams);
 
@@ -94,6 +96,7 @@ private:
     char    NameChar3;
     char    NameChar4;
     bool    isSpiesTeamTagActive;
+    int     TotalNumberOfPlayersInGame;
 
     int     extractInteger(QString &dG);
 };

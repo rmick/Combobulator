@@ -23,7 +23,8 @@ SOURCES +=  main.cpp\
 	    LttoComms.cpp \
 	    FlagsWindow.cpp \
 	    SerialUSBcomms.cpp \
-    ReHostTagger.cpp
+    ReHostTagger.cpp \
+    AboutForm.cpp
 
 
 
@@ -40,7 +41,8 @@ HEADERS  += \
 	    LttoComms.h \
 	    FlagsWindow.h \
 	    SerialUSBcomms.h \
-    ReHostTagger.h
+    ReHostTagger.h \
+    AboutForm.h
 
 
 FORMS    += \
@@ -50,4 +52,5 @@ FORMS    += \
 	    LttoMainWindow.ui \
 	    SyncTaggers.ui \
 	    FlagsWindow.ui \
-    ReHostTagger.ui
+    ReHostTagger.ui \
+    AboutForm.ui

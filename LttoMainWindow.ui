@@ -1144,7 +1144,7 @@ QSlider::groove:horizontal {
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>File</string>
+     <string>Menu</string>
     </property>
     <addaction name="actionSave"/>
     <addaction name="actionLoad"/>
@@ -1152,29 +1152,11 @@ QSlider::groove:horizontal {
     <addaction name="actionSet_CountDown_Time"/>
     <addaction name="actionuse_LazerSwarm"/>
     <addaction name="separator"/>
+    <addaction name="actionAbout"/>
+    <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
-   <widget class="QMenu" name="menuAbout">
-    <property name="title">
-     <string>About</string>
-    </property>
-   </widget>
-   <widget class="QMenu" name="menuHelp">
-    <property name="title">
-     <string>Help</string>
-    </property>
-   </widget>
-   <widget class="QMenu" name="menuComms">
-    <property name="title">
-     <string>Comms</string>
-    </property>
-    <addaction name="actionUSB_Serial"/>
-    <addaction name="actionWi_Fi"/>
-   </widget>
    <addaction name="menuFile"/>
-   <addaction name="menuAbout"/>
-   <addaction name="menuHelp"/>
-   <addaction name="menuComms"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -1239,16 +1221,21 @@ QSlider::groove:horizontal {
     <string>Wi-Fi</string>
    </property>
   </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
  <connections/>
  <buttongroups>
+  <buttongroup name="buttonGroup_NumberOfTeams"/>
   <buttongroup name="buttonGroup_GameType">
    <property name="exclusive">
     <bool>true</bool>
    </property>
   </buttongroup>
-  <buttongroup name="buttonGroup_NumberOfTeams"/>
  </buttongroups>
 </ui>

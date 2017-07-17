@@ -20,11 +20,13 @@ public:
     bool        getUseLazerSwarm() const;
     void        setUseLazerSwarm(bool value);
 
-    bool getDontAnnounceGame() const;
-    void setDontAnnounceGame(bool value);
+    bool        getDontAnnounceGame() const;
+    void        setDontAnnounceGame(bool value);
 
-    int getMissedAnnounceCount() const;
-    void setMissedAnnounceCount(int value);
+    int         getMissedAnnounceCount() const;
+    void        setMissedAnnounceCount(int value);
+
+    void        androidRxPacket(QByteArray data);
 
 signals:
     void        RequestJoinGame(int Game, int Tagger, int Flags);

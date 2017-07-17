@@ -15,9 +15,11 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
 
     timerAnnounce   = new QTimer(this);
     timerCountDown  = new QTimer(this);
+    timerDeBrief    = new QTimer(this);
 
-    connect(timerAnnounce,  SIGNAL(timeout() ),                     this, SLOT(announceGame()) );
-    connect(timerCountDown, SIGNAL(timeout() ),                     this, SLOT(sendCountDown()) );
+    connect(timerAnnounce,  SIGNAL(timeout() ),                     this, SLOT(announceGame())   );
+    connect(timerCountDown, SIGNAL(timeout() ),                     this, SLOT(sendCountDown())  );
+    connect(timerDeBrief,   SIGNAL(timeout() ),                     this, SLOT(deBriefTaggers()) );
     connect(&lttoComms,     SIGNAL(RequestJoinGame(int,int,int) ),  this, SLOT(AssignPlayer(int,int,int)) );
     connect(&lttoComms,     SIGNAL(AckPlayerAssignment(int,int) ),  this, SLOT(AddPlayerToGame(int,int)) );
     connect(&serialUSBcomms, SIGNAL(SerialPortFound(QString)),      this, SLOT(AddSerialPortToListWidget(QString)) );
@@ -38,7 +40,7 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
     serialUSBcomms.setUpSerialPort();
 
     // Kick start the process, otherwise there is a 2.0s delay until the timer first triggers.
-    announceGame();
+    //announceGame();
 }
 
 HostGameWindow::~HostGameWindow()
@@ -48,7 +50,7 @@ HostGameWindow::~HostGameWindow()
     #ifdef  INCLUDE_SERIAL_USB
         serialUSBcomms.closeSerialPort();
     #endif
-    delete ui;
+    deleteLater();
 }
 
 void HostGameWindow::hideEvent(QHideEvent *)
@@ -81,25 +83,25 @@ void HostGameWindow::SetAnnounceTimerBlock(bool state)
 
 void HostGameWindow::announceGame()
 {
-    //if (gameInfo.getIsThisPlayerInTheGame(currentPlayer) == false)  // DO I add this in?? It stops reuse of player numbers, but is needed if I use the requested team flag  // && isThisPlayerHosted[currentPlayer] == false)
-    //{
-        if (currentPlayer != 0)
-        {
-            while (gameInfo.getIsThisPlayerInTheGame(currentPlayer) == false) currentPlayer++;
-            ui->label->setText("Prepare to Host Tagger : " + QString::number(currentPlayer));
-        }
-        if (currentPlayer >24)
-        {
-            ui->label->setText("All players are hosted, press START ");
-            ui->btn_StartGame->setEnabled(true);
-            currentPlayer = 0;
-        }
-    //}
+    if (currentPlayer != 0)                                                                 // Player 0 is the dummy player
+    {
+        while (gameInfo.getIsThisPlayerInTheGame(currentPlayer) == false) currentPlayer++;
+        ui->label->setText("Prepare to Host Tagger : " + QString::number(currentPlayer));
+    }
+    if (currentPlayer > 16 && gameInfo.getNumberOfTeams() == 2) currentPlayer = 25;         // Ignore players in Team 3
+    if (currentPlayer >24)                                                                  // No more players to add
+    {
+        ui->label->setText("All players are hosted, press START ");
+        ui->btn_StartGame->setEnabled(true);
+        currentPlayer = 0;
+    }
+
     hostCurrentPlayer();
 }
 
 
 int playerDebugNum = 0;
+
 void HostGameWindow::hostCurrentPlayer()
 {
 
@@ -111,14 +113,15 @@ void HostGameWindow::hostCurrentPlayer()
         else lttoComms.setDontAnnounceGame(false);
     }
 
-    InsertToListWidget("Announce Game : Player " + QString::number(currentPlayer));
-    qDebug() << "";
-    qDebug() << "\tHostGameWindow::hostCurrentPlayer() - GameID:" + QString::number(gameInfo.getGameID());
-
-    if(playerInfo[currentPlayer].getSpyNumber() != 0)
+    //Change TeamTags if required for Spies.
+    bool wereCurrentPlayerTeamTagsActive = playerInfo[currentPlayer].getTeamTags();
+    if(gameInfo.getIsSpiesTeamTagActive() && gameInfo.getNumberOfSpies() > 0 && gameInfo.getNumberOfTeams() > 1)
     {
-        qDebug() << "HostGameWindow::hostCurrentPlayer() - This is a SPY !!!";
+        playerInfo[currentPlayer].setTeamTags(true);
     }
+
+    InsertToListWidget("Announce Game : Player " + QString::number(currentPlayer));
+    //qDebug() << "\tHostGameWindow::hostCurrentPlayer() - Player:" << currentPlayer;
 
     lttoComms.sendPacket(PACKET, gameInfo.getGameType()                        );
     lttoComms.sendPacket(DATA,   gameInfo.getGameID()                          );
@@ -161,8 +164,8 @@ void HostGameWindow::hostCurrentPlayer()
     }
     lttoComms.sendPacket(CHECKSUM);
 
-
-
+    //If the current Player did not have TeamTags active, turn them off again. (altered if they are a Spy)
+    if(wereCurrentPlayerTeamTagsActive == false) playerInfo[currentPlayer].setTeamTags(false);
 
     if(playerDebugNum != currentPlayer)
     {
@@ -178,9 +181,12 @@ void HostGameWindow::hostCurrentPlayer()
                             + ", TeamTags:" + QString::number(playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getTeamTags() ))
                             + ", Spy#:" + QString::number(playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getSpyNumber() ));
         InsertToListWidget(playerDebugData);
+
+ //TODO: Remove this, Triggers deBug messgaes for testing only
+ calculatePlayerTeam5bits(currentPlayer);
+ //TODO:
+
     }
-
-
 
 
     return;
@@ -188,36 +194,137 @@ void HostGameWindow::hostCurrentPlayer()
 
 int HostGameWindow::calculatePlayerTeam5bits(int requestedTeam)
 {
-    int playerTeam5bits = 0;
+    int assignedTeamNumber   = 0;
+    int assignedPlayerNumber = 0;
+    int playerTeam5bits      = 0;
 
-    if(requestedTeam !=0)   //
-        ;                   //To silence compiler warning.
-
-    //qDebug() << "HostGameWindow::calculatePlayerTeam5bit() - Requested Team = " << requestedTeam;
+    if(requestedTeam != 0)
+    {
+        //qDebug() << "HostGameWindow::calculatePlayerTeam5bit() - Requested Team = " << requestedTeam;
+        // Do I use this or not?
+        // If I do then the setup is trickier (I think.....)
+    }
 
     if (gameInfo.getNumberOfTeams() == 0)   //Players 1 to 24, no teams
     {
-        playerTeam5bits = 8 + (currentPlayer-1);
+        assignedTeamNumber = 0;
+        assignedPlayerNumber = currentPlayer +7;                    // For solo games: zero-based player number + 8
+
+playerTeam5bits = 8 + (currentPlayer-1);
+return playerTeam5bits;
+
     }
-    else                                    //2 bits for Team, 3 bits for PlayerID
+    else
     {
-        if      (currentPlayer > 0  && currentPlayer < 9)
+        // Assign Spies to the next team (1>2, 2>3, 3>1)
+
+        if      (currentPlayer > 0  && currentPlayer < 9)           // Team 1
         {
-            playerTeam5bits = 1 << 3;
-            playerTeam5bits += (currentPlayer - 1);
+            if (playerInfo[currentPlayer].getSpyNumber() == 0)      assignedTeamNumber = 1;     // Not a Spy
+            else
+            {
+                if      (gameInfo.getNumberOfTeams() == 2)          assignedTeamNumber = 2;     // Increment to Team 2
+                else if (gameInfo.getNumberOfTeams() == 3)          assignedTeamNumber = 2;     // Increment to Team 2
+            }
         }
-        else if (currentPlayer > 8  && currentPlayer < 17)
+        else if (currentPlayer > 8  && currentPlayer < 17)          // Team 2
         {
-            playerTeam5bits = 2 << 3;
-            playerTeam5bits += (currentPlayer - 9);
+            if (playerInfo[currentPlayer].getSpyNumber() == 0)      assignedTeamNumber = 2;     // Not a Spy
+            else
+            {
+                if      (gameInfo.getNumberOfTeams() == 2)          assignedTeamNumber = 1;     //Decrement to Team 2
+                else if (gameInfo.getNumberOfTeams() == 3)          assignedTeamNumber = 3;     //Increment to Team 3
+            }
         }
-        else if (currentPlayer > 18 && currentPlayer < 24)
+        else if (currentPlayer > 16 && currentPlayer < 25)          // Team 3
         {
-            playerTeam5bits = 3 << 3;
-            playerTeam5bits += (currentPlayer - 17);
+            if (playerInfo[currentPlayer].getSpyNumber() == 0)      assignedTeamNumber = 3;     // Not a Spy
+            else
+            {
+                if      (gameInfo.getNumberOfTeams() == 2)          assignedTeamNumber = 1;     //Impossible to get here.
+                else if (gameInfo.getNumberOfTeams() == 3)          assignedTeamNumber = 1;     //Increment/Rollover to Team 1
+            }
         }
     }
-    //qDebug() << "   HostGameWindow::calculatePlayerTeam5bits()"  << currentPlayer << displayBinary(playerTeam5bits, 8);
+
+    playerTeam5bits = (assignedTeamNumber) << 3;
+    //if (assignedTeamNumber != 0)  assignedPlayerNumber = (currentPlayer-1) % 8;
+
+    // Now the fun part, Swapping player numbers with the other spy.
+            // eg,  T1-P3 and T2-P7 becomes...
+            //      T2-P7 and T1-P3 WHILST keeping their own settings!!!
+            //      This will make debrief interesting..........
+    if (playerInfo[currentPlayer].getSpyNumber() == 0)
+    {
+        if      (assignedTeamNumber == 1) assignedPlayerNumber = currentPlayer -  1;  // 0 based player number
+        else if (assignedTeamNumber == 2) assignedPlayerNumber = currentPlayer -  9;  // 0 based player number
+        else if (assignedTeamNumber == 3) assignedPlayerNumber = currentPlayer - 17;  // 0 based player number
+    }
+    else
+    {
+        if      (currentPlayer >0 && currentPlayer < 9)      //Team 1
+        {
+            for(int n = 1; n <= gameInfo.getNumberOfSpies(); n++)
+            if      (playerInfo[currentPlayer].getSpyNumber() == n)
+            {
+                for (int x = 9; x < 18; x++)                // Swap a player from Team 2
+                {
+                    if(playerInfo[x].getSpyNumber() == n) assignedPlayerNumber = x-1;
+                }
+            }
+        }
+        else if (currentPlayer >8 && currentPlayer < 17)      //Team 2
+        {
+            for(int n = 1; n <= gameInfo.getNumberOfSpies(); n++)
+            if      (playerInfo[currentPlayer].getSpyNumber() == n)
+            {
+                if(gameInfo.getNumberOfTeams() == 2)
+                {
+                    for (int x = 1; x < 9; x++)             // Swap a player from Team 1
+                    {
+                        if(playerInfo[x].getSpyNumber() == n) assignedPlayerNumber = x-1;
+                    }
+                }
+                else
+                {
+                    for (int x = 17; x < 25; x++)           // Swap a player from Team 3
+                    {
+                        if(playerInfo[x].getSpyNumber() == n) assignedPlayerNumber = x-1;
+                    }
+                }
+            }
+            else if (currentPlayer >16 && currentPlayer < 25)      //Team 3
+            {
+                for(int n = 1; n <= gameInfo.getNumberOfSpies(); n++)
+                if      (playerInfo[currentPlayer].getSpyNumber() == n)
+                {
+                    for (int x = 1; x < 9; x++)             // Swap a player from Team 1
+                    {
+                        if(playerInfo[x].getSpyNumber() == n) assignedPlayerNumber = x-1;
+                    }
+                }
+            }
+        }
+        playerTeam5bits += assignedPlayerNumber;
+    }
+
+//    else if (playerInfo[currentPlayer].getSpyNumber() == 2)
+//    {
+
+//    }
+//    else if (playerInfo[currentPlayer].getSpyNumber() == 3)
+//    {
+
+//    }
+
+
+    if ((currentPlayer % 8) == 0) qDebug() << "   HostGameWindow::calculatePlayerTeam5bits() - Current Player = Team:"  << (((currentPlayer-1) / 8)+1) << ", Player: 8";
+    else                          qDebug() << "   HostGameWindow::calculatePlayerTeam5bits() - Current Player = Team:"  << (((currentPlayer-1) / 8)+1) << ", Player:" << (currentPlayer % 8);
+
+    qDebug() <<                               "   HostGameWindow::calculatePlayerTeam5bits() - Spy Assignment = Team:" << assignedTeamNumber << ", Player:" << assignedPlayerNumber+1;
+    qDebug() << "----";
+
+
     return playerTeam5bits;
 }
 
@@ -245,7 +352,7 @@ void HostGameWindow::AssignPlayer(int Game, int Tagger, int Flags)
         lttoComms.sendPacket(CHECKSUM);
 
 
-        bool expectingAckPlayerAssignment = true;
+        //TODO:  bool expectingAckPlayerAssignment = true;
 
         qDebug() << "HostGameWindow::AssignPlayer() " << currentPlayer << Game << Tagger, calculatePlayerTeam5bits(Flags);
     }
@@ -271,8 +378,9 @@ void HostGameWindow::AddSerialPortToListWidget(QString value)
 
 void HostGameWindow::on_btn_Start_clicked()
 {
+    //This is the Start/Stop (Debug) button on the form.
     announceGame();
-    if (ui->btn_Start->isChecked()) timerAnnounce->start(2000);
+    if (ui->btn_Start->isChecked()) timerAnnounce->start(HOST_TIMER_MSEC);
     else timerAnnounce->stop();
 }
 
@@ -286,7 +394,7 @@ void HostGameWindow::setCurrentPlayer(int value)
     currentPlayer = value;
 }
 
-void HostGameWindow::resetPlayersForNewGame()
+bool HostGameWindow::resetPlayersForNewGame()
 {
     currentPlayer = 1;
     for(int players= 0; players < 25; players++)
@@ -294,7 +402,7 @@ void HostGameWindow::resetPlayersForNewGame()
         isThisPlayerHosted[players] = false;
     }
     noMorePlayers = false;
-    assignSpies();
+    return assignSpies();
 }
 
 bool HostGameWindow::getIsThisPlayerHosted(int playerNumber) const
@@ -316,13 +424,17 @@ void HostGameWindow::on_btn_StartGame_clicked()
         countDownTimeRemaining = gameInfo.getCountDownTime();
         ui->btn_StartGame->setEnabled(false);
     }
+    else if(ui->btn_StartGame->text() == "End\nGame")
+    {
+        timerDeBrief->start(HOST_TIMER_MSEC);
+        ui->btn_StartGame->setEnabled(false);
+        ui->btn_Rehost->setEnabled(false);
+        ui->label->setText("DeBriefing..... but not just yet :-)");
+    }
     else
     {
-        //SendEndGame();
-        //ui->btn_StartGame->setText("Debrief");
-        ui->btn_StartGame->setText("Start\nthe\nGame");
-
-
+        qDebug() << "HostGameWindow::on_btn_StartGame_clicked() - Not quite sure how we got here......";
+        //ui->btn_StartGame->setText("Start\nthe\nGame");
     }
 
 }
@@ -352,6 +464,15 @@ void HostGameWindow::sendCountDown()
         InsertToListWidget("CountDownTime = " + QString::number(countDownTimeRemaining));
         countDownTimeRemaining--;
     }
+}
+
+void HostGameWindow::deBriefTaggers()
+{
+    lttoComms.sendPacket(PACKET , REQUEST_TAG_REPORT);
+    lttoComms.sendPacket(DATA, gameInfo.getGameID() );
+    lttoComms.sendPacket(DATA, 0x20 );    // Team and player number (8 bits) - Team number (4 bits) one-based, Player number (4 bits) zero-based
+    lttoComms.sendPacket(DATA, 0x0F );
+    lttoComms.sendPacket(CHECKSUM);
 }
 
 int HostGameWindow::ConvertDecToBCD(int dec)
@@ -384,8 +505,6 @@ void HostGameWindow::on_btn_TestMessage_clicked()
     lttoComms.sendPacket(TAG,  0x00);
     return;
 
-
-
     //P80:D48:D45:D4C:D4C:D4F:CF4:
     lttoComms.sendPacket(PACKET,  0x80);
     lttoComms.sendPacket(DATA,    0x48);
@@ -395,138 +514,9 @@ void HostGameWindow::on_btn_TestMessage_clicked()
     lttoComms.sendPacket(DATA,    0x4F);
     lttoComms.sendPacket(CHECKSUM     );
     return;
-
-
-//    const int Game = 0;
-
-//        ////--------------------------------------------------
-//        //  Host 2TeamRespawn Roonka Game (captured packets from LTTO host)     - WORKS - Tagger screen shows 2TRS
-//        QString hostedGameType         = "0C";
-//        QString hostedGameID           = "42";
-//        QString hostedGameTime         = "15";
-//        QString hostedTagsAvailable    = "99";
-//        QString hostedReloadsAvailable = "FF";
-//        QString hostedShieldTime       = "60";
-//        QString hostedMegaTags         = "15";
-//        QString hostedPackedFlags1     = "A8";
-//        QString hostedPackedFlags2     = "32";
-//        QString name1                  = "32";
-//        QString name2                  = "54";
-//        QString name3                  = "52";
-//        QString name4                  = "53";
-//        QString checkSum               = "00";
-
-//        if      (Game == 0) qDebug() << endl << "Sending Roonka Game";
-
-//        else if (Game ==1)
-//        {
-//            qDebug() << endl << "Sending Patent Game";
-//            ////--------------------------------------------------
-//            //  Game info from Patent                                           - WORKS - Tagger screen shows 2ZON
-//            hostedGameType         = "0C";  //HEX
-//            hostedGameID           = "2C";  //HEX
-//            hostedGameTime         = "15";  //DEC
-//            hostedTagsAvailable    = "50";  //DEC
-//            hostedReloadsAvailable = "FF";  //DEC
-//            hostedShieldTime       = "45";  //DEC
-//            hostedMegaTags         = "12";  //DEC
-//            hostedPackedFlags1     = "28";  //HEX
-//            hostedPackedFlags2     = "A2";  //HEX
-//            name1                  = "32";  //HEX
-//            name2                  = "5A";  //HEX
-//            name3                  = "4F";  //HEX
-//            name4                  = "4E";  //HEX
-//            checkSum               = "ZZ";
-//            //checkSum               = "E6";  //HEX
-//        }
-
-//        else if (Game ==2)
-//        {
-//            qDebug() << endl << "Sending LazerSwarm Game";
-//            ////--------------------------------------------------
-//            //  Game info from Patent                                           - WORKS - Tagger responds with RequestJoinGame
-//            hostedGameType         = "02";  //HEX
-//            hostedGameID           = "7C";  //HEX
-//            hostedGameTime         = "10";  //DEC
-//            hostedTagsAvailable    = "10";  //DEC
-//            hostedReloadsAvailable = "FF";  //DEC
-//            hostedShieldTime       = "15";  //DEC
-//            hostedMegaTags         = "10";  //DEC
-//            hostedPackedFlags1     = "20";  //HEX
-//            hostedPackedFlags2     = "01";  //HEX
-//            name1                  = "00";  //HEX
-//            name2                  = "00";  //HEX
-//            name3                  = "00";  //HEX
-//            name4                  = "00";  //HEX
-//            checkSum               = "ZZ";
-//            //checkSum               = "E3";  //HEX
-//        }
-
-//        else if (Game ==3)
-//        {
-//            qDebug() << endl << "Sending LTTO default Game";
-//            ////--------------------------------------------------
-//            //  Game info from Patent                                               - WORKS - Tagger responds with RequestJoinGame
-//            hostedGameType         = "02";  //HEX
-//            hostedGameID           = "A1";  //HEX
-//            hostedGameTime         = "10";  //DEC
-//            hostedTagsAvailable    = "10";  //DEC
-//            hostedReloadsAvailable = "FF";  //DEC
-//            hostedShieldTime       = "15";  //DEC
-//            hostedMegaTags         = "10";  //DEC
-//            hostedPackedFlags1     = "20";  //HEX
-//            hostedPackedFlags2     = "01";  //HEX
-//            name1                  = "00";  //HEX
-//            name2                  = "00";  //HEX
-//            name3                  = "00";  //HEX
-//            name4                  = "00";  //HEX
-//            checkSum               = "ZZ";
-//            //checkSum               = "08";  //HEX
-//        }
-
-//        else if (Game ==4)
-//        {
-//            qDebug() << endl << "Sending Copy of saved LazerSwarm";
-//            ////--------------------------------------------------
-//            //  Game info from Patent                                               - NoGo !
-//            hostedGameType         = "02";
-//            hostedGameID           = "3B";
-//            hostedGameTime         = "10";
-//            hostedTagsAvailable    = "0A";
-//            hostedReloadsAvailable = "FF";
-//            hostedShieldTime       = "0F";  //DEC
-//            hostedMegaTags         = "0A";  //DEC
-//            hostedPackedFlags1     = "14";  //HEX
-//            hostedPackedFlags2     = "01";  //HEX
-//            name1                  = "00";  //HEX
-//            name2                  = "00";  //HEX
-//            name3                  = "00";  //HEX
-//            name4                  = "00";  //HEX
-//            checkSum               = "ZZ";
-//            //checkSum               = "08";  //HEX
-//        }
-
-
-//        serialComms.sendPacket(PACKET,  hostedGameType);
-//        serialComms.sendPacket(DATA,    hostedGameID);
-//        serialComms.sendPacket(DATA,    hostedGameTime);
-//        serialComms.sendPacket(DATA,    hostedTagsAvailable);
-//        serialComms.sendPacket(DATA,    hostedReloadsAvailable);
-//        serialComms.sendPacket(DATA,    hostedShieldTime);
-//        serialComms.sendPacket(DATA,    hostedMegaTags);
-//        serialComms.sendPacket(DATA,    hostedPackedFlags1);
-//        serialComms.sendPacket(DATA,    hostedPackedFlags2);
-//        if (hostedGameType == 0x0C)
-//        {
-//            serialComms.sendPacket(DATA, name1);
-//            serialComms.sendPacket(DATA, name2);
-//            serialComms.sendPacket(DATA, name3);
-//            serialComms.sendPacket(DATA, name4);
-//        }
-//        serialComms.sendPacket(CHECKSUM, 0);
 }
 
-void HostGameWindow::assignSpies()
+bool HostGameWindow::assignSpies()
 {
     InsertToListWidget("HostGameWindow::assignSpies()" + QString::number(gameInfo.getNumberOfSpies()));
 
@@ -536,7 +526,7 @@ void HostGameWindow::assignSpies()
         playerInfo[x].setSpyNumber(0);
     }
 
-    if(gameInfo.getNumberOfSpies() == 0) return;
+    if(gameInfo.getNumberOfSpies() == 0) return true;
 
     //add some checking so that NumberOfSpies is !> number of players in any team.
     int numberOfPlayersInTeam1 = 0;
@@ -548,42 +538,44 @@ void HostGameWindow::assignSpies()
         if (gameInfo.getIsThisPlayerInTheGame(x+8))     numberOfPlayersInTeam2++;
         if (gameInfo.getIsThisPlayerInTheGame(x+16))    numberOfPlayersInTeam3++;
     }
-    if(     (gameInfo.getNumberOfSpies() *2) >= numberOfPlayersInTeam1 ||
-            (gameInfo.getNumberOfSpies() *2) >= numberOfPlayersInTeam2 ||
-            (gameInfo.getNumberOfSpies() *2) >= numberOfPlayersInTeam3  )
+    if(     (gameInfo.getNumberOfSpies()) >= (numberOfPlayersInTeam1*2) ||
+            (gameInfo.getNumberOfSpies()) >= (numberOfPlayersInTeam2*2) ||
+            (gameInfo.getNumberOfSpies()) >= (numberOfPlayersInTeam3*2)  )
             {
-                int action = QMessageBox::warning(this,tr("Are you sure?"), tr("More than 50% of your players are spies. This will make the game <i>'interesting'</i> ! \nPress OK to continue, or Cancel to set Spies to Zero."), QMessageBox::Ok | QMessageBox::Cancel);
+                int action = QMessageBox::warning(this,tr("Are you sure?"), tr("More than 50% of your players in at least one team are spies. This will make the game <i>'INTERESTING'</i> ! \nPress OK to continue, or Cancel to set Spies to Zero."), QMessageBox::Ok | QMessageBox::Cancel);
                 if (action == QMessageBox::Cancel) gameInfo.setNumberOfSpies(0);
             }
-
-    //assign that player as Spy in each time (Spy = 1, Spy = 2)
-    int randomNumber;
-    for (int s = 1; s <= gameInfo.getNumberOfSpies(); s++)
+    if(    (gameInfo.getNumberOfSpies()) > (numberOfPlayersInTeam1) ||
+           (gameInfo.getNumberOfSpies()) > (numberOfPlayersInTeam2) ||
+           (gameInfo.getNumberOfSpies()) > (numberOfPlayersInTeam3)  )
     {
-        bool loop = true;
-        while (loop == true)
-        {
-            randomNumber = GetRandomnumber(1, 8);
-            qDebug() <<"Random Number is " << randomNumber;
+        QMessageBox::critical(this,"Error","There are more spies than players in one or more of your teams.\n\nThis is illogical.\n\nPlease try again.");
+        //ui->btn_StartGame->setEnabled(false);
+        return false;
+    }
 
-            if (playerInfo[randomNumber].getSpyNumber() == 0)
+    //assign that player as Spy in each team (Spy = 1, Spy = 2)
+    int spyPlayerNumber;
+    bool loop = false;
+
+    for (int spyNumber = 1; spyNumber <= gameInfo.getNumberOfSpies(); spyNumber++)
+    {
+        for (int teamNumber = 0; teamNumber < gameInfo.getNumberOfTeams(); teamNumber++)
+        {
+            loop = true;
+            while (loop == true)
             {
-                playerInfo[randomNumber   ].setSpyNumber(s);
-                playerInfo[randomNumber+8 ].setSpyNumber(s);
-                playerInfo[randomNumber+16].setSpyNumber(s);
-                if(gameInfo.getIsSpiesTeamTagActive() )
+                spyPlayerNumber = GetRandomNumber( (1+(teamNumber*8)), (8+(teamNumber*8)) );
+                if (playerInfo[spyPlayerNumber].getSpyNumber() == 0 && gameInfo.getIsThisPlayerInTheGame(spyPlayerNumber))
                 {
-                    playerInfo[randomNumber   ].setTeamTags(true);
-                    playerInfo[randomNumber+8 ].setTeamTags(true);
-                    playerInfo[randomNumber+16].setTeamTags(true);
+                    playerInfo[spyPlayerNumber].setSpyNumber(spyNumber);
+                    qDebug() << "Player " << spyPlayerNumber <<  "\tis Spy #" << spyNumber  << "\tand is in the game - " << gameInfo.getIsThisPlayerInTheGame(spyPlayerNumber);
+                    loop = false;
                 }
-                loop = false;
             }
         }
     }
-
-    //Check this value when hosting a player, if (Spy != 0) swap teams.
-    //Not sure how to do 3 teams yet, 1>2,2>3,3>1
+    return true;
 }
 
 void HostGameWindow::OpenPorts()
@@ -596,7 +588,7 @@ void HostGameWindow::ClosePorts()
 
 }
 
-int HostGameWindow::GetRandomnumber(int min, int max)
+int HostGameWindow::GetRandomNumber(int min, int max)
 {
     return ((qrand() % ((max + 1) - min)) + min);
 }

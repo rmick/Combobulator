@@ -26,7 +26,7 @@ const char  BEACON      = 'B';
 
 //Internal timers
 const int   INTERPACKET_DELAY_MSEC  = 75;
-const int   HOST_TIMER_MSEC         = 1000;
+const int   HOST_TIMER_MSEC         = 1250;
 
 
 //Packet Header Type Codes
@@ -41,6 +41,7 @@ const int   ASSIGN_PLAYER_FAIL      = 0x0F;
 const int   REQUEST_JOIN_GAME       = 0x10;
 const int   ACK_PLAYER_ASSIGN       = 0x11;
 const int   REQUEST_ASSISTANCE      = 0x20;
+const int   REQUEST_TAG_REPORT      = 0x31;
 
 const int   TEXT_MESSAGE            = 0x80;
 const int   SPECIAL_ATTACK          = 0x90;
@@ -67,7 +68,7 @@ const int   LIMITED_MEGAS_FLAG      = 5;
 const int   TEAM_TAGS_FLAG          = 4;
 const int   MEDIC_MODE_FLAG         = 3;
 const int   SLOW_TAG_FLAG           = 2;
-const int   HUNT_THE_PREY_FLAG      = 2;
+const int   HUNT_THE_PREY_FLAG      = 1;
 const int   REVERSE_HUNT_DIR_FLAG   = 0;
 
 //Packed byte, FLAGS2

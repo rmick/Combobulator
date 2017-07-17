@@ -280,6 +280,16 @@ void Game::setIsSpiesTeamTagActive(bool value)
     isSpiesTeamTagActive = value;
 }
 
+int Game::getTotalNumberOfPlayersInGame() const
+{
+    int count = 0;
+    for (int x = 1; x<25;x++)
+    {
+        if(getIsThisPlayerInTheGame(x)) count++;
+    }
+    return count;
+}
+
 int Game::extractInteger(QString &dG)
 {
     return dG.right((dG.length() - (dG.indexOf(":")+1) )).toInt();      //extracts all the chars to right of the ":" and convert to an Int

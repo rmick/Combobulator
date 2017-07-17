@@ -2,6 +2,7 @@
 #include "ui_LttoMainWindow.h"
 #include <QMessageBox>
 #include <QDebug>
+#include <QStandardPaths>
 #include <QFileDialog>
 #include <QInputDialog>
 #include <QTime>
@@ -32,6 +33,7 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
     ui->actionuse_LazerSwarm->setChecked(true);
     serialUSBactive = true;
     tcpCommsActive = true;
+    gameInfo.setIsSpiesTeamTagActive(false);
 
 
 
@@ -111,7 +113,15 @@ void LttoMainWindow::on_btn_StartGame_clicked()
 //    {
         hostGameWindow = new HostGameWindow(this);
 //    }
-    hostGameWindow->resetPlayersForNewGame();
+    if(gameInfo.getTotalNumberOfPlayersInGame() == 0)
+    {
+        ui->btn_StartGame->setEnabled(false);
+        QMessageBox::warning(this,"Error", "There are no players in the game");
+        return;
+    }
+    if(hostGameWindow->resetPlayersForNewGame() == false) return;
+    gameInfo.setGameID(hostGameWindow->GetRandomNumber(1,255));
+    qDebug() << "LttoMainWindow::on_btn_StartGame_clicked() - GameID = " << gameInfo.getGameID();
     hostGameWindow->show();
 }
 
@@ -372,42 +382,54 @@ void LttoMainWindow::UpdateGameControlSettings()
         case Game::Ltag0:
             ui->btn_Ltag->setChecked(true);
             ui->btn_NoTeams->setChecked(true);
+            ui->btn_Spies->setEnabled(false);
+            gameInfo.setNumberOfSpies(0);
             break;
         case Game::Ltag2:
             ui->btn_Ltag->setChecked(true);
             ui->btn_TwoTeams->setChecked(true);
+            ui->btn_Spies->setEnabled(true);
             break;
         case Game::Ltag3:
             ui->btn_Ltag->setChecked(true);
             ui->btn_ThreeTeams->setChecked(true);
+            ui->btn_Spies->setEnabled(true);
             break;
         case Game::HideSeek2:
             ui->btn_HideAndSeek->setChecked(true);
             ui->btn_TwoTeams->setChecked(true);
+            ui->btn_Spies->setEnabled(true);
             break;
         case Game::HideSeek3:
             ui->btn_HideAndSeek->setChecked(true);
             ui->btn_ThreeTeams->setChecked(true);
+            ui->btn_Spies->setEnabled(true);
             break;
         case Game::Kings2:
             ui->btn_Kings->setChecked(true);
             ui->btn_TwoTeams->setChecked(true);
+            ui->btn_Spies->setEnabled(true);
             break;
         case Game::Kings3:
             ui->btn_Kings->setChecked(true);
             ui->btn_ThreeTeams->setChecked(true);
+            ui->btn_Spies->setEnabled(true);
             break;
         case Game::OwnZone0:
             ui->btn_OwnTheZone->setChecked(true);
             ui->btn_NoTeams->setChecked(true);
+            ui->btn_Spies->setEnabled(false);
+            gameInfo.setNumberOfSpies(0);
             break;
         case Game::OwnZone2:
             ui->btn_OwnTheZone->setChecked(true);
             ui->btn_TwoTeams->setChecked(true);
+            ui->btn_Spies->setEnabled(true);
             break;
         case Game::OwnZone3:
             ui->btn_OwnTheZone->setChecked(true);
             ui->btn_ThreeTeams->setChecked(true);
+            ui->btn_Spies->setEnabled(true);
             break;
         default:
             qDebug() << "No match in the switch for : " << gameInfo.getGameType();
@@ -470,6 +492,12 @@ qDebug() << "All Player Settings Locked and Loaded :-)";
 
 void LttoMainWindow::saveFile()
 {
+    QString path = QStandardPaths::standardLocations( QStandardPaths::AppDataLocation ).value(0);
+
+    QDir myDir(path);
+    if (!myDir.exists()) myDir.mkpath(path);
+    QDir::setCurrent(path);
+
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save Game Configuration"), "", tr("Ltto Game (*.lto);; All Files (*)"));
     if (fileName.isEmpty()) return;
     else
@@ -492,6 +520,12 @@ void LttoMainWindow::saveFile()
 
 void LttoMainWindow::loadFile()
 {
+    QString path = QStandardPaths::standardLocations( QStandardPaths::AppDataLocation ).value(0);
+
+    QDir myDir(path);
+    if (!myDir.exists()) myDir.mkpath(path);
+    QDir::setCurrent(path);
+
     qDebug() << "Loading show file";
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open Ltto Game"), "", tr("Ltto Game (*.lto);; All Files (*)") );
     if (fileName.isEmpty()) return;
@@ -510,6 +544,10 @@ void LttoMainWindow::loadFile()
 
         UpdateGameControlSettings();
         UpdateGlobalPlayerControlSettings();
+
+        //Check for Players, if there are at least two players, enable the Start button.
+        if (gameInfo.getTotalNumberOfPlayersInGame() > 1) ui->btn_StartGame->setEnabled(true);
+
     }
 }
 
@@ -557,4 +595,9 @@ void LttoMainWindow::on_btn_Flags_clicked()
 {
     if(flagsWindow==NULL) flagsWindow = new FlagsWindow;
     flagsWindow->show();
+}
+
+void LttoMainWindow::on_actionAbout_triggered()
+{
+    //TODO:Open an Anout form
 }

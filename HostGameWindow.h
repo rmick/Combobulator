@@ -25,7 +25,9 @@ public:
     int getCurrentPlayer() const;
     void setCurrentPlayer(int value);
 
-    void resetPlayersForNewGame();
+    bool resetPlayersForNewGame();
+
+    int GetRandomNumber(int min, int max);
 
 public slots:
 
@@ -45,6 +47,8 @@ private slots:
 
     void sendCountDown();
 
+    void deBriefTaggers();
+
     void on_btn_Cancel_clicked();
 
     void on_btn_Start_clicked();
@@ -61,6 +65,7 @@ private:
     Ui::HostGameWindow  *ui;
     QTimer              *timerAnnounce;
     QTimer              *timerCountDown;
+    QTimer              *timerDeBrief;
     ReHostTagger        *reHostTagger;
 
     bool    bluetoothActive;
@@ -77,10 +82,9 @@ private:
     int     ConvertDecToBCD(int dec);
     int     ConvertBCDtoDec(int bcd);
     void    blockingDelay(int mSec);
-    void    assignSpies();
+    bool    assignSpies();
     void    OpenPorts();
     void    ClosePorts();
-    int     GetRandomnumber(int min, int max);
 };
 
 #endif // HOSTGAMEWINDOW_H

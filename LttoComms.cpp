@@ -1,6 +1,7 @@
 #include "LttoComms.h"
 #include <QEventLoop>
 #include <QDebug>
+//#include "TCPComms.h"
 
 LttoComms lttoComms;
 
@@ -8,6 +9,8 @@ LttoComms::LttoComms(QObject *parent) : QObject(parent)
 {
     useLazerSwarm = true;          //TODO: Set this up in Preferences.
     dontAnnounceGame = false;
+
+    //connect(&tcpComms,   SIGNAL(newTCPdata(QByteArray)),  this, SLOT(receivePacket(QByteArray)) );
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -159,6 +162,11 @@ int LttoComms::getMissedAnnounceCount() const
 void LttoComms::setMissedAnnounceCount(int value)
 {
     missedAnnounceCount = value;
+}
+
+void LttoComms::androidRxPacket(QByteArray data)
+{
+    receivePacket(data);
 }
 
 bool LttoComms::getDontAnnounceGame() const
