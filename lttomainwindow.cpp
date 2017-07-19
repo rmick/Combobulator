@@ -21,11 +21,15 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
 
 {
     ui->setupUi(this);
+    this->setWindowTitle("LTTO Combobulator");
     gameInfo.setGameType(gameInfo.Ltag0);
     ui->btn_NoTeams->setChecked(true);
     gameInfo.setNumberOfTeams(0);
     ui->btn_Spies->setEnabled(false);
     ui->btn_StartGame->setEnabled(false);
+    qsrand(static_cast<uint>(QTime::currentTime().msec()));
+
+    ui->btn_CustomGame->setVisible(false);
 
 
 
@@ -37,18 +41,8 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
 
 
 
-
-    qsrand(static_cast<uint>(QTime::currentTime().msec()));
-
     //TODO: Remove these, they are for testing only.
     QWidget::move(0,0);
-
-//    gameInfo.setIsThisPlayerInTheGame(1, true);
-//    gameInfo.setIsThisPlayerInTheGame(8, true);
-//    gameInfo.setIsThisPlayerInTheGame(9, true);
-//    gameInfo.setIsThisPlayerInTheGame(16, true);
-//    gameInfo.setIsThisPlayerInTheGame(17, true);
-//    gameInfo.setIsThisPlayerInTheGame(24, true);
     //End of test/debug code.
 }
 
@@ -139,11 +133,13 @@ void LttoMainWindow::on_btn_SlowTags_clicked()
     if      (getSlowTags() == false)
     {
         ui->btn_SlowTags->setText("Slow Tags ON");
+        //ui->btn_SlowTags->setStyleSheet("font: bold;");
         setSlowTags(true);
     }
     else if (getSlowTags() == true)
     {
         ui->btn_SlowTags->setText("Slow Tags OFF");
+        //ui->btn_SlowTags->setStyleSheet("font: normal;");
         setSlowTags(false);
     }
 }
@@ -153,11 +149,13 @@ void LttoMainWindow::on_btn_MedicMode_clicked()
     if      (getMedicMode() == false)
     {
         ui->btn_MedicMode->setText("Medic Mode ON");
+        //ui->btn_MedicMode->setStyleSheet("font: bold;");
         setMedicMode(true);
     }
     else if (getMedicMode() == true)
     {
         ui->btn_MedicMode->setText("Medic Mode OFF");
+        //ui->btn_MedicMode->setStyleSheet("font: normal;");
         setMedicMode(false);
     }
 }
@@ -167,11 +165,13 @@ void LttoMainWindow::on_btn_TeamTags_clicked()
     if      (getTeamTags() == false)
     {
         ui->btn_TeamTags->setText("Team Tags ON");
+        //ui->btn_TeamTags->setStyleSheet("font: bold;");
         setTeamTags(true);
     }
     else if (getTeamTags() == true)
     {
         ui->btn_TeamTags->setText("Team Tags OFF");
+        //ui->btn_TeamTags->setStyleSheet("font: normal;");
         setTeamTags(false);
     }
 }

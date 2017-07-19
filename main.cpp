@@ -1,14 +1,16 @@
 #include "LttoMainWindow.h"
 #include <QApplication>
-//#include "Game.h"
-//#include "Players.h"
 #include "TCPComms.h"
+#include <QFile>
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
-    LttoMainWindow  w;
-    w.show();
+    QCoreApplication::setApplicationName( QString("The Combobulator") );
+    QApplication::setDesktopSettingsAware(false);
+    QApplication::setStyle("plastique");
+    QApplication theApp(argc, argv);
+    LttoMainWindow  lttoMainWindow;
+    lttoMainWindow.show();
     TCPComms tcpComms;
-    return a.exec();
+    return theApp.exec();
 }

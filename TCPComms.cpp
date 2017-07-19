@@ -8,6 +8,7 @@ TCPComms::TCPComms(QObject *parent) :
     isConnected = false;
 
     connect(tcpSocket,     SIGNAL(connected()),                this,       SLOT(connected()) );
+    connect(tcpSocket,     SIGNAL(connected()),                &lttoComms, SLOT(TCPconnected(bool)) );
     connect(tcpSocket,     SIGNAL(disconnected()),             this,       SLOT(disconnected()) );
     connect(tcpSocket,     SIGNAL(readyRead()),                this,       SLOT(receivePacket()) );
     connect(tcpSocket,     SIGNAL(bytesWritten(qint64)),       this,       SLOT(bytesWritten(qint64)) );
@@ -15,7 +16,7 @@ TCPComms::TCPComms(QObject *parent) :
     connect(&lttoComms,    SIGNAL(sendSerialData(QByteArray)), this,       SLOT(sendPacket(QByteArray)) );
     connect(this,          SIGNAL(newTCPdata(QByteArray)),     &lttoComms, SLOT(receivePacket(QByteArray)) );
 
-    tcpSocket->connectToHost("192.168.2.1",8000);
+    tcpSocket->connectToHost(HOST_IP_ADDRESS, 8000);
 }
 
 void TCPComms::connected()
@@ -39,8 +40,8 @@ void TCPComms::receivePacket()
 {
     QByteArray rX;
     rX = tcpSocket->readAll();
-    //emit newTCPdata(rX);
-    lttoComms.androidRxPacket(rX);
+    //emit newTCPdata(rX);          // Does not work on Android for some unknown reason.
+    lttoComms.androidRxPacket(rX);  // This is the simple workaround :-)
     //qDebug() << "          TCPComms::receivePacket() - " + rX;
 }
 

@@ -83,6 +83,10 @@ void HostGameWindow::SetAnnounceTimerBlock(bool state)
 
 void HostGameWindow::announceGame()
 {
+    if (lttoComms.getTcpCommsConnected() == false)  ui->led_Status->setStyleSheet("background-color: yellow; border-style: outset; border-width: 2px; border-radius: 10px; border-color: grey;");
+    else                                            ui->led_Status->setStyleSheet("background-color: green; border-style: outset; border-width: 2px; border-radius: 10px; border-color: grey;");
+
+
     if (currentPlayer != 0)                                                                 // Player 0 is the dummy player
     {
         while (gameInfo.getIsThisPlayerInTheGame(currentPlayer) == false) currentPlayer++;
@@ -216,7 +220,7 @@ return playerTeam5bits;
     }
     else
     {
-        // Assign Spies to the next team (1>2, 2>3, 3>1)
+        // Assign Spies to the next team (1>2, 2>3 or 2>1, 3>1)
 
         if      (currentPlayer > 0  && currentPlayer < 9)           // Team 1
         {
@@ -248,14 +252,15 @@ return playerTeam5bits;
     }
 
     playerTeam5bits = (assignedTeamNumber) << 3;
-    //if (assignedTeamNumber != 0)  assignedPlayerNumber = (currentPlayer-1) % 8;
+
 
     // Now the fun part, Swapping player numbers with the other spy.
             // eg,  T1-P3 and T2-P7 becomes...
             //      T2-P7 and T1-P3 WHILST keeping their own settings!!!
             //      This will make debrief interesting..........
-    if (playerInfo[currentPlayer].getSpyNumber() == 0)
+    if (playerInfo[currentPlayer].getSpyNumber() == 0)                      // Not a Spy
     {
+        //assignedPlayerNumber = currentPlayer -  1;
         if      (assignedTeamNumber == 1) assignedPlayerNumber = currentPlayer -  1;  // 0 based player number
         else if (assignedTeamNumber == 2) assignedPlayerNumber = currentPlayer -  9;  // 0 based player number
         else if (assignedTeamNumber == 3) assignedPlayerNumber = currentPlayer - 17;  // 0 based player number
@@ -267,9 +272,9 @@ return playerTeam5bits;
             for(int n = 1; n <= gameInfo.getNumberOfSpies(); n++)
             if      (playerInfo[currentPlayer].getSpyNumber() == n)
             {
-                for (int x = 9; x < 18; x++)                // Swap a player from Team 2
+                for (int x = 9; x < 17; x++)                // Swap a player from Team 2
                 {
-                    if(playerInfo[x].getSpyNumber() == n) assignedPlayerNumber = x-1;
+                    if(playerInfo[x].getSpyNumber() == n) assignedPlayerNumber = x-9;
                 }
             }
         }
@@ -289,39 +294,29 @@ return playerTeam5bits;
                 {
                     for (int x = 17; x < 25; x++)           // Swap a player from Team 3
                     {
-                        if(playerInfo[x].getSpyNumber() == n) assignedPlayerNumber = x-1;
-                    }
-                }
-            }
-            else if (currentPlayer >16 && currentPlayer < 25)      //Team 3
-            {
-                for(int n = 1; n <= gameInfo.getNumberOfSpies(); n++)
-                if      (playerInfo[currentPlayer].getSpyNumber() == n)
-                {
-                    for (int x = 1; x < 9; x++)             // Swap a player from Team 1
-                    {
-                        if(playerInfo[x].getSpyNumber() == n) assignedPlayerNumber = x-1;
+                        if(playerInfo[x].getSpyNumber() == n) assignedPlayerNumber = x-17;
                     }
                 }
             }
         }
-        playerTeam5bits += assignedPlayerNumber;
+        else if (currentPlayer >16 && currentPlayer < 25)      //Team 3
+        {
+            for(int n = 1; n <= gameInfo.getNumberOfSpies(); n++)
+            if      (playerInfo[currentPlayer].getSpyNumber() == n)
+            {
+                for (int x = 1; x < 9; x++)             // Swap a player from Team 1
+                {
+                    if(playerInfo[x].getSpyNumber() == n) assignedPlayerNumber = x-1;
+                }
+            }
+        }
     }
+    playerTeam5bits += assignedPlayerNumber;
+    int spyPlayerNumber = (assignedPlayerNumber + (8 * (assignedTeamNumber-1)) + 1);
+    if ((currentPlayer % 8) == 0) qDebug() << "   HostGameWindow::calculatePlayerTeam5bits() - Current Player = " << currentPlayer <<   "\t- Team:" << assignedTeamNumber << ", Player: 8";
+    else                          qDebug() << "   HostGameWindow::calculatePlayerTeam5bits() - Current Player = " << currentPlayer <<   "\t- Team:" << assignedTeamNumber << ", Player:" << (currentPlayer % 8);
 
-//    else if (playerInfo[currentPlayer].getSpyNumber() == 2)
-//    {
-
-//    }
-//    else if (playerInfo[currentPlayer].getSpyNumber() == 3)
-//    {
-
-//    }
-
-
-    if ((currentPlayer % 8) == 0) qDebug() << "   HostGameWindow::calculatePlayerTeam5bits() - Current Player = Team:"  << (((currentPlayer-1) / 8)+1) << ", Player: 8";
-    else                          qDebug() << "   HostGameWindow::calculatePlayerTeam5bits() - Current Player = Team:"  << (((currentPlayer-1) / 8)+1) << ", Player:" << (currentPlayer % 8);
-
-    qDebug() <<                               "   HostGameWindow::calculatePlayerTeam5bits() - Spy Assignment = Team:" << assignedTeamNumber << ", Player:" << assignedPlayerNumber+1;
+    qDebug() <<                               "   HostGameWindow::calculatePlayerTeam5bits() - Spy Player =     " << spyPlayerNumber << "\t- Team:" << assignedTeamNumber << ", Player:" << assignedPlayerNumber+1 << ", Spy# " << playerInfo[currentPlayer].getSpyNumber();
     qDebug() << "----";
 
 
@@ -351,7 +346,6 @@ void HostGameWindow::AssignPlayer(int Game, int Tagger, int Flags)
         lttoComms.sendPacket(DATA,    calculatePlayerTeam5bits(preferedTeam) );
         lttoComms.sendPacket(CHECKSUM);
 
-
         //TODO:  bool expectingAckPlayerAssignment = true;
 
         qDebug() << "HostGameWindow::AssignPlayer() " << currentPlayer << Game << Tagger, calculatePlayerTeam5bits(Flags);
@@ -376,7 +370,7 @@ void HostGameWindow::AddSerialPortToListWidget(QString value)
     InsertToListWidget(portFound);
 }
 
-void HostGameWindow::on_btn_Start_clicked()
+void HostGameWindow::on_btn_Start_clicked()     //DeBug only. Remove it later.
 {
     //This is the Start/Stop (Debug) button on the form.
     announceGame();
@@ -558,6 +552,8 @@ bool HostGameWindow::assignSpies()
     int spyPlayerNumber;
     bool loop = false;
 
+    qDebug() << "";
+    qDebug() << "------------------------------------------------";
     for (int spyNumber = 1; spyNumber <= gameInfo.getNumberOfSpies(); spyNumber++)
     {
         for (int teamNumber = 0; teamNumber < gameInfo.getNumberOfTeams(); teamNumber++)
@@ -574,7 +570,10 @@ bool HostGameWindow::assignSpies()
                 }
             }
         }
+        qDebug() << "------------------------------------------------";
     }
+    qDebug() << "";
+
     return true;
 }
 

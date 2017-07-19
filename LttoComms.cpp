@@ -154,6 +154,16 @@ void LttoComms::receivePacket(QByteArray RxData)
     }
 }
 
+bool LttoComms::getTcpCommsConnected() const
+{
+    return tcpCommsConnected;
+}
+
+void LttoComms::setTcpCommsConnected(bool value)
+{
+    tcpCommsConnected = value;
+}
+
 int LttoComms::getMissedAnnounceCount() const
 {
     return missedAnnounceCount;
@@ -167,6 +177,11 @@ void LttoComms::setMissedAnnounceCount(int value)
 void LttoComms::androidRxPacket(QByteArray data)
 {
     receivePacket(data);
+}
+
+void LttoComms::TCPconnected(bool state)
+{
+    tcpCommsConnected = state;
 }
 
 bool LttoComms::getDontAnnounceGame() const

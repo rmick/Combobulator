@@ -6,8 +6,9 @@
 
 QT       += core gui
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets network #serialport
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets network #serialport  # REMOVE the hash before the word serialport to enable USB for Lazerswarm
 TARGET = LTTO_Host
+DEPLOYMENT.display_name = Combobulator
 TEMPLATE = app
 
 
@@ -23,8 +24,8 @@ SOURCES +=  main.cpp\
 	    LttoComms.cpp \
 	    FlagsWindow.cpp \
 	    SerialUSBcomms.cpp \
-    ReHostTagger.cpp \
-    AboutForm.cpp
+	    ReHostTagger.cpp \
+	    AboutForm.cpp
 
 
 
@@ -41,8 +42,8 @@ HEADERS  += \
 	    LttoComms.h \
 	    FlagsWindow.h \
 	    SerialUSBcomms.h \
-    ReHostTagger.h \
-    AboutForm.h
+	    ReHostTagger.h \
+	    AboutForm.h
 
 
 FORMS    += \
@@ -52,5 +53,5 @@ FORMS    += \
 	    LttoMainWindow.ui \
 	    SyncTaggers.ui \
 	    FlagsWindow.ui \
-    ReHostTagger.ui \
-    AboutForm.ui
+	    ReHostTagger.ui \
+	    AboutForm.ui

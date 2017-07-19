@@ -15,7 +15,9 @@
 // If enabling this #define, also remove the # from the command 'serialport' in line 9 of the LTTO_host.pro file
 //#define INCLUDE_SERIAL_USB
 
-
+//  WiFi stuff
+const QString HOST_IP_ADDRESS   = "192.186.2.1";
+const QString WIFI_PASSWORD     = "LTAG42";
 
 //LTTO library packet type indentifiers
 const char  PACKET      = 'P';
@@ -27,7 +29,6 @@ const char  BEACON      = 'B';
 //Internal timers
 const int   INTERPACKET_DELAY_MSEC  = 75;
 const int   HOST_TIMER_MSEC         = 1250;
-
 
 //Packet Header Type Codes
 const int   ANNOUNCE    = 0x00;
@@ -57,7 +58,7 @@ const int   DEFAULT_COUNTDOWN_TIME  = 5;
 const int   DEFAULT_RELOADS         = 100;        // 100 = Unlimited
 const int   DEFAULT_HEALTH          = 25;
 const int   DEFAULT_SHEILDS         = 15;
-const int   DEFAULT_MEGAS           = 20;
+const int   DEFAULT_MEGAS           = 20;         // 100 - Unlimited
 const int   DEFAULT_FLAGS1          = 0x20;
 const int   DEFAULT_FLAGS2          = 0x1;
 

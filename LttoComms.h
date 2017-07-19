@@ -28,6 +28,12 @@ public:
 
     void        androidRxPacket(QByteArray data);
 
+    bool getTcpCommsConnected() const;
+    void setTcpCommsConnected(bool value);
+
+public slots:
+    void        TCPconnected(bool state);
+
 signals:
     void        RequestJoinGame(int Game, int Tagger, int Flags);
     void        AckPlayerAssignment(int Game, int Tagger);
@@ -46,6 +52,7 @@ private:
     QString         packetString;
     bool            useLazerSwarm;
     bool            dontAnnounceGame;
+    bool            tcpCommsConnected;
     int             missedAnnounceCount;
 
     void            processPacket(QList<QByteArray> data);

@@ -156,12 +156,12 @@ void PlayersWindow::LoadPlayerSettings(int PlayerID)
     ui->slider_MegaTags             ->setValue  (playerInfo[PlayerID].getMegaTags() );
     ui->btn_SelectedPlayerSlowTags  ->setChecked(playerInfo[PlayerID].getSlowTags() );
 
-    if (playerInfo[PlayerID].getSlowTags() == false)    ui->btn_SelectedPlayerSlowTags  ->setText("OFF");
-    else                                                ui->btn_SelectedPlayerSlowTags  ->setText("ON");
+    if (playerInfo[PlayerID].getSlowTags() == false)    ui->btn_SelectedPlayerSlowTags  ->setText("Slow Tags (received)   OFF");
+    else                                                ui->btn_SelectedPlayerSlowTags  ->setText("Slow Tags (received)   ON");
 
     ui->btn_SelectedPlayerTeamTags  ->setChecked(playerInfo[PlayerID].getTeamTags() );
-    if (playerInfo[PlayerID].getTeamTags() == false)    ui->btn_SelectedPlayerTeamTags  ->setText("OFF");
-    else                                                ui->btn_SelectedPlayerTeamTags  ->setText("ON");
+    if (playerInfo[PlayerID].getTeamTags() == false)    ui->btn_SelectedPlayerTeamTags  ->setText("Team Tags (received)   OFF");
+    else                                                ui->btn_SelectedPlayerTeamTags  ->setText("Team Tags (received)   ON");
     int reLoads;
     if (playerInfo[PlayerID].getReloads() == 0) reLoads = 100;
     else reLoads = playerInfo[PlayerID].getReloads();
@@ -204,8 +204,9 @@ void PlayersWindow::SetPlayerButtons(bool state)
     for (int x = 1; x<25; x++)
     {
          PlayerButtons[x]->setChecked(state);
+         if (state == true) PlayerButtons[x]->setStyleSheet("font: bold;");
+         else               PlayerButtons[x]->setStyleSheet("font: normal;");
          gameInfo.setIsThisPlayerInTheGame(x, state);
-
     }
 }
 
@@ -222,9 +223,9 @@ void PlayersWindow::setPlayerControls(bool state)
     ui->slider_Reloads->setEnabled(state);
     ui->label_Shields->setEnabled(state);
     ui->slider_Shields->setEnabled(state);
-    ui->label_PlayerSlowTags->setEnabled(state);
+    //ui->label_PlayerSlowTags->setEnabled(state);
     ui->btn_SelectedPlayerSlowTags->setEnabled(state);
-    ui->label_PlayerTeamTags->setEnabled(state);
+    //ui->label_PlayerTeamTags->setEnabled(state);
     ui->btn_SelectedPlayerTeamTags->setEnabled(state);
 }
 
@@ -252,15 +253,15 @@ void PlayersWindow::on_btn_SelectedPlayerSlowTags_clicked()
 {
     if(ui->btn_SelectedPlayerSlowTags->isChecked() )
     {
-        ui->btn_SelectedPlayerSlowTags->setText("ON");
+        ui->btn_SelectedPlayerSlowTags->setText("Slow Tags (received)   ON");
+        //ui->btn_SelectedPlayerSlowTags->setStyleSheet("font: bold;");
         playerInfo[SelectedPlayer].setSlowTags(true);
-        ui->btn_SelectedPlayerSlowTags->setPalette(*paletteRed);
     }
     else
     {
-        ui->btn_SelectedPlayerSlowTags->setText("OFF");
+        ui->btn_SelectedPlayerSlowTags->setText("Slow Tags (received)   OFF");
+        //ui->btn_SelectedPlayerSlowTags->setStyleSheet("font: normal;");
         playerInfo[SelectedPlayer].setSlowTags(false);
-        ui->btn_SelectedPlayerSlowTags->setPalette(*paletteGreen);
     }
 }
 
@@ -268,13 +269,14 @@ void PlayersWindow::on_btn_SelectedPlayerTeamTags_clicked()
 {
     if(ui->btn_SelectedPlayerTeamTags->isChecked() )
     {
-        ui->btn_SelectedPlayerTeamTags->setText("ON");
+        ui->btn_SelectedPlayerTeamTags->setText("Team Tags (received)   ON");
+        //ui->btn_SelectedPlayerTeamTags->setStyleSheet("font: bold;");
         playerInfo[SelectedPlayer].setTeamTags(true);
-        //ui->btn_SelectedPlayerTeamTags->
     }
     else
     {
-        ui->btn_SelectedPlayerTeamTags->setText("OFF");
+        ui->btn_SelectedPlayerTeamTags->setText("Team Tags (received)   OFF");
+        //ui->btn_SelectedPlayerTeamTags->setStyleSheet("font: normal;");
         playerInfo[SelectedPlayer].setTeamTags(false);
     }
 }
@@ -332,6 +334,8 @@ void PlayersWindow::playerButtonPressed(int value)
             setSelectedPlayer(value);
             if      (gameInfo.getIsThisPlayerInTheGame(value) == false) gameInfo.setIsThisPlayerInTheGame(value, true);
             else if (gameInfo.getIsThisPlayerInTheGame(value) == true)  gameInfo.setIsThisPlayerInTheGame(value, false);
+//            if      (PlayerButtons[value]->isChecked() ) PlayerButtons[value]->setStyleSheet("font: bold;");
+//            else                                         PlayerButtons[value]->setStyleSheet("font: normal;");
 
             LoadPlayerSettings(value);
             AdjustSettingsForHandicap(value);
