@@ -11,6 +11,7 @@ ReHostTagger::ReHostTagger(QWidget *parent) :
     signalMapper = new QSignalMapper(this);
     MapPlayerButtons();
     SetActivePlayers();
+    rehostActive = false;
 }
 
 ReHostTagger::~ReHostTagger()
@@ -68,10 +69,29 @@ void ReHostTagger::SetActivePlayers()
 void ReHostTagger::playerButtonPressed(int playerNumber)
 {
     qDebug() << "Rehosting Player " << playerNumber;
-    //somehow call > HostGameWindow::hostCurrentPlayer() with the playerNumber variable......
+    ui->label->setText("Rehosting Player " + QString::number(playerNumber) + " - Please standby.");
+    rehostActive = true;
+    //hostGameWindow.setCurrentPlayer(playerNumber);
+    //hostGameWindow.hostCurrentPlayer();
+
+    //then we need to cancel and startcountdown.....
+    //reHostActive = false;
 }
+
+
+
 
 void ReHostTagger::on_btn_Close_clicked()
 {
     deleteLater();
+}
+
+bool ReHostTagger::getRehostActive() const
+{
+    return rehostActive;
+}
+
+void ReHostTagger::setRehostActive(bool value)
+{
+    rehostActive = value;
 }

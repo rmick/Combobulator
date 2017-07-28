@@ -28,11 +28,15 @@ public:
 
     void        androidRxPacket(QByteArray data);
 
-    bool getTcpCommsConnected() const;
-    void setTcpCommsConnected(bool value);
+    bool        getTcpCommsConnected() const;
+    void        setTcpCommsConnected(bool value);
+
+    bool getDontAnnounceFailedSignal() const;
+    void setDontAnnounceFailedSignal(bool value);
 
 public slots:
-    void        TCPconnected(bool state);
+    void        TCPconnected();
+    void        TCPdisconnected();
 
 signals:
     void        RequestJoinGame(int Game, int Tagger, int Flags);
@@ -52,6 +56,7 @@ private:
     QString         packetString;
     bool            useLazerSwarm;
     bool            dontAnnounceGame;
+    bool            dontAnnounceFailedSignal;
     bool            tcpCommsConnected;
     int             missedAnnounceCount;
 

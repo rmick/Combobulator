@@ -8,8 +8,9 @@ TCPComms::TCPComms(QObject *parent) :
     isConnected = false;
 
     connect(tcpSocket,     SIGNAL(connected()),                this,       SLOT(connected()) );
-    connect(tcpSocket,     SIGNAL(connected()),                &lttoComms, SLOT(TCPconnected(bool)) );
+    connect(tcpSocket,     SIGNAL(connected()),                &lttoComms, SLOT(TCPconnected()) );
     connect(tcpSocket,     SIGNAL(disconnected()),             this,       SLOT(disconnected()) );
+    connect(tcpSocket,     SIGNAL(disconnected()),             &lttoComms, SLOT(TCPdisconnected()) );
     connect(tcpSocket,     SIGNAL(readyRead()),                this,       SLOT(receivePacket()) );
     connect(tcpSocket,     SIGNAL(bytesWritten(qint64)),       this,       SLOT(bytesWritten(qint64)) );
 
@@ -23,12 +24,14 @@ void TCPComms::connected()
 {
     qDebug() << "\n\tTCPComms::connected !!!!        :-)\n";
     isConnected = true;
+    lttoComms.setTcpCommsConnected(true);
 }
 
 void TCPComms::disconnected()
 {
     qDebug() << "TCPComms::disconnected :-(";
     isConnected = false;
+    lttoComms.setTcpCommsConnected(false);
 }
 
 void TCPComms::bytesWritten (qint64 bytes)

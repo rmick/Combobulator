@@ -203,7 +203,7 @@ QPushbutton:disabled
   <widget class="QPushButton" name="btn_SkipPlayer">
    <property name="geometry">
     <rect>
-     <x>890</x>
+     <x>900</x>
      <y>250</y>
      <width>113</width>
      <height>81</height>
@@ -697,6 +697,20 @@ Base Status</string>
      <bool>false</bool>
     </property>
    </widget>
+  </widget>
+  <widget class="QPushButton" name="btn_FailSend">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>70</y>
+     <width>113</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Send Fail
+Signal</string>
+   </property>
   </widget>
  </widget>
  <resources/>

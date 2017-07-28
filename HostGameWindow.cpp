@@ -13,15 +13,19 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    timerAnnounce   = new QTimer(this);
-    timerCountDown  = new QTimer(this);
-    timerDeBrief    = new QTimer(this);
+    timerAnnounce           = new QTimer(this);
+    timerCountDown          = new QTimer(this);
+    timerDeBrief            = new QTimer(this);
+    timerAssignFailed       = new QTimer(this);
+    timerGameTimeRemaining  = new QTimer(this);
 
-    connect(timerAnnounce,  SIGNAL(timeout() ),                     this, SLOT(announceGame())   );
-    connect(timerCountDown, SIGNAL(timeout() ),                     this, SLOT(sendCountDown())  );
-    connect(timerDeBrief,   SIGNAL(timeout() ),                     this, SLOT(deBriefTaggers()) );
+    connect(timerAnnounce,          SIGNAL(timeout() ),             this, SLOT(announceGame())            );
+    connect(timerCountDown,         SIGNAL(timeout() ),             this, SLOT(sendCountDown())           );
+    connect(timerDeBrief,           SIGNAL(timeout() ),             this, SLOT(deBriefTaggers())          );
+    connect(timerAssignFailed,      SIGNAL(timeout() ),             this, SLOT(sendAssignFailed())        );
+    connect(timerGameTimeRemaining, SIGNAL(timeout() ),             this, SLOT(updateGameTimeRemaining()) );
     connect(&lttoComms,     SIGNAL(RequestJoinGame(int,int,int) ),  this, SLOT(AssignPlayer(int,int,int)) );
-    connect(&lttoComms,     SIGNAL(AckPlayerAssignment(int,int) ),  this, SLOT(AddPlayerToGame(int,int)) );
+    connect(&lttoComms,     SIGNAL(AckPlayerAssignment(int,int) ),  this, SLOT(AddPlayerToGame(int,int))  );
     connect(&serialUSBcomms, SIGNAL(SerialPortFound(QString)),      this, SLOT(AddSerialPortToListWidget(QString)) );
 
     timerAnnounce->start(HOST_TIMER_MSEC);
@@ -69,7 +73,8 @@ void HostGameWindow::on_btn_Cancel_clicked()
     #ifdef  INCLUDE_SERIAL_USB
         serialUSBcomms.closeSerialPort();
     #endif
-    deleteLater();
+        //deletelater();
+    close();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -83,12 +88,18 @@ void HostGameWindow::SetAnnounceTimerBlock(bool state)
 
 void HostGameWindow::announceGame()
 {
+    //Set Base Station LED status
     if (lttoComms.getTcpCommsConnected() == false)  ui->led_Status->setStyleSheet("background-color: yellow; border-style: outset; border-width: 2px; border-radius: 10px; border-color: grey;");
-    else                                            ui->led_Status->setStyleSheet("background-color: green; border-style: outset; border-width: 2px; border-radius: 10px; border-color: grey;");
+    else
+    {
+        ui->led_Status->setStyleSheet("background-color: rgb(0,255,50); border-style: outset; border-width: 2px; border-radius: 10px; border-color: grey;");
+        lttoComms.setDontAnnounceGame(false);
+    }
 
 
     if (currentPlayer != 0)                                                                 // Player 0 is the dummy player
     {
+        //while (gameInfo.getIsThisPlayerInTheGame(currentPlayer) == false && reHostTagger->getRehostActive() == false) currentPlayer++;
         while (gameInfo.getIsThisPlayerInTheGame(currentPlayer) == false) currentPlayer++;
         ui->label->setText("Prepare to Host Tagger : " + QString::number(currentPlayer));
     }
@@ -114,7 +125,12 @@ void HostGameWindow::hostCurrentPlayer()
         lttoComms.setMissedAnnounceCount(lttoComms.getMissedAnnounceCount()+1);
         qDebug() << "HostGameWindow::hostCurrentPlayer() - Missed count = " << lttoComms.getMissedAnnounceCount();
         if (lttoComms.getMissedAnnounceCount() < 3) return;
-        else lttoComms.setDontAnnounceGame(false);
+
+        else if (expectingAckPlayerAssignment == true)   // we appear to have missed the AckPlayerAssignment message.
+        {
+            qDebug() << "HostGameWindow::hostCurrentPlayer() - assignPlayerFailed !!"  ;
+            assignPlayerFailed();
+        }
     }
 
     //Change TeamTags if required for Spies.
@@ -124,7 +140,12 @@ void HostGameWindow::hostCurrentPlayer()
         playerInfo[currentPlayer].setTeamTags(true);
     }
 
-    InsertToListWidget("Announce Game : Player " + QString::number(currentPlayer));
+    if (lttoComms.getTcpCommsConnected() == true) InsertToListWidget("Announce Game : Player " + QString::number(currentPlayer));
+    else
+    {
+        InsertToListWidget("Trying to connect to Base Station");
+        ui->label->setText("Connecting to Base Station......");
+    }
     //qDebug() << "\tHostGameWindow::hostCurrentPlayer() - Player:" << currentPlayer;
 
     lttoComms.sendPacket(PACKET, gameInfo.getGameType()                        );
@@ -196,6 +217,51 @@ void HostGameWindow::hostCurrentPlayer()
     return;
 }
 
+int assignPlayerFailCount;
+bool dontAnnounceFailedSignal;
+
+void HostGameWindow::assignPlayerFailed()
+{
+    qDebug() << "HostGameWindow::assignPlayerFailed() - starting Timer";
+    timerAssignFailed->start(500);
+    assignPlayerFailCount = 0;
+    lttoComms.setDontAnnounceGame(true);
+    lttoComms.setDontAnnounceFailedSignal(false);
+    // An Rx toAddPlayerToGame will cancel the timer.
+
+    // create a new Timer (500mS)
+    // send the message
+    // increment counter
+    // If counter hits 6 then rehost the player.
+
+
+}
+
+void HostGameWindow::sendAssignFailed()
+{
+    if(dontAnnounceFailedSignal == false)
+    {
+        assignPlayerFailCount++;
+
+        lttoComms.sendPacket(PACKET, ASSIGN_PLAYER_FAIL                      );
+        lttoComms.sendPacket(DATA,   gameInfo.getGameID()                    );
+        lttoComms.sendPacket(DATA,   playerInfo[currentPlayer].getTaggerID() );
+        lttoComms.sendPacket(CHECKSUM                                        );
+         qDebug() << "HostGameWindow::sendAssignFailed()  - Sending # " << assignPlayerFailCount;
+    }
+
+    if (assignPlayerFailCount == 6)   //give up and start again
+    {
+        isThisPlayerHosted[currentPlayer] = false;
+        playerInfo[currentPlayer].setTaggerID(0);
+        timerAssignFailed->stop();
+        lttoComms.setDontAnnounceGame(false);
+        expectingAckPlayerAssignment = false;
+        qDebug() <<"HostGameWindow::sendAssignFailed() - Counted to 6, I am now going away";
+    }
+}
+
+
 int HostGameWindow::calculatePlayerTeam5bits(int requestedTeam)
 {
     int assignedTeamNumber   = 0;
@@ -213,10 +279,8 @@ int HostGameWindow::calculatePlayerTeam5bits(int requestedTeam)
     {
         assignedTeamNumber = 0;
         assignedPlayerNumber = currentPlayer +7;                    // For solo games: zero-based player number + 8
-
-playerTeam5bits = 8 + (currentPlayer-1);
-return playerTeam5bits;
-
+        playerTeam5bits = 8 + (currentPlayer-1);
+        return playerTeam5bits;
     }
     else
     {
@@ -346,7 +410,7 @@ void HostGameWindow::AssignPlayer(int Game, int Tagger, int Flags)
         lttoComms.sendPacket(DATA,    calculatePlayerTeam5bits(preferedTeam) );
         lttoComms.sendPacket(CHECKSUM);
 
-        //TODO:  bool expectingAckPlayerAssignment = true;
+        expectingAckPlayerAssignment = true;
 
         qDebug() << "HostGameWindow::AssignPlayer() " << currentPlayer << Game << Tagger, calculatePlayerTeam5bits(Flags);
     }
@@ -361,6 +425,8 @@ void HostGameWindow::AddPlayerToGame(int Game, int Tagger)
     isThisPlayerHosted[currentPlayer] = true;
     if (currentPlayer != 0) currentPlayer++;
     lttoComms.setDontAnnounceGame(false);
+    expectingAckPlayerAssignment = false;
+    timerAssignFailed->stop();
 }
 
 void HostGameWindow::AddSerialPortToListWidget(QString value)
@@ -420,6 +486,7 @@ void HostGameWindow::on_btn_StartGame_clicked()
     }
     else if(ui->btn_StartGame->text() == "End\nGame")
     {
+        timerGameTimeRemaining->stop();
         timerDeBrief->start(HOST_TIMER_MSEC);
         ui->btn_StartGame->setEnabled(false);
         ui->btn_Rehost->setEnabled(false);
@@ -438,6 +505,9 @@ void HostGameWindow::sendCountDown()
     if(countDownTimeRemaining == 0)
     {
         timerCountDown->stop();
+        timerGameTimeRemaining->start(1000);
+        remainingGameTime = ConvertBCDtoDec(gameInfo.getGameLength()) * 60;
+
         InsertToListWidget("Game has started !!!");
         ui->label->setText("Game Underway !!!");
         ui->btn_Cancel->setText("Close");
@@ -457,6 +527,24 @@ void HostGameWindow::sendCountDown()
         lttoComms.sendPacket(CHECKSUM);
         InsertToListWidget("CountDownTime = " + QString::number(countDownTimeRemaining));
         countDownTimeRemaining--;
+    }
+}
+
+void HostGameWindow::updateGameTimeRemaining()
+{
+    remainingGameTime--;
+    QString remainingMinutes = QString::number(remainingGameTime / 60);
+    QString remainingSeconds = QString::number(remainingGameTime % 60);
+    if (remainingMinutes.length() == 1) remainingMinutes.prepend("0");
+    if (remainingSeconds.length() == 1) remainingSeconds.prepend("0");
+    ui->label->setText("Game Time Remaining  " + remainingMinutes + ":" + remainingSeconds);
+    if (remainingGameTime == 0)
+    {
+        timerGameTimeRemaining->stop();
+        timerDeBrief->start(HOST_TIMER_MSEC);
+        ui->btn_StartGame->setEnabled(false);
+        ui->btn_Rehost->setEnabled(false);
+        ui->label->setText("DeBriefing..... but not just yet :-)");
     }
 }
 
@@ -577,16 +665,6 @@ bool HostGameWindow::assignSpies()
     return true;
 }
 
-void HostGameWindow::OpenPorts()
-{
-
-}
-
-void HostGameWindow::ClosePorts()
-{
-
-}
-
 int HostGameWindow::GetRandomNumber(int min, int max)
 {
     return ((qrand() % ((max + 1) - min)) + min);
@@ -596,4 +674,10 @@ void HostGameWindow::on_btn_Rehost_clicked()
 {
     reHostTagger = new ReHostTagger(this);
     reHostTagger->show();
+}
+
+void HostGameWindow::on_btn_FailSend_clicked()
+{
+    lttoComms.setDontAnnounceGame(true);
+    sendAssignFailed();
 }

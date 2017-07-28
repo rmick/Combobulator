@@ -114,6 +114,7 @@ QString LttoComms::createIRstring(int data)
 void LttoComms::receivePacket(QByteArray RxData)
 {
     dontAnnounceGame = true;
+    dontAnnounceFailedSignal = true;
     missedAnnounceCount = 0;
     bool isPacketComplete = false;
 
@@ -154,6 +155,18 @@ void LttoComms::receivePacket(QByteArray RxData)
     }
 }
 
+bool LttoComms::getDontAnnounceFailedSignal() const
+{
+    return dontAnnounceFailedSignal;
+}
+
+void LttoComms::setDontAnnounceFailedSignal(bool value)
+{
+    dontAnnounceFailedSignal = value;
+}
+
+/////////////////////////////////////////////////////////////////////////
+
 bool LttoComms::getTcpCommsConnected() const
 {
     return tcpCommsConnected;
@@ -163,6 +176,18 @@ void LttoComms::setTcpCommsConnected(bool value)
 {
     tcpCommsConnected = value;
 }
+
+void LttoComms::TCPconnected()
+{
+    tcpCommsConnected = true;
+}
+
+void LttoComms::TCPdisconnected()
+{
+    tcpCommsConnected = false;
+}
+
+/////////////////////////////////////////////////////////////////////////
 
 int LttoComms::getMissedAnnounceCount() const
 {
@@ -177,11 +202,6 @@ void LttoComms::setMissedAnnounceCount(int value)
 void LttoComms::androidRxPacket(QByteArray data)
 {
     receivePacket(data);
-}
-
-void LttoComms::TCPconnected(bool state)
-{
-    tcpCommsConnected = state;
 }
 
 bool LttoComms::getDontAnnounceGame() const

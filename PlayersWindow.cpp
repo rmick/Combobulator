@@ -156,12 +156,12 @@ void PlayersWindow::LoadPlayerSettings(int PlayerID)
     ui->slider_MegaTags             ->setValue  (playerInfo[PlayerID].getMegaTags() );
     ui->btn_SelectedPlayerSlowTags  ->setChecked(playerInfo[PlayerID].getSlowTags() );
 
-    if (playerInfo[PlayerID].getSlowTags() == false)    ui->btn_SelectedPlayerSlowTags  ->setText("Slow Tags (received)   OFF");
-    else                                                ui->btn_SelectedPlayerSlowTags  ->setText("Slow Tags (received)   ON");
+    if (playerInfo[PlayerID].getSlowTags() == false)    ui->btn_SelectedPlayerSlowTags  ->setText("OFF");
+    else                                                ui->btn_SelectedPlayerSlowTags  ->setText("ON");
 
     ui->btn_SelectedPlayerTeamTags  ->setChecked(playerInfo[PlayerID].getTeamTags() );
-    if (playerInfo[PlayerID].getTeamTags() == false)    ui->btn_SelectedPlayerTeamTags  ->setText("Team Tags (received)   OFF");
-    else                                                ui->btn_SelectedPlayerTeamTags  ->setText("Team Tags (received)   ON");
+    if (playerInfo[PlayerID].getTeamTags() == false)    ui->btn_SelectedPlayerTeamTags  ->setText("OFF");
+    else                                                ui->btn_SelectedPlayerTeamTags  ->setText("ON");
     int reLoads;
     if (playerInfo[PlayerID].getReloads() == 0) reLoads = 100;
     else reLoads = playerInfo[PlayerID].getReloads();
@@ -253,13 +253,13 @@ void PlayersWindow::on_btn_SelectedPlayerSlowTags_clicked()
 {
     if(ui->btn_SelectedPlayerSlowTags->isChecked() )
     {
-        ui->btn_SelectedPlayerSlowTags->setText("Slow Tags (received)   ON");
+        ui->btn_SelectedPlayerSlowTags->setText("ON");
         //ui->btn_SelectedPlayerSlowTags->setStyleSheet("font: bold;");
         playerInfo[SelectedPlayer].setSlowTags(true);
     }
     else
     {
-        ui->btn_SelectedPlayerSlowTags->setText("Slow Tags (received)   OFF");
+        ui->btn_SelectedPlayerSlowTags->setText("OFF");
         //ui->btn_SelectedPlayerSlowTags->setStyleSheet("font: normal;");
         playerInfo[SelectedPlayer].setSlowTags(false);
     }
@@ -269,13 +269,13 @@ void PlayersWindow::on_btn_SelectedPlayerTeamTags_clicked()
 {
     if(ui->btn_SelectedPlayerTeamTags->isChecked() )
     {
-        ui->btn_SelectedPlayerTeamTags->setText("Team Tags (received)   ON");
+        ui->btn_SelectedPlayerTeamTags->setText("ON");
         //ui->btn_SelectedPlayerTeamTags->setStyleSheet("font: bold;");
         playerInfo[SelectedPlayer].setTeamTags(true);
     }
     else
     {
-        ui->btn_SelectedPlayerTeamTags->setText("Team Tags (received)   OFF");
+        ui->btn_SelectedPlayerTeamTags->setText("OFF");
         //ui->btn_SelectedPlayerTeamTags->setStyleSheet("font: normal;");
         playerInfo[SelectedPlayer].setTeamTags(false);
     }
@@ -319,7 +319,7 @@ void PlayersWindow::playerButtonPressed(int value)
     if (QEvent::MouseButtonPress)
     {
         qDebug() << "playerButtonPressed::MouseButtonPress";
-        setSelectedPlayer(value);
+        //setSelectedPlayer(value);
         elapsedTime.start();
     }
     if (QEvent::MouseButtonRelease)
@@ -334,8 +334,15 @@ void PlayersWindow::playerButtonPressed(int value)
             setSelectedPlayer(value);
             if      (gameInfo.getIsThisPlayerInTheGame(value) == false) gameInfo.setIsThisPlayerInTheGame(value, true);
             else if (gameInfo.getIsThisPlayerInTheGame(value) == true)  gameInfo.setIsThisPlayerInTheGame(value, false);
-//            if      (PlayerButtons[value]->isChecked() ) PlayerButtons[value]->setStyleSheet("font: bold;");
-//            else                                         PlayerButtons[value]->setStyleSheet("font: normal;");
+
+            //Set the last button Red and reset all others.
+            for (int x = 1; x < 25; x++)
+            {
+                if (PlayerButtons[x]->isChecked() ) PlayerButtons[x]->setStyleSheet("background-color: rgb(50,220,200)");
+                else                                PlayerButtons[x]->setStyleSheet("background-color: cyan");
+            }
+            PlayerButtons[value]->setStyleSheet("background-color: rgb(50,250,220)");
+
 
             LoadPlayerSettings(value);
             AdjustSettingsForHandicap(value);
@@ -390,20 +397,21 @@ void PlayersWindow::on_btn_EditMode_clicked()
     {
         setPlayerControls(true);
         ui->btn_EditMode->setText("Edit Handicap");
-        ui->PlayerButtonGroup->setExclusive(true);
+        //ui->PlayerButtonGroup->setExclusive(true);
 
     }
     else if (ui->btn_EditMode->isChecked() == false)
     {
         setPlayerControls(false);
         ui->btn_EditMode->setText("Edit Settings");
-        ui->PlayerButtonGroup->setExclusive(false);
+        //ui->PlayerButtonGroup->setExclusive(false);
     }
 }
 
 void PlayersWindow::on_slider_Handicap_valueChanged(int value)
 {
-    ui->label_Handicap->setText("Handicap : " + QString::number(value) );
+   if (value > 0) ui->label_Handicap->setText("Handicap : +" + QString::number(value*10) + "%" );
+   else           ui->label_Handicap->setText("Handicap : "  + QString::number(value*10) + "%" );
     playerInfo[SelectedPlayer].setHandicap(value);
     AdjustSettingsForHandicap(SelectedPlayer);
 }

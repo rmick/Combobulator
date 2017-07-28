@@ -47,7 +47,11 @@ private slots:
 
     void sendCountDown();
 
+    void updateGameTimeRemaining();
+
     void deBriefTaggers();
+
+     void sendAssignFailed();
 
     void on_btn_Cancel_clicked();
 
@@ -61,11 +65,15 @@ private slots:
 
     void on_btn_Rehost_clicked();
 
+    void on_btn_FailSend_clicked();
+
 private:
     Ui::HostGameWindow  *ui;
     QTimer              *timerAnnounce;
     QTimer              *timerCountDown;
     QTimer              *timerDeBrief;
+    QTimer              *timerAssignFailed;
+    QTimer              *timerGameTimeRemaining;
     ReHostTagger        *reHostTagger;
 
     bool    bluetoothActive;
@@ -76,15 +84,16 @@ private:
     int     currentPlayer;
     bool    noMorePlayers;
     int     countDownTimeRemaining;
+    bool    expectingAckPlayerAssignment;
+    int     remainingGameTime;
 
     void    hostCurrentPlayer();
+    void    assignPlayerFailed();
     int     calculatePlayerTeam5bits(int requestedTeam);
     int     ConvertDecToBCD(int dec);
     int     ConvertBCDtoDec(int bcd);
     void    blockingDelay(int mSec);
     bool    assignSpies();
-    void    OpenPorts();
-    void    ClosePorts();
 };
 
 #endif // HOSTGAMEWINDOW_H
