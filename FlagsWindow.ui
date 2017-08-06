@@ -14,25 +14,7 @@
    <string>Dialog</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">QPushButton
-{
-    background-color: cyan;
-    border-style: outset;
-    border-width: 2px;
-    border-radius: 10px;
-    border-color: grey;
-}
-
-QPushbutton:checked
-{
-    background-color: rgb(100,255,255);
-	font-weight: bold;
-}
-
-QPushbutton:disabled
-{
-	background-color: grey;
-}</string>
+   <string notr="true"/>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
@@ -107,38 +89,65 @@ QPushbutton:disabled
         <colorrole role="Button">
          <brush brushstyle="SolidPattern">
           <color alpha="255">
-           <red>0</red>
-           <green>255</green>
-           <blue>255</blue>
+           <red>200</red>
+           <green>230</green>
+           <blue>230</blue>
           </color>
          </brush>
         </colorrole>
         <colorrole role="Base">
          <brush brushstyle="SolidPattern">
           <color alpha="255">
-           <red>0</red>
-           <green>255</green>
-           <blue>255</blue>
+           <red>200</red>
+           <green>230</green>
+           <blue>230</blue>
           </color>
          </brush>
         </colorrole>
         <colorrole role="Window">
          <brush brushstyle="SolidPattern">
           <color alpha="255">
-           <red>0</red>
-           <green>255</green>
-           <blue>255</blue>
+           <red>200</red>
+           <green>230</green>
+           <blue>230</blue>
           </color>
          </brush>
         </colorrole>
        </disabled>
       </palette>
      </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton
+{
+    background-color: cyan;
+    border-style: outset;
+    border-width: 2px;
+    border-radius: 10px;
+    border-color: grey;
+}
+
+QPushButton:disabled
+{
+    background-color: rgb(200,230	,230); 
+}
+
+QPushButton:checked 
+{ 
+    background-color: rgb(50,220,200);
+	font-weight: bold
+ }</string>
+     </property>
      <property name="text">
       <string>Neutralise</string>
      </property>
      <property name="checkable">
       <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+     <property name="autoDefault">
+      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -214,32 +223,53 @@ QPushbutton:disabled
         <colorrole role="Button">
          <brush brushstyle="SolidPattern">
           <color alpha="255">
-           <red>0</red>
-           <green>255</green>
-           <blue>255</blue>
+           <red>200</red>
+           <green>230</green>
+           <blue>230</blue>
           </color>
          </brush>
         </colorrole>
         <colorrole role="Base">
          <brush brushstyle="SolidPattern">
           <color alpha="255">
-           <red>0</red>
-           <green>255</green>
-           <blue>255</blue>
+           <red>200</red>
+           <green>230</green>
+           <blue>230</blue>
           </color>
          </brush>
         </colorrole>
         <colorrole role="Window">
          <brush brushstyle="SolidPattern">
           <color alpha="255">
-           <red>0</red>
-           <green>255</green>
-           <blue>255</blue>
+           <red>200</red>
+           <green>230</green>
+           <blue>230</blue>
           </color>
          </brush>
         </colorrole>
        </disabled>
       </palette>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton
+{
+    background-color: cyan;
+    border-style: outset;
+    border-width: 2px;
+    border-radius: 10px;
+    border-color: grey;
+}
+
+QPushButton:disabled
+{
+    background-color: rgb(200,230	,230); 
+}
+
+QPushButton:checked 
+{ 
+    background-color: rgb(50,220,200);
+	font-weight: bold
+ }</string>
      </property>
      <property name="text">
       <string>Supply Zones
@@ -247,6 +277,9 @@ Refill Tags</string>
      </property>
      <property name="checkable">
       <bool>true</bool>
+     </property>
+     <property name="autoDefault">
+      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -322,32 +355,53 @@ Refill Tags</string>
         <colorrole role="Button">
          <brush brushstyle="SolidPattern">
           <color alpha="255">
-           <red>0</red>
-           <green>255</green>
-           <blue>255</blue>
+           <red>200</red>
+           <green>230</green>
+           <blue>230</blue>
           </color>
          </brush>
         </colorrole>
         <colorrole role="Base">
          <brush brushstyle="SolidPattern">
           <color alpha="255">
-           <red>0</red>
-           <green>255</green>
-           <blue>255</blue>
+           <red>200</red>
+           <green>230</green>
+           <blue>230</blue>
           </color>
          </brush>
         </colorrole>
         <colorrole role="Window">
          <brush brushstyle="SolidPattern">
           <color alpha="255">
-           <red>0</red>
-           <green>255</green>
-           <blue>255</blue>
+           <red>200</red>
+           <green>230</green>
+           <blue>230</blue>
           </color>
          </brush>
         </colorrole>
        </disabled>
       </palette>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton
+{
+    background-color: cyan;
+    border-style: outset;
+    border-width: 2px;
+    border-radius: 10px;
+    border-color: grey;
+}
+
+QPushButton:disabled
+{
+    background-color: rgb(200,230	,230); 
+}
+
+QPushButton:checked 
+{ 
+    background-color: rgb(50,220,200);
+	font-weight: bold
+ }</string>
      </property>
      <property name="text">
       <string>Contested
@@ -355,6 +409,9 @@ Zones</string>
      </property>
      <property name="checkable">
       <bool>true</bool>
+     </property>
+     <property name="autoDefault">
+      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -430,32 +487,53 @@ Zones</string>
         <colorrole role="Button">
          <brush brushstyle="SolidPattern">
           <color alpha="255">
-           <red>0</red>
-           <green>255</green>
-           <blue>255</blue>
+           <red>200</red>
+           <green>230</green>
+           <blue>230</blue>
           </color>
          </brush>
         </colorrole>
         <colorrole role="Base">
          <brush brushstyle="SolidPattern">
           <color alpha="255">
-           <red>0</red>
-           <green>255</green>
-           <blue>255</blue>
+           <red>200</red>
+           <green>230</green>
+           <blue>230</blue>
           </color>
          </brush>
         </colorrole>
         <colorrole role="Window">
          <brush brushstyle="SolidPattern">
           <color alpha="255">
-           <red>0</red>
-           <green>255</green>
-           <blue>255</blue>
+           <red>200</red>
+           <green>230</green>
+           <blue>230</blue>
           </color>
          </brush>
         </colorrole>
        </disabled>
       </palette>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton
+{
+    background-color: cyan;
+    border-style: outset;
+    border-width: 2px;
+    border-radius: 10px;
+    border-color: grey;
+}
+
+QPushButton:disabled
+{
+    background-color: rgb(200,230	,230); 
+}
+
+QPushButton:checked 
+{ 
+    background-color: rgb(50,220,200);
+	font-weight: bold
+ }</string>
      </property>
      <property name="text">
       <string>Hostile
@@ -463,6 +541,9 @@ Zones</string>
      </property>
      <property name="checkable">
       <bool>true</bool>
+     </property>
+     <property name="autoDefault">
+      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -538,32 +619,53 @@ Zones</string>
         <colorrole role="Button">
          <brush brushstyle="SolidPattern">
           <color alpha="255">
-           <red>0</red>
-           <green>255</green>
-           <blue>255</blue>
+           <red>200</red>
+           <green>230</green>
+           <blue>230</blue>
           </color>
          </brush>
         </colorrole>
         <colorrole role="Base">
          <brush brushstyle="SolidPattern">
           <color alpha="255">
-           <red>0</red>
-           <green>255</green>
-           <blue>255</blue>
+           <red>200</red>
+           <green>230</green>
+           <blue>230</blue>
           </color>
          </brush>
         </colorrole>
         <colorrole role="Window">
          <brush brushstyle="SolidPattern">
           <color alpha="255">
-           <red>0</red>
-           <green>255</green>
-           <blue>255</blue>
+           <red>200</red>
+           <green>230</green>
+           <blue>230</blue>
           </color>
          </brush>
         </colorrole>
        </disabled>
       </palette>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton
+{
+    background-color: cyan;
+    border-style: outset;
+    border-width: 2px;
+    border-radius: 10px;
+    border-color: grey;
+}
+
+QPushButton:disabled
+{
+    background-color: rgb(200,230	,230); 
+}
+
+QPushButton:checked 
+{ 
+    background-color: rgb(50,220,200);
+	font-weight: bold
+ }</string>
      </property>
      <property name="text">
       <string>Zones
@@ -571,6 +673,9 @@ with Teams</string>
      </property>
      <property name="checkable">
       <bool>true</bool>
+     </property>
+     <property name="autoDefault">
+      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -646,32 +751,53 @@ with Teams</string>
         <colorrole role="Button">
          <brush brushstyle="SolidPattern">
           <color alpha="255">
-           <red>0</red>
-           <green>255</green>
-           <blue>255</blue>
+           <red>200</red>
+           <green>230</green>
+           <blue>230</blue>
           </color>
          </brush>
         </colorrole>
         <colorrole role="Base">
          <brush brushstyle="SolidPattern">
           <color alpha="255">
-           <red>0</red>
-           <green>255</green>
-           <blue>255</blue>
+           <red>200</red>
+           <green>230</green>
+           <blue>230</blue>
           </color>
          </brush>
         </colorrole>
         <colorrole role="Window">
          <brush brushstyle="SolidPattern">
           <color alpha="255">
-           <red>0</red>
-           <green>255</green>
-           <blue>255</blue>
+           <red>200</red>
+           <green>230</green>
+           <blue>230</blue>
           </color>
          </brush>
         </colorrole>
        </disabled>
       </palette>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton
+{
+    background-color: cyan;
+    border-style: outset;
+    border-width: 2px;
+    border-radius: 10px;
+    border-color: grey;
+}
+
+QPushButton:disabled
+{
+    background-color: rgb(200,230	,230); 
+}
+
+QPushButton:checked 
+{ 
+    background-color: rgb(50,220,200);
+	font-weight: bold
+ }</string>
      </property>
      <property name="text">
       <string>Reverse
@@ -679,6 +805,9 @@ Hunt Direction</string>
      </property>
      <property name="checkable">
       <bool>true</bool>
+     </property>
+     <property name="autoDefault">
+      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -754,32 +883,53 @@ Hunt Direction</string>
         <colorrole role="Button">
          <brush brushstyle="SolidPattern">
           <color alpha="255">
-           <red>0</red>
-           <green>255</green>
-           <blue>255</blue>
+           <red>200</red>
+           <green>230</green>
+           <blue>230</blue>
           </color>
          </brush>
         </colorrole>
         <colorrole role="Base">
          <brush brushstyle="SolidPattern">
           <color alpha="255">
-           <red>0</red>
-           <green>255</green>
-           <blue>255</blue>
+           <red>200</red>
+           <green>230</green>
+           <blue>230</blue>
           </color>
          </brush>
         </colorrole>
         <colorrole role="Window">
          <brush brushstyle="SolidPattern">
           <color alpha="255">
-           <red>0</red>
-           <green>255</green>
-           <blue>255</blue>
+           <red>200</red>
+           <green>230</green>
+           <blue>230</blue>
           </color>
          </brush>
         </colorrole>
        </disabled>
       </palette>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton
+{
+    background-color: cyan;
+    border-style: outset;
+    border-width: 2px;
+    border-radius: 10px;
+    border-color: grey;
+}
+
+QPushButton:disabled
+{
+    background-color: rgb(200,230	,230); 
+}
+
+QPushButton:checked 
+{ 
+    background-color: rgb(50,220,200);
+	font-weight: bold
+ }</string>
      </property>
      <property name="text">
       <string>Neutralised
@@ -787,6 +937,9 @@ when tagged</string>
      </property>
      <property name="checkable">
       <bool>true</bool>
+     </property>
+     <property name="autoDefault">
+      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -862,35 +1015,59 @@ when tagged</string>
         <colorrole role="Button">
          <brush brushstyle="SolidPattern">
           <color alpha="255">
-           <red>0</red>
-           <green>255</green>
-           <blue>255</blue>
+           <red>200</red>
+           <green>230</green>
+           <blue>230</blue>
           </color>
          </brush>
         </colorrole>
         <colorrole role="Base">
          <brush brushstyle="SolidPattern">
           <color alpha="255">
-           <red>0</red>
-           <green>255</green>
-           <blue>255</blue>
+           <red>200</red>
+           <green>230</green>
+           <blue>230</blue>
           </color>
          </brush>
         </colorrole>
         <colorrole role="Window">
          <brush brushstyle="SolidPattern">
           <color alpha="255">
-           <red>0</red>
-           <green>255</green>
-           <blue>255</blue>
+           <red>200</red>
+           <green>230</green>
+           <blue>230</blue>
           </color>
          </brush>
         </colorrole>
        </disabled>
       </palette>
      </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton
+{
+    background-color: cyan;
+    border-style: outset;
+    border-width: 2px;
+    border-radius: 10px;
+    border-color: grey;
+}
+
+QPushButton:disabled
+{
+    background-color: rgb(200,230	,230); 
+}
+
+QPushButton:checked 
+{ 
+    background-color: rgb(50,220,200);
+	font-weight: bold
+ }</string>
+     </property>
      <property name="text">
       <string>Close</string>
+     </property>
+     <property name="autoDefault">
+      <bool>false</bool>
      </property>
      <property name="default">
       <bool>true</bool>

@@ -100,10 +100,10 @@ void Game::setNumberOfTeams(int value)
             msb = 0;
             lsb = 0;
     }
-    for(int x=0;x<25;x++)
+    for(int x = 0; x < 25; x++)
     {
-        playerInfo[0].setBitFlags2(TEAM_COUNT_MSB, msb);
-        playerInfo[0].setBitFlags2(TEAM_COUNT_LSB, lsb);
+        playerInfo[x].setBitFlags2(TEAM_COUNT_MSB, msb);
+        playerInfo[x].setBitFlags2(TEAM_COUNT_LSB, lsb);
     }
 }
 

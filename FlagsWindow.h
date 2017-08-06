@@ -36,8 +36,8 @@ private slots:
 
 private:
     Ui::FlagsWindow *ui;
-    void updatePlayerFlags1(int bit, bool state, int firstPlayer = 0, int lastPlayer = 25);
-    void updatePlayerFlags2(int bit, bool state, int firstPlayer = 0, int lastPlayer = 25);
+    void updatePlayerFlags1(int bit, bool state, int firstPlayer = 0, int lastPlayer = 24);
+    void updatePlayerFlags2(int bit, bool state, int firstPlayer = 0, int lastPlayer = 24);
 };
 
 #endif // FLAGSWINDOW_H

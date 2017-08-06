@@ -67,6 +67,8 @@ private slots:
 
     void on_btn_FailSend_clicked();
 
+    void on_btn_SetFlags2_clicked();
+
 private:
     Ui::HostGameWindow  *ui;
     QTimer              *timerAnnounce;
@@ -86,6 +88,8 @@ private:
     int     countDownTimeRemaining;
     bool    expectingAckPlayerAssignment;
     int     remainingGameTime;
+    bool    closingWindow;
+    bool    sendingCommsActive;
 
     void    hostCurrentPlayer();
     void    assignPlayerFailed();

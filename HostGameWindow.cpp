@@ -2,10 +2,15 @@
 #include "ui_HostGameWindow.h"
 #include <QMessageBox>
 #include <QDebug>
+#include <QApplication>
 #include "Defines.h"
 #include "Game.h"
 #include "Players.h"
 #include "LttoComms.h"
+
+#include <QInputDialog>
+
+int playerDebugNum = 0;
 
 HostGameWindow::HostGameWindow(QWidget *parent) :
     QDialog(parent),
@@ -24,57 +29,59 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
     connect(timerDeBrief,           SIGNAL(timeout() ),             this, SLOT(deBriefTaggers())          );
     connect(timerAssignFailed,      SIGNAL(timeout() ),             this, SLOT(sendAssignFailed())        );
     connect(timerGameTimeRemaining, SIGNAL(timeout() ),             this, SLOT(updateGameTimeRemaining()) );
-    connect(&lttoComms,     SIGNAL(RequestJoinGame(int,int,int) ),  this, SLOT(AssignPlayer(int,int,int)) );
-    connect(&lttoComms,     SIGNAL(AckPlayerAssignment(int,int) ),  this, SLOT(AddPlayerToGame(int,int))  );
+    connect(&lttoComms,      SIGNAL(RequestJoinGame(int,int,int) ), this, SLOT(AssignPlayer(int,int,int)) );
+    connect(&lttoComms,      SIGNAL(AckPlayerAssignment(int,int) ), this, SLOT(AddPlayerToGame(int,int))  );
     connect(&serialUSBcomms, SIGNAL(SerialPortFound(QString)),      this, SLOT(AddSerialPortToListWidget(QString)) );
 
     timerAnnounce->start(HOST_TIMER_MSEC);
 
-    #ifdef Q_OS_ANDROID
-        InsertToListWidget("This is Android");
-    #endif
-
     for (int x = 0; x<25;x++) isThisPlayerHosted[x] = false;
     currentPlayer = 1;
     noMorePlayers = false;
+    playerDebugNum = 0;
+    closingWindow = false;
+    sendingCommsActive = false;
     countDownTimeRemaining = DEFAULT_COUNTDOWN_TIME;
     ui->btn_Cancel->setText("Cancel");
     ui->btn_Rehost->setEnabled(false);
 
     serialUSBcomms.setUpSerialPort();
-
-    // Kick start the process, otherwise there is a 2.0s delay until the timer first triggers.
-    //announceGame();
 }
 
 HostGameWindow::~HostGameWindow()
 {
+    //qDebug() << "HostGameWindow::~HostGameWindow() - Triggered";
     timerAnnounce->stop();
     timerCountDown->stop();
-    #ifdef  INCLUDE_SERIAL_USB
-        serialUSBcomms.closeSerialPort();
-    #endif
-    deleteLater();
+    timerDeBrief->stop();
+    timerAssignFailed->stop();
+    timerGameTimeRemaining->stop();
+    qDebug() << "HostGameWindow::~HostGameWindow() - Shutting Down !";
+    delete ui;
+
 }
 
 void HostGameWindow::hideEvent(QHideEvent *)
 {
+    closingWindow = true;
     timerAnnounce->stop();
     timerCountDown->stop();
-    #ifdef  INCLUDE_SERIAL_USB
-        serialUSBcomms.closeSerialPort();
-    #endif
+    timerDeBrief->stop();
+    timerAssignFailed->stop();
+    timerGameTimeRemaining->stop();
 }
 
 void HostGameWindow::on_btn_Cancel_clicked()
 {
+    closingWindow = true;
+    ui->btn_Cancel->setEnabled(false);
+    ui->label->setText("Cancelling......");
     timerAnnounce->stop();
     timerCountDown->stop();
-    #ifdef  INCLUDE_SERIAL_USB
-        serialUSBcomms.closeSerialPort();
-    #endif
-        //deletelater();
-    close();
+    timerDeBrief->stop();
+    timerAssignFailed->stop();
+    timerGameTimeRemaining->stop();
+    if (sendingCommsActive == false) deleteLater();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -88,6 +95,8 @@ void HostGameWindow::SetAnnounceTimerBlock(bool state)
 
 void HostGameWindow::announceGame()
 {
+    sendingCommsActive = true;
+
     //Set Base Station LED status
     if (lttoComms.getTcpCommsConnected() == false)  ui->led_Status->setStyleSheet("background-color: yellow; border-style: outset; border-width: 2px; border-radius: 10px; border-color: grey;");
     else
@@ -99,7 +108,6 @@ void HostGameWindow::announceGame()
 
     if (currentPlayer != 0)                                                                 // Player 0 is the dummy player
     {
-        //while (gameInfo.getIsThisPlayerInTheGame(currentPlayer) == false && reHostTagger->getRehostActive() == false) currentPlayer++;
         while (gameInfo.getIsThisPlayerInTheGame(currentPlayer) == false) currentPlayer++;
         ui->label->setText("Prepare to Host Tagger : " + QString::number(currentPlayer));
     }
@@ -114,8 +122,6 @@ void HostGameWindow::announceGame()
     hostCurrentPlayer();
 }
 
-
-int playerDebugNum = 0;
 
 void HostGameWindow::hostCurrentPlayer()
 {
@@ -140,7 +146,7 @@ void HostGameWindow::hostCurrentPlayer()
         playerInfo[currentPlayer].setTeamTags(true);
     }
 
-    if (lttoComms.getTcpCommsConnected() == true) InsertToListWidget("Announce Game : Player " + QString::number(currentPlayer));
+    if (lttoComms.getTcpCommsConnected() == true || serialUSBcomms.getSerialCommsConnected() == true) InsertToListWidget("Announce Game : Player " + QString::number(currentPlayer));
     else
     {
         InsertToListWidget("Trying to connect to Base Station");
@@ -178,6 +184,7 @@ void HostGameWindow::hostCurrentPlayer()
 
     lttoComms.sendPacket(DATA,   playerInfo[currentPlayer].getPackedFlags1()   );
     lttoComms.sendPacket(DATA,   playerInfo[currentPlayer].getPackedFlags2()   );
+    qDebug() << "HostGameWindow::hostCurrentPlayer() - Player # " << currentPlayer << "  - Flags2 = " << playerInfo[currentPlayer].getPackedFlags2();
 
     //  Add a name for Custom Game Types, otherwise skip.
     if (gameInfo.getGameType() == 0x0C)
@@ -206,6 +213,8 @@ void HostGameWindow::hostCurrentPlayer()
                             + ", TeamTags:" + QString::number(playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getTeamTags() ))
                             + ", Spy#:" + QString::number(playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getSpyNumber() ));
         InsertToListWidget(playerDebugData);
+        InsertToListWidget("Flag1 = " + QString::number(playerInfo[currentPlayer].getPackedFlags1()) + " Flag2 = " + QString::number(playerInfo[currentPlayer].getPackedFlags2()));
+        qDebug() << "Flag1 = " << playerInfo[currentPlayer].getPackedFlags1() << " Flag2 = "<< playerInfo[currentPlayer].getPackedFlags2();
 
  //TODO: Remove this, Triggers deBug messgaes for testing only
  calculatePlayerTeam5bits(currentPlayer);
@@ -213,7 +222,8 @@ void HostGameWindow::hostCurrentPlayer()
 
     }
 
-
+    sendingCommsActive = false;
+    if (closingWindow) deleteLater();
     return;
 }
 
@@ -610,33 +620,41 @@ bool HostGameWindow::assignSpies()
 
     if(gameInfo.getNumberOfSpies() == 0) return true;
 
+    // ///////////////////////////////////////////////////////////////////////////
     //add some checking so that NumberOfSpies is !> number of players in any team.
     int numberOfPlayersInTeam1 = 0;
     int numberOfPlayersInTeam2 = 0;
     int numberOfPlayersInTeam3 = 0;
+
+    //count the number of players in each team
     for (int x = 1; x < 9; x++)
     {
         if (gameInfo.getIsThisPlayerInTheGame(x))       numberOfPlayersInTeam1++;
         if (gameInfo.getIsThisPlayerInTheGame(x+8))     numberOfPlayersInTeam2++;
         if (gameInfo.getIsThisPlayerInTheGame(x+16))    numberOfPlayersInTeam3++;
+        if (gameInfo.getNumberOfTeams() < 3) numberOfPlayersInTeam3 = 8;  // Set to 8 so that we dont get a false positive in the checks below.
     }
-    if(     (gameInfo.getNumberOfSpies()) >= (numberOfPlayersInTeam1*2) ||
-            (gameInfo.getNumberOfSpies()) >= (numberOfPlayersInTeam2*2) ||
-            (gameInfo.getNumberOfSpies()) >= (numberOfPlayersInTeam3*2)  )
-            {
-                int action = QMessageBox::warning(this,tr("Are you sure?"), tr("More than 50% of your players in at least one team are spies. This will make the game <i>'INTERESTING'</i> ! \nPress OK to continue, or Cancel to set Spies to Zero."), QMessageBox::Ok | QMessageBox::Cancel);
-                if (action == QMessageBox::Cancel) gameInfo.setNumberOfSpies(0);
-            }
-    if(    (gameInfo.getNumberOfSpies()) > (numberOfPlayersInTeam1) ||
-           (gameInfo.getNumberOfSpies()) > (numberOfPlayersInTeam2) ||
-           (gameInfo.getNumberOfSpies()) > (numberOfPlayersInTeam3)  )
+    //exit if the number of spies is greater than number of players
+    if(    (gameInfo.getNumberOfSpies() > numberOfPlayersInTeam1) ||
+           (gameInfo.getNumberOfSpies() > numberOfPlayersInTeam2) ||
+           (gameInfo.getNumberOfSpies() > numberOfPlayersInTeam3)  )
     {
         QMessageBox::critical(this,"Error","There are more spies than players in one or more of your teams.\n\nThis is illogical.\n\nPlease try again.");
         //ui->btn_StartGame->setEnabled(false);
         return false;
     }
 
-    //assign that player as Spy in each team (Spy = 1, Spy = 2)
+    //issue warning if 50% or more of the players are spies
+    if(     ( (gameInfo.getNumberOfSpies()*2) >= numberOfPlayersInTeam1) ||
+            ( (gameInfo.getNumberOfSpies()*2) >= numberOfPlayersInTeam2) ||
+            ( (gameInfo.getNumberOfSpies()*2) >= numberOfPlayersInTeam3)  )
+            {
+                int action = QMessageBox::question(this,tr("Are you sure?"), tr("More than 50% of your players in one team are spies.\nAre you sure this is what you want? \n\nPress OK to continue, or Cancel to set Spies to Zero."), QMessageBox::Ok | QMessageBox::Cancel);
+                if (action == QMessageBox::Cancel) gameInfo.setNumberOfSpies(0);
+            }
+
+    // ////////////////////////////////////////////////////////
+    //Pick a random player from each team as a Spy and assign a spy number (Spy = 1, Spy = 2)
     int spyPlayerNumber;
     bool loop = false;
 
@@ -680,4 +698,19 @@ void HostGameWindow::on_btn_FailSend_clicked()
 {
     lttoComms.setDontAnnounceGame(true);
     sendAssignFailed();
+}
+
+void HostGameWindow::on_btn_SetFlags2_clicked()
+{
+    bool ok;
+    int Flags2 = QInputDialog::getInt(this, "Set Flags2", "Enter a number:", playerInfo[currentPlayer].getPackedFlags2(), 0, 255, 1, &ok);
+    if(ok)
+    {
+        for (int x = 1; x < 25; x++)
+        {
+            playerInfo[x].setPackedFlags2(Flags2);
+        }
+
+        //playerInfo[currentPlayer].setPackedFlags2(Flags2);
+    }
 }

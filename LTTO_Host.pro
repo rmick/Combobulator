@@ -6,7 +6,7 @@
 
 QT       += core gui
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets network #serialport  # REMOVE the hash before the word serialport to enable USB for Lazerswarm
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets network serialport  # REMOVE the hash before the word serialport to enable USB for Lazerswarm
 TARGET = LTTO_Host
 DEPLOYMENT.display_name = Combobulator
 TEMPLATE = app

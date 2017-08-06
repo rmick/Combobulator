@@ -21,6 +21,9 @@ public:
     void        setUpSerialPort();
     void        closeSerialPort();
 
+    bool        getSerialCommsConnected() const;
+    void        setSerialCommsConnected(bool value);
+
 signals:
     void        SerialPortFound(QString portDetails);
     void        newSerialUSBdata(QByteArray dataReceived);
@@ -34,6 +37,7 @@ private:
 #ifdef INCLUDE_SERIAL_USB
         QSerialPort     *serialUSB;
 #endif
+        bool    serialCommsConnected;
 };
 
 extern SerialUSBcomms serialUSBcomms;

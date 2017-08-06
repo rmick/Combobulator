@@ -7,6 +7,7 @@
 #include "HostGameWindow.h"
 #include "FlagsWindow.h"
 #include "LttoComms.h"
+#include <QPointer>
 
 namespace Ui {
 class LttoMainWindow;
@@ -93,10 +94,12 @@ private slots:
 
     void on_actionAbout_triggered();
 
+    void on_btn_DisplayFlags2_clicked();
+
 private:
     Ui::LttoMainWindow  *ui;
     PlayersWindow       *playersWindow;
-    HostGameWindow      *hostGameWindow;
+    QPointer<HostGameWindow>      hostGameWindow;
     FlagsWindow         *flagsWindow;
 
     bool    SlowTags;

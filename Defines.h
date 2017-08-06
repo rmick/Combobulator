@@ -6,14 +6,14 @@
 //      Navigate to the QT Build directory for the App. (e.g. build-LTTO_Host-Desktop..........)
 //      Right click on the folder and go to 'services', then 'New Terminal At Folder'.
 //      Copy/paste the following line into the terminal window and wait.....
-//              /Users/Richie/Qt5.8.0/5.8/clang_64/bin/macdeployqt LTTO_Host.app -dmg
+//              /Users/Richie/Qt/5.9.1/clang_64/bin/macdeployqt LTTO_Host.app -dmg
 //
 //      Here is the current build directory
-// /build-LTTO_Host-Desktop_Qt_5_8_0_clang_64bit-Release Richie$
+//              build-LTTO_Host-Desktop_Qt_5_9_1_clang_64bit-Release
 
 
 // If enabling this #define, also remove the # from the command 'serialport' in line 9 of the LTTO_host.pro file
-//#define INCLUDE_SERIAL_USB
+#define INCLUDE_SERIAL_USB
 
 //  WiFi stuff
 const QString HOST_IP_ADDRESS   = "192.186.2.1";
@@ -60,7 +60,7 @@ const int   DEFAULT_HEALTH          = 25;
 const int   DEFAULT_SHEILDS         = 15;
 const int   DEFAULT_MEGAS           = 20;         // 100 - Unlimited
 const int   DEFAULT_FLAGS1          = 0x20;
-const int   DEFAULT_FLAGS2          = 0x1;
+const int   DEFAULT_FLAGS2          = 0x02;
 
 //Packed byte, FLAGS1
 const int   NEUTRALISE_10_FLAG      = 7;

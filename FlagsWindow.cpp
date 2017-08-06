@@ -15,7 +15,7 @@ FlagsWindow::~FlagsWindow()
 
 void FlagsWindow::updatePlayerFlags1(int bit, bool state, int firstPlayer, int lastPlayer)
 {
-    for(int x = firstPlayer; x < lastPlayer; x++)
+    for(int x = firstPlayer; x <= lastPlayer; x++)
     {
         playerInfo[x].setBitFlags1(bit, state);
     }
@@ -23,7 +23,7 @@ void FlagsWindow::updatePlayerFlags1(int bit, bool state, int firstPlayer, int l
 
 void FlagsWindow::updatePlayerFlags2(int bit, bool state, int firstPlayer, int lastPlayer)
 {
-    for(int x = firstPlayer; x < lastPlayer; x++)
+    for(int x = firstPlayer; x <= lastPlayer; x++)
     {
         playerInfo[x].setBitFlags2(bit, state);
     }

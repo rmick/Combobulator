@@ -103,10 +103,12 @@ void LttoMainWindow::setSlowTags(bool value)
 void LttoMainWindow::on_btn_StartGame_clicked()
 {
     //if (hostGameWindow != NULL) return;
-//    if (hostGameWindow == NULL)
-//    {
+    //if (hostGameWindow == NULL)
+    if ( ! hostGameWindow)
+    {
+        qDebug() << "LttoMainWindow::on_btn_StartGame_clicked() - Creating new HostGameWindow";
         hostGameWindow = new HostGameWindow(this);
-//    }
+    }
     if(gameInfo.getTotalNumberOfPlayersInGame() == 0)
     {
         ui->btn_StartGame->setEnabled(false);
@@ -600,4 +602,12 @@ void LttoMainWindow::on_btn_Flags_clicked()
 void LttoMainWindow::on_actionAbout_triggered()
 {
     //TODO:Open an Anout form
+}
+
+void LttoMainWindow::on_btn_DisplayFlags2_clicked()
+{
+    for (int x = 0; x < 25; x++)
+    {
+        qDebug() << "Player " << x << " -   Flags1= " << playerInfo[x].getPackedFlags1() << "\t  Flags2= " << playerInfo[x].getPackedFlags2();
+    }
 }

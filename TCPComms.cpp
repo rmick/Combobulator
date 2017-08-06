@@ -58,13 +58,13 @@ void TCPComms::sendPacket(QByteArray data)
     }
     else
     {
-        if (retryCount < 20)
+        if (retryCount < 30)
         {
             retryCount++;
             return;
         }
         tcpSocket->connectToHost("192.168.2.1",8000);
-        //qDebug() << "TCPComms::sendPacket() - Trying to connect to Socket......";
+        qDebug() << "TCPComms::sendPacket() - Trying to connect to Socket......";
         retryCount= 0;
     }
 }

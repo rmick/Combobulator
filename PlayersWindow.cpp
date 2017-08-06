@@ -22,12 +22,6 @@ PlayersWindow::PlayersWindow(QWidget *parent) :
     LoadPlayersForTeams();
     LoadPlayerSettings(0);      // 0 = Global Player
     SetActivePlayers();
-
-//    paletteRed = new QPalette();
-//    paletteRed->setColor(QPalette::Button,Qt::red);
-
-//    paletteGreen = new QPalette();
-//    paletteGreen->setColor(QPalette::Button,Qt::green);
 }
 
 PlayersWindow::~PlayersWindow()

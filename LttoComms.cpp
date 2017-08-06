@@ -1,7 +1,6 @@
 #include "LttoComms.h"
 #include <QEventLoop>
 #include <QDebug>
-//#include "TCPComms.h"
 
 LttoComms lttoComms;
 

@@ -117,7 +117,6 @@ void Players::setMedicMode(bool value)
 {
     MedicMode = value;
     setBitFlags1(MEDIC_MODE_FLAG, value);
-    setBitFlags2(TEAM_COUNT_MSB, value);
     //setBitFlags1(NEUTRALISE_10_FLAG, value);
 }
 
@@ -144,8 +143,8 @@ void Players::streamToFile(QTextStream &out)
 
 void Players::streamFromFile(QTextStream &in)
 {
-    QString descriptorP;
-    int playerID;
+    QString descriptorP = NULL ;
+    int playerID = NULL;
 
     do
     {
@@ -189,7 +188,7 @@ int Players::getPackedFlags1() const
 void Players::setBitFlags1(int bitNumber, bool state)
 {
     PackedFlags1 ^= (-state ^ PackedFlags1) & (1 << bitNumber);
-    //qDebug() << "Flags1: " << displayBinary(PackedFlags1, 8);
+    //qDebug() << "\tFlags1: " << getPackedFlags1() << "\t\tBinary = " << displayBinary(PackedFlags1, 8);
 }
 
 void Players::setPackedFlags1(int value)
@@ -210,7 +209,7 @@ void Players::setPackedFlags2(int value)
 void Players::setBitFlags2(int bitNumber, bool state)
 {
     PackedFlags2 ^= (-state ^ PackedFlags2) & (1 << bitNumber);
-    //qDebug() << "Flags2: " << displayBinary(PackedFlags2, 8);
+    //qDebug() << "\tFlags2: " << getPackedFlags2() << "\t\tBinary = " << displayBinary(PackedFlags2, 8);
 }
 
 int Players::getTaggerID() const
