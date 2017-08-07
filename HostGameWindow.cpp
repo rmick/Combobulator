@@ -268,6 +268,7 @@ void HostGameWindow::sendAssignFailed()
         lttoComms.setDontAnnounceGame(false);
         expectingAckPlayerAssignment = false;
         qDebug() <<"HostGameWindow::sendAssignFailed() - Counted to 6, I am now going away";
+        if (closingWindow) deleteLater();   // Delete the window, as the cancel button has been pressed.
     }
 }
 
@@ -423,6 +424,7 @@ void HostGameWindow::AssignPlayer(int Game, int Tagger, int Flags)
         expectingAckPlayerAssignment = true;
 
         qDebug() << "HostGameWindow::AssignPlayer() " << currentPlayer << Game << Tagger, calculatePlayerTeam5bits(Flags);
+        if (closingWindow) deleteLater();   // Delete the window, as the cancel button has been pressed.
     }
 }
 
@@ -437,6 +439,7 @@ void HostGameWindow::AddPlayerToGame(int Game, int Tagger)
     lttoComms.setDontAnnounceGame(false);
     expectingAckPlayerAssignment = false;
     timerAssignFailed->stop();
+    if (closingWindow) deleteLater();   // Delete the window, as the cancel button has been pressed.
 }
 
 void HostGameWindow::AddSerialPortToListWidget(QString value)

@@ -2012,7 +2012,7 @@ background: #eee;
     <item row="1" column="2">
      <widget class="QLabel" name="label">
       <property name="text">
-       <string>Build : 17.8.7a</string>
+       <string>Build : 17.8.8a</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
