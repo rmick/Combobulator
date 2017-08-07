@@ -82,7 +82,7 @@ void Game::setNumberOfTeams(int value)
     {
         case 0:
             msb = 0;
-            lsb = 0;
+            lsb = 1;
             break;
         case 1:
             msb = 0;

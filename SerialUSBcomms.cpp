@@ -21,7 +21,7 @@ void SerialUSBcomms::findSerialPort()
 #ifdef INCLUDE_SERIAL_USB
     foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts())
     {
-        if (info.manufacturer().contains("Spark") )
+        if (info.manufacturer().contains("Spark") || info.manufacturer().contains("Arduino"))
         {
             serialUSB->setPortName(info.portName() );
             emit SerialPortFound(info.portName() );

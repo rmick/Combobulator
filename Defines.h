@@ -59,8 +59,8 @@ const int   DEFAULT_RELOADS         = 100;        // 100 = Unlimited
 const int   DEFAULT_HEALTH          = 25;
 const int   DEFAULT_SHEILDS         = 15;
 const int   DEFAULT_MEGAS           = 20;         // 100 - Unlimited
-const int   DEFAULT_FLAGS1          = 0x20;
-const int   DEFAULT_FLAGS2          = 0x02;
+const int   DEFAULT_FLAGS1          = 0x32;
+const int   DEFAULT_FLAGS2          = 0x01;
 
 //Packed byte, FLAGS1
 const int   NEUTRALISE_10_FLAG      = 7;

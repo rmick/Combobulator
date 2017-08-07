@@ -81,7 +81,7 @@ void HostGameWindow::on_btn_Cancel_clicked()
     timerDeBrief->stop();
     timerAssignFailed->stop();
     timerGameTimeRemaining->stop();
-    if (sendingCommsActive == false) deleteLater();
+    if (sendingCommsActive == false) deleteLater();     //If this is true then the deleteLater is triggered at the end of hostCurrentPlayer(), to stop the app crashing.
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -223,7 +223,7 @@ void HostGameWindow::hostCurrentPlayer()
     }
 
     sendingCommsActive = false;
-    if (closingWindow) deleteLater();
+    if (closingWindow) deleteLater();   // Delete the window, as the cancel button has been pressed.
     return;
 }
 
@@ -536,6 +536,7 @@ void HostGameWindow::sendCountDown()
         lttoComms.sendPacket(DATA, 8);   //TODO:Team3 PlayerCount
         lttoComms.sendPacket(CHECKSUM);
         InsertToListWidget("CountDownTime = " + QString::number(countDownTimeRemaining));
+        ui->label->setText("CountDownTime = " + QString::number(countDownTimeRemaining));
         countDownTimeRemaining--;
     }
 }
