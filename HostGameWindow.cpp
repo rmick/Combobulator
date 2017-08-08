@@ -295,6 +295,8 @@ int HostGameWindow::calculatePlayerTeam5bits(int requestedTeam)
     }
     else
     {
+       //TODO: Move this to a separate function.
+
         // Assign Spies to the next team (1>2, 2>3 or 2>1, 3>1)
 
         if      (currentPlayer > 0  && currentPlayer < 9)           // Team 1
@@ -333,6 +335,9 @@ int HostGameWindow::calculatePlayerTeam5bits(int requestedTeam)
             // eg,  T1-P3 and T2-P7 becomes...
             //      T2-P7 and T1-P3 WHILST keeping their own settings!!!
             //      This will make debrief interesting..........
+
+
+    //TODO: Move this to a separate function as well.
     if (playerInfo[currentPlayer].getSpyNumber() == 0)                      // Not a Spy
     {
         //assignedPlayerNumber = currentPlayer -  1;
@@ -519,7 +524,7 @@ void HostGameWindow::sendCountDown()
     {
         timerCountDown->stop();
         timerGameTimeRemaining->start(1000);
-        remainingGameTime = ConvertBCDtoDec(gameInfo.getGameLength()) * 60;
+        remainingGameTime = (ConvertBCDtoDec(gameInfo.getGameLength()) * 60) + 2;  // Add a couple of seconds to match the taggers, who start the clock AFTER the Good Luck message.
 
         InsertToListWidget("Game has started !!!");
         ui->label->setText("Game Underway !!!");
@@ -547,6 +552,7 @@ void HostGameWindow::sendCountDown()
 void HostGameWindow::updateGameTimeRemaining()
 {
     remainingGameTime--;
+    if (remainingGameTime > (ConvertBCDtoDec(gameInfo.getGameLength()) * 60)) return;   // We dont want to see a countdown time > than the game time.
     QString remainingMinutes = QString::number(remainingGameTime / 60);
     QString remainingSeconds = QString::number(remainingGameTime % 60);
     if (remainingMinutes.length() == 1) remainingMinutes.prepend("0");

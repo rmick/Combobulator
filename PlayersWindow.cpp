@@ -22,6 +22,7 @@ PlayersWindow::PlayersWindow(QWidget *parent) :
     LoadPlayersForTeams();
     LoadPlayerSettings(0);      // 0 = Global Player
     SetActivePlayers();
+    RenamePlayerTeamButtons(gameInfo.getNumberOfTeams());
 }
 
 PlayersWindow::~PlayersWindow()
@@ -233,6 +234,40 @@ void PlayersWindow::setSelectedPlayer(int value)
     if (ui->btn_EditMode->isChecked()) setPlayerControls(true);
     else setPlayerControls(false);
 
+}
+
+void PlayersWindow::RenamePlayerTeamButtons(int numTeams)
+{
+    //SetUpPlayerButtonMapping();      //required as the window has not been created yet, so the constructor has not done the mapping.
+    switch(numTeams)
+    {
+    case 0:
+        for (int index = 1; index < 25; index++)
+        {
+            PlayerButtons[index]->setText("Player " + QString::number(index) );
+        }
+        ui->label_Team1->setText("Team 1");
+        ui->label_Team2->setText("Team 1");
+        ui->label_Team3->setText("Team 1");
+        ui->label_Team2->setVisible(false);
+        ui->label_Team3->setVisible(false);
+        break;
+    case 2:
+    case 3:
+        for (int index = 1; index < 25; index++)
+        {
+            if      (index < 9)     PlayerButtons[index]->setText("Player " + QString::number(index) );
+            else if (index < 17)    PlayerButtons[index]->setText("Player " + QString::number(index-8) );
+            else if (index < 25)    PlayerButtons[index]->setText("Player " + QString::number(index-16) );
+        }
+        ui->label_Team1->setText("Team 1");
+        ui->label_Team2->setText("Team 2");
+        ui->label_Team3->setText("Team 3");
+        ui->label_Team2->setVisible(true);
+        if(gameInfo.getNumberOfTeams() == 2) ui->label_Team3->setVisible(false);
+        else                                 ui->label_Team3->setVisible(true);
+        break;
+    }
 }
 
 int PlayersWindow::getSelectedPlayer() const

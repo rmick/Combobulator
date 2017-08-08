@@ -29,7 +29,7 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
     ui->btn_StartGame->setEnabled(false);
     qsrand(static_cast<uint>(QTime::currentTime().msec()));
 
-    ui->btn_CustomGame->setVisible(false);
+    //ui->btn_CustomGame->setVisible(false);
 
 
 

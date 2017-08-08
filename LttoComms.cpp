@@ -8,8 +8,6 @@ LttoComms::LttoComms(QObject *parent) : QObject(parent)
 {
     useLazerSwarm = true;          //TODO: Set this up in Preferences.
     dontAnnounceGame = false;
-
-    //connect(&tcpComms,   SIGNAL(newTCPdata(QByteArray)),  this, SLOT(receivePacket(QByteArray)) );
 }
 
 ////////////////////////////////////////////////////////////////////
