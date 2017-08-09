@@ -2015,26 +2015,10 @@ background: #eee;
     <item row="1" column="2">
      <widget class="QLabel" name="label">
       <property name="text">
-       <string>Build : 17.8.8b</string>
+       <string>Build : 17.8.9a</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="6">
-     <widget class="QToolButton" name="btn_DisplayFlags2">
-      <property name="enabled">
-       <bool>true</bool>
-      </property>
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text">
-       <string>Display Flags2</string>
       </property>
      </widget>
     </item>

@@ -49,11 +49,16 @@ private slots:
 
     void playerButtonPressed(int value);
 
+    void playerButtonReleased(int value);
+
 private:
     Ui::PlayersWindow   *ui;
-    QSignalMapper       *signalMapper;
+    QSignalMapper       *signalMapperClicked;
+    QSignalMapper       *signalMapperPressed;
+    QSignalMapper       *signalMapperReleased;
     QPalette            *paletteRed;
     QPalette            *paletteGreen;
+    QElapsedTimer       elapsedTime;
 
     QVector <QPushButton*> PlayerButtons;
     int SelectedPlayer;
@@ -62,14 +67,44 @@ private:
     void LoadPlayerSettings(int PlayerID);
     void SetActivePlayers();
     void ShowButton();
-    void setPlayerControls(bool state);
+    void SetPlayerControls(int state, int mode);
     void SetPlayerButtons(bool state);
-    void renamePlayer(int player);
+    void RenamePlayer(int player);
     void AdjustSettingsForHandicap(int currentPlayer);
-
-    bool eventFilter(QObject *obj, QEvent *event);
-    void mousePressEvent(QMouseEvent *me);
-    void mouseReleaseEvent(QMouseEvent *me);
 };
 
 #endif // PLAYERSWINDOW_H
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//Alternate button mapping method
+
+//    QList<QPushButton*> PlayerButtons = findChildren<QPushButton*>(QRegExp("btn_Player*"));
+//// They will be found in any order so need to gather together into a vector.
+//    QSignalMapper* signalMapper = new QSignalMapper(this);
+
+//    for (int i=0; i<formButtons.count(); i++)
+//    {
+//           QPushButton *btn = formButtons.at(i);
+//           int id = btn->objectName().mid(QString("btn_Player").length()).toInt() - 1;
+//           PlayerButtons[id] = btn;
+//           MAP_BTN_TO_ACTION(btn, id);
+//    }
+//    for (int index=0; index<sizeofArray(lastSwitchStates); index++)
+//    {
+//           lastSwitchStates[index] = lastLedStates[index] = 0;
+//    }
+//    connect(signalMapper,  SIGNAL(mapped(int)), this, SIGNAL(btnClicked(int)));
+//    connect(this,  SIGNAL(btnClicked(int)), SLOT(buttonPushed(int)));
+

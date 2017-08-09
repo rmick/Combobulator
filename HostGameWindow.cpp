@@ -45,6 +45,9 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
     ui->btn_Cancel->setText("Cancel");
     ui->btn_Rehost->setEnabled(false);
 
+    //TODO: finish rehost and delete this line
+    ui->btn_Rehost->setVisible(false);
+
     serialUSBcomms.setUpSerialPort();
 }
 
@@ -552,7 +555,7 @@ void HostGameWindow::sendCountDown()
 void HostGameWindow::updateGameTimeRemaining()
 {
     remainingGameTime--;
-    if (remainingGameTime > (ConvertBCDtoDec(gameInfo.getGameLength()) * 60)) return;   // We dont want to see a countdown time > than the game time.
+    if (remainingGameTime > (ConvertBCDtoDec(gameInfo.getGameLength()) * 60)) return;   // Ignore the extra 2 seconds we added to the clock.
     QString remainingMinutes = QString::number(remainingGameTime / 60);
     QString remainingSeconds = QString::number(remainingGameTime % 60);
     if (remainingMinutes.length() == 1) remainingMinutes.prepend("0");

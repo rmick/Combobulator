@@ -28,7 +28,7 @@ const char  BEACON      = 'B';
 
 //Internal timers
 const int   INTERPACKET_DELAY_MSEC  = 75;
-const int   HOST_TIMER_MSEC         = 1250;
+const int   HOST_TIMER_MSEC         = 1500;
 
 //Packet Header Type Codes
 const int   ANNOUNCE    = 0x00;
@@ -81,5 +81,16 @@ const int   SUPPLY_ZONES_REFILL_TAGS_FLAG   = 3;
 const int   HOSTILE_ZONES_FLAG              = 2;
 const int   TEAM_COUNT_MSB                  = 1;
 const int   TEAM_COUNT_LSB                  = 0;
+
+//Debrief stuff
+const int   REQUEST_TAG_SUMMARY_BIT         = 1;
+const int   REQUEST_TEAM1_REPORT_BIT        = 2;
+const int   REQUEST_TEAM2_REPORT_BIT        = 4;
+const int   REQUEST_TEAM3_REPORT_BIT        = 8;
+
+//States for PlayersWindow::SetPlayerControls
+const int   CURRENT_MODE                    = 2;
+const int   HANDICAP_MODE                   = 0;
+const int   EDIT_SETTINGS_MODE              = 1;
 
 #endif // DEFINES_H

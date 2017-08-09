@@ -13,10 +13,10 @@ Game::Game()    // (QObject *parent)
     GameLength      = DEFAULT_GAME_LENGTH;
     NumberOfPlayers = 24;
     GameName        ="LTTO";
-    NameChar1       = 43;  // C
-    NameChar2       = 55;  // U
-    NameChar3       = 53;  // S
-    NameChar4       = 54;  // T
+    NameChar1       = 49;  // 1
+    NameChar2       = 50;  // 2
+    NameChar3       = 51;  // 3
+    NameChar4       = 52;  // 4
 
     isSpiesTeamTagActive = true;
 

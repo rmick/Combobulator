@@ -25,7 +25,8 @@ SOURCES +=  main.cpp\
 	    FlagsWindow.cpp \
 	    SerialUSBcomms.cpp \
 	    ReHostTagger.cpp \
-	    AboutForm.cpp
+	    AboutForm.cpp \
+    DeBrief.cpp
 
 
 
@@ -43,7 +44,8 @@ HEADERS  += \
 	    FlagsWindow.h \
 	    SerialUSBcomms.h \
 	    ReHostTagger.h \
-	    AboutForm.h
+	    AboutForm.h \
+    DeBrief.h
 
 
 FORMS    += \

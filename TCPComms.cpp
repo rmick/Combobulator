@@ -63,7 +63,7 @@ void TCPComms::sendPacket(QByteArray data)
             retryCount++;
             return;
         }
-        tcpSocket->connectToHost("192.168.2.1",8000);
+        tcpSocket->connectToHost(HOST_IP_ADDRESS, 8000);
         qDebug() << "TCPComms::sendPacket() - Trying to connect to Socket......";
         retryCount= 0;
     }

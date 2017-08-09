@@ -13,15 +13,21 @@
 PlayersWindow::PlayersWindow(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::PlayersWindow),
-    signalMapper(NULL)
+    signalMapperClicked(NULL),
+    signalMapperPressed(NULL),
+    signalMapperReleased(NULL)
 {
     SelectedPlayer = 0;
     ui->setupUi(this);
-    signalMapper = new QSignalMapper(this);
+    signalMapperClicked  = new QSignalMapper(this);
+    signalMapperPressed  = new QSignalMapper(this);
+    signalMapperReleased = new QSignalMapper(this);
     SetUpPlayerButtonMapping();
+    SetPlayerControls(false, HANDICAP_MODE);
     LoadPlayersForTeams();
     LoadPlayerSettings(0);      // 0 = Global Player
     SetActivePlayers();
+    ui->line_3->setVisible(false);
     RenamePlayerTeamButtons(gameInfo.getNumberOfTeams());
 }
 
@@ -34,26 +40,6 @@ PlayersWindow::~PlayersWindow()
 
 void PlayersWindow::SetUpPlayerButtonMapping()
 {
-//    QList<QPushButton*> PlayerButtons = findChildren<QPushButton*>(QRegExp("btn_Player*"));
-//// They will be found in any order so need to gather together into a vector.
-//    QSignalMapper* signalMapper = new QSignalMapper(this);
-
-//    for (int i=0; i<formButtons.count(); i++)
-//    {
-//           QPushButton *btn = formButtons.at(i);
-//           int id = btn->objectName().mid(QString("btn_Player").length()).toInt() - 1;
-//           PlayerButtons[id] = btn;
-//           MAP_BTN_TO_ACTION(btn, id);
-//    }
-//    for (int index=0; index<sizeofArray(lastSwitchStates); index++)
-//    {
-//           lastSwitchStates[index] = lastLedStates[index] = 0;
-//    }
-//    connect(signalMapper,  SIGNAL(mapped(int)), this, SIGNAL(btnClicked(int)));
-//    connect(this,  SIGNAL(btnClicked(int)), SLOT(buttonPushed(int)));
-
-
-
     PlayerButtons.append(0);    // Fake button for Player 0
     PlayerButtons.append(ui->btn_Player1);
     PlayerButtons.append(ui->btn_Player2);
@@ -80,41 +66,17 @@ void PlayersWindow::SetUpPlayerButtonMapping()
     PlayerButtons.append(ui->btn_Player23);
     PlayerButtons.append(ui->btn_Player24);
 
-    //Connect button array to SignalMapper
+    //Connect button array to SignalMappers
     for (int x = 1; x<25; x++)
     {
-        connect (PlayerButtons[x],  SIGNAL(clicked()), signalMapper, SLOT (map()) );
-        //connect (PlayerButtons[x],  SIGNAL(pressed()), signalMapper, SLOT (map()) );
-        //connect (PlayerButtons[x],  SIGNAL(released()), signalMapper, SLOT (map()) );
-        signalMapper->setMapping(PlayerButtons[x] ,  x);
-        PlayerButtons[x]->installEventFilter(this);
+        connect (PlayerButtons[x],  SIGNAL(pressed()),  signalMapperPressed,  SLOT (map()) );
+        connect (PlayerButtons[x],  SIGNAL(released()), signalMapperReleased, SLOT (map()) );
+        signalMapperPressed ->setMapping(PlayerButtons[x] ,  x);
+        signalMapperReleased->setMapping(PlayerButtons[x] ,  x);
     }
-    connect (signalMapper, SIGNAL(mapped(int)), this, SLOT(playerButtonPressed(int))   );
+    connect (signalMapperPressed,  SIGNAL(mapped(int)), this, SLOT(playerButtonPressed(int))   );
+    connect (signalMapperReleased, SIGNAL(mapped(int)), this, SLOT(playerButtonReleased(int))   );
     qDebug() << "Signal Mapping complete";
-}
-
-QElapsedTimer elapsedTime;
-
-bool PlayersWindow::eventFilter(QObject *obj, QEvent *event)
-{
-    if      (event->type() == QEvent::MouseButtonPress)
-    {
-        qDebug() << "eventFilter::MousePress" << obj;
-        elapsedTime.start();
-        return false;
-    }
-    else if (event->type() == QEvent::MouseButtonRelease)
-    {
-        if (elapsedTime.elapsed() > 1000)
-        {
-            qDebug() << "eventFilter::MouseRelease" << obj;
-            //renamePlayer();
-            //PlayerButtons[SelectedPlayer]->setChecked(false);
-            return true;
-        }
-    }
-    //else
-    return false;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -146,6 +108,7 @@ void PlayersWindow::LoadPlayersForTeams()
 void PlayersWindow::LoadPlayerSettings(int PlayerID)
 {
     // Index 0 is the global setting.
+
     ui->slider_Health               ->setValue  (playerInfo[PlayerID].getHealthTags() );
     ui->slider_Shields              ->setValue  (playerInfo[PlayerID].getShieldTime() );
     ui->slider_MegaTags             ->setValue  (playerInfo[PlayerID].getMegaTags() );
@@ -166,10 +129,10 @@ void PlayersWindow::LoadPlayerSettings(int PlayerID)
 
 void PlayersWindow::SetActivePlayers()
 {
-    for (int x = 1; x < 25; x++)
+    for (int index = 1; index < 25; index++)
     {
-        if      (gameInfo.getIsThisPlayerInTheGame(x) == true) PlayerButtons[x]->setChecked(true);
-        else                                                   PlayerButtons[x]->setChecked(false);
+        if      (gameInfo.getIsThisPlayerInTheGame(index) == true)  PlayerButtons[index]->setChecked(true);
+        else                                                        PlayerButtons[index]->setChecked(false);
     }
 }
 
@@ -183,15 +146,13 @@ void PlayersWindow::on_btn_ClosePlayerWindow_clicked()
 void PlayersWindow::on_btn_SelectNone_clicked()
 {
     SetPlayerButtons(false);
-    ui->label_Handicap->setEnabled(false);
-    ui->slider_Handicap->setEnabled(false);
+    SetPlayerControls(false, CURRENT_MODE);
 }
 
 void PlayersWindow::on_btn_SelectAll_clicked()
 {
-
-    if (ui->btn_EditMode->isChecked() == true) return;
-    else SetPlayerButtons(true);
+    SetPlayerControls(false, CURRENT_MODE);
+    SetPlayerButtons(true);
 }
 
 void PlayersWindow::SetPlayerButtons(bool state)
@@ -199,58 +160,71 @@ void PlayersWindow::SetPlayerButtons(bool state)
     for (int x = 1; x<25; x++)
     {
          PlayerButtons[x]->setChecked(state);
+         //The next two lines should not be required, but the stylesheet fails when SelectAll/SelectNone are triggered.
          if (state == true) PlayerButtons[x]->setStyleSheet("font: bold;");
          else               PlayerButtons[x]->setStyleSheet("font: normal;");
          gameInfo.setIsThisPlayerInTheGame(x, state);
     }
 }
 
-void PlayersWindow::setPlayerControls(bool state)
+void PlayersWindow::SetPlayerControls(int state, int mode)
 {
-    ui->label_Handicap->setEnabled(!state);
-    ui->slider_Handicap->setEnabled(!state);
-    ui->label_Health->setEnabled(state);
-    ui->slider_Health->setEnabled(state);
-    ui->label_Health->setEnabled(state);
-    ui->label_MegaTags->setEnabled(state);
-    ui->slider_MegaTags->setEnabled(state);
-    ui->label_Reloads->setEnabled(state);
-    ui->slider_Reloads->setEnabled(state);
-    ui->label_Shields->setEnabled(state);
-    ui->slider_Shields->setEnabled(state);
-    //ui->label_PlayerSlowTags->setEnabled(state);
-    ui->btn_SelectedPlayerSlowTags->setEnabled(state);
-    //ui->label_PlayerTeamTags->setEnabled(state);
-    ui->btn_SelectedPlayerTeamTags->setEnabled(state);
+    //Set the state of ALL the controls.
+    if(state != CURRENT_MODE)
+    {
+        ui->label_Handicap->setEnabled(state);
+        ui->slider_Handicap->setEnabled(state);
+        ui->slider_Health->setEnabled(state);
+        ui->slider_MegaTags->setEnabled(state);
+        ui->slider_Reloads->setEnabled(state);
+        ui->slider_Shields->setEnabled(state);
+        ui->label_SlowTags->setEnabled(state);
+        ui->label_TeamTags->setEnabled(state);
+        ui->btn_SelectedPlayerSlowTags->setEnabled(state);
+        ui->btn_SelectedPlayerTeamTags->setEnabled(state);
+    }
+
+    //Now setVisible for those we want to see
+    if(mode != CURRENT_MODE)
+    {
+        ui->slider_Health->setVisible(mode);
+        ui->slider_MegaTags->setVisible(mode);
+        ui->slider_Reloads->setVisible(mode);
+        ui->slider_Shields->setVisible(mode);
+        ui->slider_Handicap->setVisible(!mode);
+        ui->label_Handicap->setVisible(!mode);
+    }
 }
 
 void PlayersWindow::setSelectedPlayer(int value)
 {
-    qDebug() << "setSelectedPlayer()";
+    if      (gameInfo.getIsThisPlayerInTheGame(value) == false) gameInfo.setIsThisPlayerInTheGame(value, true);
+    else if (gameInfo.getIsThisPlayerInTheGame(value) == true)  gameInfo.setIsThisPlayerInTheGame(value, false);
+    qDebug() << "setSelectedPlayer() = " <<value;
     SelectedPlayer = value;
-    ui->label_LastSelectedPlayer->setText("Selected Player : " + QString::number(value));
-    this->setWindowTitle("Selected Player = " +QString::number(value));
-    qDebug() << "Selected Player : " << value << endl;
-    if (ui->btn_EditMode->isChecked()) setPlayerControls(true);
-    else setPlayerControls(false);
-
+    SetPlayerControls(true, CURRENT_MODE);
 }
 
 void PlayersWindow::RenamePlayerTeamButtons(int numTeams)
 {
-    //SetUpPlayerButtonMapping();      //required as the window has not been created yet, so the constructor has not done the mapping.
     switch(numTeams)
     {
     case 0:
         for (int index = 1; index < 25; index++)
         {
             PlayerButtons[index]->setText("Player " + QString::number(index) );
+            //Rename player buttons if they have a name
+            if (playerInfo[index].getPlayerName() != "") PlayerButtons[index]->setText(playerInfo[index].getPlayerName());
         }
-        ui->label_Team1->setText("Team 1");
+        ui->label_Team1->setText("Players");
         ui->label_Team2->setText("Team 1");
         ui->label_Team3->setText("Team 1");
+        //ui->label_Team1->setVisible(false);
         ui->label_Team2->setVisible(false);
         ui->label_Team3->setVisible(false);
+        ui->line_1->setVisible(false);
+        ui->line_2->setVisible(false);
+        ui->line_2->setVisible(false);
         break;
     case 2:
     case 3:
@@ -259,13 +233,26 @@ void PlayersWindow::RenamePlayerTeamButtons(int numTeams)
             if      (index < 9)     PlayerButtons[index]->setText("Player " + QString::number(index) );
             else if (index < 17)    PlayerButtons[index]->setText("Player " + QString::number(index-8) );
             else if (index < 25)    PlayerButtons[index]->setText("Player " + QString::number(index-16) );
+            //Rename player buttons if they have a name
+            if (playerInfo[index].getPlayerName() != "") PlayerButtons[index]->setText(playerInfo[index].getPlayerName());
         }
         ui->label_Team1->setText("Team 1");
         ui->label_Team2->setText("Team 2");
         ui->label_Team3->setText("Team 3");
+        ui->line_1->setVisible(true);
+        ui->line_2->setVisible(true);
+        ui->label_Team1->setVisible(true);
         ui->label_Team2->setVisible(true);
-        if(gameInfo.getNumberOfTeams() == 2) ui->label_Team3->setVisible(false);
-        else                                 ui->label_Team3->setVisible(true);
+        if(gameInfo.getNumberOfTeams() == 2)
+        {
+            ui->label_Team3->setVisible(false);
+            ui->line_2->setVisible(false);
+        }
+        else
+        {
+            ui->label_Team3->setVisible(true);
+            ui->line_2->setVisible(true);
+        }
         break;
     }
 }
@@ -275,7 +262,6 @@ int PlayersWindow::getSelectedPlayer() const
     return SelectedPlayer;
 }
 
-
 //////////////////////////////////////////////////////////////////////////////////
 
 void PlayersWindow::on_btn_SelectedPlayerSlowTags_clicked()
@@ -283,13 +269,11 @@ void PlayersWindow::on_btn_SelectedPlayerSlowTags_clicked()
     if(ui->btn_SelectedPlayerSlowTags->isChecked() )
     {
         ui->btn_SelectedPlayerSlowTags->setText("ON");
-        //ui->btn_SelectedPlayerSlowTags->setStyleSheet("font: bold;");
         playerInfo[SelectedPlayer].setSlowTags(true);
     }
     else
     {
         ui->btn_SelectedPlayerSlowTags->setText("OFF");
-        //ui->btn_SelectedPlayerSlowTags->setStyleSheet("font: normal;");
         playerInfo[SelectedPlayer].setSlowTags(false);
     }
 }
@@ -299,94 +283,57 @@ void PlayersWindow::on_btn_SelectedPlayerTeamTags_clicked()
     if(ui->btn_SelectedPlayerTeamTags->isChecked() )
     {
         ui->btn_SelectedPlayerTeamTags->setText("ON");
-        //ui->btn_SelectedPlayerTeamTags->setStyleSheet("font: bold;");
         playerInfo[SelectedPlayer].setTeamTags(true);
     }
     else
     {
         ui->btn_SelectedPlayerTeamTags->setText("OFF");
-        //ui->btn_SelectedPlayerTeamTags->setStyleSheet("font: normal;");
         playerInfo[SelectedPlayer].setTeamTags(false);
     }
 }
 
 //////////////////////////////////////////////////////////////////////////////////
-//QElapsedTimer elapsedTime;
 
-void PlayersWindow::mousePressEvent(QMouseEvent *me)
+void PlayersWindow::playerButtonPressed(int value)
 {
-    qDebug() << "myMousePressEvent::MouseButtonPress" << me;
+    qDebug() << "PlayersWindow::playerButtonPressed - MouseButtonPress";
     elapsedTime.start();
 }
 
-void PlayersWindow::mouseReleaseEvent(QMouseEvent *me)
+void PlayersWindow::playerButtonReleased(int value)
 {
-    qDebug() << "myMouseReleaseEvent::MouseButtonRelease" << me;
+    qDebug() << "PlayersWindow::playerButtonReleased - MouseButtonRelease";
     if (elapsedTime.elapsed() > 1000)
     {
-        qDebug() << "renamePlayer()";
+        qDebug() << "PlayersWindow::playerButtonReleased - Long Press !!!";
+        RenamePlayer(value);
     }
     else
     {
-        qDebug() << "setSelectedPlayer(value)";
-//        setSelectedPlayer(value);
-//        if      (gameInfo.getIsThisPlayerInTheGame(value) == false) gameInfo.setIsThisPlayerInTheGame(value, true);
-//        else if (gameInfo.getIsThisPlayerInTheGame(value) == true)  gameInfo.setIsThisPlayerInTheGame(value, false);
+        setSelectedPlayer(value);
 
-//        LoadPlayerSettings(value);
-//        AdjustSettingsForHandicap(value);
+        //Reset all buttons to default stylesheet settings.
+        for (int x = 1; x < 25; x++)
+        {
+            if (PlayerButtons[x]->isChecked() ) PlayerButtons[x]->setStyleSheet("background-color: rgb(50,220,200)");
+            else                                PlayerButtons[x]->setStyleSheet("background-color: cyan");
+        }
+        //Set the last pressed button to a darker colour
+        PlayerButtons[value]->setStyleSheet("background-color: rgb(50,250,220)");
+
+        LoadPlayerSettings(value);
+        AdjustSettingsForHandicap(value);
     }
 }
 
-
-int passNum = 0;
-void PlayersWindow::playerButtonPressed(int value)
-{
-
-    qDebug() << QEvent::MouseButtonPress << "Pass #:" << ++passNum;
-
-    if (QEvent::MouseButtonPress)
-    {
-        qDebug() << "playerButtonPressed::MouseButtonPress";
-        //setSelectedPlayer(value);
-        elapsedTime.start();
-    }
-    if (QEvent::MouseButtonRelease)
-    {
-        qDebug() << "playerButtonPressed::MouseButtonRelease";
-        if (elapsedTime.elapsed() > 1000)
-        {
-            renamePlayer(value);
-        }
-        else
-        {
-            setSelectedPlayer(value);
-            if      (gameInfo.getIsThisPlayerInTheGame(value) == false) gameInfo.setIsThisPlayerInTheGame(value, true);
-            else if (gameInfo.getIsThisPlayerInTheGame(value) == true)  gameInfo.setIsThisPlayerInTheGame(value, false);
-
-            //Set the last button Red and reset all others.
-            for (int x = 1; x < 25; x++)
-            {
-                if (PlayerButtons[x]->isChecked() ) PlayerButtons[x]->setStyleSheet("background-color: rgb(50,220,200)");
-                else                                PlayerButtons[x]->setStyleSheet("background-color: cyan");
-            }
-            PlayerButtons[value]->setStyleSheet("background-color: rgb(50,250,220)");
-
-
-            LoadPlayerSettings(value);
-            AdjustSettingsForHandicap(value);
-        }
-    }
-}
-
-void PlayersWindow::renamePlayer(int player)
+void PlayersWindow::RenamePlayer(int player)
 {
     QString text = QInputDialog::getText(this, tr("Rename Player"), tr("Enter Player name:"), QLineEdit::Normal);
 
     PlayerButtons[player]->setText(text);
+    playerInfo[player].setPlayerName(text);
+    qDebug() << "Saved Player" << player << "name as" << text;
 }
-
-
 
 /////////////////////////////////////////////////////////////////////////////////
 
@@ -424,16 +371,14 @@ void PlayersWindow::on_btn_EditMode_clicked()
 {
     if (ui->btn_EditMode->isChecked() == true)
     {
-        setPlayerControls(true);
+       SetPlayerControls(true, EDIT_SETTINGS_MODE);
         ui->btn_EditMode->setText("Edit Handicap");
-        //ui->PlayerButtonGroup->setExclusive(true);
 
     }
     else if (ui->btn_EditMode->isChecked() == false)
     {
-        setPlayerControls(false);
+        SetPlayerControls(true, HANDICAP_MODE);
         ui->btn_EditMode->setText("Edit Settings");
-        //ui->PlayerButtonGroup->setExclusive(false);
     }
 }
 
