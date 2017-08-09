@@ -171,7 +171,7 @@ QPushbutton:disabled
     </font>
    </property>
    <property name="text">
-    <string>Prepare to Host Tagger : 1</string>
+    <string>Initialising Data.   Standby........</string>
    </property>
    <property name="scaledContents">
     <bool>true</bool>

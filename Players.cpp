@@ -149,7 +149,6 @@ void Players::streamFromFile(QTextStream &in)
     do
     {
             descriptorP = in.readLine();
-            //qDebug() << descriptorP;
             if      (descriptorP.contains("PlayerID:") )        playerID                         = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
             else if (descriptorP.contains("Handicap:") )        playerInfo[playerID].Handicap    = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
             else if (descriptorP.contains("HealthTags:") )      playerInfo[playerID].HealthTags  = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
@@ -158,7 +157,7 @@ void Players::streamFromFile(QTextStream &in)
             else if (descriptorP.contains("MedicMode:") )       playerInfo[playerID].MedicMode   = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
             else if (descriptorP.contains("SlowTags:") )        playerInfo[playerID].SlowTags    = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
             else if (descriptorP.contains("TeamTags:") )        playerInfo[playerID].TeamTags    = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
-            else if (descriptorP.contains("PlayerName:") )      playerInfo[playerID].PlayerName  = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
+            else if (descriptorP.contains("PlayerName:") )      playerInfo[playerID].PlayerName  = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) ));
             else if (descriptorP.contains("Reloads:") )         playerInfo[playerID].Reloads     = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
     }   while (descriptorP != "END_OF_PLAYER_SETTINGS");
 

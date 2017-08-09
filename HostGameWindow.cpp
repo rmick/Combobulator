@@ -112,14 +112,15 @@ void HostGameWindow::announceGame()
     if (currentPlayer != 0)                                                                 // Player 0 is the dummy player
     {
         while (gameInfo.getIsThisPlayerInTheGame(currentPlayer) == false) currentPlayer++;
-        ui->label->setText("Prepare to Host Tagger : " + QString::number(currentPlayer));
+        ui->label->setText("Prepare to Host : Tagger " + QString::number(currentPlayer));
+        if (playerInfo[currentPlayer].getPlayerName() != "") ui->label->setText("Prepare to Host : " + playerInfo[currentPlayer].getPlayerName());
     }
     if (currentPlayer > 16 && gameInfo.getNumberOfTeams() == 2) currentPlayer = 25;         // Ignore players in Team 3
     if (currentPlayer >24)                                                                  // No more players to add
     {
         ui->label->setText("All players are hosted, press START ");
         ui->btn_StartGame->setEnabled(true);
-        currentPlayer = 0;
+        currentPlayer = 0;      //Transmits global game data to keep guns sync'd
     }
 
     hostCurrentPlayer();
@@ -187,7 +188,6 @@ void HostGameWindow::hostCurrentPlayer()
 
     lttoComms.sendPacket(DATA,   playerInfo[currentPlayer].getPackedFlags1()   );
     lttoComms.sendPacket(DATA,   playerInfo[currentPlayer].getPackedFlags2()   );
-    qDebug() << "HostGameWindow::hostCurrentPlayer() - Player # " << currentPlayer << "  - Flags2 = " << playerInfo[currentPlayer].getPackedFlags2();
 
     //  Add a name for Custom Game Types, otherwise skip.
     if (gameInfo.getGameType() == 0x0C)
@@ -396,10 +396,8 @@ int HostGameWindow::calculatePlayerTeam5bits(int requestedTeam)
     }
     playerTeam5bits += assignedPlayerNumber;
     int spyPlayerNumber = (assignedPlayerNumber + (8 * (assignedTeamNumber-1)) + 1);
-    if ((currentPlayer % 8) == 0) qDebug() << "   HostGameWindow::calculatePlayerTeam5bits() - Current Player = " << currentPlayer <<   "\t- Team:" << assignedTeamNumber << ", Player: 8";
-    else                          qDebug() << "   HostGameWindow::calculatePlayerTeam5bits() - Current Player = " << currentPlayer <<   "\t- Team:" << assignedTeamNumber << ", Player:" << (currentPlayer % 8);
-
-    qDebug() <<                               "   HostGameWindow::calculatePlayerTeam5bits() - Spy Player =     " << spyPlayerNumber << "\t- Team:" << assignedTeamNumber << ", Player:" << assignedPlayerNumber+1 << ", Spy# " << playerInfo[currentPlayer].getSpyNumber();
+    qDebug() << "   HostGameWindow::calculatePlayerTeam5bits() - Current Player = " << currentPlayer;;
+    qDebug() << "   HostGameWindow::calculatePlayerTeam5bits() - Spy Player =     " << spyPlayerNumber << "\t- Team:" << assignedTeamNumber << ", Player:" << assignedPlayerNumber+1 << ", Spy# " << playerInfo[currentPlayer].getSpyNumber();
     qDebug() << "----";
 
 

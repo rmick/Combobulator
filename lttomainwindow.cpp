@@ -102,19 +102,19 @@ void LttoMainWindow::setSlowTags(bool value)
 
 void LttoMainWindow::on_btn_StartGame_clicked()
 {
-    //if (hostGameWindow != NULL) return;
-    //if (hostGameWindow == NULL)
-    if ( ! hostGameWindow)
-    {
-        qDebug() << "LttoMainWindow::on_btn_StartGame_clicked() - Creating new HostGameWindow";
-        hostGameWindow = new HostGameWindow(this);
-    }
     if(gameInfo.getTotalNumberOfPlayersInGame() == 0)
     {
         ui->btn_StartGame->setEnabled(false);
         QMessageBox::warning(this,"Error", "There are no players in the game");
         return;
     }
+
+    if ( ! hostGameWindow)
+    {
+        qDebug() << "LttoMainWindow::on_btn_StartGame_clicked() - Creating new HostGameWindow";
+        hostGameWindow = new HostGameWindow(this);
+    }
+
     if(hostGameWindow->resetPlayersForNewGame() == false) return;
     gameInfo.setGameID(hostGameWindow->GetRandomNumber(1,255));
     qDebug() << "LttoMainWindow::on_btn_StartGame_clicked() - GameID = " << gameInfo.getGameID();
@@ -546,6 +546,7 @@ void LttoMainWindow::loadFile()
 
         UpdateGameControlSettings();
         UpdateGlobalPlayerControlSettings();
+        gameInfo.setNumberOfTeams(gameInfo.getNumberOfTeams()); //This updates the Flags2 bits 1+2
 
         //Check for Players, if there are at least two players, enable the Start button.
         if (gameInfo.getTotalNumberOfPlayersInGame() > 1) ui->btn_StartGame->setEnabled(true);

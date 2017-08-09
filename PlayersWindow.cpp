@@ -303,10 +303,22 @@ void PlayersWindow::playerButtonPressed(int value)
 void PlayersWindow::playerButtonReleased(int value)
 {
     qDebug() << "PlayersWindow::playerButtonReleased - MouseButtonRelease";
-    if (elapsedTime.elapsed() > 1000)
+    if (elapsedTime.elapsed() > PRESS_AND_HOLD_TIME)
     {
         qDebug() << "PlayersWindow::playerButtonReleased - Long Press !!!";
         RenamePlayer(value);
+        PlayerButtons[value]->setChecked(false);
+        if(playerInfo[value].getPlayerName() == "")
+        {
+            if (gameInfo.getNumberOfTeams() == 0)
+            {
+                PlayerButtons[value]->setText("Player " + QString::number(value));
+                return;
+            }
+            if (value > 0)  PlayerButtons[value]->setText("Player " + QString::number(value)    );
+            if (value > 8)  PlayerButtons[value]->setText("Player " + QString::number(value - 8));
+            if (value > 16) PlayerButtons[value]->setText("Player " + QString::number(value -16));
+        }
     }
     else
     {
@@ -328,7 +340,7 @@ void PlayersWindow::playerButtonReleased(int value)
 
 void PlayersWindow::RenamePlayer(int player)
 {
-    QString text = QInputDialog::getText(this, tr("Rename Player"), tr("Enter Player name:"), QLineEdit::Normal);
+    QString text = QInputDialog::getText(this, tr("Rename Player"), tr("Enter Player name:"), QLineEdit::Normal, playerInfo[player].getPlayerName());
 
     PlayerButtons[player]->setText(text);
     playerInfo[player].setPlayerName(text);

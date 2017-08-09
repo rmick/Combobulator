@@ -26,9 +26,10 @@ const char  CHECKSUM    = 'C';
 const char  TAG         = 'T';
 const char  BEACON      = 'B';
 
-//Internal timers
+//Internal timers (in mSec)
 const int   INTERPACKET_DELAY_MSEC  = 75;
 const int   HOST_TIMER_MSEC         = 1500;
+const int   PRESS_AND_HOLD_TIME     = 500;
 
 //Packet Header Type Codes
 const int   ANNOUNCE    = 0x00;

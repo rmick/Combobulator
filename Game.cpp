@@ -139,6 +139,7 @@ void Game::setIsThisPlayerInTheGame(int index, int value)
 
 int Game::getPlayersInTeam(int TeamNumber) const
 {
+    //TODO: This is bunkem and shall not work !!!
     int PlayersPackedByte = 0;
     PlayersPackedByte = PlayersPackedByte << isThisPlayerInTheGame[(8*TeamNumber)];
     PlayersPackedByte = PlayersPackedByte << isThisPlayerInTheGame[(7*TeamNumber)];
@@ -163,7 +164,7 @@ void Game::streamToFile(QTextStream &out)
     out << "NumberOfPlayers:"  << NumberOfPlayers  << endl;
     out << "NumberOfTeams:"    << NumberOfTeams    << endl;
     out << "NumberOfSpies:"    << NumberOfSpies    << endl;
-    out << "CountDownTime:"   << CountDownTime    << endl;
+    out << "CountDownTime:"    << CountDownTime    << endl;
     out << "PlayersInGame;"    << endl;
     for (int x=0; x< 25; x++)
     {
@@ -189,7 +190,7 @@ void Game::streamFromFile(QTextStream &in)
             else if (descriptorG.contains("NumberOfPlayers:") )  NumberOfPlayers = extractInteger(descriptorG);
             else if (descriptorG.contains("NumberOfTeams:") )    NumberOfTeams   = extractInteger(descriptorG);
             else if (descriptorG.contains("NumberOfSpies:") )    NumberOfSpies   = extractInteger(descriptorG);
-            else if (descriptorG.contains("GameName:") )         GameName        = extractInteger(descriptorG);
+            else if (descriptorG.contains("GameName:") )         GameName        = descriptorG;
             else if (descriptorG.contains(" Player") )           isThisPlayerInTheGame[descriptorG.mid(7,2).toInt()] = descriptorG.right(1).toInt();
             else if (descriptorG.contains("CountDownTime:") )    CountDownTime   = extractInteger(descriptorG);
     }   while (descriptorG != "END_OF_GAME_SETTINGS");
