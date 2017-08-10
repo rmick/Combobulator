@@ -76,7 +76,6 @@ void PlayersWindow::SetUpPlayerButtonMapping()
     }
     connect (signalMapperPressed,  SIGNAL(mapped(int)), this, SLOT(playerButtonPressed(int))   );
     connect (signalMapperReleased, SIGNAL(mapped(int)), this, SLOT(playerButtonReleased(int))   );
-    qDebug() << "Signal Mapping complete";
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -200,7 +199,6 @@ void PlayersWindow::setSelectedPlayer(int value)
 {
     if      (gameInfo.getIsThisPlayerInTheGame(value) == false) gameInfo.setIsThisPlayerInTheGame(value, true);
     else if (gameInfo.getIsThisPlayerInTheGame(value) == true)  gameInfo.setIsThisPlayerInTheGame(value, false);
-    qDebug() << "setSelectedPlayer() = " <<value;
     SelectedPlayer = value;
     SetPlayerControls(true, CURRENT_MODE);
 }
@@ -217,9 +215,6 @@ void PlayersWindow::RenamePlayerTeamButtons(int numTeams)
             if (playerInfo[index].getPlayerName() != "") PlayerButtons[index]->setText(playerInfo[index].getPlayerName());
         }
         ui->label_Team1->setText("Players");
-        ui->label_Team2->setText("Team 1");
-        ui->label_Team3->setText("Team 1");
-        //ui->label_Team1->setVisible(false);
         ui->label_Team2->setVisible(false);
         ui->label_Team3->setVisible(false);
         ui->line_1->setVisible(false);
@@ -237,8 +232,8 @@ void PlayersWindow::RenamePlayerTeamButtons(int numTeams)
             if (playerInfo[index].getPlayerName() != "") PlayerButtons[index]->setText(playerInfo[index].getPlayerName());
         }
         ui->label_Team1->setText("Team 1");
-        ui->label_Team2->setText("Team 2");
-        ui->label_Team3->setText("Team 3");
+//        ui->label_Team2->setText("Team 2");
+//        ui->label_Team3->setText("Team 3");
         ui->line_1->setVisible(true);
         ui->line_2->setVisible(true);
         ui->label_Team1->setVisible(true);
@@ -296,16 +291,14 @@ void PlayersWindow::on_btn_SelectedPlayerTeamTags_clicked()
 
 void PlayersWindow::playerButtonPressed(int value)
 {
-    qDebug() << "PlayersWindow::playerButtonPressed - MouseButtonPress";
+    value++;        //to silence compiler warning
     elapsedTime.start();
 }
 
 void PlayersWindow::playerButtonReleased(int value)
 {
-    qDebug() << "PlayersWindow::playerButtonReleased - MouseButtonRelease";
     if (elapsedTime.elapsed() > PRESS_AND_HOLD_TIME)
     {
-        qDebug() << "PlayersWindow::playerButtonReleased - Long Press !!!";
         RenamePlayer(value);
         PlayerButtons[value]->setChecked(false);
         if(playerInfo[value].getPlayerName() == "")
@@ -426,4 +419,11 @@ void PlayersWindow::on_slider_MegaTags_valueChanged(int value)
      if  (value == 100) ui->label_MegaTags->setText("MegaTags : Unlimited");
      else               ui->label_MegaTags->setText("MegaTags : " + QString::number(value) );
      playerInfo[SelectedPlayer].setMegaTags(value);
+}
+
+void PlayersWindow::on_btn_Test_clicked()
+{
+    gameInfo.getPlayersInTeam(1);
+    gameInfo.getPlayersInTeam(2);
+    gameInfo.getPlayersInTeam(3);
 }

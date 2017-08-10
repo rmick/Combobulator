@@ -3628,6 +3628,13 @@ QFrame[frameShape=&quot;5&quot;]
       </property>
      </widget>
     </item>
+    <item row="0" column="3">
+     <widget class="QPushButton" name="btn_Test">
+      <property name="text">
+       <string>DeBug-PlayersInGameByte</string>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QWidget" name="layoutWidget">

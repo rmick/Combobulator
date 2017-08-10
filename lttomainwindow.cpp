@@ -38,6 +38,7 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
     serialUSBactive = true;
     tcpCommsActive = true;
     gameInfo.setIsSpiesTeamTagActive(false);
+    //save position on screen to a Qsettings file
 
 
 
@@ -111,13 +112,11 @@ void LttoMainWindow::on_btn_StartGame_clicked()
 
     if ( ! hostGameWindow)
     {
-        qDebug() << "LttoMainWindow::on_btn_StartGame_clicked() - Creating new HostGameWindow";
         hostGameWindow = new HostGameWindow(this);
     }
 
     if(hostGameWindow->resetPlayersForNewGame() == false) return;
     gameInfo.setGameID(hostGameWindow->GetRandomNumber(1,255));
-    qDebug() << "LttoMainWindow::on_btn_StartGame_clicked() - GameID = " << gameInfo.getGameID();
     hostGameWindow->show();
 }
 
@@ -135,13 +134,11 @@ void LttoMainWindow::on_btn_SlowTags_clicked()
     if      (getSlowTags() == false)
     {
         ui->btn_SlowTags->setText("Slow Tags ON");
-        //ui->btn_SlowTags->setStyleSheet("font: bold;");
         setSlowTags(true);
     }
     else if (getSlowTags() == true)
     {
         ui->btn_SlowTags->setText("Slow Tags OFF");
-        //ui->btn_SlowTags->setStyleSheet("font: normal;");
         setSlowTags(false);
     }
 }
@@ -151,13 +148,11 @@ void LttoMainWindow::on_btn_MedicMode_clicked()
     if      (getMedicMode() == false)
     {
         ui->btn_MedicMode->setText("Medic Mode ON");
-        //ui->btn_MedicMode->setStyleSheet("font: bold;");
         setMedicMode(true);
     }
     else if (getMedicMode() == true)
     {
         ui->btn_MedicMode->setText("Medic Mode OFF");
-        //ui->btn_MedicMode->setStyleSheet("font: normal;");
         setMedicMode(false);
     }
 }
@@ -167,13 +162,11 @@ void LttoMainWindow::on_btn_TeamTags_clicked()
     if      (getTeamTags() == false)
     {
         ui->btn_TeamTags->setText("Team Tags ON");
-        //ui->btn_TeamTags->setStyleSheet("font: bold;");
         setTeamTags(true);
     }
     else if (getTeamTags() == true)
     {
         ui->btn_TeamTags->setText("Team Tags OFF");
-        //ui->btn_TeamTags->setStyleSheet("font: normal;");
         setTeamTags(false);
     }
 }
@@ -187,7 +180,6 @@ void LttoMainWindow::on_btn_Ltag_clicked()
     if      (gameInfo.getNumberOfTeams() == 0)   gameInfo.setGameType(gameInfo.Ltag0);
     else if (gameInfo.getNumberOfTeams() == 2)   gameInfo.setGameType(gameInfo.Ltag2);
     else if (gameInfo.getNumberOfTeams() == 3)   gameInfo.setGameType(gameInfo.Ltag3);
-    qDebug() << "LaserTag: " << gameInfo.getGameType();
 }
 
 void LttoMainWindow::on_btn_HideAndSeek_clicked()
@@ -201,7 +193,6 @@ void LttoMainWindow::on_btn_HideAndSeek_clicked()
     }
     else if (gameInfo.getNumberOfTeams() == 2)   gameInfo.setGameType(gameInfo.HideSeek2);
     else if (gameInfo.getNumberOfTeams() == 3)   gameInfo.setGameType(gameInfo.HideSeek3);
-    qDebug() << "HideAndSeek: " << gameInfo.getGameType();
 }
 
 void LttoMainWindow::on_btn_Kings_clicked()
@@ -215,7 +206,6 @@ void LttoMainWindow::on_btn_Kings_clicked()
     }
     else if (gameInfo.getNumberOfTeams() == 2)   gameInfo.setGameType(gameInfo.Kings2);
     else if (gameInfo.getNumberOfTeams() == 3)   gameInfo.setGameType(gameInfo.Kings3);
-    qDebug() << "Kings: " << gameInfo.getGameType();
 }
 
 void LttoMainWindow::on_btn_OwnTheZone_clicked()
@@ -225,33 +215,27 @@ void LttoMainWindow::on_btn_OwnTheZone_clicked()
     if      (gameInfo.getNumberOfTeams() == 0)   gameInfo.setGameType(gameInfo.OwnZone0);
     else if (gameInfo.getNumberOfTeams() == 2)   gameInfo.setGameType(gameInfo.OwnZone2);
     else if (gameInfo.getNumberOfTeams() == 3)   gameInfo.setGameType(gameInfo.OwnZone3);
-    qDebug() << "OwnTheZone: " << gameInfo.getGameType();
 }
 
 void LttoMainWindow::on_btn_CustomGame_clicked()        //TODO: Add all the team options, etc
 {
     gameInfo.setGameType(12);
-    gameInfo.setGameID(44);
-//    playerInfo[0].setPackedFlags1(28);
-//    playerInfo[0].setPackedFlags2(162);
+    gameInfo.setGameID(42);
 }
 //////////////////////////////////////////////////////////////////////////////////
 
 void LttoMainWindow::on_btn_NoTeams_clicked()
 {
     gameInfo.setNumberOfTeams(0);
-    qDebug() << "Current Game is: " << gameInfo.getGameType();
     ui->btn_Spies->setEnabled(false);
     if (gameInfo.getGameType() >= gameInfo.Ltag0      && gameInfo.getGameType() <= gameInfo.Ltag3)      gameInfo.setGameType(gameInfo.Ltag0);
     if (gameInfo.getGameType() >= gameInfo.OwnZone0   && gameInfo.getGameType() <= gameInfo.OwnZone3)   gameInfo.setGameType(gameInfo.OwnZone0);
-    qDebug() << "New Game is:" << gameInfo.getGameType();
 }
 
 void LttoMainWindow::on_btn_TwoTeams_clicked()
 {
     gameInfo.setNumberOfTeams(2);
     ui->btn_Spies->setEnabled(true);
-    qDebug() << "Current Game is: " << gameInfo.getGameType();
     switch(gameInfo.getGameType() )
     {
     case Game::Ltag0:
@@ -273,14 +257,12 @@ void LttoMainWindow::on_btn_TwoTeams_clicked()
         gameInfo.setGameType(Game::OwnZone2);
         break;
     }
-    qDebug() << "New Game is:" << gameInfo.getGameType();
 }
 
 void LttoMainWindow::on_btn_ThreeTeams_clicked()
 {
     gameInfo.setNumberOfTeams(3);
     ui->btn_Spies->setEnabled(true);
-    qDebug() << "Current Game is: " << gameInfo.getGameType();
     switch(gameInfo.getGameType() )
     {
         case Game::Ltag0:
@@ -305,7 +287,6 @@ void LttoMainWindow::on_btn_ThreeTeams_clicked()
             gameInfo.setGameType(Game::Special);
             break;
     }
-     qDebug() << "New Game is:" << gameInfo.getGameType();
 }
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -378,7 +359,6 @@ void LttoMainWindow::on_btn_Spies_clicked()
 
 void LttoMainWindow::UpdateGameControlSettings()
 {
-    qDebug() << "Updating Game Type to : " << gameInfo.getGameType();
     switch (gameInfo.getGameType() )
     {
         case Game::Ltag0:
@@ -437,7 +417,6 @@ void LttoMainWindow::UpdateGameControlSettings()
             qDebug() << "No match in the switch for : " << gameInfo.getGameType();
     }
 
-    qDebug() << "Setting Spy Count to " << gameInfo.getNumberOfSpies();
     switch (gameInfo.getNumberOfSpies() )
     {
         case 0:
@@ -463,26 +442,27 @@ void LttoMainWindow::UpdateGameControlSettings()
 void LttoMainWindow::UpdateGlobalPlayerControlSettings()
 {
     // Index 0 is the global setting.
-    qDebug() << "Commence Loading PlayerSettings";
     ui->slider_Health               ->setValue  (playerInfo[0].getHealthTags() );
     ui->slider_Shields              ->setValue  (playerInfo[0].getShieldTime() );
     ui->slider_MegaTags             ->setValue  (playerInfo[0].getMegaTags() );
-    qDebug() << "Commence Loading tags";
+
     ui->btn_SlowTags  ->setChecked(playerInfo[0].getSlowTags() );
     if (playerInfo[0].getSlowTags() == false)    ui->btn_SlowTags  ->setText("Slow Tags OFF");
     else                                         ui->btn_SlowTags  ->setText("Slow Tags ON");
+
     ui->btn_TeamTags  ->setChecked(playerInfo[0].getTeamTags() );
     if (playerInfo[0].getTeamTags() == false)    ui->btn_TeamTags  ->setText("Team Tags OFF");
     else                                         ui->btn_TeamTags  ->setText("Team Tags ON");
+
     ui->btn_MedicMode ->setChecked(playerInfo[0].getMedicMode() );
     if (playerInfo[0].getMedicMode() == false)   ui->btn_MedicMode ->setText("Medic Mode OFF");
     else                                         ui->btn_MedicMode ->setText("Medic Mode ON");
-qDebug() << "Commence Loading ReLoads";
-    int reLoads;
-    if (playerInfo[0].getReloads() == 0) reLoads = 100;
-    else reLoads = playerInfo[0].getReloads();
-    ui->slider_Reloads              ->setValue(reLoads);
-qDebug() << "All Player Settings Locked and Loaded :-)";
+
+//    int reLoads;
+//    if (playerInfo[0].getReloads() == 0) reLoads = 100;
+//    else reLoads = playerInfo[0].getReloads();
+//    ui->slider_Reloads              ->setValue(reLoads);
+      ui->slider_Reloads->setValue(playerInfo[0].getReloads());
 }
 
 //////////////////////////////////////////////////////////////////
@@ -572,7 +552,6 @@ void LttoMainWindow::on_actionuse_LazerSwarm_triggered()
     else                                       lttoComms.setUseLazerSwarm(false);
 }
 
-
 void LttoMainWindow::on_actionSave_triggered()
 {
     saveFile();
@@ -589,11 +568,6 @@ void LttoMainWindow::on_actionUSB_Serial_triggered()
     else                                  serialUSBactive = false;
 }
 
-void LttoMainWindow::on_actionWi_Fi_triggered()
-{
-
-}
-
 void LttoMainWindow::on_btn_Flags_clicked()
 {
     if(flagsWindow==NULL) flagsWindow = new FlagsWindow;
@@ -602,13 +576,5 @@ void LttoMainWindow::on_btn_Flags_clicked()
 
 void LttoMainWindow::on_actionAbout_triggered()
 {
-    //TODO:Open an Anout form
-}
-
-void LttoMainWindow::on_btn_DisplayFlags2_clicked()
-{
-    for (int x = 0; x < 25; x++)
-    {
-        qDebug() << "Player " << x << " -   Flags1= " << playerInfo[x].getPackedFlags1() << "\t  Flags2= " << playerInfo[x].getPackedFlags2();
-    }
+    //TODO:Open an About form
 }

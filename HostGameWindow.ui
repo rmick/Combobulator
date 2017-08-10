@@ -141,31 +141,31 @@ QPushbutton:disabled
   <widget class="QListWidget" name="listWidget_Status">
    <property name="geometry">
     <rect>
-     <x>140</x>
-     <y>110</y>
-     <width>741</width>
-     <height>351</height>
+     <x>10</x>
+     <y>10</y>
+     <width>631</width>
+     <height>171</height>
     </rect>
    </property>
    <property name="movement">
     <enum>QListView::Free</enum>
    </property>
    <property name="isWrapping" stdset="0">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
   </widget>
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>180</x>
-     <y>10</y>
-     <width>691</width>
-     <height>101</height>
+     <x>0</x>
+     <y>120</y>
+     <width>1024</width>
+     <height>200</height>
     </rect>
    </property>
    <property name="font">
     <font>
-     <pointsize>36</pointsize>
+     <pointsize>55</pointsize>
      <weight>75</weight>
      <bold>true</bold>
     </font>
@@ -183,7 +183,7 @@ QPushbutton:disabled
   <widget class="QPushButton" name="btn_Start">
    <property name="geometry">
     <rect>
-     <x>10</x>
+     <x>650</x>
      <y>10</y>
      <width>113</width>
      <height>51</height>
@@ -203,8 +203,8 @@ QPushbutton:disabled
   <widget class="QPushButton" name="btn_SkipPlayer">
    <property name="geometry">
     <rect>
-     <x>900</x>
-     <y>250</y>
+     <x>10</x>
+     <y>370</y>
      <width>113</width>
      <height>81</height>
     </rect>
@@ -310,8 +310,8 @@ QPushbutton:disabled
    </property>
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>350</y>
+     <x>480</x>
+     <y>360</y>
      <width>113</width>
      <height>111</height>
     </rect>
@@ -427,8 +427,8 @@ Game</string>
    </property>
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>230</y>
+     <x>250</x>
+     <y>410</y>
      <width>113</width>
      <height>71</height>
     </rect>
@@ -701,8 +701,8 @@ Base Status</string>
   <widget class="QPushButton" name="btn_FailSend">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>70</y>
+     <x>650</x>
+     <y>80</y>
      <width>113</width>
      <height>51</height>
     </rect>

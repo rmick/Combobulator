@@ -10,6 +10,7 @@ SerialUSBcomms::SerialUSBcomms(QObject *parent) :
     serialUSB = new QSerialPort(this);
     connect(serialUSB,  SIGNAL(readyRead()),                    this,       SLOT(receivePacket()) );
 #endif
+    //TODO: Move this to an INIT routine so that Windows does not bark!
     connect(&lttoComms, SIGNAL(sendSerialData(QByteArray)),     this,       SLOT(sendPacket(QByteArray)) );
     connect(this,       SIGNAL(newSerialUSBdata(QByteArray)),   &lttoComms, SLOT(receivePacket(QByteArray)) );
 

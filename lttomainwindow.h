@@ -88,13 +88,9 @@ private slots:
 
     void on_actionUSB_Serial_triggered();
 
-    void on_actionWi_Fi_triggered();
-
     void on_btn_Flags_clicked();
 
     void on_actionAbout_triggered();
-
-    void on_btn_DisplayFlags2_clicked();
 
 private:
     Ui::LttoMainWindow  *ui;

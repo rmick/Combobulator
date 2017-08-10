@@ -7,6 +7,7 @@ TCPComms::TCPComms(QObject *parent) :
     tcpSocket = new QTcpSocket(this);
     isConnected = false;
 
+    //TODO: Move to an INIT routine to see if it fixes the EMIT issue on Android.
     connect(tcpSocket,     SIGNAL(connected()),                this,       SLOT(connected()) );
     connect(tcpSocket,     SIGNAL(connected()),                &lttoComms, SLOT(TCPconnected()) );
     connect(tcpSocket,     SIGNAL(disconnected()),             this,       SLOT(disconnected()) );
@@ -43,6 +44,7 @@ void TCPComms::receivePacket()
 {
     QByteArray rX;
     rX = tcpSocket->readAll();
+    //TODO: Move all the connect stuff to an INIT routine to see if it fixes this issue.
     //emit newTCPdata(rX);          // Does not work on Android for some unknown reason.
     lttoComms.androidRxPacket(rX);  // This is the simple workaround :-)
     //qDebug() << "          TCPComms::receivePacket() - " + rX;

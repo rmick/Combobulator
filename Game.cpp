@@ -139,17 +139,17 @@ void Game::setIsThisPlayerInTheGame(int index, int value)
 
 int Game::getPlayersInTeam(int TeamNumber) const
 {
-    //TODO: This is bunkem and shall not work !!!
     int PlayersPackedByte = 0;
-    PlayersPackedByte = PlayersPackedByte << isThisPlayerInTheGame[(8*TeamNumber)];
-    PlayersPackedByte = PlayersPackedByte << isThisPlayerInTheGame[(7*TeamNumber)];
-    PlayersPackedByte = PlayersPackedByte << isThisPlayerInTheGame[(6*TeamNumber)];
-    PlayersPackedByte = PlayersPackedByte << isThisPlayerInTheGame[(5*TeamNumber)];
-    PlayersPackedByte = PlayersPackedByte << isThisPlayerInTheGame[(4*TeamNumber)];
-    PlayersPackedByte = PlayersPackedByte << isThisPlayerInTheGame[(3*TeamNumber)];
-    PlayersPackedByte = PlayersPackedByte << isThisPlayerInTheGame[(2*TeamNumber)];
-    PlayersPackedByte = PlayersPackedByte << isThisPlayerInTheGame[(1*TeamNumber)];
-    qDebug() << "Game::getPlayersInTeamTx() = " << PlayersPackedByte;
+    int playerOffset = ((TeamNumber-1)*8);
+    PlayersPackedByte =  isThisPlayerInTheGame[(8+playerOffset)]*128;
+    PlayersPackedByte += isThisPlayerInTheGame[(7+playerOffset)]*64;
+    PlayersPackedByte += isThisPlayerInTheGame[(6+playerOffset)]*32;
+    PlayersPackedByte += isThisPlayerInTheGame[(5+playerOffset)]*16;
+    PlayersPackedByte += isThisPlayerInTheGame[(4+playerOffset)]*8;
+    PlayersPackedByte += isThisPlayerInTheGame[(3+playerOffset)]*4;
+    PlayersPackedByte += isThisPlayerInTheGame[(2+playerOffset)]*2;
+    PlayersPackedByte += isThisPlayerInTheGame[(1+playerOffset)];
+    qDebug() << "Game::getPlayersInTeamTx() - Team =" << TeamNumber << "Byte =" << PlayersPackedByte;
     return PlayersPackedByte;
 }
 

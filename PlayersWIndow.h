@@ -51,6 +51,8 @@ private slots:
 
     void playerButtonReleased(int value);
 
+    void on_btn_Test_clicked();
+
 private:
     Ui::PlayersWindow   *ui;
     QSignalMapper       *signalMapperClicked;

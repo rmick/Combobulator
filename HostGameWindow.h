@@ -61,13 +61,9 @@ private slots:
 
     void on_btn_SkipPlayer_clicked();
 
-    void on_btn_TestMessage_clicked();
-
     void on_btn_Rehost_clicked();
 
     void on_btn_FailSend_clicked();
-
-    void on_btn_SetFlags2_clicked();
 
 private:
     Ui::HostGameWindow  *ui;

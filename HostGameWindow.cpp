@@ -53,15 +53,12 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
 
 HostGameWindow::~HostGameWindow()
 {
-    //qDebug() << "HostGameWindow::~HostGameWindow() - Triggered";
     timerAnnounce->stop();
     timerCountDown->stop();
     timerDeBrief->stop();
     timerAssignFailed->stop();
     timerGameTimeRemaining->stop();
-    qDebug() << "HostGameWindow::~HostGameWindow() - Shutting Down !";
     delete ui;
-
 }
 
 void HostGameWindow::hideEvent(QHideEvent *)
@@ -112,8 +109,11 @@ void HostGameWindow::announceGame()
     if (currentPlayer != 0)                                                                 // Player 0 is the dummy player
     {
         while (gameInfo.getIsThisPlayerInTheGame(currentPlayer) == false) currentPlayer++;
-        ui->label->setText("Prepare to Host : Tagger " + QString::number(currentPlayer));
-        if (playerInfo[currentPlayer].getPlayerName() != "") ui->label->setText("Prepare to Host : " + playerInfo[currentPlayer].getPlayerName());
+        if (currentPlayer < 25)
+        {
+            ui->label->setText("Prepare to Host : Tagger " + QString::number(currentPlayer));
+            if (playerInfo[currentPlayer].getPlayerName() != "") ui->label->setText("Prepare to Host : " + playerInfo[currentPlayer].getPlayerName());
+        }
     }
     if (currentPlayer > 16 && gameInfo.getNumberOfTeams() == 2) currentPlayer = 25;         // Ignore players in Team 3
     if (currentPlayer >24)                                                                  // No more players to add
@@ -217,7 +217,6 @@ void HostGameWindow::hostCurrentPlayer()
                             + ", Spy#:" + QString::number(playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getSpyNumber() ));
         InsertToListWidget(playerDebugData);
         InsertToListWidget("Flag1 = " + QString::number(playerInfo[currentPlayer].getPackedFlags1()) + " Flag2 = " + QString::number(playerInfo[currentPlayer].getPackedFlags2()));
-        qDebug() << "Flag1 = " << playerInfo[currentPlayer].getPackedFlags1() << " Flag2 = "<< playerInfo[currentPlayer].getPackedFlags2();
 
  //TODO: Remove this, Triggers deBug messgaes for testing only
  calculatePlayerTeam5bits(currentPlayer);
@@ -286,7 +285,7 @@ int HostGameWindow::calculatePlayerTeam5bits(int requestedTeam)
     {
         //qDebug() << "HostGameWindow::calculatePlayerTeam5bit() - Requested Team = " << requestedTeam;
         // Do I use this or not?
-        // If I do then the setup is trickier (I think.....)
+        // Best not to, otherwise the announcement to Host T1, P1 might actually join T3,P1.
     }
 
     if (gameInfo.getNumberOfTeams() == 0)   //Players 1 to 24, no teams
@@ -521,7 +520,7 @@ void HostGameWindow::on_btn_StartGame_clicked()
 
 void HostGameWindow::sendCountDown()
 {
-    if(countDownTimeRemaining == 0)
+    if(countDownTimeRemaining == 0)     // Start the game
     {
         timerCountDown->stop();
         timerGameTimeRemaining->start(1000);
@@ -535,17 +534,24 @@ void HostGameWindow::sendCountDown()
         ui->btn_StartGame->setEnabled(true);
         //TODO:Change the form to show the DeBrief stuff - use a State Machine?
     }
-    else
+    else                                // Send the Countdown Signal
     {
         lttoComms.sendPacket(PACKET , COUNTDOWN);
         lttoComms.sendPacket(DATA, gameInfo.getGameID() );
         lttoComms.sendPacket(DATA, ConvertDecToBCD(countDownTimeRemaining));
-        lttoComms.sendPacket(DATA, 8);   //TODO:Team1 PlayerCount
-        lttoComms.sendPacket(DATA, 8);   //TODO:Team2 PlayerCount
-        lttoComms.sendPacket(DATA, 8);   //TODO:Team3 PlayerCount
+
+        lttoComms.sendPacket(DATA, gameInfo.getPlayersInTeam(1));
+        //lttoComms.sendPacket(DATA, 8);  //TODO:Team1 PlayerCount
+
+        lttoComms.sendPacket(DATA, gameInfo.getPlayersInTeam(2));
+        //lttoComms.sendPacket(DATA, 8);   //TODO:Team2 PlayerCount
+
+        lttoComms.sendPacket(DATA, gameInfo.getPlayersInTeam(3));
+        //lttoComms.sendPacket(DATA, 8);   //TODO:Team3 PlayerCount
+
         lttoComms.sendPacket(CHECKSUM);
         InsertToListWidget("CountDownTime = " + QString::number(countDownTimeRemaining));
-        ui->label->setText("CountDownTime = " + QString::number(countDownTimeRemaining));
+        ui->label->setText("CountDownTime\n\n" + QString::number(countDownTimeRemaining));
         countDownTimeRemaining--;
     }
 }
@@ -558,7 +564,7 @@ void HostGameWindow::updateGameTimeRemaining()
     QString remainingSeconds = QString::number(remainingGameTime % 60);
     if (remainingMinutes.length() == 1) remainingMinutes.prepend("0");
     if (remainingSeconds.length() == 1) remainingSeconds.prepend("0");
-    ui->label->setText("Game Time Remaining  " + remainingMinutes + ":" + remainingSeconds);
+    ui->label->setText("Game Time Remaining\n\n" + remainingMinutes + ":" + remainingSeconds);
     if (remainingGameTime == 0)
     {
         timerGameTimeRemaining->stop();
@@ -600,23 +606,6 @@ void HostGameWindow::InsertToListWidget(QString lineText)
 {
     ui->listWidget_Status->addItem(lineText);
     if (ui->listWidget_Status->count() > 18) ui->listWidget_Status->takeItem(0);
-}
-
-void HostGameWindow::on_btn_TestMessage_clicked()
-{
-
-    lttoComms.sendPacket(TAG,  0x00);
-    return;
-
-    //P80:D48:D45:D4C:D4C:D4F:CF4:
-    lttoComms.sendPacket(PACKET,  0x80);
-    lttoComms.sendPacket(DATA,    0x48);
-    lttoComms.sendPacket(DATA,    0x45);
-    lttoComms.sendPacket(DATA,    0x4C);
-    lttoComms.sendPacket(DATA,    0x4C);
-    lttoComms.sendPacket(DATA,    0x4F);
-    lttoComms.sendPacket(CHECKSUM     );
-    return;
 }
 
 bool HostGameWindow::assignSpies()
@@ -709,19 +698,4 @@ void HostGameWindow::on_btn_FailSend_clicked()
 {
     lttoComms.setDontAnnounceGame(true);
     sendAssignFailed();
-}
-
-void HostGameWindow::on_btn_SetFlags2_clicked()
-{
-    bool ok;
-    int Flags2 = QInputDialog::getInt(this, "Set Flags2", "Enter a number:", playerInfo[currentPlayer].getPackedFlags2(), 0, 255, 1, &ok);
-    if(ok)
-    {
-        for (int x = 1; x < 25; x++)
-        {
-            playerInfo[x].setPackedFlags2(Flags2);
-        }
-
-        //playerInfo[currentPlayer].setPackedFlags2(Flags2);
-    }
 }
