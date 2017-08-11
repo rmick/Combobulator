@@ -76,7 +76,8 @@ int Game::getNumberOfTeams() const
 void Game::setNumberOfTeams(int value)
 {
     NumberOfTeams = value;
-    //if (NumberOfTeams == 0) emit NumberOfTeamsHasChanged(NumberOfTeams);
+
+    //now set the Flags2 Team bits
     bool msb, lsb;
     switch (value)
     {

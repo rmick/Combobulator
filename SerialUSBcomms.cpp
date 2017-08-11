@@ -10,10 +10,6 @@ SerialUSBcomms::SerialUSBcomms(QObject *parent) :
     serialUSB = new QSerialPort(this);
     connect(serialUSB,  SIGNAL(readyRead()),                    this,       SLOT(receivePacket()) );
 #endif
-    //TODO: Move this to an INIT routine so that Windows does not bark!
-    connect(&lttoComms, SIGNAL(sendSerialData(QByteArray)),     this,       SLOT(sendPacket(QByteArray)) );
-    connect(this,       SIGNAL(newSerialUSBdata(QByteArray)),   &lttoComms, SLOT(receivePacket(QByteArray)) );
-
     setSerialCommsConnected(false);
 }
 
@@ -78,7 +74,8 @@ void SerialUSBcomms::receivePacket()
 #ifdef INCLUDE_SERIAL_USB
     QByteArray rX;
     rX = serialUSB->readAll();
-    //qDebug() << "SerialUSBcomms::receivePacket() " << rX;
+    qDebug() << "SerialUSBcomms::receivePacket() " << rX;
+    lttoComms.androidRxPacket(rX);
     emit newSerialUSBdata(rX);
 #endif
 }
@@ -106,6 +103,15 @@ bool SerialUSBcomms::getSerialCommsConnected() const
 void SerialUSBcomms::setSerialCommsConnected(bool value)
 {
     serialCommsConnected = value;
+}
+
+void SerialUSBcomms::initialiseUSBsignalsAndSlots()
+{
+    //Needs to be done here not in constructor because lttoComms a static and may not exist when this static is created.
+    qDebug() << "SerialUSBcomms::initialiseUSBsignalsAndSlots() - Triggered";
+    connect(&lttoComms, SIGNAL(sendSerialData(QByteArray)),     this,       SLOT(sendPacket(QByteArray)) );
+    connect(this,       SIGNAL(newSerialUSBdata(QByteArray)),   &lttoComms, SLOT(receivePacket(QByteArray)) );
+    connect(serialUSB,  SIGNAL(readyRead()),                    this,       SLOT(receivePacket()) );
 }
 
 

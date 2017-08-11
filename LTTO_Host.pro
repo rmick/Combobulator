@@ -6,7 +6,7 @@
 
 QT       += core gui
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets network serialport  # REMOVE the hash before the word serialport to enable USB for Lazerswarm
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets network multimedia serialport  # REMOVE the hash before the word serialport to enable USB for Lazerswarm
 TARGET = LTTO_Host
 DEPLOYMENT.display_name = Combobulator
 TEMPLATE = app
@@ -57,3 +57,11 @@ FORMS    += \
 	    FlagsWindow.ui \
 	    ReHostTagger.ui \
 	    AboutForm.ui
+
+RESOURCES += \
+    Resources.qrc
+
+DISTFILES += \
+    resources/files/sound_hosting-join-complete.wav \
+    resources/files/sound_hosting-listening.wav \
+    resources/files/sound_hosting-problem.wav

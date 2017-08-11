@@ -6,10 +6,8 @@ Players playerInfo[25];
 
 Players::Players()
 {
-    for (int x= 0; x<25; x++)
-    {
         Handicap        = 0;
-        PlayerName      = "";
+        PlayerName       = "_";
         Reloads         = DEFAULT_RELOADS;
         HealthTags      = DEFAULT_HEALTH;
         ShieldTime      = DEFAULT_SHEILDS;
@@ -19,7 +17,6 @@ Players::Players()
         MedicMode       = false;
         PackedFlags1    = DEFAULT_FLAGS1;
         PackedFlags2    = DEFAULT_FLAGS2;
-    }
 }
 
 int Players::getHandicap() const

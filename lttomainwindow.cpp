@@ -28,9 +28,10 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
     ui->btn_Spies->setEnabled(false);
     ui->btn_StartGame->setEnabled(false);
     qsrand(static_cast<uint>(QTime::currentTime().msec()));
+    for (int index = 1; index < 25; index++)    playerInfo[index].setPlayerName("Player " + QString::number(index));
 
+    serialUSBcomms.initialiseUSBsignalsAndSlots();
     //ui->btn_CustomGame->setVisible(false);
-
 
 
     //TODO: Get rid of this, it is just debug until I store/recall this setting
@@ -190,6 +191,7 @@ void LttoMainWindow::on_btn_HideAndSeek_clicked()
     {
         ui->btn_TwoTeams->setChecked(true);
         gameInfo.setGameType(gameInfo.HideSeek2);
+        gameInfo.setNumberOfTeams(2);
     }
     else if (gameInfo.getNumberOfTeams() == 2)   gameInfo.setGameType(gameInfo.HideSeek2);
     else if (gameInfo.getNumberOfTeams() == 3)   gameInfo.setGameType(gameInfo.HideSeek3);
@@ -203,6 +205,7 @@ void LttoMainWindow::on_btn_Kings_clicked()
     {
         ui->btn_TwoTeams->setChecked(true);
         gameInfo.setGameType(gameInfo.Kings2);
+        gameInfo.setNumberOfTeams(2);
     }
     else if (gameInfo.getNumberOfTeams() == 2)   gameInfo.setGameType(gameInfo.Kings2);
     else if (gameInfo.getNumberOfTeams() == 3)   gameInfo.setGameType(gameInfo.Kings3);

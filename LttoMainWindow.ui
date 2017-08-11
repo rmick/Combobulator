@@ -14,7 +14,22 @@
    <string>LaserTag Combobulator</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">QPushButton
+   <string notr="true">QWidget
+{
+	background-color: black;
+}
+
+QLabel
+{
+	color: white;
+}
+
+QListWidget
+{
+	color: white;
+}
+
+QPushButton
 {
     background-color: cyan;
     border-style: outset;

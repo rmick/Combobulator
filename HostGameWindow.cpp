@@ -3,6 +3,7 @@
 #include <QMessageBox>
 #include <QDebug>
 #include <QApplication>
+#include <QSoundEffect>
 #include "Defines.h"
 #include "Game.h"
 #include "Players.h"
@@ -23,6 +24,10 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
     timerDeBrief            = new QTimer(this);
     timerAssignFailed       = new QTimer(this);
     timerGameTimeRemaining  = new QTimer(this);
+
+    //QSoundEffect::play(QUrl"sound_hosting-listening.wav")
+
+
 
     connect(timerAnnounce,          SIGNAL(timeout() ),             this, SLOT(announceGame())            );
     connect(timerCountDown,         SIGNAL(timeout() ),             this, SLOT(sendCountDown())           );
@@ -95,6 +100,13 @@ void HostGameWindow::SetAnnounceTimerBlock(bool state)
 
 void HostGameWindow::announceGame()
 {
+    QSoundEffect sound_Hosting;
+    sound_Hosting.setSource(QUrl::fromLocalFile(":/files/resources/sound_hosting-listening.wav"));
+    //sound_Hosting.setSource(("qrc:/sound_hosting-listening.wav"));
+    sound_Hosting.setVolume(0.25f);
+    sound_Hosting.play();
+    //sound_Hosting.play();
+
     sendingCommsActive = true;
 
     //Set Base Station LED status
@@ -111,8 +123,9 @@ void HostGameWindow::announceGame()
         while (gameInfo.getIsThisPlayerInTheGame(currentPlayer) == false) currentPlayer++;
         if (currentPlayer < 25)
         {
-            ui->label->setText("Prepare to Host : Tagger " + QString::number(currentPlayer));
-            if (playerInfo[currentPlayer].getPlayerName() != "") ui->label->setText("Prepare to Host : " + playerInfo[currentPlayer].getPlayerName());
+            //if (playerInfo[currentPlayer].getPlayerName() != "")
+                    ui->label->setText("Prepare to Host : " + playerInfo[currentPlayer].getPlayerName());
+            //else                                                    ui->label->setText("Prepare to Host : Tagger " + QString::number(currentPlayer));
         }
     }
     if (currentPlayer > 16 && gameInfo.getNumberOfTeams() == 2) currentPlayer = 25;         // Ignore players in Team 3

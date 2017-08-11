@@ -23,6 +23,7 @@ public:
 
     bool        getSerialCommsConnected() const;
     void        setSerialCommsConnected(bool value);
+    void        initialiseUSBsignalsAndSlots();
 
 signals:
     void        SerialPortFound(QString portDetails);

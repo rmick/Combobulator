@@ -210,9 +210,10 @@ void PlayersWindow::RenamePlayerTeamButtons(int numTeams)
     case 0:
         for (int index = 1; index < 25; index++)
         {
-            PlayerButtons[index]->setText("Player " + QString::number(index) );
+            //PlayerButtons[index]->setText("Player " + QString::number(index) );
             //Rename player buttons if they have a name
-            if (playerInfo[index].getPlayerName() != "") PlayerButtons[index]->setText(playerInfo[index].getPlayerName());
+            //if (playerInfo[index].getPlayerName() != " ")
+                PlayerButtons[index]->setText(playerInfo[index].getPlayerName());
         }
         ui->label_Team1->setText("Players");
         ui->label_Team2->setVisible(false);
@@ -229,7 +230,8 @@ void PlayersWindow::RenamePlayerTeamButtons(int numTeams)
             else if (index < 17)    PlayerButtons[index]->setText("Player " + QString::number(index-8) );
             else if (index < 25)    PlayerButtons[index]->setText("Player " + QString::number(index-16) );
             //Rename player buttons if they have a name
-            if (playerInfo[index].getPlayerName() != "") PlayerButtons[index]->setText(playerInfo[index].getPlayerName());
+            //if (playerInfo[index].getPlayerName() != "")
+            PlayerButtons[index]->setText(playerInfo[index].getPlayerName());
         }
         ui->label_Team1->setText("Team 1");
 //        ui->label_Team2->setText("Team 2");
@@ -334,10 +336,9 @@ void PlayersWindow::playerButtonReleased(int value)
 void PlayersWindow::RenamePlayer(int player)
 {
     QString text = QInputDialog::getText(this, tr("Rename Player"), tr("Enter Player name:"), QLineEdit::Normal, playerInfo[player].getPlayerName());
-
+    if (text == "") text = "Player " + QString::number(player);
     PlayerButtons[player]->setText(text);
     playerInfo[player].setPlayerName(text);
-    qDebug() << "Saved Player" << player << "name as" << text;
 }
 
 /////////////////////////////////////////////////////////////////////////////////
