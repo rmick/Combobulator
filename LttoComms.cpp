@@ -15,7 +15,6 @@ LttoComms::LttoComms(QObject *parent) : QObject(parent)
 bool LttoComms::sendPacket(char type, int data, bool dataFormat)
 {
     bool result = false;
-    //bool ok;    //dummy
     QByteArray packet;
 
     //Calculating BCD and the CheckSum.
@@ -89,10 +88,8 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
     }
     else packet.append(":");
 
-    //qDebug() << "lttoComms::sendPacket  USBpacketSent->" << packet;
     emit sendSerialData(packet);            //Connects to TCPComms::sendPacket slot && SerialUSBcomms::sendPacket slot
-    //QThread::msleep(INTERPACKET_DELAY_MSEC);
-    blockingDelay(INTERPACKET_DELAY_MSEC);
+    nonBlockingDelay(INTERPACKET_DELAY_MSEC);
 
     return result;
 }
@@ -302,7 +299,7 @@ int LttoComms::ConvertBCDtoDec(int bcd)
   return (int) (((bcd >> 4) & 0xF) *10) + (bcd & 0xF);
 }
 
-void LttoComms::blockingDelay(int mSec)
+void LttoComms::nonBlockingDelay(int mSec)
 {
     QEventLoop loop;
     QTimer::singleShot(mSec, &loop, SLOT(quit()));

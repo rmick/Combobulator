@@ -31,8 +31,10 @@ public:
     bool        getTcpCommsConnected() const;
     void        setTcpCommsConnected(bool value);
 
-    bool getDontAnnounceFailedSignal() const;
-    void setDontAnnounceFailedSignal(bool value);
+    bool        getDontAnnounceFailedSignal() const;
+    void        setDontAnnounceFailedSignal(bool value);
+
+    void        nonBlockingDelay(int mSec);
 
 public slots:
     void        TCPconnected();
@@ -67,7 +69,6 @@ private:
     int             ConvertDecToBCD(int dec);
     int             ConvertBCDtoDec(int bcd);
     QString         createIRstring(int data);
-    void            blockingDelay(int mSec);
 };
 
 extern LttoComms lttoComms;

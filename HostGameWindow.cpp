@@ -3,7 +3,6 @@
 #include <QMessageBox>
 #include <QDebug>
 #include <QApplication>
-#include <QSoundEffect>
 #include "Defines.h"
 #include "Game.h"
 #include "Players.h"
@@ -49,6 +48,16 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
     countDownTimeRemaining = DEFAULT_COUNTDOWN_TIME;
     ui->btn_Cancel->setText("Cancel");
     ui->btn_Rehost->setEnabled(false);
+
+    //Init all the sound effects.
+    sound_Hosting            = new QSoundEffect(this);
+    sound_Countdown          = new QSoundEffect(this);
+    sound_HostingMissedReply = new QSoundEffect(this);
+    sound_GoodLuck           = new QSoundEffect(this);
+    sound_Hosting           ->setSource(QUrl::fromLocalFile(":/resources/audio/hosting-listening.wav"));
+    sound_HostingMissedReply->setSource(QUrl::fromLocalFile(":/resources/audio/hosting-problem.wav"));
+    sound_Countdown         ->setSource(QUrl::fromLocalFile(":/resources/audio/countdown.wav"));
+    sound_GoodLuck          ->setSource(QUrl::fromLocalFile(":/resources/audio/good-luck.wav"));
 
     //TODO: finish rehost and delete this line
     ui->btn_Rehost->setVisible(false);
@@ -100,12 +109,7 @@ void HostGameWindow::SetAnnounceTimerBlock(bool state)
 
 void HostGameWindow::announceGame()
 {
-    QSoundEffect sound_Hosting;
-    sound_Hosting.setSource(QUrl::fromLocalFile(":/files/resources/sound_hosting-listening.wav"));
-    //sound_Hosting.setSource(("qrc:/sound_hosting-listening.wav"));
-    sound_Hosting.setVolume(0.25f);
-    sound_Hosting.play();
-    //sound_Hosting.play();
+    sound_Hosting->play();
 
     sendingCommsActive = true;
 
@@ -247,6 +251,7 @@ bool dontAnnounceFailedSignal;
 
 void HostGameWindow::assignPlayerFailed()
 {
+    sound_HostingMissedReply->play();
     qDebug() << "HostGameWindow::assignPlayerFailed() - starting Timer";
     timerAssignFailed->start(500);
     assignPlayerFailCount = 0;
@@ -448,6 +453,7 @@ void HostGameWindow::AssignPlayer(int Game, int Tagger, int Flags)
 
 void HostGameWindow::AddPlayerToGame(int Game, int Tagger)
 {    
+    //TODO: soundJoined
     qDebug() << "HostGameWindow::AddPlayerToGame()" << currentPlayer;
 
     if(gameInfo.getGameID() != Game || playerInfo[currentPlayer].getTaggerID() != Tagger) return;
@@ -535,6 +541,8 @@ void HostGameWindow::sendCountDown()
 {
     if(countDownTimeRemaining == 0)     // Start the game
     {
+        sound_Countdown->stop();
+        sound_GoodLuck->play();
         timerCountDown->stop();
         timerGameTimeRemaining->start(1000);
         remainingGameTime = (ConvertBCDtoDec(gameInfo.getGameLength()) * 60) + 2;  // Add a couple of seconds to match the taggers, who start the clock AFTER the Good Luck message.
@@ -549,6 +557,7 @@ void HostGameWindow::sendCountDown()
     }
     else                                // Send the Countdown Signal
     {
+        sound_Countdown->play();
         lttoComms.sendPacket(PACKET , COUNTDOWN);
         lttoComms.sendPacket(DATA, gameInfo.getGameID() );
         lttoComms.sendPacket(DATA, ConvertDecToBCD(countDownTimeRemaining));

@@ -11,6 +11,7 @@
 #include "Defines.h"
 #include "LttoComms.h"
 
+#include <QAudioDeviceInfo>
 
 LttoMainWindow::LttoMainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -33,15 +34,25 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
     serialUSBcomms.initialiseUSBsignalsAndSlots();
     //ui->btn_CustomGame->setVisible(false);
 
+    foreach (const QAudioDeviceInfo &deviceInfo, QAudioDeviceInfo::availableDevices(QAudio::AudioOutput))
+        qDebug() << "LttoMainWindow::LttoMainWindow() - Audio Device name: " << deviceInfo.deviceName();
+
+    //Init all the sound effects.
+    sound_PowerUp   = new QSoundEffect(this);
+    sound_Powerdown = new QSoundEffect(this);
+    sound_PowerUp  ->setSource(QUrl::fromLocalFile(":/resources/audio/stinger-power-on.wav"));
+    sound_Powerdown->setSource(QUrl::fromLocalFile(":/resources/audio/shut-down.wav"));
+    sound_PowerUp->play();
+
+
 
     //TODO: Get rid of this, it is just debug until I store/recall this setting
     ui->actionuse_LazerSwarm->setChecked(true);
     serialUSBactive = true;
     tcpCommsActive = true;
     gameInfo.setIsSpiesTeamTagActive(false);
+    sound_PowerUp->setVolume(1.0);
     //save position on screen to a Qsettings file
-
-
 
     //TODO: Remove these, they are for testing only.
     QWidget::move(0,0);
@@ -68,11 +79,15 @@ void LttoMainWindow::setTeamTags(bool value)
     }
 }
 
+//--------------------------------------------------------
+
 void LttoMainWindow::SetSpiesButtonState(int NumTeams)
 {
     if (NumTeams == 0) ui->btn_Spies->setEnabled(false);
     else               ui->btn_Spies->setEnabled(true);
 }
+
+//--------------------------------------------------------
 
 bool LttoMainWindow::getMedicMode() const
 {
@@ -87,6 +102,8 @@ void LttoMainWindow::setMedicMode(bool value)
     }
 }
 
+//--------------------------------------------------------
+
 bool LttoMainWindow::getSlowTags() const
 {
     return playerInfo[0].getSlowTags();
@@ -99,6 +116,8 @@ void LttoMainWindow::setSlowTags(bool value)
          playerInfo[x].setSlowTags(value);
     }
 }
+
+//--------------------------------------------------------
 
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -144,6 +163,8 @@ void LttoMainWindow::on_btn_SlowTags_clicked()
     }
 }
 
+//--------------------------------------------------------
+
 void LttoMainWindow::on_btn_MedicMode_clicked()
 {
     if      (getMedicMode() == false)
@@ -157,6 +178,8 @@ void LttoMainWindow::on_btn_MedicMode_clicked()
         setMedicMode(false);
     }
 }
+
+//--------------------------------------------------------
 
 void LttoMainWindow::on_btn_TeamTags_clicked()
 {
@@ -200,6 +223,7 @@ void LttoMainWindow::on_btn_HideAndSeek_clicked()
 void LttoMainWindow::on_btn_Kings_clicked()
 {
     gameInfo.setGameName("KING");
+    //TOD): Player1 is ALWAYS the king, so I need to use Spies technology to pick random player to be King and swap player numbers from the same team.
     ui->btn_NoTeams->setEnabled(false);
     if      (gameInfo.getNumberOfTeams() == 0)  //Zero teams is not valid, force to 2 teams.
     {
@@ -539,6 +563,9 @@ void LttoMainWindow::loadFile()
 
 void LttoMainWindow::on_actionExit_triggered()
 {
+    sound_Powerdown->setLoopCount(1);
+    sound_Powerdown->play();
+    lttoComms.nonBlockingDelay(850);
     QApplication::quit();
 }
 

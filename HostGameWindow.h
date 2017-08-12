@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QTimer>
+#include <QSoundEffect>
 #include "ReHostTagger.h"
 
 namespace Ui {
@@ -73,6 +74,10 @@ private:
     QTimer              *timerAssignFailed;
     QTimer              *timerGameTimeRemaining;
     ReHostTagger        *reHostTagger;
+    QSoundEffect        *sound_Hosting;
+    QSoundEffect        *sound_Countdown;
+    QSoundEffect        *sound_HostingMissedReply;
+    QSoundEffect        *sound_GoodLuck;
 
     bool    bluetoothActive;
     bool    serialUSBactive;
@@ -92,7 +97,7 @@ private:
     int     calculatePlayerTeam5bits(int requestedTeam);
     int     ConvertDecToBCD(int dec);
     int     ConvertBCDtoDec(int bcd);
-    void    blockingDelay(int mSec);
+
     bool    assignSpies();
 };
 

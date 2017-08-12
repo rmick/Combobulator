@@ -1,5 +1,17 @@
 <RCC>
-    <qresource prefix="/files">
-        <file>resources/sound_hosting-listening.wav</file>
+    <qresource prefix="/resources">
+        <file>audio/countdown.wav</file>
+        <file>audio/game-over.wav</file>
+        <file>audio/good-luck.wav</file>
+        <file>audio/hosting-aborted.wav</file>
+        <file>audio/hosting-join-complete.wav</file>
+        <file>audio/hosting-listening.wav</file>
+        <file>audio/hosting-problem.wav</file>
+        <file>audio/menu-beep.wav</file>
+        <file>audio/menu-blip.wav</file>
+        <file>audio/power-up.wav</file>
+        <file>audio/shut-down.wav</file>
+        <file>audio/stinger-power-on.wav</file>
+        <file>images/Combobulator Logo.jpg</file>
     </qresource>
 </RCC>

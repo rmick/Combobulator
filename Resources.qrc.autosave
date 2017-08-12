@@ -1,8 +1,0 @@
-<RCC>
-    <qresource prefix="/files">
-        <file>resources/sound_hosting-listening.wav</file>
-        <file>resources/sound_hosting-aborted.wav</file>
-        <file>resources/sound_hosting-join-complete.wav</file>
-        <file>resources/sound_hosting-problem.wav</file>
-    </qresource>
-</RCC>

@@ -2030,7 +2030,7 @@ background: #eee;
     <item row="1" column="2">
      <widget class="QLabel" name="label">
       <property name="text">
-       <string>Build : 17.8.10a</string>
+       <string>Build : 17.8.12a</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>

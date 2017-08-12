@@ -2,12 +2,14 @@
 #define LTTOMAINWINDOW_H
 
 #include <QMainWindow>
+#include <QPointer>
+#include <QSoundEffect>
 #include "Defines.h"
 #include "PlayersWindow.h"
 #include "HostGameWindow.h"
 #include "FlagsWindow.h"
 #include "LttoComms.h"
-#include <QPointer>
+
 
 namespace Ui {
 class LttoMainWindow;
@@ -97,6 +99,8 @@ private:
     PlayersWindow       *playersWindow;
     QPointer<HostGameWindow>      hostGameWindow;
     FlagsWindow         *flagsWindow;
+    QSoundEffect        *sound_PowerUp;
+    QSoundEffect        *sound_Powerdown;
 
     bool    SlowTags;
     bool    MedicMode;
