@@ -30,6 +30,8 @@ public:
 
     int GetRandomNumber(int min, int max);
 
+    void changeMode(int mode);
+
 public slots:
 
     void AssignPlayer(int Game, int Tagger, int Flags);   //Connects to RequestJoinGame signal

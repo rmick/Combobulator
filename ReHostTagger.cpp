@@ -1,6 +1,7 @@
 #include "ReHostTagger.h"
 #include "ui_ReHostTagger.h"
 
+
 #include <QDebug>
 
 ReHostTagger::ReHostTagger(QWidget *parent) :
@@ -58,11 +59,19 @@ void ReHostTagger::MapPlayerButtons()
 
 void ReHostTagger::SetActivePlayers()
 {
-    for (int x = 1; x < 25; x++)
+    for (int index = 1; index < 25; index++)
     {
-        if (gameInfo.getIsThisPlayerInTheGame(x) )  playerButtons[x]->setEnabled(true);
-        else                                        playerButtons[x]->setEnabled(false);
-        qDebug() << "Player " << x << " = " << gameInfo.getIsThisPlayerInTheGame(x);
+        if (gameInfo.getIsThisPlayerInTheGame(index) )
+        {
+            playerButtons[index]->setEnabled(true);
+            playerButtons[index]->setChecked(true);
+        }
+        else
+        {
+         playerButtons[index]->setEnabled(false);
+         playerButtons[index]->setChecked(false);
+        }
+        qDebug() << "Player " << index << " = " << gameInfo.getIsThisPlayerInTheGame(index);
     }
 }
 
@@ -71,11 +80,8 @@ void ReHostTagger::playerButtonPressed(int playerNumber)
     qDebug() << "Rehosting Player " << playerNumber;
     ui->label->setText("Rehosting Player " + QString::number(playerNumber) + " - Please standby.");
     rehostActive = true;
-    //hostGameWindow.setCurrentPlayer(playerNumber);
-    //hostGameWindow.hostCurrentPlayer();
-
-    //then we need to cancel and startcountdown.....
-    //reHostActive = false;
+    gameInfo.setPlayerToReHost(playerNumber);
+    deleteLater();
 }
 
 

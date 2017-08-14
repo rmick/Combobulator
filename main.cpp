@@ -1,9 +1,9 @@
 #include "LttoMainWindow.h"
 #include <QApplication>
 #include <QSplashScreen>
-#include <QThread>
+#include <QSoundEffect>
 #include "TCPComms.h"
-#include <QFile>
+//#include <QFile>
 
 class mofta : public QThread
 {
@@ -21,20 +21,20 @@ int main(int argc, char *argv[])
     QEventLoop      loop;
     QSoundEffect    sound_PowerUp;
     QPixmap         pixmap(":/resources/images/Combobulator Logo.jpg");
-    QSplashScreen   splash(pixmap);
+    QSplashScreen   splashScreen(pixmap);
     TCPComms        tcpComms;
 
     sound_PowerUp.setSource(QUrl::fromLocalFile(":/resources/audio/stinger-power-on.wav"));
     sound_PowerUp.setVolume(1.0);
 
     sound_PowerUp.play();
-    splash.show();
+    splashScreen.show();
 
     QTimer::singleShot(2000, &loop, SLOT(quit()));
     loop.exec();
 
     lttoMainWindow.show();
-    splash.finish(&lttoMainWindow);
+    splashScreen.finish(&lttoMainWindow);
 
     return theApp.exec();
 }

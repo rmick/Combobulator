@@ -14,7 +14,16 @@ int playerDebugNum = 0;
 
 HostGameWindow::HostGameWindow(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::HostGameWindow)
+    ui(new Ui::HostGameWindow),
+    timerAnnounce(NULL),
+    timerAssignFailed(NULL),
+    timerCountDown(NULL),
+    timerDeBrief(NULL),
+    timerGameTimeRemaining(NULL),
+    sound_Countdown(NULL),
+    sound_GoodLuck(NULL),
+    sound_Hosting(NULL),
+    sound_HostingMissedReply(NULL)
 {
     ui->setupUi(this);
 
@@ -23,10 +32,6 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
     timerDeBrief            = new QTimer(this);
     timerAssignFailed       = new QTimer(this);
     timerGameTimeRemaining  = new QTimer(this);
-
-    //QSoundEffect::play(QUrl"sound_hosting-listening.wav")
-
-
 
     connect(timerAnnounce,          SIGNAL(timeout() ),             this, SLOT(announceGame())            );
     connect(timerCountDown,         SIGNAL(timeout() ),             this, SLOT(sendCountDown())           );
@@ -58,6 +63,7 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
     sound_HostingMissedReply->setSource(QUrl::fromLocalFile(":/resources/audio/hosting-problem.wav"));
     sound_Countdown         ->setSource(QUrl::fromLocalFile(":/resources/audio/countdown.wav"));
     sound_GoodLuck          ->setSource(QUrl::fromLocalFile(":/resources/audio/good-luck.wav"));
+    sound_Countdown         ->setLoopCount(5);
 
     //TODO: finish rehost and delete this line
     ui->btn_Rehost->setVisible(false);
@@ -136,6 +142,7 @@ void HostGameWindow::announceGame()
     if (currentPlayer >24)                                                                  // No more players to add
     {
         ui->label->setText("All players are hosted, press START ");
+        ui->btn_SkipPlayer->setVisible(false);
         ui->btn_StartGame->setEnabled(true);
         currentPlayer = 0;      //Transmits global game data to keep guns sync'd
     }
@@ -550,6 +557,7 @@ void HostGameWindow::sendCountDown()
         InsertToListWidget("Game has started !!!");
         ui->label->setText("Game Underway !!!");
         ui->btn_Cancel->setText("Close");
+        ui->btn_Rehost->setVisible(true);
         ui->btn_Rehost->setEnabled(true);
         ui->btn_StartGame->setText("End\nGame");
         ui->btn_StartGame->setEnabled(true);
@@ -562,13 +570,13 @@ void HostGameWindow::sendCountDown()
         lttoComms.sendPacket(DATA, gameInfo.getGameID() );
         lttoComms.sendPacket(DATA, ConvertDecToBCD(countDownTimeRemaining));
 
-        lttoComms.sendPacket(DATA, gameInfo.getPlayersInTeam(1));
+        lttoComms.sendPacket(DATA, gameInfo.getPlayersInTeamByte(1));
         //lttoComms.sendPacket(DATA, 8);  //TODO:Team1 PlayerCount
 
-        lttoComms.sendPacket(DATA, gameInfo.getPlayersInTeam(2));
+        lttoComms.sendPacket(DATA, gameInfo.getPlayersInTeamByte(2));
         //lttoComms.sendPacket(DATA, 8);   //TODO:Team2 PlayerCount
 
-        lttoComms.sendPacket(DATA, gameInfo.getPlayersInTeam(3));
+        lttoComms.sendPacket(DATA, gameInfo.getPlayersInTeamByte(3));
         //lttoComms.sendPacket(DATA, 8);   //TODO:Team3 PlayerCount
 
         lttoComms.sendPacket(CHECKSUM);
@@ -710,10 +718,60 @@ int HostGameWindow::GetRandomNumber(int min, int max)
     return ((qrand() % ((max + 1) - min)) + min);
 }
 
+void HostGameWindow::changeMode(int mode)
+{
+    qDebug() << "HostGameWindow::changeMode" << mode;
+    switch (mode)
+    {
+    case HOST_MODE:
+        ui->btn_StartGame->setVisible(true);
+        ui->btn_StartGame->setEnabled(false);
+        ui->btn_Cancel->setVisible(true);
+        ui->btn_Cancel->setEnabled(true);
+        ui->btn_SkipPlayer->setEnabled(true);
+        ui->btn_SkipPlayer->setEnabled(true);
+        ui->btn_Rehost->setVisible(false);
+        ui->btn_Rehost->setEnabled(false);
+        break;
+    case COUNTDOWN_MODE:
+        ui->btn_StartGame->setVisible(false);
+        ui->btn_StartGame->setEnabled(false);
+        ui->btn_Cancel->setVisible(false);
+        ui->btn_Cancel->setEnabled(true);
+        ui->btn_SkipPlayer->setEnabled(false);
+        ui->btn_SkipPlayer->setEnabled(true);
+        ui->btn_Rehost->setVisible(false);
+        ui->btn_Rehost->setEnabled(false);
+        break;
+    case GAME_MODE:
+        ui->btn_StartGame->setVisible(false);
+        ui->btn_StartGame->setEnabled(false);
+        ui->btn_Cancel->setVisible(false);
+        ui->btn_Cancel->setEnabled(true);
+        ui->btn_SkipPlayer->setEnabled(false);
+        ui->btn_SkipPlayer->setEnabled(true);
+        ui->btn_Rehost->setVisible(true);
+        ui->btn_Rehost->setEnabled(true);
+        break;
+    case REHOST_MODE:
+
+        break;
+    case DEBRIEF_MODE:
+
+        break;
+    case SCOREBOARD_MODE:
+
+        break;
+    }
+}
+
 void HostGameWindow::on_btn_Rehost_clicked()
 {
     reHostTagger = new ReHostTagger(this);
+    ui->btn_Rehost->setEnabled(false);
     reHostTagger->show();
+    changeMode(REHOST_MODE);
+
 }
 
 void HostGameWindow::on_btn_FailSend_clicked()

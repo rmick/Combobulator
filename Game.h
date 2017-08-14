@@ -40,7 +40,8 @@ public:
     bool getIsThisPlayerInTheGame(int index) const;
     void setIsThisPlayerInTheGame(int index, int value);
 
-    int getPlayersInTeam(int TeamNumber) const;             //returns PlayersInTeam1 as a PackedByte - used in CountDown
+    int getPlayersInTeamByte(int TeamNumber) const;             //returns PlayersInTeam1 as a PackedByte - used in CountDown
+    void setPlayersInTeamByte(int TeamNumber, int PlayerNumber, bool state);
 
     int getNumberOfTeams() const;
     void setNumberOfTeams(int value);
@@ -54,8 +55,8 @@ public:
     void streamToFile(QTextStream &out);
     void streamFromFile(QTextStream &in);
 
-    int getPlayersInGameByte() const;
-    void setPlayersInGameByte(int value);
+//    int getPlayersInGameByte() const;
+//    void setPlayersInGameByte(int value);
 
     int getCountDownTime() const;
     void setCountDownTime(int value);
@@ -77,6 +78,9 @@ public:
 
     int getTotalNumberOfPlayersInGame() const;
 
+    int getPlayerToReHost() const;
+    void setPlayerToReHost(int value);
+
 signals:
     void NumberOfTeamsHasChanged(int NumTeams);
 
@@ -89,7 +93,6 @@ private:
     QString GameName;
     bool    isThisPlayerInTheGame[25];
     int     NumberOfSpies;
-    int     PlayersInGameByte;
     int     CountDownTime;
     char    NameChar1;
     char    NameChar2;
@@ -97,6 +100,8 @@ private:
     char    NameChar4;
     bool    isSpiesTeamTagActive;
     int     TotalNumberOfPlayersInGame;
+    int     PlayersInTeamByte[3];
+    int     PlayerToReHost;
 
     int     extractInteger(QString &dG);
 };

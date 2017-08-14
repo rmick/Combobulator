@@ -18,8 +18,9 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
     ui(new Ui::LttoMainWindow),
     playersWindow(NULL),
     hostGameWindow(NULL),
-    flagsWindow(NULL)
-
+    flagsWindow(NULL),
+    sound_PowerUp(NULL),
+    sound_Powerdown(NULL)
 {
     ui->setupUi(this);
     this->setWindowTitle("LTTO Combobulator");
@@ -28,6 +29,7 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
     gameInfo.setNumberOfTeams(0);
     ui->btn_Spies->setEnabled(false);
     ui->btn_StartGame->setEnabled(false);
+    ui->actionuse_LazerSwarm->setVisible(false);
     qsrand(static_cast<uint>(QTime::currentTime().msec()));
     for (int index = 1; index < 25; index++)    playerInfo[index].setPlayerName("Player " + QString::number(index));
 
@@ -38,6 +40,7 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
         qDebug() << "LttoMainWindow::LttoMainWindow() - Audio Device name: " << deviceInfo.deviceName();
 
     //Init all the sound effects.
+
     sound_PowerUp   = new QSoundEffect(this);
     sound_Powerdown = new QSoundEffect(this);
     sound_PowerUp  ->setSource(QUrl::fromLocalFile(":/resources/audio/stinger-power-on.wav"));

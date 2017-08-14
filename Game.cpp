@@ -26,6 +26,10 @@ Game::Game()    // (QObject *parent)
     {
         isThisPlayerInTheGame[x] = false;
     }
+    for (int index = 1; index < 3; index++)
+    {
+        PlayersInTeamByte[index] = 0;
+    }
 }
 
 int Game::getGameType() const
@@ -138,22 +142,30 @@ void Game::setIsThisPlayerInTheGame(int index, int value)
     isThisPlayerInTheGame[index] = value;
 }
 
-int Game::getPlayersInTeam(int TeamNumber) const
+int Game::getPlayersInTeamByte(int TeamNumber) const
 {
-    int PlayersPackedByte = 0;
-    int playerOffset = ((TeamNumber-1)*8);
-    PlayersPackedByte =  isThisPlayerInTheGame[(8+playerOffset)]*128;
-    PlayersPackedByte += isThisPlayerInTheGame[(7+playerOffset)]*64;
-    PlayersPackedByte += isThisPlayerInTheGame[(6+playerOffset)]*32;
-    PlayersPackedByte += isThisPlayerInTheGame[(5+playerOffset)]*16;
-    PlayersPackedByte += isThisPlayerInTheGame[(4+playerOffset)]*8;
-    PlayersPackedByte += isThisPlayerInTheGame[(3+playerOffset)]*4;
-    PlayersPackedByte += isThisPlayerInTheGame[(2+playerOffset)]*2;
-    PlayersPackedByte += isThisPlayerInTheGame[(1+playerOffset)];
-    qDebug() << "Game::getPlayersInTeamTx() - Team =" << TeamNumber << "Byte =" << PlayersPackedByte;
-    return PlayersPackedByte;
+    qDebug() << "Game::getPlayersInTeamTx() - Team =" << TeamNumber << "Byte =" << PlayersInTeamByte[TeamNumber];
+    return PlayersInTeamByte[TeamNumber];
+
+//    int PlayersPackedByte = 0;
+//    int playerOffset = ((TeamNumber-1)*8);
+//    PlayersPackedByte =  isThisPlayerInTheGame[(8+playerOffset)]*128;
+//    PlayersPackedByte += isThisPlayerInTheGame[(7+playerOffset)]*64;
+//    PlayersPackedByte += isThisPlayerInTheGame[(6+playerOffset)]*32;
+//    PlayersPackedByte += isThisPlayerInTheGame[(5+playerOffset)]*16;
+//    PlayersPackedByte += isThisPlayerInTheGame[(4+playerOffset)]*8;
+//    PlayersPackedByte += isThisPlayerInTheGame[(3+playerOffset)]*4;
+//    PlayersPackedByte += isThisPlayerInTheGame[(2+playerOffset)]*2;
+//    PlayersPackedByte += isThisPlayerInTheGame[(1+playerOffset)];
+//    qDebug() << "Game::getPlayersInTeamTx() - Team =" << TeamNumber << "Byte =" << PlayersPackedByte;
+//    return PlayersPackedByte;
 }
 
+void Game::setPlayersInTeamByte(int TeamNumber, int PlayerNumber, bool state)
+{
+    //PackedFlags1 ^= (-state ^ PackedFlags1) & (1 << bitNumber);
+    PlayersInTeamByte[TeamNumber] ^= (-state ^ PlayersInTeamByte[TeamNumber]) & (1 << (PlayerNumber-1));
+}
 ////////////////////////////////////////////////////////////////////////////////////
 
 void Game::streamToFile(QTextStream &out)
@@ -196,6 +208,12 @@ void Game::streamFromFile(QTextStream &in)
             else if (descriptorG.contains("CountDownTime:") )    CountDownTime   = extractInteger(descriptorG);
     }   while (descriptorG != "END_OF_GAME_SETTINGS");
 
+    setNumberOfTeams(NumberOfTeams);    //This is required to update the Flags2 bits.
+
+
+
+
+
     qDebug() << "GameID:"           << GameID;
     qDebug() << "GameLength:"       << GameLength;
     qDebug() << "GameName:"         << GameName;
@@ -212,15 +230,15 @@ void Game::streamFromFile(QTextStream &in)
     qDebug() << endl << "Game::StreamFromFile has left the building" << endl;
 }
 
-int Game::getPlayersInGameByte() const
-{
-    return PlayersInGameByte;
-}
+//int Game::getPlayersInGameByte() const
+//{
+//    return PlayersInGameByte;
+//}
 
-void Game::setPlayersInGameByte(int value)
-{
-    PlayersInGameByte = value;
-}
+//void Game::setPlayersInGameByte(int value)
+//{
+//    PlayersInGameByte = value;
+//}
 
 int Game::getCountDownTime() const
 {
@@ -292,14 +310,17 @@ int Game::getTotalNumberOfPlayersInGame() const
     return count;
 }
 
+int Game::getPlayerToReHost() const
+{
+    return PlayerToReHost;
+}
+
+void Game::setPlayerToReHost(int value)
+{
+    PlayerToReHost = value;
+}
+
 int Game::extractInteger(QString &dG)
 {
     return dG.right((dG.length() - (dG.indexOf(":")+1) )).toInt();      //extracts all the chars to right of the ":" and convert to an Int
-}
-
-////////////////////////////////////////////////////////////////////////////////////
-
-int calculatePlayersInGameByte()
-{
-    return false; //TODO: This needs to be calculated
 }

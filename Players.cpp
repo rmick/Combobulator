@@ -120,18 +120,18 @@ void Players::setMedicMode(bool value)
 void Players::streamToFile(QTextStream &out)
 {
     out << "------------------------" << endl;
-    for (int x = 0; x<25; x++)
+    for (int index = 0; index < 25; index++)
     {
-        out << "PlayerID:" << x << endl;
-        out << "Handicap: "     << playerInfo[x].Handicap << endl;
-        out << "HealthTags: "   << playerInfo[x].HealthTags << endl;
-        out << "MedicMode: "    << playerInfo[x].MedicMode << endl;
-        out << "MegaTags: "     << playerInfo[x].MegaTags << endl;
-        out << "PlayerName: "   << playerInfo[x].PlayerName << endl;
-        out << "Reloads: "      << playerInfo[x].Reloads << endl;
-        out << "ShieldTime: "   << playerInfo[x].ShieldTime << endl;
-        out << "SlowTags: "     << playerInfo[x].SlowTags << endl;
-        out << "TeamTags: "     << playerInfo[x].TeamTags << endl;
+        out << "PlayerID:" << index << endl;
+        out << "Handicap: "     << playerInfo[index].Handicap << endl;
+        out << "HealthTags: "   << playerInfo[index].HealthTags << endl;
+        out << "MedicMode: "    << playerInfo[index].MedicMode << endl;
+        out << "MegaTags: "     << playerInfo[index].MegaTags << endl;
+        out << "PlayerName: "   << playerInfo[index].PlayerName << endl;
+        out << "Reloads: "      << playerInfo[index].Reloads << endl;
+        out << "ShieldTime: "   << playerInfo[index].ShieldTime << endl;
+        out << "SlowTags: "     << playerInfo[index].SlowTags << endl;
+        out << "TeamTags: "     << playerInfo[index].TeamTags << endl;
         out << "------------------------" << endl;
     }
     out << "END_OF_PLAYER_SETTINGS" << endl;
@@ -140,8 +140,8 @@ void Players::streamToFile(QTextStream &out)
 
 void Players::streamFromFile(QTextStream &in)
 {
-    QString descriptorP = NULL ;
-    int playerID = NULL;
+    QString descriptorP = "" ;
+    int playerID = 0;
 
     do
     {
@@ -158,18 +158,18 @@ void Players::streamFromFile(QTextStream &in)
             else if (descriptorP.contains("Reloads:") )         playerInfo[playerID].Reloads     = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
     }   while (descriptorP != "END_OF_PLAYER_SETTINGS");
 
-    for (int x=0; x< 25; x++)
+    for (int index=0; index< 25; index++)
     {
-        qDebug() << "PlayerID:"     << x;
-        qDebug() << "Handicap:"     << playerInfo[x].Handicap;
-        qDebug() << "HealthTags:"   << playerInfo[x].HealthTags;
-        qDebug() << "MegaTags:"     << playerInfo[x].MegaTags;
-        qDebug() << "Reloads:"      << playerInfo[x].Reloads;
-        qDebug() << "ShieldTime:"   << playerInfo[x].ShieldTime;
-        qDebug() << "MedicMode:"    << playerInfo[x].MedicMode;
-        qDebug() << "SlowTags:"     << playerInfo[x].SlowTags;
-        qDebug() << "TeamTags:"     << playerInfo[x].TeamTags;
-        qDebug() << "PlayerName:"   << playerInfo[x].PlayerName << endl;
+        qDebug() << "PlayerID:"     << index;
+        qDebug() << "Handicap:"     << playerInfo[index].Handicap;
+        qDebug() << "HealthTags:"   << playerInfo[index].HealthTags;
+        qDebug() << "MegaTags:"     << playerInfo[index].MegaTags;
+        qDebug() << "Reloads:"      << playerInfo[index].Reloads;
+        qDebug() << "ShieldTime:"   << playerInfo[index].ShieldTime;
+        qDebug() << "MedicMode:"    << playerInfo[index].MedicMode;
+        qDebug() << "SlowTags:"     << playerInfo[index].SlowTags;
+        qDebug() << "TeamTags:"     << playerInfo[index].TeamTags;
+        qDebug() << "PlayerName:"   << playerInfo[index].PlayerName << endl;
     }
     qDebug() << "Players::StreamFromFile has left the building" << endl << endl;
 }

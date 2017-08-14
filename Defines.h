@@ -94,4 +94,12 @@ const int   CURRENT_MODE                    = 2;
 const int   HANDICAP_MODE                   = 0;
 const int   EDIT_SETTINGS_MODE              = 1;
 
+//States for HostGameWindow
+const int   HOST_MODE                       = 1;
+const int   COUNTDOWN_MODE                  = 2;
+const int   GAME_MODE                       = 3;
+const int   REHOST_MODE                     = 4;
+const int   DEBRIEF_MODE                    = 5;
+const int   SCOREBOARD_MODE                 = 6;
+
 #endif // DEFINES_H
