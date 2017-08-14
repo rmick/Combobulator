@@ -26,7 +26,8 @@ SOURCES +=  main.cpp\
 	    SerialUSBcomms.cpp \
 	    ReHostTagger.cpp \
 	    AboutForm.cpp \
-	    DeBrief.cpp
+	    DeBrief.cpp \
+    Hosting.cpp
 
 
 
@@ -45,7 +46,8 @@ HEADERS  += \
 	    SerialUSBcomms.h \
 	    ReHostTagger.h \
 	    AboutForm.h \
-	    DeBrief.h
+	    DeBrief.h \
+    Hosting.h
 
 
 FORMS    += \

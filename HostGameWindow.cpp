@@ -20,6 +20,7 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
     timerCountDown(NULL),
     timerDeBrief(NULL),
     timerGameTimeRemaining(NULL),
+    timerReHost(NULL),
     sound_Countdown(NULL),
     sound_GoodLuck(NULL),
     sound_Hosting(NULL),
@@ -32,12 +33,14 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
     timerDeBrief            = new QTimer(this);
     timerAssignFailed       = new QTimer(this);
     timerGameTimeRemaining  = new QTimer(this);
+    timerReHost             = new QTimer(this);
 
     connect(timerAnnounce,          SIGNAL(timeout() ),             this, SLOT(announceGame())            );
     connect(timerCountDown,         SIGNAL(timeout() ),             this, SLOT(sendCountDown())           );
     connect(timerDeBrief,           SIGNAL(timeout() ),             this, SLOT(deBriefTaggers())          );
-    connect(timerAssignFailed,      SIGNAL(timeout() ),             this, SLOT(sendAssignFailed())        );
+    connect(timerAssignFailed,      SIGNAL(timeout() ),             this, SLOT(sendAssignFailedMessage())        );
     connect(timerGameTimeRemaining, SIGNAL(timeout() ),             this, SLOT(updateGameTimeRemaining()) );
+    connect(timerReHost,            SIGNAL(timeout() ),             this, SLOT(TaggerReHost()) );
     connect(&lttoComms,      SIGNAL(RequestJoinGame(int,int,int) ), this, SLOT(AssignPlayer(int,int,int)) );
     connect(&lttoComms,      SIGNAL(AckPlayerAssignment(int,int) ), this, SLOT(AddPlayerToGame(int,int))  );
     connect(&serialUSBcomms, SIGNAL(SerialPortFound(QString)),      this, SLOT(AddSerialPortToListWidget(QString)) );
@@ -50,6 +53,7 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
     playerDebugNum = 0;
     closingWindow = false;
     sendingCommsActive = false;
+    rehostingActive = false;
     countDownTimeRemaining = DEFAULT_COUNTDOWN_TIME;
     ui->btn_Cancel->setText("Cancel");
     ui->btn_Rehost->setEnabled(false);
@@ -78,6 +82,7 @@ HostGameWindow::~HostGameWindow()
     timerDeBrief->stop();
     timerAssignFailed->stop();
     timerGameTimeRemaining->stop();
+    timerReHost->stop();
     delete ui;
 }
 
@@ -89,6 +94,7 @@ void HostGameWindow::hideEvent(QHideEvent *)
     timerDeBrief->stop();
     timerAssignFailed->stop();
     timerGameTimeRemaining->stop();
+    timerReHost->stop();
 }
 
 void HostGameWindow::on_btn_Cancel_clicked()
@@ -101,6 +107,7 @@ void HostGameWindow::on_btn_Cancel_clicked()
     timerDeBrief->stop();
     timerAssignFailed->stop();
     timerGameTimeRemaining->stop();
+    timerReHost->stop();
     if (sendingCommsActive == false) deleteLater();     //If this is true then the deleteLater is triggered at the end of hostCurrentPlayer(), to stop the app crashing.
 }
 
@@ -120,11 +127,18 @@ void HostGameWindow::announceGame()
     sendingCommsActive = true;
 
     //Set Base Station LED status
-    if (lttoComms.getTcpCommsConnected() == false)  ui->led_Status->setStyleSheet("background-color: yellow; border-style: outset; border-width: 2px; border-radius: 10px; border-color: grey;");
+    if (lttoComms.getTcpCommsConnected() == false)
+    {
+        ui->led_Status->setStyleSheet("background-color: yellow; border-style: outset; border-width: 2px; border-radius: 10px; border-color: grey;");
+    }
     else
     {
         ui->led_Status->setStyleSheet("background-color: rgb(0,255,50); border-style: outset; border-width: 2px; border-radius: 10px; border-color: grey;");
-        lttoComms.setDontAnnounceGame(false);
+
+// ****        // WHY IS THIS HERE = WONT THIS STOP RECEIVING OF MESSAGES !!!!!
+// ****    lttoComms.setDontAnnounceGame(false);
+// ****
+
     }
 
 
@@ -160,7 +174,7 @@ void HostGameWindow::hostCurrentPlayer()
         qDebug() << "HostGameWindow::hostCurrentPlayer() - Missed count = " << lttoComms.getMissedAnnounceCount();
         if (lttoComms.getMissedAnnounceCount() < 3) return;
 
-        else if (expectingAckPlayerAssignment == true)   // we appear to have missed the AckPlayerAssignment message.
+        if (expectingAckPlayerAssignment == true)   // we appear to have missed the AckPlayerAssignment message.
         {
             qDebug() << "HostGameWindow::hostCurrentPlayer() - assignPlayerFailed !!"  ;
             assignPlayerFailed();
@@ -169,10 +183,14 @@ void HostGameWindow::hostCurrentPlayer()
 
     //Change TeamTags if required for Spies.
     bool wereCurrentPlayerTeamTagsActive = playerInfo[currentPlayer].getTeamTags();
-    if(gameInfo.getIsSpiesTeamTagActive() && gameInfo.getNumberOfSpies() > 0 && gameInfo.getNumberOfTeams() > 1)
+    if(playerInfo[currentPlayer].getSpyNumber() != 0)   //Player is a spy
     {
-        playerInfo[currentPlayer].setTeamTags(true);
+        if(gameInfo.getIsSpiesTeamTagActive()) playerInfo[currentPlayer].setTeamTags(true);
     }
+//    if(gameInfo.getIsSpiesTeamTagActive() && gameInfo.getNumberOfSpies() > 0 && gameInfo.getNumberOfTeams() > 1)
+//    {
+//        playerInfo[currentPlayer].setTeamTags(true);
+//    }
 
     if (lttoComms.getTcpCommsConnected() == true || serialUSBcomms.getSerialCommsConnected() == true) InsertToListWidget("Announce Game : Player " + QString::number(currentPlayer));
     else
@@ -274,7 +292,7 @@ void HostGameWindow::assignPlayerFailed()
 
 }
 
-void HostGameWindow::sendAssignFailed()
+void HostGameWindow::sendAssignFailedMessage()
 {
     if(dontAnnounceFailedSignal == false)
     {
@@ -284,7 +302,7 @@ void HostGameWindow::sendAssignFailed()
         lttoComms.sendPacket(DATA,   gameInfo.getGameID()                    );
         lttoComms.sendPacket(DATA,   playerInfo[currentPlayer].getTaggerID() );
         lttoComms.sendPacket(CHECKSUM                                        );
-         qDebug() << "HostGameWindow::sendAssignFailed()  - Sending # " << assignPlayerFailCount;
+         qDebug() << "HostGameWindow::sendAssignFailedMessage()  - Sending # " << assignPlayerFailCount;
     }
 
     if (assignPlayerFailCount == 6)   //give up and start again
@@ -294,7 +312,7 @@ void HostGameWindow::sendAssignFailed()
         timerAssignFailed->stop();
         lttoComms.setDontAnnounceGame(false);
         expectingAckPlayerAssignment = false;
-        qDebug() <<"HostGameWindow::sendAssignFailed() - Counted to 6, I am now going away";
+        qDebug() <<"HostGameWindow::sendAssignFailedMessage() - Counted to 6, I am now going away";
         if (closingWindow) deleteLater();   // Delete the window, as the cancel button has been pressed.
     }
 }
@@ -594,7 +612,7 @@ void HostGameWindow::updateGameTimeRemaining()
     QString remainingSeconds = QString::number(remainingGameTime % 60);
     if (remainingMinutes.length() == 1) remainingMinutes.prepend("0");
     if (remainingSeconds.length() == 1) remainingSeconds.prepend("0");
-    ui->label->setText("Game Time Remaining\n\n" + remainingMinutes + ":" + remainingSeconds);
+    if (rehostingActive == false) ui->label->setText("Game Time Remaining\n\n" + remainingMinutes + ":" + remainingSeconds);
     if (remainingGameTime == 0)
     {
         timerGameTimeRemaining->stop();
@@ -771,11 +789,24 @@ void HostGameWindow::on_btn_Rehost_clicked()
     ui->btn_Rehost->setEnabled(false);
     reHostTagger->show();
     changeMode(REHOST_MODE);
-
+    timerReHost->start(1000);
 }
 
 void HostGameWindow::on_btn_FailSend_clicked()
 {
     lttoComms.setDontAnnounceGame(true);
-    sendAssignFailed();
+    expectingAckPlayerAssignment = true;
+    sendAssignFailedMessage();
+}
+
+void HostGameWindow::TaggerReHost()
+{
+    qDebug() << "HostGameWindow::TaggerReHost() - Triggered";
+
+    sendingCommsActive = true;
+    rehostingActive = true;
+    currentPlayer = gameInfo.getPlayerToReHost();
+    ui->label->setText("ReHosting " + playerInfo[currentPlayer].getPlayerName());
+    sound_Hosting->play();
+    hostCurrentPlayer();
 }

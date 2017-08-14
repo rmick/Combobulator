@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <QTimer>
 #include <QSoundEffect>
+#include "Hosting.h"
 #include "ReHostTagger.h"
 
 namespace Ui {
@@ -54,7 +55,7 @@ private slots:
 
     void deBriefTaggers();
 
-     void sendAssignFailed();
+    void sendAssignFailedMessage();
 
     void on_btn_Cancel_clicked();
 
@@ -68,6 +69,8 @@ private slots:
 
     void on_btn_FailSend_clicked();
 
+    void TaggerReHost();
+
 private:
     Ui::HostGameWindow  *ui;
     QTimer              *timerAnnounce;
@@ -75,6 +78,7 @@ private:
     QTimer              *timerDeBrief;
     QTimer              *timerAssignFailed;
     QTimer              *timerGameTimeRemaining;
+    QTimer              *timerReHost;
     ReHostTagger        *reHostTagger;
     QSoundEffect        *sound_Hosting;
     QSoundEffect        *sound_Countdown;
@@ -93,6 +97,7 @@ private:
     int     remainingGameTime;
     bool    closingWindow;
     bool    sendingCommsActive;
+    bool    rehostingActive;
 
     void    hostCurrentPlayer();
     void    assignPlayerFailed();

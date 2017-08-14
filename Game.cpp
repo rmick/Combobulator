@@ -144,7 +144,7 @@ void Game::setIsThisPlayerInTheGame(int index, int value)
 
 int Game::getPlayersInTeamByte(int TeamNumber) const
 {
-    qDebug() << "Game::getPlayersInTeamTx() - Team =" << TeamNumber << "Byte =" << PlayersInTeamByte[TeamNumber];
+    //qDebug() << "Game::getPlayersInTeamTx() - Team =" << TeamNumber << "Byte =" << PlayersInTeamByte[TeamNumber];
     return PlayersInTeamByte[TeamNumber];
 
 //    int PlayersPackedByte = 0;
