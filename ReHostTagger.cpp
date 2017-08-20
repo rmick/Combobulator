@@ -71,7 +71,6 @@ void ReHostTagger::SetActivePlayers()
          playerButtons[index]->setEnabled(false);
          playerButtons[index]->setChecked(false);
         }
-        qDebug() << "Player " << index << " = " << gameInfo.getIsThisPlayerInTheGame(index);
     }
 }
 
@@ -83,9 +82,6 @@ void ReHostTagger::playerButtonPressed(int playerNumber)
     gameInfo.setPlayerToReHost(playerNumber);
     deleteLater();
 }
-
-
-
 
 void ReHostTagger::on_btn_Close_clicked()
 {

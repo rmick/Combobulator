@@ -4,11 +4,13 @@
 #include <QMainWindow>
 #include <QPointer>
 #include <QSoundEffect>
+#include <QSettings>
 #include "Defines.h"
 #include "PlayersWindow.h"
 #include "HostGameWindow.h"
 #include "FlagsWindow.h"
 #include "LttoComms.h"
+#include "AboutForm.h"
 
 
 namespace Ui {
@@ -88,19 +90,20 @@ private slots:
 
     void on_actionLoad_triggered();
 
-    void on_actionUSB_Serial_triggered();
-
     void on_btn_Flags_clicked();
 
     void on_actionAbout_triggered();
 
+    void on_btn_SpyTeamTags_clicked();
+
 private:
-    Ui::LttoMainWindow  *ui;
-    PlayersWindow       *playersWindow;
-    QPointer<HostGameWindow>      hostGameWindow;
-    FlagsWindow         *flagsWindow;
-    QSoundEffect        *sound_PowerUp;
-    QSoundEffect        *sound_Powerdown;
+    Ui::LttoMainWindow      *ui;
+    PlayersWindow           *playersWindow;
+    QPointer<HostGameWindow> hostGameWindow;
+    FlagsWindow             *flagsWindow;
+    AboutForm               *aboutForm;
+    QSoundEffect            *sound_PowerUp;
+    QSoundEffect            *sound_Powerdown;
 
     bool    SlowTags;
     bool    MedicMode;

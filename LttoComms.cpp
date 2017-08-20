@@ -107,12 +107,11 @@ QString LttoComms::createIRstring(int data)
 
 void LttoComms::receivePacket(QByteArray RxData)
 {
-    dontAnnounceGame = true;
-    dontAnnounceFailedSignal = true;
-    missedAnnounceCount = 0;
-    bool isPacketComplete = false;
-
     //qDebug() << "LttoComms::receivePacket() triggered";
+
+    //setDontAnnounceGame(true);                        // Dont do it here, you get too many false triggers.
+    //setDontAnnounceFailedSignal(true);   //TODO: What does this do ????
+    bool isPacketComplete = false;
 
     if (useLazerSwarm)
     {
@@ -242,7 +241,7 @@ void LttoComms::processPacket(QList<QByteArray> data)
     int flags   = 0;
     int checksum= 0;
 
-   // qDebug() << "\nLttoComms::processPacket()" << command;
+    //qDebug() << "\nLttoComms::processPacket()" << command;
 
     switch (command)
     {

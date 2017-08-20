@@ -14,7 +14,25 @@
    <string>Dialog</string>
   </property>
   <property name="styleSheet">
-   <string notr="true"/>
+   <string notr="true">QPushButton
+{
+    background-color: cyan;
+    border-style: outset;
+    border-width: 2px;
+    border-radius: 10px;
+    border-color: grey;
+}
+
+QPushButton:disabled
+{
+    background-color: rgb(200,230	,230); 
+}
+
+QPushButton:checked 
+{ 
+    background-color: rgb(50,220,200);
+	font-weight: bold
+ }</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
@@ -117,25 +135,7 @@
       </palette>
      </property>
      <property name="styleSheet">
-      <string notr="true">QPushButton
-{
-    background-color: cyan;
-    border-style: outset;
-    border-width: 2px;
-    border-radius: 10px;
-    border-color: grey;
-}
-
-QPushButton:disabled
-{
-    background-color: rgb(200,230	,230); 
-}
-
-QPushButton:checked 
-{ 
-    background-color: rgb(50,220,200);
-	font-weight: bold
- }</string>
+      <string notr="true"/>
      </property>
      <property name="text">
       <string>Neutralise</string>
@@ -251,25 +251,7 @@ QPushButton:checked
       </palette>
      </property>
      <property name="styleSheet">
-      <string notr="true">QPushButton
-{
-    background-color: cyan;
-    border-style: outset;
-    border-width: 2px;
-    border-radius: 10px;
-    border-color: grey;
-}
-
-QPushButton:disabled
-{
-    background-color: rgb(200,230	,230); 
-}
-
-QPushButton:checked 
-{ 
-    background-color: rgb(50,220,200);
-	font-weight: bold
- }</string>
+      <string notr="true"/>
      </property>
      <property name="text">
       <string>Supply Zones
@@ -383,25 +365,7 @@ Refill Tags</string>
       </palette>
      </property>
      <property name="styleSheet">
-      <string notr="true">QPushButton
-{
-    background-color: cyan;
-    border-style: outset;
-    border-width: 2px;
-    border-radius: 10px;
-    border-color: grey;
-}
-
-QPushButton:disabled
-{
-    background-color: rgb(200,230	,230); 
-}
-
-QPushButton:checked 
-{ 
-    background-color: rgb(50,220,200);
-	font-weight: bold
- }</string>
+      <string notr="true"/>
      </property>
      <property name="text">
       <string>Contested
@@ -515,25 +479,7 @@ Zones</string>
       </palette>
      </property>
      <property name="styleSheet">
-      <string notr="true">QPushButton
-{
-    background-color: cyan;
-    border-style: outset;
-    border-width: 2px;
-    border-radius: 10px;
-    border-color: grey;
-}
-
-QPushButton:disabled
-{
-    background-color: rgb(200,230	,230); 
-}
-
-QPushButton:checked 
-{ 
-    background-color: rgb(50,220,200);
-	font-weight: bold
- }</string>
+      <string notr="true"/>
      </property>
      <property name="text">
       <string>Hostile
@@ -647,25 +593,7 @@ Zones</string>
       </palette>
      </property>
      <property name="styleSheet">
-      <string notr="true">QPushButton
-{
-    background-color: cyan;
-    border-style: outset;
-    border-width: 2px;
-    border-radius: 10px;
-    border-color: grey;
-}
-
-QPushButton:disabled
-{
-    background-color: rgb(200,230	,230); 
-}
-
-QPushButton:checked 
-{ 
-    background-color: rgb(50,220,200);
-	font-weight: bold
- }</string>
+      <string notr="true"/>
      </property>
      <property name="text">
       <string>Zones
@@ -779,25 +707,7 @@ with Teams</string>
       </palette>
      </property>
      <property name="styleSheet">
-      <string notr="true">QPushButton
-{
-    background-color: cyan;
-    border-style: outset;
-    border-width: 2px;
-    border-radius: 10px;
-    border-color: grey;
-}
-
-QPushButton:disabled
-{
-    background-color: rgb(200,230	,230); 
-}
-
-QPushButton:checked 
-{ 
-    background-color: rgb(50,220,200);
-	font-weight: bold
- }</string>
+      <string notr="true"/>
      </property>
      <property name="text">
       <string>Reverse
@@ -911,25 +821,7 @@ Hunt Direction</string>
       </palette>
      </property>
      <property name="styleSheet">
-      <string notr="true">QPushButton
-{
-    background-color: cyan;
-    border-style: outset;
-    border-width: 2px;
-    border-radius: 10px;
-    border-color: grey;
-}
-
-QPushButton:disabled
-{
-    background-color: rgb(200,230	,230); 
-}
-
-QPushButton:checked 
-{ 
-    background-color: rgb(50,220,200);
-	font-weight: bold
- }</string>
+      <string notr="true"/>
      </property>
      <property name="text">
       <string>Neutralised
@@ -1043,25 +935,7 @@ when tagged</string>
       </palette>
      </property>
      <property name="styleSheet">
-      <string notr="true">QPushButton
-{
-    background-color: cyan;
-    border-style: outset;
-    border-width: 2px;
-    border-radius: 10px;
-    border-color: grey;
-}
-
-QPushButton:disabled
-{
-    background-color: rgb(200,230	,230); 
-}
-
-QPushButton:checked 
-{ 
-    background-color: rgb(50,220,200);
-	font-weight: bold
- }</string>
+      <string notr="true"/>
      </property>
      <property name="text">
       <string>Close</string>
@@ -1071,6 +945,25 @@ QPushButton:checked
      </property>
      <property name="default">
       <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QPushButton" name="btn_HuntThePrey">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="text">
+      <string>Hunt The Prey</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="autoDefault">
+      <bool>false</bool>
      </property>
     </widget>
    </item>

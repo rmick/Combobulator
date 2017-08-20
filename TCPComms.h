@@ -19,6 +19,7 @@ public slots:
     void bytesWritten (qint64 bytes);
     void receivePacket();
     void sendPacket(QByteArray data);
+    void initialiseTCPsignalsAndSlots();
 
 signals:
     void newTCPdata(QByteArray dataReceived);

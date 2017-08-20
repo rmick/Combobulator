@@ -33,6 +33,9 @@ public:
 
     void changeMode(int mode);
 
+    bool getIsUSBinitialised() const;
+    void setIsUSBinitialised(bool value);
+
 public slots:
 
     void AssignPlayer(int Game, int Tagger, int Flags);   //Connects to RequestJoinGame signal
@@ -72,6 +75,7 @@ private slots:
     void TaggerReHost();
 
 private:
+    //pointers
     Ui::HostGameWindow  *ui;
     QTimer              *timerAnnounce;
     QTimer              *timerCountDown;
@@ -84,13 +88,15 @@ private:
     QSoundEffect        *sound_Countdown;
     QSoundEffect        *sound_HostingMissedReply;
     QSoundEffect        *sound_GoodLuck;
+    QSoundEffect        *sound_PlayerAdded;
 
-    bool    bluetoothActive;
-    bool    serialUSBactive;
-    bool    wiFiActive;
-    bool    useLazerSwarm;
-    bool    isThisPlayerHosted[25];
-    int     currentPlayer;
+    //variables
+    bool    bluetoothActive;                    // no longer used TODO:
+    bool    serialUSBactive;                    // no longer used TODO:
+    bool    wiFiActive;                         // no longer used TODO:
+    bool    useLazerSwarm;                      // determines whether to use Lazerswarm coding or my own coding.
+    bool    isThisPlayerHosted[25];             // an array that defines which players have joined the game.
+    int     currentPlayer;                      // the current player to host.
     bool    noMorePlayers;
     int     countDownTimeRemaining;
     bool    expectingAckPlayerAssignment;
@@ -98,13 +104,15 @@ private:
     bool    closingWindow;
     bool    sendingCommsActive;
     bool    rehostingActive;
+    int     assignPlayerFailCount;
+    bool    dontAnnounceFailedSignal;
 
+    //methods
     void    hostCurrentPlayer();
     void    assignPlayerFailed();
     int     calculatePlayerTeam5bits(int requestedTeam);
     int     ConvertDecToBCD(int dec);
     int     ConvertBCDtoDec(int bcd);
-
     bool    assignSpies();
 };
 

@@ -7,6 +7,7 @@
 #include "LazerSwarm.h"
 
 #include "SerialUSBcomms.h"
+#include "TCPComms.h"
 
 class LttoComms : public QObject
 {
@@ -36,6 +37,9 @@ public:
 
     void        nonBlockingDelay(int mSec);
 
+    bool getIsUSBinitialised() const;
+    void setIsUSBinitialised(bool value);
+
 public slots:
     void        TCPconnected();
     void        TCPdisconnected();
@@ -61,6 +65,7 @@ private:
     bool            dontAnnounceFailedSignal;
     bool            tcpCommsConnected;
     int             missedAnnounceCount;
+
 
     void            processPacket(QList<QByteArray> data);
     int             extract(QList<QByteArray> &data);

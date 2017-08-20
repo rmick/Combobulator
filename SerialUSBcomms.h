@@ -25,6 +25,9 @@ public:
     void        setSerialCommsConnected(bool value);
     void        initialiseUSBsignalsAndSlots();
 
+    bool getIsUSBinitialised() const;
+    void setIsUSBinitialised(bool value);
+
 signals:
     void        SerialPortFound(QString portDetails);
     void        newSerialUSBdata(QByteArray dataReceived);
@@ -38,7 +41,8 @@ private:
 #ifdef INCLUDE_SERIAL_USB
         QSerialPort     *serialUSB;
 #endif
-        bool    serialCommsConnected;
+        bool            serialCommsConnected;               // is the serial port connecrted and working.
+        bool            isUSBinitialised;                   // used to trigger a single instance of USB port connectSignals.
 };
 
 extern SerialUSBcomms serialUSBcomms;

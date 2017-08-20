@@ -18,7 +18,8 @@ Game::Game()    // (QObject *parent)
     NameChar3       = 51;  // 3
     NameChar4       = 52;  // 4
 
-    isSpiesTeamTagActive = true;
+    PlayerToReHost = 0;
+    isSpiesTeamTagActive = false;
 
     CountDownTime   = DEFAULT_COUNTDOWN_TIME;
     isThisPlayerInTheGame[0] = true;        //this is required so that Announce continues after all Taggers are hosted.
@@ -40,6 +41,60 @@ int Game::getGameType() const
 void Game::setGameType(int value)
 {
     GameType = value;
+
+    for(int index = 0; index < 25; index++)
+    {
+        // Reset Game Specific Flags.
+        playerInfo[index].setBitFlags1(HUNT_THE_PREY_FLAG, false);
+        playerInfo[index].setBitFlags1(CONTESTED_ZONES_FLAG, false);
+
+        // Set Game Specific Flags and Number of Teams Flags
+        switch(value)
+        {
+        case Ltag0:
+            setNumberOfTeams(0);
+            break;
+        case Ltag2:
+            setNumberOfTeams(2);
+            break;
+        case Ltag3:
+            setNumberOfTeams(3);
+            break;
+
+        case HideSeek2:
+            playerInfo[index].setBitFlags1(HUNT_THE_PREY_FLAG, true);
+            setNumberOfTeams(2);
+            break;
+        case HideSeek3:
+            playerInfo[index].setBitFlags1(HUNT_THE_PREY_FLAG, true);
+            setNumberOfTeams(3);
+            break;
+
+        case Kings2:
+            setNumberOfTeams(2);
+            break;
+        case Kings3:
+            setNumberOfTeams(3);
+            break;
+
+        case OwnZone0:
+            playerInfo[index].setBitFlags1(CONTESTED_ZONES_FLAG, true);
+            setNumberOfTeams(0);
+            break;
+        case OwnZone2:
+            playerInfo[index].setBitFlags1(CONTESTED_ZONES_FLAG, true);
+            setNumberOfTeams(2);
+            break;
+        case OwnZone3:
+            playerInfo[index].setBitFlags1(CONTESTED_ZONES_FLAG, true);
+            setNumberOfTeams(3);
+            break;
+
+        case Special:       //TODO: This might need a way to set Teams and sorts of other things.
+            //setNumberOfTeams(0);
+            break;
+        }
+    }
 }
 
 int Game::getGameID() const
@@ -142,7 +197,7 @@ void Game::setIsThisPlayerInTheGame(int index, int value)
     isThisPlayerInTheGame[index] = value;
 }
 
-int Game::getPlayersInTeamByte(int TeamNumber) const
+int Game::getPlayersInTeam(int TeamNumber) const
 {
     //qDebug() << "Game::getPlayersInTeamTx() - Team =" << TeamNumber << "Byte =" << PlayersInTeamByte[TeamNumber];
     return PlayersInTeamByte[TeamNumber];
@@ -179,6 +234,7 @@ void Game::streamToFile(QTextStream &out)
     out << "NumberOfSpies:"    << NumberOfSpies    << endl;
     out << "CountDownTime:"    << CountDownTime    << endl;
     out << "PlayersInGame;"    << endl;
+    out << "SpyTeamTagsActive:"<< isSpiesTeamTagActive << endl;
     for (int x=0; x< 25; x++)
     {
         if      (x < 10) out << " Player0" << x << ":" << isThisPlayerInTheGame[x] << endl;
@@ -197,15 +253,16 @@ void Game::streamFromFile(QTextStream &in)
     {
             descriptorG = in.readLine();
             //qDebug() << descriptorG << descriptorG.indexOf(":");
-            if      (descriptorG.contains("GameID:") )           GameID          = extractInteger(descriptorG);
-            else if (descriptorG.contains("GameLength:") )       GameLength      = extractInteger(descriptorG);
-            else if (descriptorG.contains("GameType:") )         GameType        = extractInteger(descriptorG);
-            else if (descriptorG.contains("NumberOfPlayers:") )  NumberOfPlayers = extractInteger(descriptorG);
-            else if (descriptorG.contains("NumberOfTeams:") )    NumberOfTeams   = extractInteger(descriptorG);
-            else if (descriptorG.contains("NumberOfSpies:") )    NumberOfSpies   = extractInteger(descriptorG);
-            else if (descriptorG.contains("GameName:") )         GameName        = descriptorG;
-            else if (descriptorG.contains(" Player") )           isThisPlayerInTheGame[descriptorG.mid(7,2).toInt()] = descriptorG.right(1).toInt();
-            else if (descriptorG.contains("CountDownTime:") )    CountDownTime   = extractInteger(descriptorG);
+            if      (descriptorG.contains("GameID:") )              GameID                  = extractInteger(descriptorG);
+            else if (descriptorG.contains("GameLength:") )          GameLength              = extractInteger(descriptorG);
+            else if (descriptorG.contains("GameType:") )            GameType                = extractInteger(descriptorG);
+            else if (descriptorG.contains("NumberOfPlayers:") )     NumberOfPlayers         = extractInteger(descriptorG);
+            else if (descriptorG.contains("NumberOfTeams:") )       NumberOfTeams           = extractInteger(descriptorG);
+            else if (descriptorG.contains("NumberOfSpies:") )       NumberOfSpies           = extractInteger(descriptorG);
+            else if (descriptorG.contains("GameName:") )            GameName                = descriptorG;
+            else if (descriptorG.contains(" Player") )              isThisPlayerInTheGame[descriptorG.mid(7,2).toInt()] = descriptorG.right(1).toInt();
+            else if (descriptorG.contains("CountDownTime:") )       CountDownTime           = extractInteger(descriptorG);
+            else if (descriptorG.contains("SpyTeamTagsActive:") )   isSpiesTeamTagActive    = extractInteger(descriptorG);
     }   while (descriptorG != "END_OF_GAME_SETTINGS");
 
     setNumberOfTeams(NumberOfTeams);    //This is required to update the Flags2 bits.

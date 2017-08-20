@@ -34,6 +34,8 @@ private slots:
 
     void on_btn_Close_clicked();
 
+    void on_btn_HuntThePrey_clicked();
+
 private:
     Ui::FlagsWindow *ui;
     void updatePlayerFlags1(int bit, bool state, int firstPlayer = 0, int lastPlayer = 24);

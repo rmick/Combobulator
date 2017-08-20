@@ -19,22 +19,22 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
     playersWindow(NULL),
     hostGameWindow(NULL),
     flagsWindow(NULL),
+    aboutForm(NULL),
     sound_PowerUp(NULL),
     sound_Powerdown(NULL)
 {
     ui->setupUi(this);
     this->setWindowTitle("LTTO Combobulator");
+    ui->label_BuildNumber->setText(BUILD_NUMBER);
     gameInfo.setGameType(gameInfo.Ltag0);
     ui->btn_NoTeams->setChecked(true);
     gameInfo.setNumberOfTeams(0);
     ui->btn_Spies->setEnabled(false);
     ui->btn_StartGame->setEnabled(false);
     ui->actionuse_LazerSwarm->setVisible(false);
+    serialUSBcomms.setIsUSBinitialised(false);
     qsrand(static_cast<uint>(QTime::currentTime().msec()));
     for (int index = 1; index < 25; index++)    playerInfo[index].setPlayerName("Player " + QString::number(index));
-
-    serialUSBcomms.initialiseUSBsignalsAndSlots();
-    //ui->btn_CustomGame->setVisible(false);
 
     foreach (const QAudioDeviceInfo &deviceInfo, QAudioDeviceInfo::availableDevices(QAudio::AudioOutput))
         qDebug() << "LttoMainWindow::LttoMainWindow() - Audio Device name: " << deviceInfo.deviceName();
@@ -46,7 +46,6 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
     sound_PowerUp  ->setSource(QUrl::fromLocalFile(":/resources/audio/stinger-power-on.wav"));
     sound_Powerdown->setSource(QUrl::fromLocalFile(":/resources/audio/shut-down.wav"));
     sound_PowerUp->play();
-
 
 
     //TODO: Get rid of this, it is just debug until I store/recall this setting
@@ -86,8 +85,16 @@ void LttoMainWindow::setTeamTags(bool value)
 
 void LttoMainWindow::SetSpiesButtonState(int NumTeams)
 {
-    if (NumTeams == 0) ui->btn_Spies->setEnabled(false);
-    else               ui->btn_Spies->setEnabled(true);
+    if (NumTeams == 0)
+    {
+        ui->btn_Spies->setEnabled(false);
+        ui->btn_SpyTeamTags->setEnabled(false);
+    }
+    else
+    {
+        ui->btn_Spies->setEnabled(true);
+        ui->btn_SpyTeamTags->setEnabled(true);
+    }
 }
 
 //--------------------------------------------------------
@@ -204,51 +211,85 @@ void LttoMainWindow::on_btn_Ltag_clicked()
 {
     gameInfo.setGameName("LTAG");
     ui->btn_NoTeams->setEnabled(true);
-    if      (gameInfo.getNumberOfTeams() == 0)   gameInfo.setGameType(gameInfo.Ltag0);
-    else if (gameInfo.getNumberOfTeams() == 2)   gameInfo.setGameType(gameInfo.Ltag2);
-    else if (gameInfo.getNumberOfTeams() == 3)   gameInfo.setGameType(gameInfo.Ltag3);
+
+    switch(gameInfo.getNumberOfTeams())
+    {
+    case 0:
+        gameInfo.setGameType(gameInfo.Ltag0);
+        break;
+    case 2:
+        gameInfo.setGameType(gameInfo.Ltag2);
+        break;
+    case 3:
+        gameInfo.setGameType(gameInfo.Ltag3);
+        break;
+    }
 }
 
 void LttoMainWindow::on_btn_HideAndSeek_clicked()
 {
     gameInfo.setGameName("SEEK");
     ui->btn_NoTeams->setEnabled(false);
-    if      (gameInfo.getNumberOfTeams() == 0)
+
+    switch(gameInfo.getNumberOfTeams())
     {
+    case 0:
+        gameInfo.setGameType(gameInfo.HideSeek2);               //Zero teams is not valid, force to 2 teams.
         ui->btn_TwoTeams->setChecked(true);
+        break;
+    case 2:
         gameInfo.setGameType(gameInfo.HideSeek2);
-        gameInfo.setNumberOfTeams(2);
+        break;
+    case 3:
+        gameInfo.setGameType(gameInfo.HideSeek3);
+        break;
     }
-    else if (gameInfo.getNumberOfTeams() == 2)   gameInfo.setGameType(gameInfo.HideSeek2);
-    else if (gameInfo.getNumberOfTeams() == 3)   gameInfo.setGameType(gameInfo.HideSeek3);
 }
 
 void LttoMainWindow::on_btn_Kings_clicked()
 {
     gameInfo.setGameName("KING");
-    //TOD): Player1 is ALWAYS the king, so I need to use Spies technology to pick random player to be King and swap player numbers from the same team.
+    //TODO: Player1 is ALWAYS the king, so I need to use Spies technology to pick random player to be King and swap player numbers from the same team.
     ui->btn_NoTeams->setEnabled(false);
-    if      (gameInfo.getNumberOfTeams() == 0)  //Zero teams is not valid, force to 2 teams.
+
+    switch(gameInfo.getNumberOfTeams())
     {
+    case 0:
+        gameInfo.setGameType(gameInfo.Kings2);                  //Zero teams is not valid, force to 2 teams.
         ui->btn_TwoTeams->setChecked(true);
+        break;
+    case 2:
         gameInfo.setGameType(gameInfo.Kings2);
-        gameInfo.setNumberOfTeams(2);
+        break;
+    case 3:
+        gameInfo.setGameType(gameInfo.Kings3);
+        break;
+
     }
-    else if (gameInfo.getNumberOfTeams() == 2)   gameInfo.setGameType(gameInfo.Kings2);
-    else if (gameInfo.getNumberOfTeams() == 3)   gameInfo.setGameType(gameInfo.Kings3);
 }
 
 void LttoMainWindow::on_btn_OwnTheZone_clicked()
 {
     gameInfo.setGameName("ZONE");
     ui->btn_NoTeams->setEnabled(true);
-    if      (gameInfo.getNumberOfTeams() == 0)   gameInfo.setGameType(gameInfo.OwnZone0);
-    else if (gameInfo.getNumberOfTeams() == 2)   gameInfo.setGameType(gameInfo.OwnZone2);
-    else if (gameInfo.getNumberOfTeams() == 3)   gameInfo.setGameType(gameInfo.OwnZone3);
+
+    switch(gameInfo.getNumberOfTeams())
+    {
+    case 0:
+        gameInfo.setGameType(gameInfo.OwnZone0);
+        break;
+    case 2:
+        gameInfo.setGameType(gameInfo.OwnZone2);
+        break;
+    case 3:
+        gameInfo.setGameType(gameInfo.OwnZone3);
+        break;
+    }
 }
 
-void LttoMainWindow::on_btn_CustomGame_clicked()        //TODO: Add all the team options, etc
+void LttoMainWindow::on_btn_CustomGame_clicked()
 {
+    //TODO: Add all the team options, etc
     gameInfo.setGameType(12);
     gameInfo.setGameID(42);
 }
@@ -257,15 +298,39 @@ void LttoMainWindow::on_btn_CustomGame_clicked()        //TODO: Add all the team
 void LttoMainWindow::on_btn_NoTeams_clicked()
 {
     gameInfo.setNumberOfTeams(0);
-    ui->btn_Spies->setEnabled(false);
-    if (gameInfo.getGameType() >= gameInfo.Ltag0      && gameInfo.getGameType() <= gameInfo.Ltag3)      gameInfo.setGameType(gameInfo.Ltag0);
-    if (gameInfo.getGameType() >= gameInfo.OwnZone0   && gameInfo.getGameType() <= gameInfo.OwnZone3)   gameInfo.setGameType(gameInfo.OwnZone0);
+    SetSpiesButtonState(false);
+
+    switch(gameInfo.getGameType() )                         // Find the current gameType and change it to the NoTeams variant.
+    {
+    case Game::Ltag0:
+    case Game::Ltag2:
+    case Game::Ltag3:
+        gameInfo.setGameType(Game::Ltag0);
+        break;
+    case Game::HideSeek2:
+    case Game::HideSeek3:
+        qDebug() << "Error. This is impossible";
+        break;
+    case Game::Kings2:
+    case Game::Kings3:
+        qDebug() << "Error. This is impossible";
+        break;
+    case Game::OwnZone0:
+    case Game::OwnZone2:
+    case Game::OwnZone3:
+        gameInfo.setGameType(Game::OwnZone0);
+        break;
+    case Game::Special:
+        gameInfo.setGameType(Game::Special);
+        break;
+    }
 }
 
-void LttoMainWindow::on_btn_TwoTeams_clicked()
+void LttoMainWindow::on_btn_TwoTeams_clicked()              // Find the current gameType and change it to the 2Teams variant.
 {
     gameInfo.setNumberOfTeams(2);
-    ui->btn_Spies->setEnabled(true);
+    SetSpiesButtonState(true);
+
     switch(gameInfo.getGameType() )
     {
     case Game::Ltag0:
@@ -286,36 +351,39 @@ void LttoMainWindow::on_btn_TwoTeams_clicked()
     case Game::OwnZone3:
         gameInfo.setGameType(Game::OwnZone2);
         break;
+    case Game::Special:
+        gameInfo.setGameType(Game::Special);
+        break;
     }
 }
 
-void LttoMainWindow::on_btn_ThreeTeams_clicked()
+void LttoMainWindow::on_btn_ThreeTeams_clicked()            // Find the current gameType and change it to the 2Teams variant.
 {
     gameInfo.setNumberOfTeams(3);
-    ui->btn_Spies->setEnabled(true);
+    SetSpiesButtonState(true);
     switch(gameInfo.getGameType() )
     {
-        case Game::Ltag0:
-        case Game::Ltag2:
-        case Game::Ltag3:
-            gameInfo.setGameType(Game::Ltag3);
-            break;
-        case Game::HideSeek2:
-        case Game::HideSeek3:
-            gameInfo.setGameType(Game::HideSeek3);
-            break;
-        case Game::Kings2:
-        case Game::Kings3:
-            gameInfo.setGameType(Game::Kings3);
-            break;
-        case Game::OwnZone0:
-        case Game::OwnZone2:
-        case Game::OwnZone3:
-            gameInfo.setGameType(Game::OwnZone3);
-            break;
-        case Game::Special:
-            gameInfo.setGameType(Game::Special);
-            break;
+    case Game::Ltag0:
+    case Game::Ltag2:
+    case Game::Ltag3:
+        gameInfo.setGameType(Game::Ltag3);
+        break;
+    case Game::HideSeek2:
+    case Game::HideSeek3:
+        gameInfo.setGameType(Game::HideSeek3);
+        break;
+    case Game::Kings2:
+    case Game::Kings3:
+        gameInfo.setGameType(Game::Kings3);
+        break;
+    case Game::OwnZone0:
+    case Game::OwnZone2:
+    case Game::OwnZone3:
+        gameInfo.setGameType(Game::OwnZone3);
+        break;
+    case Game::Special:
+        gameInfo.setGameType(Game::Special);
+        break;
     }
 }
 
@@ -370,16 +438,18 @@ void LttoMainWindow::on_slider_GameTime_valueChanged(int value)
 
 void LttoMainWindow::on_btn_Spies_clicked()
 {
-    for (int x =0; x<4; x++)
+    for (int index =0; index<4; index++)
     {
-        if (gameInfo.getNumberOfSpies() == x)
+        if (gameInfo.getNumberOfSpies() == index)
         {
-            ui->btn_Spies->setText("Spies = "+QString::number(++x) );
-            gameInfo.setNumberOfSpies(x);
+            ui->btn_Spies->setText("Spies = "+QString::number(++index) );
+            ui->btn_SpyTeamTags->setEnabled(true);
+            gameInfo.setNumberOfSpies(index);
         }
         if (gameInfo.getNumberOfSpies() == 4)
         {
             ui->btn_Spies->setText("Spies = 0");
+            ui->btn_SpyTeamTags->setEnabled(false);
             gameInfo.setNumberOfSpies(0);
         }
     }
@@ -595,12 +665,6 @@ void LttoMainWindow::on_actionLoad_triggered()
     loadFile();
 }
 
-void LttoMainWindow::on_actionUSB_Serial_triggered()
-{
-    if(ui->actionUSB_Serial->isChecked()) serialUSBactive = true;
-    else                                  serialUSBactive = false;
-}
-
 void LttoMainWindow::on_btn_Flags_clicked()
 {
     if(flagsWindow==NULL) flagsWindow = new FlagsWindow;
@@ -609,5 +673,20 @@ void LttoMainWindow::on_btn_Flags_clicked()
 
 void LttoMainWindow::on_actionAbout_triggered()
 {
-    //TODO:Open an About form
+    aboutForm = new AboutForm(this);
+    aboutForm->show();
+}
+
+void LttoMainWindow::on_btn_SpyTeamTags_clicked()
+{
+    if      (gameInfo.getIsSpiesTeamTagActive() == false)
+    {
+        ui->btn_TeamTags->setText("Spy TeamTags OFF");
+        gameInfo.setIsSpiesTeamTagActive(false);
+    }
+    else if (gameInfo.getIsSpiesTeamTagActive() == true)
+    {
+        ui->btn_TeamTags->setText("Spy TeamTags ON");
+        gameInfo.setIsSpiesTeamTagActive(true);
+    }
 }

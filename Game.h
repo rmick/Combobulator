@@ -40,7 +40,7 @@ public:
     bool getIsThisPlayerInTheGame(int index) const;
     void setIsThisPlayerInTheGame(int index, int value);
 
-    int getPlayersInTeamByte(int TeamNumber) const;             //returns PlayersInTeam1 as a PackedByte - used in CountDown
+    int getPlayersInTeam(int TeamNumber) const;             //returns PlayersInTeam1 as a PackedByte - used in CountDown
     void setPlayersInTeamByte(int TeamNumber, int PlayerNumber, bool state);
 
     int getNumberOfTeams() const;

@@ -15,6 +15,10 @@
 // If enabling this #define, also remove the # from the command 'serialport' in line 9 of the LTTO_host.pro file
 #define INCLUDE_SERIAL_USB
 
+
+//  Build Number
+const QString BUILD_NUMBER  = "Build : 17.8.21a";
+
 //  WiFi stuff
 const QString HOST_IP_ADDRESS   = "192.186.2.1";
 const QString WIFI_PASSWORD     = "LTAG42";
@@ -28,7 +32,7 @@ const char  BEACON      = 'B';
 
 //Internal timers (in mSec)
 const int   INTERPACKET_DELAY_MSEC  = 75;
-const int   HOST_TIMER_MSEC         = 1500;
+const int   HOST_TIMER_MSEC         = 1300;
 const int   PRESS_AND_HOLD_TIME     = 500;
 
 //Packet Header Type Codes

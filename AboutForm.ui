@@ -6,17 +6,26 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>603</width>
+    <width>734</width>
     <height>481</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">QDialog
+{
+	background-color: black;
+	border-width: 10px;
+    	border-radius: 20px;
+    	border-color: cyan;
+}</string>
+  </property>
   <widget class="QPushButton" name="btn_Ok">
    <property name="geometry">
     <rect>
-     <x>470</x>
+     <x>610</x>
      <y>410</y>
      <width>113</width>
      <height>61</height>
@@ -31,12 +40,12 @@
     <rect>
      <x>30</x>
      <y>20</y>
-     <width>461</width>
+     <width>571</width>
      <height>441</height>
     </rect>
    </property>
    <property name="text">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;(C) 2017 S Richie Mickan&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Created in Qt 5.9.1&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Free for personal use of up to 4 players.&lt;/p&gt;&lt;p&gt;Commercial use or hosting games with more than 4 players requires a license.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;richie@bushandbeyond.com.au&lt;/p&gt;&lt;p&gt;www.github.com/rmick&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Thanks to A. Faucher and R. McArdyle for&lt;/p&gt;&lt;p&gt;their work in reverse engineering the LTTO IR codes.&lt;/p&gt;&lt;p&gt;Visit wiki.lazerswarm.com for all the info.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;(C) 2017 S Richie Mickan&lt;/p&gt;&lt;p&gt;&lt;br/&gt;Created in Qt 5.9.1&lt;/p&gt;&lt;p&gt;&lt;br/&gt;Free for personal use of up to 6 players.&lt;/p&gt;&lt;p&gt;Commercial use or hosting games with more than 6 players requires a license.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;richie@bushandbeyond.com.au&lt;/p&gt;&lt;p&gt;www.github.com/rmick&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Thanks to A. Faucher and R. McArdyle for their work in reverse engineering the LTTO IR codes.&lt;br/&gt;Visit wiki.lazerswarm.com for all the info.&lt;/p&gt;&lt;p&gt;Special thanks to Bryan Steele for extensive beta testing and bug finding&lt;br/&gt;and Dustin Westaby for the base station hardware design.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </widget>
  </widget>

@@ -462,7 +462,7 @@ void PlayersWindow::on_slider_MegaTags_valueChanged(int value)
 
 void PlayersWindow::on_btn_Test_clicked()
 {
-    gameInfo.getPlayersInTeamByte(1);
-    gameInfo.getPlayersInTeamByte(2);
-    gameInfo.getPlayersInTeamByte(3);
+    qDebug() << "PlayersWindow::on_btn_Test_clicked() - Team1 PlayersByte:" <<gameInfo.getPlayersInTeam(1);
+    qDebug() << "PlayersWindow::on_btn_Test_clicked() - Team2 PlayersByte:" <<gameInfo.getPlayersInTeam(2);
+    qDebug() << "PlayersWindow::on_btn_Test_clicked() - Team3 PlayersByte:" << gameInfo.getPlayersInTeam(3);
 }

@@ -74,8 +74,11 @@ void SerialUSBcomms::receivePacket()
 #ifdef INCLUDE_SERIAL_USB
     QByteArray rX;
     rX = serialUSB->readAll();
-    qDebug() << "SerialUSBcomms::receivePacket() " << rX;
+    //qDebug() << "SerialUSBcomms::receivePacket() " << rX;
+#ifdef Q_OS_ANDROID
     lttoComms.androidRxPacket(rX);
+#endif
+
     emit newSerialUSBdata(rX);
 #endif
 }
@@ -93,6 +96,16 @@ void SerialUSBcomms::sendPacket(QByteArray packet)
 #else
     packet.clear();        // to silence Compiler warning!
 #endif
+}
+
+bool SerialUSBcomms::getIsUSBinitialised() const
+{
+    return isUSBinitialised;
+}
+
+void SerialUSBcomms::setIsUSBinitialised(bool value)
+{
+    isUSBinitialised = value;
 }
 
 bool SerialUSBcomms::getSerialCommsConnected() const
