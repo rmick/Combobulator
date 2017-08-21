@@ -58,12 +58,13 @@ QByteArray LazerSwarm::decodeCommand(QString messageIn)
 
     if (messageIn.startsWith("RCV") )
     {
-        char packetTypeIn;
-        int  packetDataIn;
-        int  numberOfBitsIn;
-        int  isBeaconIn;
+        char    packetTypeIn;
+        int     packetDataIn;
+        int     numberOfBitsIn;
+        int     isBeaconIn;
+        QString dummyString;           // to silence compiler warning of discarded attribute.
 
-        messageIn.trimmed();                                                //removes the \r\n from the end
+        dummyString  = messageIn.trimmed();                                                //removes the \r\n from the end
         messageParts = messageIn.split(" ");
 
         bool ok = 0;

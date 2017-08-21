@@ -668,6 +668,7 @@ void LttoMainWindow::on_actionLoad_triggered()
 void LttoMainWindow::on_btn_Flags_clicked()
 {
     if(flagsWindow==NULL) flagsWindow = new FlagsWindow;
+    flagsWindow->setButtonStates();
     flagsWindow->show();
 }
 

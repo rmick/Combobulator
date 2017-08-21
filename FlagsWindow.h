@@ -17,6 +17,8 @@ public:
     explicit FlagsWindow(QWidget *parent = 0);
     ~FlagsWindow();
 
+    void setButtonStates();
+
 private slots:
     void on_btn_Neutralise_clicked();
 
@@ -35,6 +37,8 @@ private slots:
     void on_btn_Close_clicked();
 
     void on_btn_HuntThePrey_clicked();
+
+    void on_btn_SupplyZonesReSpawn_clicked();
 
 private:
     Ui::FlagsWindow *ui;

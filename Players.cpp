@@ -132,6 +132,8 @@ void Players::streamToFile(QTextStream &out)
         out << "ShieldTime: "   << playerInfo[index].ShieldTime << endl;
         out << "SlowTags: "     << playerInfo[index].SlowTags << endl;
         out << "TeamTags: "     << playerInfo[index].TeamTags << endl;
+        out << "Flags1:"        << playerInfo[index].PackedFlags1 << endl;
+        out << "Flags2:"        << playerInfo[index].PackedFlags2 << endl;
         out << "------------------------" << endl;
     }
     out << "END_OF_PLAYER_SETTINGS" << endl;
@@ -156,6 +158,8 @@ void Players::streamFromFile(QTextStream &in)
             else if (descriptorP.contains("TeamTags:") )        playerInfo[playerID].TeamTags    = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
             else if (descriptorP.contains("PlayerName:") )      playerInfo[playerID].PlayerName  = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) ));
             else if (descriptorP.contains("Reloads:") )         playerInfo[playerID].Reloads     = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
+            else if (descriptorP.contains("Flags1:") )         playerInfo[playerID].PackedFlags1 = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
+            else if (descriptorP.contains("Flags2:") )         playerInfo[playerID].PackedFlags2 = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
     }   while (descriptorP != "END_OF_PLAYER_SETTINGS");
 
     for (int index=0; index< 25; index++)
@@ -176,15 +180,18 @@ void Players::streamFromFile(QTextStream &in)
 
 int Players::getPackedFlags1() const
 {
-    //qDebug() << "Players::getPackedFlags1() " + QString::number(PackedFlags1, 2);
-
     return PackedFlags1;
 }
 
 void Players::setBitFlags1(int bitNumber, bool state)
 {
     PackedFlags1 ^= (-state ^ PackedFlags1) & (1 << bitNumber);
-    //qDebug() << "\tFlags1: " << getPackedFlags1() << "\t\tBinary = " << displayBinary(PackedFlags1, 8);
+    //qDebug() << "\tFlags1: " << "\tBinary = " << displayBinary(PackedFlags1, 8);
+}
+
+int Players::getBitFlags1(int bitNumber) const
+{
+    return (PackedFlags1 >> bitNumber) & 1;
 }
 
 void Players::setPackedFlags1(int value)
@@ -205,7 +212,12 @@ void Players::setPackedFlags2(int value)
 void Players::setBitFlags2(int bitNumber, bool state)
 {
     PackedFlags2 ^= (-state ^ PackedFlags2) & (1 << bitNumber);
-    //qDebug() << "\tFlags2: " << getPackedFlags2() << "\t\tBinary = " << displayBinary(PackedFlags2, 8);
+    //qDebug() << "\tFlags2: " << "\tBinary = " << displayBinary(PackedFlags2, 8);
+}
+
+int Players::getBitFlags2(int bitNumber) const
+{
+    return (PackedFlags2 >> bitNumber) & 1;
 }
 
 int Players::getTaggerID() const

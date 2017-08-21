@@ -42,10 +42,12 @@ public:
     int  getPackedFlags1() const;
     void setPackedFlags1(int value);
     void setBitFlags1(int bitNumber, bool state);
+    int getBitFlags1(int bitNumber) const;
 
     int getPackedFlags2() const;
     void setPackedFlags2(int value);;
     void setBitFlags2(int bitNumber, bool state);
+    int getBitFlags2(int bitNumber) const;
 
     int getTaggerID() const;
     void setTaggerID(int value);

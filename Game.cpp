@@ -46,7 +46,8 @@ void Game::setGameType(int value)
     {
         // Reset Game Specific Flags.
         playerInfo[index].setBitFlags1(HUNT_THE_PREY_FLAG, false);
-        playerInfo[index].setBitFlags1(CONTESTED_ZONES_FLAG, false);
+        playerInfo[index].setBitFlags1(REVERSE_HUNT_DIR_FLAG, false);
+        playerInfo[index].setBitFlags2(CONTESTED_ZONES_FLAG, false);
 
         // Set Game Specific Flags and Number of Teams Flags
         switch(value)
@@ -78,15 +79,15 @@ void Game::setGameType(int value)
             break;
 
         case OwnZone0:
-            playerInfo[index].setBitFlags1(CONTESTED_ZONES_FLAG, true);
+            playerInfo[index].setBitFlags2(CONTESTED_ZONES_FLAG, true);
             setNumberOfTeams(0);
             break;
         case OwnZone2:
-            playerInfo[index].setBitFlags1(CONTESTED_ZONES_FLAG, true);
+            playerInfo[index].setBitFlags2(CONTESTED_ZONES_FLAG, true);
             setNumberOfTeams(2);
             break;
         case OwnZone3:
-            playerInfo[index].setBitFlags1(CONTESTED_ZONES_FLAG, true);
+            playerInfo[index].setBitFlags2(CONTESTED_ZONES_FLAG, true);
             setNumberOfTeams(3);
             break;
 
@@ -95,6 +96,8 @@ void Game::setGameType(int value)
             break;
         }
     }
+    qDebug() << "\n\tFlags1: "  << playerInfo[0].displayBinary(playerInfo[0].getPackedFlags1(), 8)
+             << "\t: "          << playerInfo[0].displayBinary(playerInfo[0].getPackedFlags2(), 8);
 }
 
 int Game::getGameID() const
