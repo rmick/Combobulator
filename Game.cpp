@@ -48,6 +48,7 @@ void Game::setGameType(int value)
         playerInfo[index].setBitFlags1(HUNT_THE_PREY_FLAG, false);
         playerInfo[index].setBitFlags1(REVERSE_HUNT_DIR_FLAG, false);
         playerInfo[index].setBitFlags2(CONTESTED_ZONES_FLAG, false);
+        playerInfo[index].setBitFlags2(NEUTRALISE_15s_TAGGED_FLAG, false);
 
         // Set Game Specific Flags and Number of Teams Flags
         switch(value)
@@ -63,10 +64,12 @@ void Game::setGameType(int value)
             break;
 
         case HideSeek2:
+            playerInfo[index].setBitFlags2(NEUTRALISE_15s_TAGGED_FLAG, true);
             playerInfo[index].setBitFlags1(HUNT_THE_PREY_FLAG, true);
             setNumberOfTeams(2);
             break;
         case HideSeek3:
+            playerInfo[index].setBitFlags2(NEUTRALISE_15s_TAGGED_FLAG, true);
             playerInfo[index].setBitFlags1(HUNT_THE_PREY_FLAG, true);
             setNumberOfTeams(3);
             break;
@@ -202,26 +205,22 @@ void Game::setIsThisPlayerInTheGame(int index, int value)
 
 int Game::getPlayersInTeam(int TeamNumber) const
 {
-    //qDebug() << "Game::getPlayersInTeamTx() - Team =" << TeamNumber << "Byte =" << PlayersInTeamByte[TeamNumber];
-    return PlayersInTeamByte[TeamNumber];
-
-//    int PlayersPackedByte = 0;
-//    int playerOffset = ((TeamNumber-1)*8);
-//    PlayersPackedByte =  isThisPlayerInTheGame[(8+playerOffset)]*128;
-//    PlayersPackedByte += isThisPlayerInTheGame[(7+playerOffset)]*64;
-//    PlayersPackedByte += isThisPlayerInTheGame[(6+playerOffset)]*32;
-//    PlayersPackedByte += isThisPlayerInTheGame[(5+playerOffset)]*16;
-//    PlayersPackedByte += isThisPlayerInTheGame[(4+playerOffset)]*8;
-//    PlayersPackedByte += isThisPlayerInTheGame[(3+playerOffset)]*4;
-//    PlayersPackedByte += isThisPlayerInTheGame[(2+playerOffset)]*2;
-//    PlayersPackedByte += isThisPlayerInTheGame[(1+playerOffset)];
-//    qDebug() << "Game::getPlayersInTeamTx() - Team =" << TeamNumber << "Byte =" << PlayersPackedByte;
-//    return PlayersPackedByte;
+    //TODO: Get a sum of the number of players in the team (0 thru 8)
+    int numberOfPlayersInThisTeam = 0;
+    int startingPlayer = 1 + (8*(TeamNumber-1));
+    int endingPlayer = 1+(8*TeamNumber);
+    for (int index = startingPlayer; index < endingPlayer; index++)
+    {
+        if (gameInfo.getIsThisPlayerInTheGame(index) == true) numberOfPlayersInThisTeam++;
+    }
+    qDebug() << "Game::getPlayersInTeam() - Number of players = " << numberOfPlayersInThisTeam << "in Team" << TeamNumber;
+    return numberOfPlayersInThisTeam;
 }
 
 void Game::setPlayersInTeamByte(int TeamNumber, int PlayerNumber, bool state)
 {
-    //PackedFlags1 ^= (-state ^ PackedFlags1) & (1 << bitNumber);
+    qDebug() << "Game::setPlayersInTeamByte() -------  NOT NEEDED, delete this call";
+    //TODO: This is wrong. Just needs to be a sum of the number of players in the team.
     PlayersInTeamByte[TeamNumber] ^= (-state ^ PlayersInTeamByte[TeamNumber]) & (1 << (PlayerNumber-1));
 }
 ////////////////////////////////////////////////////////////////////////////////////

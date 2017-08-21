@@ -17,7 +17,7 @@
 
 
 //  Build Number
-const QString BUILD_NUMBER  = "Build : 17.8.21b";
+const QString BUILD_NUMBER  = "Build : 17.8.22a";
 
 //  WiFi stuff
 const QString HOST_IP_ADDRESS   = "192.186.2.1";

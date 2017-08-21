@@ -336,6 +336,7 @@ void HostGameWindow::AddPlayerToGame(int Game, int Tagger)
         countDownTimeRemaining = (DEFAULT_COUNTDOWN_TIME + 5);
         ui->btn_StartGame->setEnabled(true);
         //ui->btn_StartGame->setText("End\nGame");
+        ui->btn_Rehost->setText("Rehost Tagger");
         lttoComms.nonBlockingDelay(1000);
         timerCountDown->start(1000);    // Auto start the countdown to get the player into the game ASAP.
     }
@@ -826,27 +827,29 @@ void HostGameWindow::changeMode(int mode)
 bool firstPass;
 void HostGameWindow::on_btn_Rehost_clicked()
 {
-    reHostTagger = new ReHostTagger(this);
-    ui->btn_Rehost->setEnabled(false);
-    gameInfo.setPlayerToReHost(0);
-    firstPass = true;
-    reHostTagger->show();
-    timerReHost->start(HOST_TIMER_MSEC);
-}
-
-void HostGameWindow::on_btn_FailSend_clicked()
-{
-    lttoComms.setDontAnnounceGame(true);
-    expectingAckPlayerAssignment = true;
-    sendAssignFailedMessage();
+    if(ui->btn_Rehost->text() == "Cancel\nReHost")
+    {
+        timerReHost->stop();
+        ui->btn_Rehost->setText("ReHost\nTagger");
+        ui->btn_Rehost->setEnabled(true);
+        rehostingActive = false;
+    }
+    else
+    {
+        reHostTagger = new ReHostTagger(this);
+        ui->btn_Rehost->setEnabled(false);
+        gameInfo.setPlayerToReHost(0);
+        firstPass = true;
+        reHostTagger->show();
+        timerReHost->start(HOST_TIMER_MSEC);
+    }
 }
 
 void HostGameWindow::TaggerReHost()
 {
-    if(gameInfo.getPlayerToReHost() == 0 && rehostingActive == true)                //If the Close button was pressed
+    if(reHostTagger->getClosedWithoutSelectingPlayer() == true)                //If the Close button was pressed
     {
         ui->btn_Rehost->setEnabled(true);
-        rehostingActive = false;
     }
     if(gameInfo.getPlayerToReHost() == 0) return;        //Means that the ReHost window is still open and no player is yet selected.
 
@@ -859,7 +862,19 @@ void HostGameWindow::TaggerReHost()
         ui->label->setText("ReHosting " + playerInfo[currentPlayer].getPlayerName());
         lttoComms.setDontAnnounceGame(false);
         firstPass = false;
+        ui->btn_Rehost->setText("Cancel\nReHost");
+        ui->btn_Rehost->setEnabled(true);
     }
     sendingCommsActive = true;
     hostCurrentPlayer();                                //HostGameWindow::AddPlayer starts the CountDownTimer if(rehostingActive == true).
+}
+
+
+
+
+void HostGameWindow::on_btn_FailSend_clicked()
+{
+    lttoComms.setDontAnnounceGame(true);
+    expectingAckPlayerAssignment = true;
+    sendAssignFailedMessage();
 }

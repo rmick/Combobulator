@@ -37,7 +37,7 @@ void TCPComms::disconnected()
 
 void TCPComms::bytesWritten (qint64 bytes)
 {
-   if(bytes > 0) qDebug() << "Impossible";
+   if(bytes > 0) qDebug() << "TCPComms::bytesWritten()";
 }
 
 void TCPComms::receivePacket()
