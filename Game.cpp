@@ -64,12 +64,10 @@ void Game::setGameType(int value)
             break;
 
         case HideSeek2:
-            playerInfo[index].setBitFlags2(NEUTRALISE_15s_TAGGED_FLAG, true);
             playerInfo[index].setBitFlags1(HUNT_THE_PREY_FLAG, true);
             setNumberOfTeams(2);
             break;
         case HideSeek3:
-            playerInfo[index].setBitFlags2(NEUTRALISE_15s_TAGGED_FLAG, true);
             playerInfo[index].setBitFlags1(HUNT_THE_PREY_FLAG, true);
             setNumberOfTeams(3);
             break;
@@ -82,10 +80,12 @@ void Game::setGameType(int value)
             break;
 
         case OwnZone0:
+            playerInfo[index].setBitFlags2(NEUTRALISE_15s_TAGGED_FLAG, true);
             playerInfo[index].setBitFlags2(CONTESTED_ZONES_FLAG, true);
             setNumberOfTeams(0);
             break;
         case OwnZone2:
+            playerInfo[index].setBitFlags2(NEUTRALISE_15s_TAGGED_FLAG, true);
             playerInfo[index].setBitFlags2(CONTESTED_ZONES_FLAG, true);
             setNumberOfTeams(2);
             break;
