@@ -21,8 +21,8 @@ public:
     explicit ReHostTagger(QWidget *parent = 0);
     ~ReHostTagger();
 
-    bool getClosedWithoutSelectingPlayer() const;
-    void setClosedWithoutSelectingPlayer(bool value);
+//    bool getClosedWithoutSelectingPlayer() const;
+//    void setClosedWithoutSelectingPlayer(bool value);
 
 private slots:
     void    playerButtonPressed(int playerNumber);

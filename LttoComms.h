@@ -49,6 +49,7 @@ signals:
     void        AckPlayerAssignment(int Game, int Tagger);
     void        TimerBlock(bool StartStop);
     void        sendSerialData(QByteArray dataToSend);
+    void        TagSummaryReceived();
 
 private slots:
     void        receivePacket(QByteArray RxData);

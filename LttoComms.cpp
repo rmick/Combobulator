@@ -236,36 +236,55 @@ void LttoComms::processPacket(QList<QByteArray> data)
 {
 
     int command = extract(data);
-    int game    = 0;
-    int tagger  = 0;
-    int flags   = 0;
+    int game            = 0;
+    int tagger          = 0;
+    int flags           = 0;
+    int teamAndPlayer   = 0;
+    int totalTags       = 0;
+    int SurvivedMinutes = 0;
+    int SurvivedSeconds = 0;
+    int ZoneTimeMinutes = 0;
+    int ZoneTimeSeconds = 0;
+    int Flags           = 0;
     int checksum= 0;
 
     //qDebug() << "\nLttoComms::processPacket()" << command;
 
     switch (command)
     {
-        case REQUEST_JOIN_GAME:
-            game     = extract(data);
-            tagger   = extract(data);
-            flags    = extract(data);
-            checksum = extract(data);
-            if(isCheckSumCorrect(command, game, tagger, flags, checksum) == false) break;
+    case REQUEST_JOIN_GAME:
+        game     = extract(data);
+        tagger   = extract(data);
+        flags    = extract(data);
+        checksum = extract(data);
+        if(isCheckSumCorrect(command, game, tagger, flags, checksum) == false) break;
 
-            emit RequestJoinGame(game, tagger, flags);
-            //qDebug() << "emit RequestJoinGame()" << game << tagger << flags << checksum;
+        emit RequestJoinGame(game, tagger, flags);
+        break;
 
-            break;
+    case ACK_PLAYER_ASSIGN:
+        game     = extract(data);
+        tagger   = extract(data);
+        checksum = extract(data);
+        if(isCheckSumCorrect(command, game, tagger, flags, checksum) == false) break;
 
-        case ACK_PLAYER_ASSIGN:
-            game     = extract(data);
-            tagger   = extract(data);
-            checksum = extract(data);
-            if(isCheckSumCorrect(command, game, tagger, flags, checksum) == false) break;
+        emit AckPlayerAssignment(game, tagger);
+        break;
 
-            emit AckPlayerAssignment(game, tagger);
-            //qDebug() << "emit AckPlayerAssignment()" << game << tagger << checksum;
-            break;
+    case TAG_SUMMARY:
+        game                = extract(data);
+        teamAndPlayer       = extract(data);
+        totalTags           = extract(data);
+        SurvivedMinutes     = extract(data);
+        SurvivedSeconds     = extract(data);
+        ZoneTimeMinutes     = extract(data);
+        ZoneTimeSeconds     = extract(data);
+        Flags               = extract(data);
+        checksum            = extract(data);
+        //if(isCheckSumCorrect(command, game, teamAndPlayer, SurvivedMinutes, . . . . checksum) == false) break;
+
+        emit TagSummaryReceived();
+        break;
 
         //Other cases will be required for DeBrief. Maybe create a funciton for each one to make code more easily readable.
 

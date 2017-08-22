@@ -44,7 +44,7 @@ void Game::setGameType(int value)
 
     for(int index = 0; index < 25; index++)
     {
-        // Reset Game Specific Flags.
+        // Reset Game Specific Flags and buttons.
         playerInfo[index].setBitFlags1(HUNT_THE_PREY_FLAG, false);
         playerInfo[index].setBitFlags1(REVERSE_HUNT_DIR_FLAG, false);
         playerInfo[index].setBitFlags2(CONTESTED_ZONES_FLAG, false);
@@ -94,12 +94,12 @@ void Game::setGameType(int value)
             setNumberOfTeams(3);
             break;
 
-        case Special:       //TODO: This might need a way to set Teams and sorts of other things.
-            //setNumberOfTeams(0);
+        case Custom:
+            //TODO: How to deal with different numbers of teams ????
             break;
         }
     }
-    qDebug() << "\n\tFlags1: "  << playerInfo[0].displayBinary(playerInfo[0].getPackedFlags1(), 8)
+    qDebug() << "\n\tFlags: "  << playerInfo[0].displayBinary(playerInfo[0].getPackedFlags1(), 8)
              << "\t: "          << playerInfo[0].displayBinary(playerInfo[0].getPackedFlags2(), 8);
 }
 

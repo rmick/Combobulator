@@ -2,6 +2,7 @@
 #define DEBRIEF_H
 
 #include <QObject>
+#include <QTimer>
 
 class DeBrief : public QObject
 {
@@ -12,7 +13,9 @@ public:
 signals:
 
 public slots:
-    void RequestTagReports();
+    void RequestTagReports(int playerToInterogate);
+
+
 };
 
 #endif // DEBRIEF_H

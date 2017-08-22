@@ -4,8 +4,10 @@
 #include <QDialog>
 #include <QTimer>
 #include <QSoundEffect>
+#include <QPointer>
 #include "Hosting.h"
 #include "ReHostTagger.h"
+#include "DeBrief.h"
 
 namespace Ui {
 class HostGameWindow;
@@ -44,8 +46,6 @@ public slots:
 
     void AddSerialPortToListWidget(QString value);
 
-    void SetAnnounceTimerBlock(bool state);
-
     void InsertToListWidget(QString lineText);
 
 private slots:
@@ -76,19 +76,21 @@ private slots:
 
 private:
     //pointers
-    Ui::HostGameWindow  *ui;
-    QTimer              *timerAnnounce;
-    QTimer              *timerCountDown;
-    QTimer              *timerDeBrief;
-    QTimer              *timerAssignFailed;
-    QTimer              *timerGameTimeRemaining;
-    QTimer              *timerReHost;
-    ReHostTagger        *reHostTagger;
-    QSoundEffect        *sound_Hosting;
-    QSoundEffect        *sound_Countdown;
-    QSoundEffect        *sound_HostingMissedReply;
-    QSoundEffect        *sound_GoodLuck;
-    QSoundEffect        *sound_PlayerAdded;
+    Ui::HostGameWindow      *ui;
+    QTimer                  *timerAnnounce;
+    QTimer                  *timerCountDown;
+    QTimer                  *timerDeBrief;
+    QTimer                  *timerAssignFailed;
+    QTimer                  *timerGameTimeRemaining;
+    QTimer                  *timerReHost;
+    QPointer<ReHostTagger>  reHostTagger;
+    QSoundEffect            *sound_Hosting;
+    QSoundEffect            *sound_Countdown;
+    QSoundEffect            *sound_HostingMissedReply;
+    QSoundEffect            *sound_GoodLuck;
+    QSoundEffect            *sound_PlayerAdded;
+    DeBrief                 *deBrief;
+
 
     //variables
     bool    bluetoothActive;                    // no longer used TODO:

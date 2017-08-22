@@ -22,7 +22,7 @@ public:
         OwnZone0    = 0x09,
         OwnZone2    = 0x0A,
         OwnZone3    = 0x0B,
-        Special     = 0x0C
+        Custom      = 0x0C
     };
 
     int getGameType() const;

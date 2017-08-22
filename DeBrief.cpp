@@ -8,6 +8,7 @@ DeBrief::DeBrief(QObject *parent) : QObject(parent)
 {
     //pseudoCode
 
+    //  Get currentPlayer
     //  Request Tag Report (Team, Player, Type) - 0x31
     //      Type = Tag Summary
 
@@ -26,10 +27,11 @@ DeBrief::DeBrief(QObject *parent) : QObject(parent)
 
 }
 
-void DeBrief::RequestTagReports()
+
+
+void DeBrief::RequestTagReports(int playerToInterogate)
 {
-    for(int playerToInterogate = 0; playerToInterogate < 24; playerToInterogate++)
-    {
+
         int teamNum;
 
         switch (gameInfo.getNumberOfTeams())
@@ -51,5 +53,4 @@ void DeBrief::RequestTagReports()
         lttoComms.sendPacket((teamNum << 4) + playerToInterogate);
         lttoComms.sendPacket(REQUEST_TAG_SUMMARY_BIT);
         lttoComms.sendPacket(CHECKSUM);
-    }
 }

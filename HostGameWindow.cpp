@@ -50,6 +50,8 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
 
     timerAnnounce->start(HOST_TIMER_MSEC);
 
+    deBrief = new DeBrief(this);
+
     for (int x = 0; x<25;x++) isThisPlayerHosted[x] = false;
     currentPlayer = 1;
     noMorePlayers = false;
@@ -123,10 +125,6 @@ void HostGameWindow::on_btn_Cancel_clicked()
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void HostGameWindow::SetAnnounceTimerBlock(bool state)
-{
-    timerAnnounce->blockSignals(state);
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -581,6 +579,7 @@ void HostGameWindow::on_btn_StartGame_clicked()
         timerGameTimeRemaining->stop();
         timerReHost->stop();
         timerDeBrief->start(HOST_TIMER_MSEC);
+        currentPlayer = 0;                          // Set ready for DeBriefing to search for next player
         ui->btn_StartGame->setEnabled(false);
         ui->btn_Rehost->setEnabled(false);
         ui->btn_Cancel->setEnabled(true);
@@ -647,6 +646,7 @@ void HostGameWindow::sendCountDown()
 
 void HostGameWindow::updateGameTimeRemaining()
 {
+    if (!reHostTagger) ui->btn_Rehost->setEnabled(true);
     remainingGameTime--;
     if (remainingGameTime > (ConvertBCDtoDec(gameInfo.getGameLength()) * 60)) return;   // Ignore the extra 2 seconds we added to the clock.
     QString remainingMinutes = QString::number(remainingGameTime / 60);
@@ -666,11 +666,25 @@ void HostGameWindow::updateGameTimeRemaining()
 
 void HostGameWindow::deBriefTaggers()
 {
-    lttoComms.sendPacket(PACKET , REQUEST_TAG_REPORT);
-    lttoComms.sendPacket(DATA, gameInfo.getGameID() );
-    lttoComms.sendPacket(DATA, 0x20 );    // Team and player number (8 bits) - Team number (4 bits) one-based, Player number (4 bits) zero-based
-    lttoComms.sendPacket(DATA, 0x0F );
-    lttoComms.sendPacket(CHECKSUM);
+    for (int index = 1; index < 25; index++)
+    {
+        while (gameInfo.getIsThisPlayerInTheGame(currentPlayer) == false) currentPlayer++;  // Find next player
+    }
+    if (currentPlayer > 24)                                                                 // All players are debriefed
+    {
+        timerDeBrief->stop();
+        // etc etc
+    }
+
+    deBrief->RequestTagReports(currentPlayer);
+
+
+
+//    lttoComms.sendPacket(PACKET , REQUEST_TAG_REPORT);
+//    lttoComms.sendPacket(DATA, gameInfo.getGameID() );
+//    lttoComms.sendPacket(DATA, 0x20 );    // Team and player number (8 bits) - Team number (4 bits) one-based, Player number (4 bits) zero-based
+//    lttoComms.sendPacket(DATA, 0x0F );
+//    lttoComms.sendPacket(CHECKSUM);
 }
 
 int HostGameWindow::ConvertDecToBCD(int dec)
@@ -847,10 +861,11 @@ void HostGameWindow::on_btn_Rehost_clicked()
 
 void HostGameWindow::TaggerReHost()
 {
-    if(reHostTagger->getClosedWithoutSelectingPlayer() == true)                //If the Close button was pressed
-    {
-        ui->btn_Rehost->setEnabled(true);
-    }
+//    if(reHostTagger->getClosedWithoutSelectingPlayer() == true)                //If the Close button was pressed
+//    {
+//        ui->btn_Rehost->setEnabled(true);
+//    }
+
     if(gameInfo.getPlayerToReHost() == 0) return;        //Means that the ReHost window is still open and no player is yet selected.
 
     if (firstPass)

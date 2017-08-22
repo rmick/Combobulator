@@ -211,6 +211,7 @@ void LttoMainWindow::on_btn_Ltag_clicked()
 {
     gameInfo.setGameName("LTAG");
     ui->btn_NoTeams->setEnabled(true);
+    ui->btn_Flags->setEnabled(false);
 
     switch(gameInfo.getNumberOfTeams())
     {
@@ -230,6 +231,7 @@ void LttoMainWindow::on_btn_HideAndSeek_clicked()
 {
     gameInfo.setGameName("SEEK");
     ui->btn_NoTeams->setEnabled(false);
+    ui->btn_Flags->setEnabled(false);
 
     switch(gameInfo.getNumberOfTeams())
     {
@@ -251,6 +253,7 @@ void LttoMainWindow::on_btn_Kings_clicked()
     gameInfo.setGameName("KING");
     //TODO: Player1 is ALWAYS the king, so I need to use Spies technology to pick random player to be King and swap player numbers from the same team.
     ui->btn_NoTeams->setEnabled(false);
+    ui->btn_Flags->setEnabled(false);
 
     switch(gameInfo.getNumberOfTeams())
     {
@@ -272,6 +275,7 @@ void LttoMainWindow::on_btn_OwnTheZone_clicked()
 {
     gameInfo.setGameName("ZONE");
     ui->btn_NoTeams->setEnabled(true);
+    ui->btn_Flags->setEnabled(false);
 
     switch(gameInfo.getNumberOfTeams())
     {
@@ -289,9 +293,16 @@ void LttoMainWindow::on_btn_OwnTheZone_clicked()
 
 void LttoMainWindow::on_btn_CustomGame_clicked()
 {
-    //TODO: Add all the team options, etc
-    gameInfo.setGameType(12);
-    gameInfo.setGameID(42);
+    gameInfo.setGameName("CUST");
+    ui->btn_NoTeams->setEnabled(true);
+    ui->btn_Flags->setEnabled(true);
+
+    switch(gameInfo.getNumberOfTeams())
+    {
+    default:
+        gameInfo.setGameType(gameInfo.Custom);
+        break;
+    }
 }
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -320,8 +331,8 @@ void LttoMainWindow::on_btn_NoTeams_clicked()
     case Game::OwnZone3:
         gameInfo.setGameType(Game::OwnZone0);
         break;
-    case Game::Special:
-        gameInfo.setGameType(Game::Special);
+    case Game::Custom:
+        gameInfo.setGameType(Game::Custom);
         break;
     }
 }
@@ -351,8 +362,8 @@ void LttoMainWindow::on_btn_TwoTeams_clicked()              // Find the current 
     case Game::OwnZone3:
         gameInfo.setGameType(Game::OwnZone2);
         break;
-    case Game::Special:
-        gameInfo.setGameType(Game::Special);
+    case Game::Custom:
+        gameInfo.setGameType(Game::Custom);
         break;
     }
 }
@@ -381,8 +392,8 @@ void LttoMainWindow::on_btn_ThreeTeams_clicked()            // Find the current 
     case Game::OwnZone3:
         gameInfo.setGameType(Game::OwnZone3);
         break;
-    case Game::Special:
-        gameInfo.setGameType(Game::Special);
+    case Game::Custom:
+        gameInfo.setGameType(Game::Custom);
         break;
     }
 }
