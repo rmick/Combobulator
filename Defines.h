@@ -17,7 +17,7 @@
 
 
 //  Build Number
-const QString BUILD_NUMBER  = "Build : 17.8.22c";
+const QString BUILD_NUMBER  = "Build : 17.8.23a";
 
 //  WiFi stuff
 const QString HOST_IP_ADDRESS   = "192.186.2.1";
@@ -34,6 +34,7 @@ const char  BEACON      = 'B';
 const int   INTERPACKET_DELAY_MSEC  = 75;
 const int   HOST_TIMER_MSEC         = 1800;
 const int   PRESS_AND_HOLD_TIME     = 500;
+const int   BEACON_TIMER_MSEC       = 500;
 
 //Packet Header Type Codes
 const int   ANNOUNCE    = 0x00;

@@ -147,6 +147,30 @@ QPushbutton:disabled
      <height>111</height>
     </rect>
    </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="verticalScrollBarPolicy">
+    <enum>Qt::ScrollBarAlwaysOn</enum>
+   </property>
+   <property name="horizontalScrollBarPolicy">
+    <enum>Qt::ScrollBarAlwaysOff</enum>
+   </property>
+   <property name="sizeAdjustPolicy">
+    <enum>QAbstractScrollArea::AdjustToContents</enum>
+   </property>
+   <property name="autoScroll">
+    <bool>false</bool>
+   </property>
+   <property name="verticalScrollMode">
+    <enum>QAbstractItemView::ScrollPerItem</enum>
+   </property>
+   <property name="horizontalScrollMode">
+    <enum>QAbstractItemView::ScrollPerItem</enum>
+   </property>
    <property name="movement">
     <enum>QListView::Free</enum>
    </property>
@@ -180,13 +204,13 @@ QPushbutton:disabled
     <set>Qt::AlignCenter</set>
    </property>
   </widget>
-  <widget class="QPushButton" name="btn_Start">
+  <widget class="QPushButton" name="btn_StartStopHosting">
    <property name="geometry">
     <rect>
      <x>740</x>
-     <y>20</y>
+     <y>10</y>
      <width>113</width>
-     <height>51</height>
+     <height>41</height>
     </rect>
    </property>
    <property name="text">
@@ -702,14 +726,36 @@ Base Status</string>
    <property name="geometry">
     <rect>
      <x>740</x>
-     <y>70</y>
+     <y>60</y>
      <width>113</width>
-     <height>51</height>
+     <height>31</height>
     </rect>
    </property>
    <property name="text">
     <string>Send Fail
 Signal</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btn_StopStartBeacon">
+   <property name="geometry">
+    <rect>
+     <x>740</x>
+     <y>100</y>
+     <width>113</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Pause Beacon</string>
+   </property>
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
    </property>
   </widget>
  </widget>

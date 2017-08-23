@@ -62,8 +62,6 @@ private slots:
 
     void on_btn_Cancel_clicked();
 
-    void on_btn_Start_clicked();
-
     void on_btn_StartGame_clicked();
 
     void on_btn_SkipPlayer_clicked();
@@ -74,6 +72,12 @@ private slots:
 
     void TaggerReHost();
 
+    void BeaconSignal();
+
+    void on_btn_StartStopHosting_clicked();
+
+    void on_btn_StopStartBeacon_clicked();
+
 private:
     //pointers
     Ui::HostGameWindow      *ui;
@@ -83,6 +87,7 @@ private:
     QTimer                  *timerAssignFailed;
     QTimer                  *timerGameTimeRemaining;
     QTimer                  *timerReHost;
+    QTimer                  *timerBeacon;
     QPointer<ReHostTagger>  reHostTagger;
     QSoundEffect            *sound_Hosting;
     QSoundEffect            *sound_Countdown;

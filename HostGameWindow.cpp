@@ -22,6 +22,7 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
     timerAssignFailed(NULL),
     timerGameTimeRemaining(NULL),
     timerReHost(NULL),
+    timerBeacon(NULL),
     sound_Hosting(NULL),
     sound_Countdown(NULL),
     sound_HostingMissedReply(NULL),
@@ -37,6 +38,7 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
     timerAssignFailed       = new QTimer(this);
     timerGameTimeRemaining  = new QTimer(this);
     timerReHost             = new QTimer(this);
+    timerBeacon             = new QTimer(this);
 
     connect(timerAnnounce,          SIGNAL(timeout() ),             this, SLOT(announceGame())            );
     connect(timerCountDown,         SIGNAL(timeout() ),             this, SLOT(sendCountDown())           );
@@ -44,6 +46,7 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
     connect(timerAssignFailed,      SIGNAL(timeout() ),             this, SLOT(sendAssignFailedMessage())        );
     connect(timerGameTimeRemaining, SIGNAL(timeout() ),             this, SLOT(updateGameTimeRemaining()) );
     connect(timerReHost,            SIGNAL(timeout() ),             this, SLOT(TaggerReHost()) );
+    connect(timerBeacon,            SIGNAL(timeout() ),             this, SLOT(BeaconSignal()) );
     connect(&lttoComms,      SIGNAL(RequestJoinGame(int,int,int) ), this, SLOT(AssignPlayer(int,int,int)) );
     connect(&lttoComms,      SIGNAL(AckPlayerAssignment(int,int) ), this, SLOT(AddPlayerToGame(int,int))  );
     connect(&serialUSBcomms, SIGNAL(SerialPortFound(QString)),      this, SLOT(AddSerialPortToListWidget(QString)) );
@@ -526,14 +529,6 @@ void HostGameWindow::AddSerialPortToListWidget(QString value)
     InsertToListWidget(portFound);
 }
 
-void HostGameWindow::on_btn_Start_clicked()     //DeBug only. Remove it later.
-{
-    //This is the Start/Stop (Debug) button on the form.
-    announceGame();
-    if (ui->btn_Start->isChecked()) timerAnnounce->start(HOST_TIMER_MSEC);
-    else timerAnnounce->stop();
-}
-
 int HostGameWindow::getCurrentPlayer() const
 {
     return currentPlayer;
@@ -578,6 +573,7 @@ void HostGameWindow::on_btn_StartGame_clicked()
     {
         timerGameTimeRemaining->stop();
         timerReHost->stop();
+        timerBeacon->stop();
         timerDeBrief->start(HOST_TIMER_MSEC);
         currentPlayer = 0;                          // Set ready for DeBriefing to search for next player
         ui->btn_StartGame->setEnabled(false);
@@ -609,6 +605,7 @@ void HostGameWindow::sendCountDown()
             remainingGameTime = (ConvertBCDtoDec(gameInfo.getGameLength()) * 60) + 2;  // Add a couple of seconds to match the taggers, who start the clock AFTER the Good Luck message.
             InsertToListWidget("Game has started !!!");
             ui->label->setText("Game Underway !!!");
+            timerBeacon->start(BEACON_TIMER_MSEC);
         }
         else
         {
@@ -679,12 +676,12 @@ void HostGameWindow::deBriefTaggers()
     deBrief->RequestTagReports(currentPlayer);
 
 
-
-//    lttoComms.sendPacket(PACKET , REQUEST_TAG_REPORT);
-//    lttoComms.sendPacket(DATA, gameInfo.getGameID() );
-//    lttoComms.sendPacket(DATA, 0x20 );    // Team and player number (8 bits) - Team number (4 bits) one-based, Player number (4 bits) zero-based
-//    lttoComms.sendPacket(DATA, 0x0F );
-//    lttoComms.sendPacket(CHECKSUM);
+// TODO: Remove this, it is hard coded and is replaced by RequestTagReports() above.
+    lttoComms.sendPacket(PACKET , REQUEST_TAG_REPORT);
+    lttoComms.sendPacket(DATA, gameInfo.getGameID() );
+    lttoComms.sendPacket(DATA, 0x20 );    // Team and player number (8 bits) - Team number (4 bits) one-based, Player number (4 bits) zero-based
+    lttoComms.sendPacket(DATA, 0x0F );
+    lttoComms.sendPacket(CHECKSUM);
 }
 
 int HostGameWindow::ConvertDecToBCD(int dec)
@@ -708,7 +705,8 @@ void HostGameWindow::on_btn_SkipPlayer_clicked()
 void HostGameWindow::InsertToListWidget(QString lineText)
 {
     ui->listWidget_Status->addItem(lineText);
-    if (ui->listWidget_Status->count() > 18) ui->listWidget_Status->takeItem(0);
+    //if (ui->listWidget_Status->count() > 18) ui->listWidget_Status->takeItem(0);
+    ui->listWidget_Status->scrollToBottom();
 }
 
 bool HostGameWindow::assignSpies()
@@ -884,6 +882,18 @@ void HostGameWindow::TaggerReHost()
     hostCurrentPlayer();                                //HostGameWindow::AddPlayer starts the CountDownTimer if(rehostingActive == true).
 }
 
+void HostGameWindow::BeaconSignal()
+{
+    if (lttoComms.getDontAnnounceGame()) return;
+    //Check Game Type.
+
+    //Set Beacon to match game type
+    int beaconType = 2;         // Contested Zone, No Team
+
+    //Send Beacon;
+    lttoComms.sendPacket(BEACON, beaconType);
+}
+
 
 
 
@@ -892,4 +902,16 @@ void HostGameWindow::on_btn_FailSend_clicked()
     lttoComms.setDontAnnounceGame(true);
     expectingAckPlayerAssignment = true;
     sendAssignFailedMessage();
+}
+
+void HostGameWindow::on_btn_StartStopHosting_clicked()
+{
+    if (ui->btn_StartStopHosting->isChecked()) timerAnnounce->start(HOST_TIMER_MSEC);
+    else timerAnnounce->stop();
+}
+
+void HostGameWindow::on_btn_StopStartBeacon_clicked()
+{
+    if (ui->btn_StopStartBeacon->isChecked()) timerBeacon->start(BEACON_TIMER_MSEC);
+    else timerBeacon->stop();
 }
