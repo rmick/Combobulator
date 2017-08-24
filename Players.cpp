@@ -260,3 +260,63 @@ int Players::handicapAdjust(int value)
 
     return value;
 }
+
+int Players::getTagsTaken() const
+{
+    return tagsTaken;
+}
+
+void Players::setTagsTaken(int value)
+{
+    tagsTaken = value;
+}
+
+int Players::getSurvivalTimeMinutes() const
+{
+    return survivalTimeMinutes;
+}
+
+void Players::setSurvivalTimeMinutes(int value)
+{
+    survivalTimeMinutes = value;
+}
+
+int Players::getSurvivalTimeSeconds() const
+{
+    return survivalTimeSeconds;
+}
+
+void Players::setSurvivalTimeSeconds(int value)
+{
+    survivalTimeSeconds = value;
+}
+
+int Players::getZoneTimeMinutes() const
+{
+    return zoneTimeMinutes;
+}
+
+void Players::setZoneTimeMinutes(int value)
+{
+    zoneTimeMinutes = value;
+}
+
+int Players::getZoneTimeSeconds() const
+{
+    return zoneTimeSeconds;
+}
+
+void Players::setZoneTimeSeconds(int value)
+{
+    zoneTimeSeconds = value;
+}
+
+int Players::getTagFlags() const
+{
+    return tagFlags;
+}
+
+void Players::setTagFlags(int value)
+{
+    tagFlags = value;
+}

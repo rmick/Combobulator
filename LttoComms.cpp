@@ -76,6 +76,8 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
             packetString.prepend('B');
             packet.append(packetString);
             break;
+    default:
+        qDebug() << "lttoComms::sendPacket() - No Packet type specified. You ninkom poop.";
     }
 
     if (useLazerSwarm)
@@ -231,6 +233,22 @@ bool LttoComms::isCheckSumCorrect(int _command, int _game, int _tagger, int _fla
     return result;
 }
 
+bool LttoComms::isCheckSumCorrect(int _command, int _game, int _teamAndPlayer, int _tagsTaken, int _survivedMinutes, int _survivedSeconds, int _zoneTimeMinutes, int _zoneTimeSeconds, int _flags, int _checksum)
+{
+    bool result = false;
+    calculatedCheckSumRx =  _command;
+    calculatedCheckSumRx += _game;
+    calculatedCheckSumRx += _teamAndPlayer;
+    calculatedCheckSumRx += _tagsTaken;
+    calculatedCheckSumRx += _survivedMinutes;
+    calculatedCheckSumRx += _survivedSeconds;
+    calculatedCheckSumRx += _zoneTimeMinutes;
+    calculatedCheckSumRx += _zoneTimeSeconds;
+    calculatedCheckSumRx += _flags;
+    calculatedCheckSumRx = calculatedCheckSumRx%256;
+    if (calculatedCheckSumRx == _checksum%256) result = true;
+    return result;
+}
 
 void LttoComms::processPacket(QList<QByteArray> data)
 {
@@ -240,13 +258,12 @@ void LttoComms::processPacket(QList<QByteArray> data)
     int tagger          = 0;
     int flags           = 0;
     int teamAndPlayer   = 0;
-    int totalTags       = 0;
-    int SurvivedMinutes = 0;
-    int SurvivedSeconds = 0;
-    int ZoneTimeMinutes = 0;
-    int ZoneTimeSeconds = 0;
-    int Flags           = 0;
-    int checksum= 0;
+    int tagsTaken       = 0;
+    int survivedMinutes = 0;
+    int survivedSeconds = 0;
+    int zoneTimeMinutes = 0;
+    int zoneTimeSeconds = 0;
+    int checksum        = 0;
 
     //qDebug() << "\nLttoComms::processPacket()" << command;
 
@@ -272,21 +289,32 @@ void LttoComms::processPacket(QList<QByteArray> data)
         break;
 
     case TAG_SUMMARY:
+        qDebug() << "\nLttoComms::processPacket() - TagSummary arriving";
         game                = extract(data);
         teamAndPlayer       = extract(data);
-        totalTags           = extract(data);
-        SurvivedMinutes     = extract(data);
-        SurvivedSeconds     = extract(data);
-        ZoneTimeMinutes     = extract(data);
-        ZoneTimeSeconds     = extract(data);
-        Flags               = extract(data);
+        tagsTaken           = extract(data);
+        survivedMinutes     = extract(data);
+        survivedSeconds     = extract(data);
+        zoneTimeMinutes     = extract(data);
+        zoneTimeSeconds     = extract(data);
+        flags               = extract(data);
         checksum            = extract(data);
-        //if(isCheckSumCorrect(command, game, teamAndPlayer, SurvivedMinutes, . . . . checksum) == false) break;
+        if(isCheckSumCorrect(command, game, teamAndPlayer, tagsTaken, survivedMinutes, survivedSeconds, zoneTimeMinutes, zoneTimeSeconds, flags, checksum) == false)
+        {
+            qDebug() << "LttoComms::processPacket() - CheckSum failed.";
+            break;
+        }
 
-        emit TagSummaryReceived();
+        emit TagSummaryReceived(game, teamAndPlayer, tagsTaken, survivedMinutes, survivedSeconds, zoneTimeMinutes, zoneTimeSeconds, flags);
+        qDebug() << "LttoComms::processPacket() - TagSummary = " << game << teamAndPlayer << survivedMinutes << survivedSeconds << zoneTimeMinutes << zoneTimeSeconds << flags;
         break;
 
-        //Other cases will be required for DeBrief. Maybe create a funciton for each one to make code more easily readable.
+    case TEAM_1_TAG_REPORT:
+    case TEAM_2_TAG_REPORT:
+    case TEAM_3_TAG_REPORT:
+        // do something
+        break;
+
 
     }
     rxPacketList.clear();

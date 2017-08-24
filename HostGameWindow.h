@@ -118,8 +118,8 @@ private:
     void    hostCurrentPlayer();
     void    assignPlayerFailed();
     int     calculatePlayerTeam5bits(int requestedTeam);
-    int     ConvertDecToBCD(int dec);
-    int     ConvertBCDtoDec(int bcd);
+//    int     ConvertDecToBCD(int dec);
+//    int     ConvertBCDtoDec(int bcd);
     bool    assignSpies();
 };
 

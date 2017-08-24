@@ -58,6 +58,8 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
 
     //TODO: Remove these, they are for testing only.
     QWidget::move(0,0);
+    gameInfo.setIsThisPlayerInTheGame(3, true);
+    ui->btn_StartGame->setEnabled(true);
     //End of test/debug code.
 }
 
@@ -211,7 +213,7 @@ void LttoMainWindow::on_btn_Ltag_clicked()
 {
     gameInfo.setGameName("LTAG");
     ui->btn_NoTeams->setEnabled(true);
-    ui->btn_Flags->setEnabled(false);
+    //ui->btn_Flags->setEnabled(false);
 
     switch(gameInfo.getNumberOfTeams())
     {
@@ -231,7 +233,7 @@ void LttoMainWindow::on_btn_HideAndSeek_clicked()
 {
     gameInfo.setGameName("SEEK");
     ui->btn_NoTeams->setEnabled(false);
-    ui->btn_Flags->setEnabled(false);
+    //ui->btn_Flags->setEnabled(false);
 
     switch(gameInfo.getNumberOfTeams())
     {
@@ -253,7 +255,7 @@ void LttoMainWindow::on_btn_Kings_clicked()
     gameInfo.setGameName("KING");
     //TODO: Player1 is ALWAYS the king, so I need to use Spies technology to pick random player to be King and swap player numbers from the same team.
     ui->btn_NoTeams->setEnabled(false);
-    ui->btn_Flags->setEnabled(false);
+    //ui->btn_Flags->setEnabled(false);
 
     switch(gameInfo.getNumberOfTeams())
     {
@@ -275,7 +277,7 @@ void LttoMainWindow::on_btn_OwnTheZone_clicked()
 {
     gameInfo.setGameName("ZONE");
     ui->btn_NoTeams->setEnabled(true);
-    ui->btn_Flags->setEnabled(false);
+    //ui->btn_Flags->setEnabled(false);
 
     switch(gameInfo.getNumberOfTeams())
     {

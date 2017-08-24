@@ -17,7 +17,7 @@
 
 
 //  Build Number
-const QString BUILD_NUMBER  = "Build : 17.8.23a";
+const QString BUILD_NUMBER  = "Build : 17.8.24a";
 
 //  WiFi stuff
 const QString HOST_IP_ADDRESS   = "192.186.2.1";
@@ -50,6 +50,9 @@ const int   ACK_PLAYER_ASSIGN       = 0x11;
 const int   REQUEST_ASSISTANCE      = 0x20;
 const int   REQUEST_TAG_REPORT      = 0x31;
 const int   TAG_SUMMARY             = 0x40;
+const int   TEAM_1_TAG_REPORT       = 0x41;
+const int   TEAM_2_TAG_REPORT       = 0x42;
+const int   TEAM_3_TAG_REPORT       = 0x43;
 
 const int   TEXT_MESSAGE            = 0x80;
 const int   SPECIAL_ATTACK          = 0x90;

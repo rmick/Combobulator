@@ -6,6 +6,25 @@
 
 DeBrief::DeBrief(QObject *parent) : QObject(parent)
 {
+    connect(&lttoComms, SIGNAL(TagSummaryReceived(int,int,int,int,int,int,int,int)), this, SLOT(ReceiveTagSummary(int,int,int,int,int,int,int,int)) );
+
+    maxTeamNum  = 0;
+    deBriefTeam = 1;
+
+    switch (gameInfo.getNumberOfTeams())
+    {
+    case 0:
+    case 1:
+        maxTeamNum = 1;
+        break;
+    case 2:
+        maxTeamNum = 2;
+        break;
+    case 3:
+        maxTeamNum = 3;
+        break;
+    }
+
     //pseudoCode
 
     //  Get currentPlayer
@@ -30,27 +49,60 @@ DeBrief::DeBrief(QObject *parent) : QObject(parent)
 
 
 void DeBrief::RequestTagReports(int playerToInterogate)
+{   
+    if (lttoComms.getDontAnnounceGame()) return;
+
+    currentPlayer = playerToInterogate;
+
+    if(playerToInterogate < 9)
+    {
+        deBriefTeam = 1;
+        deBriefPlayer = playerToInterogate - 1;       //currentPlayer is 0 based.
+    }
+
+    if(playerToInterogate > 9 && playerToInterogate < 17)
+    {
+        deBriefTeam = 2;
+        deBriefPlayer = playerToInterogate - 9;       //currentPlayer is 0 based.
+    }
+
+    if(playerToInterogate > 16 && playerToInterogate < 25)
+    {
+        deBriefTeam = 3;
+        deBriefPlayer = playerToInterogate - 17;       //currentPlayer is 0 based.
+    }
+
+    qDebug() << "DeBrief::RequestTagReports() -" << playerToInterogate << ":" << deBriefTeam << deBriefPlayer;
+
+    lttoComms.sendPacket(PACKET, REQUEST_TAG_REPORT);
+    lttoComms.sendPacket(DATA, gameInfo.getGameID());
+    lttoComms.sendPacket(DATA, (deBriefTeam << 4) + deBriefPlayer);
+    lttoComms.sendPacket(DATA, REQUEST_TAG_SUMMARY_BIT);
+    lttoComms.sendPacket(CHECKSUM);
+
+    // this should get an answer from a tagger.
+}
+
+void DeBrief::ReceiveTagSummary(int game, int teamAndPlayer, int tagsTaken, int survivedMinutes, int survivedSeconds, int zoneTimeMinutes, int zoneTimeSeconds, int flags)
 {
+    int team    = teamAndPlayer >> 4;
+    int player  = (teamAndPlayer - team) + 1;
 
-        int teamNum;
+    playerInfo[currentPlayer].setTagsTaken          (lttoComms.ConvertBCDtoDec(tagsTaken));
+    playerInfo[currentPlayer].setSurvivalTimeMinutes(lttoComms.ConvertBCDtoDec(survivedMinutes));
+    playerInfo[currentPlayer].setSurvivalTimeSeconds(lttoComms.ConvertBCDtoDec(survivedSeconds));
+    playerInfo[currentPlayer].setZoneTimeMinutes    (lttoComms.ConvertBCDtoDec(zoneTimeMinutes));
+    playerInfo[currentPlayer].setZoneTimeSeconds    (lttoComms.ConvertBCDtoDec(zoneTimeSeconds));
+    playerInfo[currentPlayer].setTagFlags           (flags);
 
-        switch (gameInfo.getNumberOfTeams())
-        {
-        case 0:
-        case 1:
-            teamNum = 1;
-            break;
-        case 2:
-            teamNum = 2;
-            break;
-        case 3:
-            teamNum = 3;
-            break;
-        }
+    isTeam1TagReportDue = (flags >> 2) & 1;
+    isTeam1TagReportDue = (flags >> 3) & 1;
+    isTeam1TagReportDue = (flags >> 4) & 1;
 
-        lttoComms.sendPacket(REQUEST_TAG_REPORT);
-        lttoComms.sendPacket(gameInfo.getGameID());
-        lttoComms.sendPacket((teamNum << 4) + playerToInterogate);
-        lttoComms.sendPacket(REQUEST_TAG_SUMMARY_BIT);
-        lttoComms.sendPacket(CHECKSUM);
+    qDebug() << "DeBrief::ReceiveTagSummary() - Game" << game << "Team" << team << "Player" << player << "aka-" << currentPlayer;
+    qDebug() << "Tags taken =" << playerInfo[currentPlayer].getTagsTaken();
+    qDebug() << "SurvivalTime =" << playerInfo[currentPlayer].getSurvivalTimeMinutes() << ":" << playerInfo[currentPlayer].getSurvivalTimeSeconds();
+    qDebug() << "ZoneTime =" << playerInfo[currentPlayer].getZoneTimeMinutes() << ":" << playerInfo[currentPlayer].getZoneTimeSeconds();
+    qDebug() << "Flags" << playerInfo[currentPlayer].getTagFlags() << "Team1:" << isTeam1TagReportDue << "Team2:" << isTeam2TagReportDue << "Team3:" << isTeam3TagReportDue;
+
 }

@@ -70,19 +70,19 @@ public:
     char getNameChar3() const;
     void setNameChar3(char value);
 
-    char getNameChar4() const;
-    void setNameChar4(char value);
+    char    getNameChar4() const;
+    void    setNameChar4(char value);
 
-    bool getIsSpiesTeamTagActive() const;
-    void setIsSpiesTeamTagActive(bool value);
+    bool    getIsSpiesTeamTagActive() const;
+    void    setIsSpiesTeamTagActive(bool value);
 
-    int getTotalNumberOfPlayersInGame() const;
+    int     getTotalNumberOfPlayersInGame() const;
 
-    int getPlayerToReHost() const;
-    void setPlayerToReHost(int value);
+    int     getPlayerToReHost() const;
+    void    setPlayerToReHost(int value);
 
 signals:
-    void NumberOfTeamsHasChanged(int NumTeams);
+    void    NumberOfTeamsHasChanged(int NumTeams);
 
 private:
     int     GameType;

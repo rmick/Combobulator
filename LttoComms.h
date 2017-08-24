@@ -37,8 +37,11 @@ public:
 
     void        nonBlockingDelay(int mSec);
 
-    bool getIsUSBinitialised() const;
-    void setIsUSBinitialised(bool value);
+    bool        getIsUSBinitialised() const;
+    void        setIsUSBinitialised(bool value);
+
+    int         ConvertDecToBCD(int dec);
+    int         ConvertBCDtoDec(int bcd);
 
 public slots:
     void        TCPconnected();
@@ -49,7 +52,7 @@ signals:
     void        AckPlayerAssignment(int Game, int Tagger);
     void        TimerBlock(bool StartStop);
     void        sendSerialData(QByteArray dataToSend);
-    void        TagSummaryReceived();
+    void        TagSummaryReceived(int game, int teamAndPlayer, int tagsTaken, int survivedMinutes, int survivedSeconds, int zoneTimeMinutes, int zoneTimeSeconds, int flags);
 
 private slots:
     void        receivePacket(QByteArray RxData);
@@ -72,8 +75,8 @@ private:
     int             extract(QList<QByteArray> &data);
     void            findSerialPort();
     bool            isCheckSumCorrect(int _command, int _game, int _tagger, int _flags, int _checksum);
-    int             ConvertDecToBCD(int dec);
-    int             ConvertBCDtoDec(int bcd);
+    bool            isCheckSumCorrect(int _command, int _game, int _tagsTaken, int _teamAndPlayer, int _survivedMinutes, int _survivedSeconds, int _zoneTimeMinutes, int _zoneTimeSeconds, int _flags, int _checksum);
+
     QString         createIRstring(int data);
 };
 

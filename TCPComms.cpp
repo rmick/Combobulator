@@ -8,6 +8,9 @@ TCPComms::TCPComms(QObject *parent) :
     tcpSocket = new QTcpSocket(this);
     isConnected = false;
 
+    //TODO: Debug testing - ignoring TCP/IP whilst using USB
+    return;
+
     connect(tcpSocket,     SIGNAL(connected()),                this,       SLOT(connected()) );
     connect(tcpSocket,     SIGNAL(connected()),                &lttoComms, SLOT(TCPconnected()) );
     connect(tcpSocket,     SIGNAL(disconnected()),             this,       SLOT(disconnected()) );

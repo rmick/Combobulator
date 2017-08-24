@@ -53,8 +53,6 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
 
     timerAnnounce->start(HOST_TIMER_MSEC);
 
-    deBrief = new DeBrief(this);
-
     for (int x = 0; x<25;x++) isThisPlayerHosted[x] = false;
     currentPlayer = 1;
     noMorePlayers = false;
@@ -571,6 +569,7 @@ void HostGameWindow::on_btn_StartGame_clicked()
     }
     else if(ui->btn_StartGame->text() == "End\nGame")
     {
+        deBrief = new DeBrief(this);
         timerGameTimeRemaining->stop();
         timerReHost->stop();
         timerBeacon->stop();
@@ -579,6 +578,7 @@ void HostGameWindow::on_btn_StartGame_clicked()
         ui->btn_StartGame->setEnabled(false);
         ui->btn_Rehost->setEnabled(false);
         ui->btn_Cancel->setEnabled(true);
+        ui->btn_SkipPlayer->setVisible(true);
         ui->label->setText("DeBriefing..... but not just yet :-)");
     }
     else
@@ -602,7 +602,7 @@ void HostGameWindow::sendCountDown()
         if (rehostingActive == false)               //Ignore the next section if the game is running.
         {
             timerGameTimeRemaining->start(1000);
-            remainingGameTime = (ConvertBCDtoDec(gameInfo.getGameLength()) * 60) + 2;  // Add a couple of seconds to match the taggers, who start the clock AFTER the Good Luck message.
+            remainingGameTime = (lttoComms.ConvertBCDtoDec(gameInfo.getGameLength()) * 60) + 2;  // Add a couple of seconds to match the taggers, who start the clock AFTER the Good Luck message.
             InsertToListWidget("Game has started !!!");
             ui->label->setText("Game Underway !!!");
             timerBeacon->start(BEACON_TIMER_MSEC);
@@ -625,7 +625,7 @@ void HostGameWindow::sendCountDown()
         sound_Countdown->play();
         lttoComms.sendPacket(PACKET ,   COUNTDOWN);
         lttoComms.sendPacket(DATA,      gameInfo.getGameID() );
-        lttoComms.sendPacket(DATA,      ConvertDecToBCD(countDownTimeRemaining));
+        lttoComms.sendPacket(DATA,      lttoComms.ConvertDecToBCD(countDownTimeRemaining));
         lttoComms.sendPacket(DATA, 8);
         lttoComms.sendPacket(DATA, 8);
         lttoComms.sendPacket(DATA, 8);
@@ -645,7 +645,7 @@ void HostGameWindow::updateGameTimeRemaining()
 {
     if (!reHostTagger) ui->btn_Rehost->setEnabled(true);
     remainingGameTime--;
-    if (remainingGameTime > (ConvertBCDtoDec(gameInfo.getGameLength()) * 60)) return;   // Ignore the extra 2 seconds we added to the clock.
+    if (remainingGameTime > (lttoComms.ConvertBCDtoDec(gameInfo.getGameLength()) * 60)) return;   // Ignore the extra 2 seconds we added to the clock.
     QString remainingMinutes = QString::number(remainingGameTime / 60);
     QString remainingSeconds = QString::number(remainingGameTime % 60);
     if (remainingMinutes.length() == 1) remainingMinutes.prepend("0");
@@ -661,40 +661,17 @@ void HostGameWindow::updateGameTimeRemaining()
     }
 }
 
-void HostGameWindow::deBriefTaggers()
-{
-    for (int index = 1; index < 25; index++)
-    {
-        while (gameInfo.getIsThisPlayerInTheGame(currentPlayer) == false) currentPlayer++;  // Find next player
-    }
-    if (currentPlayer > 24)                                                                 // All players are debriefed
-    {
-        timerDeBrief->stop();
-        // etc etc
-    }
+//int HostGameWindow::ConvertDecToBCD(int dec)
+//{
+//  if (dec == 0xFF) return dec;
+//  return (int) (((dec/10) << 4) | (dec %10) );
+//}
 
-    deBrief->RequestTagReports(currentPlayer);
-
-
-// TODO: Remove this, it is hard coded and is replaced by RequestTagReports() above.
-    lttoComms.sendPacket(PACKET , REQUEST_TAG_REPORT);
-    lttoComms.sendPacket(DATA, gameInfo.getGameID() );
-    lttoComms.sendPacket(DATA, 0x20 );    // Team and player number (8 bits) - Team number (4 bits) one-based, Player number (4 bits) zero-based
-    lttoComms.sendPacket(DATA, 0x0F );
-    lttoComms.sendPacket(CHECKSUM);
-}
-
-int HostGameWindow::ConvertDecToBCD(int dec)
-{
-  if (dec == 0xFF) return dec;
-  return (int) (((dec/10) << 4) | (dec %10) );
-}
-
-int HostGameWindow::ConvertBCDtoDec(int bcd)
-{
-  if (bcd == 0xFF) return bcd;
-  return (int) (((bcd >> 4) & 0xF) *10) + (bcd & 0xF);
-}
+//int HostGameWindow::ConvertBCDtoDec(int bcd)
+//{
+//  if (bcd == 0xFF) return bcd;
+//  return (int) (((bcd >> 4) & 0xF) *10) + (bcd & 0xF);
+//}
 
 void HostGameWindow::on_btn_SkipPlayer_clicked()
 {
@@ -895,7 +872,7 @@ void HostGameWindow::BeaconSignal()
 }
 
 
-
+///////////////////------------------------------
 
 void HostGameWindow::on_btn_FailSend_clicked()
 {
@@ -914,4 +891,22 @@ void HostGameWindow::on_btn_StopStartBeacon_clicked()
 {
     if (ui->btn_StopStartBeacon->isChecked()) timerBeacon->start(BEACON_TIMER_MSEC);
     else timerBeacon->stop();
+}
+
+///////////////////------------------------------
+
+void HostGameWindow::deBriefTaggers()
+{
+    while (isThisPlayerHosted[currentPlayer] == false) currentPlayer++;                     // Find next player
+
+    if (currentPlayer > 24)                                                                 // All players are debriefed
+    {
+        timerDeBrief->stop();
+        currentPlayer = 0;
+        ui->label->setText("The End");
+        // Show Scores Window
+        // Close this window
+    }
+
+    deBrief->RequestTagReports(currentPlayer);
 }

@@ -62,6 +62,24 @@ public:
 
     int handicapAdjust(int value);
 
+    int getTagsTaken() const;
+    void setTagsTaken(int value);
+
+    int getSurvivalTimeMinutes() const;
+    void setSurvivalTimeMinutes(int value);
+
+    int getSurvivalTimeSeconds() const;
+    void setSurvivalTimeSeconds(int value);
+
+    int getZoneTimeMinutes() const;
+    void setZoneTimeMinutes(int value);
+
+    int getZoneTimeSeconds() const;
+    void setZoneTimeSeconds(int value);
+
+    int getTagFlags() const;
+    void setTagFlags(int value);
+
 private:
     int     Handicap;
     QString PlayerName;
@@ -76,6 +94,13 @@ private:
     int     PackedFlags2;
     int     TaggerID;
     int     SpyNumber;
+
+    int     tagsTaken;
+    int     survivalTimeMinutes;
+    int     survivalTimeSeconds;
+    int     zoneTimeMinutes;
+    int     zoneTimeSeconds;
+    int     tagFlags;
 };
 
 extern Players playerInfo[25];
