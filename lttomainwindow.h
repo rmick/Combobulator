@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 #include <QPointer>
-//#include <QSoundEffect>
+#include <QSoundEffect>
 #include <QSettings>
 #include "Defines.h"
 #include "PlayersWindow.h"
@@ -104,8 +104,8 @@ private:
     QPointer<HostGameWindow> hostGameWindow;
     FlagsWindow             *flagsWindow;
     AboutForm               *aboutForm;
-    //QSoundEffect            *sound_PowerUp;
-    //QSoundEffect            *sound_Powerdown;
+    QSoundEffect            *sound_PowerUp;
+    QSoundEffect            *sound_Powerdown;
 
     bool    SlowTags;
     bool    MedicMode;

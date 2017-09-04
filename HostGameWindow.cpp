@@ -21,12 +21,12 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
     timerAssignFailed(NULL),
     timerGameTimeRemaining(NULL),
     timerReHost(NULL),
-    timerBeacon(NULL)
-    //sound_Hosting(NULL),
-    //sound_Countdown(NULL),
-    //sound_HostingMissedReply(NULL),
-    //sound_GoodLuck(NULL),
-    //sound_PlayerAdded(NULL)
+    timerBeacon(NULL),
+    sound_Hosting(NULL),
+    sound_Countdown(NULL),
+    sound_HostingMissedReply(NULL),
+    sound_GoodLuck(NULL),
+    sound_PlayerAdded(NULL)
 {
     ui->setupUi(this);
     changeMode(HOST_MODE);
@@ -64,7 +64,7 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
     ui->btn_Cancel->setText("Cancel");
     ui->btn_Rehost->setEnabled(false);
 
-/*    //Init all the sound effects.
+    //Init all the sound effects.
     sound_Hosting            = new QSoundEffect(this);
     sound_Countdown          = new QSoundEffect(this);
     sound_HostingMissedReply = new QSoundEffect(this);
@@ -76,7 +76,7 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
     sound_GoodLuck          ->setSource(QUrl::fromLocalFile(":/resources/audio/good-luck.wav"));
     sound_PlayerAdded       ->setSource(QUrl::fromLocalFile(":/resources/audio/hosting-join-complete.wav"));
     sound_Countdown         ->setLoopCount(5);
-*/
+
 
     if(serialUSBcomms.getIsUSBinitialised() == false)
     {
@@ -187,7 +187,7 @@ void HostGameWindow::hostCurrentPlayer()
         }
     }
 
-    //sound_Hosting->play();
+    sound_Hosting->play();
 
     //Change TeamTags if required for Spies.
     bool wereCurrentPlayerTeamTagsActive = playerInfo[currentPlayer].getTeamTags();
@@ -329,7 +329,7 @@ void HostGameWindow::AssignPlayer(int Game, int Tagger, int Flags)
 
 void HostGameWindow::AddPlayerToGame(int Game, int Tagger)
 {
-    //sound_PlayerAdded->play();
+    sound_PlayerAdded->play();
     qDebug() << "\tHostGameWindow::AddPlayerToGame()" << currentPlayer << endl;
 
     if(gameInfo.getGameID() != Game || playerInfo[currentPlayer].getTaggerID() != Tagger)
@@ -364,7 +364,7 @@ void HostGameWindow::AddPlayerToGame(int Game, int Tagger)
 
 void HostGameWindow::assignPlayerFailed()       //TODO: THis is not working.
 {
-    //sound_HostingMissedReply->play();
+    sound_HostingMissedReply->play();
     qDebug() << "HostGameWindow::assignPlayerFailed() - starting Timer";
     timerAssignFailed->start(500);
     assignPlayerFailCount = 0;
@@ -384,7 +384,7 @@ void HostGameWindow::sendAssignFailedMessage()
     {
         assignPlayerFailCount++;
 
-        //sound_HostingMissedReply->play();
+        sound_HostingMissedReply->play();
 
         lttoComms.sendPacket(PACKET, ASSIGN_PLAYER_FAIL                      );
         lttoComms.sendPacket(DATA,   gameInfo.getGameID()                    );
@@ -608,8 +608,8 @@ void HostGameWindow::sendCountDown()
 {
     if(countDownTimeRemaining == 0)     // Start the game
     {
-        //sound_Countdown->stop();
-        //sound_GoodLuck->play();
+        sound_Countdown->stop();
+        sound_GoodLuck->play();
         timerCountDown->stop();
         sendingCommsActive = false;         // Otherwise it is
 
@@ -675,18 +675,6 @@ void HostGameWindow::updateGameTimeRemaining()
         ui->label->setText("DeBriefing..... but not just yet :-)");
     }
 }
-
-//int HostGameWindow::ConvertDecToBCD(int dec)
-//{
-//  if (dec == 0xFF) return dec;
-//  return (int) (((dec/10) << 4) | (dec %10) );
-//}
-
-//int HostGameWindow::ConvertBCDtoDec(int bcd)
-//{
-//  if (bcd == 0xFF) return bcd;
-//  return (int) (((bcd >> 4) & 0xF) *10) + (bcd & 0xF);
-//}
 
 void HostGameWindow::on_btn_SkipPlayer_clicked()
 {
@@ -851,11 +839,6 @@ void HostGameWindow::on_btn_Rehost_clicked()
 
 void HostGameWindow::TaggerReHost()
 {
-//    if(reHostTagger->getClosedWithoutSelectingPlayer() == true)                //If the Close button was pressed
-//    {
-//        ui->btn_Rehost->setEnabled(true);
-//    }
-
     if(gameInfo.getPlayerToReHost() == 0) return;        //Means that the ReHost window is still open and no player is yet selected.
 
     if (firstPass)
