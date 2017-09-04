@@ -6,11 +6,13 @@ SerialUSBcomms serialUSBcomms;
 SerialUSBcomms::SerialUSBcomms(QObject *parent) :
     QObject(parent)
 {
+    qDebug() << "SerialUSBComms::SerialUSBComms() - Constructing.......";
 #ifdef INCLUDE_SERIAL_USB
     serialUSB = new QSerialPort(this);
     connect(serialUSB,  SIGNAL(readyRead()),                    this,       SLOT(receivePacket()) );
 #endif
     setSerialCommsConnected(false);
+    setIsUSBinitialised(false);
 }
 
 void SerialUSBcomms::findSerialPort()
@@ -18,7 +20,7 @@ void SerialUSBcomms::findSerialPort()
 #ifdef INCLUDE_SERIAL_USB
     foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts())
     {
-        if (info.manufacturer().contains("Spark") || info.manufacturer().contains("Arduino"))
+        if (info.manufacturer().contains("Spark") || info.manufacturer().contains("Arduino") || info.portName().contains("SLAB") )
         {
             serialUSB->setPortName(info.portName() );
             emit SerialPortFound(info.portName() );
@@ -125,6 +127,7 @@ void SerialUSBcomms::initialiseUSBsignalsAndSlots()
     connect(&lttoComms, SIGNAL(sendSerialData(QByteArray)),     this,       SLOT(sendPacket(QByteArray)) );
     connect(this,       SIGNAL(newSerialUSBdata(QByteArray)),   &lttoComms, SLOT(receivePacket(QByteArray)) );
     connect(serialUSB,  SIGNAL(readyRead()),                    this,       SLOT(receivePacket()) );
+    setIsUSBinitialised(true);
 }
 
 

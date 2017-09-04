@@ -9,22 +9,24 @@ class Players
 public:
     Players();
 
-    int getHandicap() const;
+    int  getHandicap() const;
     void setHandicap(int value);
 
     QString getPlayerName() const;
-    void setPlayerName(const QString &value);
+    void    setPlayerName(const QString &value);
 
-    int getReloads() const;
-    void setReloads(int value);
+    int  getReloads() const;
+    void setReloads(int value);    
+    int  getReloads2() const;
+    void setReloads2(int value);
 
-    int getHealthTags() const;
+    int  getHealthTags() const;
     void setHealthTags(int value);
 
-    int getShieldTime() const;
+    int  getShieldTime() const;
     void setShieldTime(int value);
 
-    int getMegaTags() const;
+    int  getMegaTags() const;
     void setMegaTags(int value);
 
     bool getSlowTags() const;
@@ -42,14 +44,19 @@ public:
     int  getPackedFlags1() const;
     void setPackedFlags1(int value);
     void setBitFlags1(int bitNumber, bool state);
-    int getBitFlags1(int bitNumber) const;
+    int  getBitFlags1(int bitNumber) const;
 
-    int getPackedFlags2() const;
+    int  getPackedFlags2() const;
     void setPackedFlags2(int value);;
     void setBitFlags2(int bitNumber, bool state);
-    int getBitFlags2(int bitNumber) const;
+    int  getBitFlags2(int bitNumber) const;
 
-    int getTaggerID() const;
+    int  getPackedFlags3() const;
+    void setPackedFlags3(int value);
+    void setBitFlags3(int bitNumber, bool state);
+    int  getBitFlags3(int bitNumber) const;
+
+    int  getTaggerID() const;
     void setTaggerID(int value);
 
 //    bool getIsInTheGame() const;
@@ -80,10 +87,14 @@ public:
     int getTagFlags() const;
     void setTagFlags(int value);
 
+    int getStartingAmmo() const;
+    void setStartingAmmo(int value);
+
 private:
     int     Handicap;
     QString PlayerName;
     int     Reloads;
+    int     Reloads2;       //LTAR games only
     int     HealthTags;
     int     ShieldTime;
     int     MegaTags;
@@ -92,6 +103,8 @@ private:
     bool    MedicMode;
     int     PackedFlags1;
     int     PackedFlags2;
+    int     PackedFlags3;   //LTAR games only
+    int     StartingAmmo;   //LTAR games only
     int     TaggerID;
     int     SpyNumber;
 

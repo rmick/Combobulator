@@ -11,7 +11,7 @@
 #include "Defines.h"
 #include "LttoComms.h"
 
-#include <QAudioDeviceInfo>
+//#include <QAudioDeviceInfo>
 
 LttoMainWindow::LttoMainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -19,9 +19,9 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
     playersWindow(NULL),
     hostGameWindow(NULL),
     flagsWindow(NULL),
-    aboutForm(NULL),
-    sound_PowerUp(NULL),
-    sound_Powerdown(NULL)
+    aboutForm(NULL)
+    //sound_PowerUp(NULL),
+    //sound_Powerdown(NULL)
 {
     ui->setupUi(this);
     this->setWindowTitle("LTTO Combobulator");
@@ -36,6 +36,7 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
     qsrand(static_cast<uint>(QTime::currentTime().msec()));
     for (int index = 1; index < 25; index++)    playerInfo[index].setPlayerName("Player " + QString::number(index));
 
+    /*
     foreach (const QAudioDeviceInfo &deviceInfo, QAudioDeviceInfo::availableDevices(QAudio::AudioOutput))
         qDebug() << "LttoMainWindow::LttoMainWindow() - Audio Device name: " << deviceInfo.deviceName();
 
@@ -46,14 +47,14 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
     sound_PowerUp  ->setSource(QUrl::fromLocalFile(":/resources/audio/stinger-power-on.wav"));
     sound_Powerdown->setSource(QUrl::fromLocalFile(":/resources/audio/shut-down.wav"));
     sound_PowerUp->play();
-
+*/
 
     //TODO: Get rid of this, it is just debug until I store/recall this setting
     ui->actionuse_LazerSwarm->setChecked(true);
     serialUSBactive = true;
     tcpCommsActive = true;
     gameInfo.setIsSpiesTeamTagActive(false);
-    sound_PowerUp->setVolume(1.0);
+    //sound_PowerUp->setVolume(1.0);
     //save position on screen to a Qsettings file
 
     //TODO: Remove these, they are for testing only.
@@ -306,6 +307,22 @@ void LttoMainWindow::on_btn_CustomGame_clicked()
         break;
     }
 }
+
+void LttoMainWindow::on_btn_LtarGame_clicked()
+{
+    gameInfo.setGameName("LTAR");
+    ui->btn_NoTeams->setEnabled(true);
+    ui->btn_Flags->setEnabled(true);
+
+    switch(gameInfo.getNumberOfTeams())
+    {
+    default:
+        gameInfo.setGameType(gameInfo.LtarGame);
+        break;
+    }
+}
+
+
 //////////////////////////////////////////////////////////////////////////////////
 
 void LttoMainWindow::on_btn_NoTeams_clicked()
@@ -649,8 +666,8 @@ void LttoMainWindow::loadFile()
 
 void LttoMainWindow::on_actionExit_triggered()
 {
-    sound_Powerdown->setLoopCount(1);
-    sound_Powerdown->play();
+    //sound_Powerdown->setLoopCount(1);
+    //sound_Powerdown->play();
     lttoComms.nonBlockingDelay(850);
     QApplication::quit();
 }
@@ -704,3 +721,4 @@ void LttoMainWindow::on_btn_SpyTeamTags_clicked()
         gameInfo.setIsSpiesTeamTagActive(true);
     }
 }
+

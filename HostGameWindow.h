@@ -3,7 +3,7 @@
 
 #include <QDialog>
 #include <QTimer>
-#include <QSoundEffect>
+//#include <QSoundEffect>
 #include <QPointer>
 #include "Hosting.h"
 #include "ReHostTagger.h"
@@ -78,6 +78,10 @@ private slots:
 
     void on_btn_StopStartBeacon_clicked();
 
+    void on_btn_Connect_clicked();
+
+    void on_btn_Disconnect_clicked();
+
 private:
     //pointers
     Ui::HostGameWindow      *ui;
@@ -89,11 +93,11 @@ private:
     QTimer                  *timerReHost;
     QTimer                  *timerBeacon;
     QPointer<ReHostTagger>  reHostTagger;
-    QSoundEffect            *sound_Hosting;
-    QSoundEffect            *sound_Countdown;
-    QSoundEffect            *sound_HostingMissedReply;
-    QSoundEffect            *sound_GoodLuck;
-    QSoundEffect            *sound_PlayerAdded;
+    //QSoundEffect            *sound_Hosting;
+    //QSoundEffect            *sound_Countdown;
+    //QSoundEffect            *sound_HostingMissedReply;
+    //QSoundEffect            *sound_GoodLuck;
+    //QSoundEffect            *sound_PlayerAdded;
     DeBrief                 *deBrief;
 
 

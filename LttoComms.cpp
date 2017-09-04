@@ -1,11 +1,14 @@
 #include "LttoComms.h"
 #include <QEventLoop>
 #include <QDebug>
+#include "Game.h"
 
 LttoComms lttoComms;
 
 LttoComms::LttoComms(QObject *parent) : QObject(parent)
 {
+    qDebug() << "LttoComms::LttoComms() - Constructing.......";
+
     useLazerSwarm = true;          //TODO: Set this up in Preferences.
     dontAnnounceGame = false;
 }
@@ -335,14 +338,18 @@ int LttoComms::extract(QList<QByteArray> &data)
 
 int LttoComms::ConvertDecToBCD(int dec)
 {
-  if (dec == 100) return 0xFF;
-  return (int) (((dec/10) << 4) | (dec %10) );
+    if(gameInfo.getIsLTARGame())    return dec;     //LTAR hosting protocol does not use BCD
+
+    if (dec == 100) return 0xFF;
+    return (int) (((dec/10) << 4) | (dec %10) );
 }
 
 int LttoComms::ConvertBCDtoDec(int bcd)
 {
-  if (bcd == 0xFF) return bcd;
-  return (int) (((bcd >> 4) & 0xF) *10) + (bcd & 0xF);
+    if(gameInfo.getIsLTARGame())    return bcd;     //LTAR hosting protocol does not use BCD
+
+    if (bcd == 0xFF) return bcd;
+    return (int) (((bcd >> 4) & 0xF) *10) + (bcd & 0xF);
 }
 
 void LttoComms::nonBlockingDelay(int mSec)

@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 #include <QPointer>
-#include <QSoundEffect>
+//#include <QSoundEffect>
 #include <QSettings>
 #include "Defines.h"
 #include "PlayersWindow.h"
@@ -96,14 +96,16 @@ private slots:
 
     void on_btn_SpyTeamTags_clicked();
 
+    void on_btn_LtarGame_clicked();
+
 private:
     Ui::LttoMainWindow      *ui;
     PlayersWindow           *playersWindow;
     QPointer<HostGameWindow> hostGameWindow;
     FlagsWindow             *flagsWindow;
     AboutForm               *aboutForm;
-    QSoundEffect            *sound_PowerUp;
-    QSoundEffect            *sound_Powerdown;
+    //QSoundEffect            *sound_PowerUp;
+    //QSoundEffect            *sound_Powerdown;
 
     bool    SlowTags;
     bool    MedicMode;

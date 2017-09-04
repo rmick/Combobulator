@@ -8,6 +8,8 @@ Game    gameInfo;
 
 Game::Game()    // (QObject *parent)
 {
+    qDebug() << "Game::Game() - Constructing.......";
+
     GameType        = DEFAULT_GAME_TYPE;
     GameID          = DEFAULT_GAME_ID;
     GameLength      = DEFAULT_GAME_LENGTH;
@@ -97,10 +99,15 @@ void Game::setGameType(int value)
         case Custom:
             //TODO: How to deal with different numbers of teams ????
             break;
+
+        case LtarGame:
+            //TODO: What do I do here.
+            setIsLTARGame(true);
+
         }
     }
-    qDebug() << "\n\tFlags: "  << playerInfo[0].displayBinary(playerInfo[0].getPackedFlags1(), 8)
-             << "\t: "          << playerInfo[0].displayBinary(playerInfo[0].getPackedFlags2(), 8);
+   // qDebug() << "\n\tFlags: "  << playerInfo[0].displayBinary(playerInfo[0].getPackedFlags1(), 8)
+   //          << "\t: "          << playerInfo[0].displayBinary(playerInfo[0].getPackedFlags2(), 8);
 }
 
 int Game::getGameID() const
@@ -377,6 +384,16 @@ int Game::getPlayerToReHost() const
 void Game::setPlayerToReHost(int value)
 {
     PlayerToReHost = value;
+}
+
+bool Game::getIsLTARGame() const
+{
+    return isLTARGame;
+}
+
+void Game::setIsLTARGame(bool value)
+{
+    isLTARGame = value;
 }
 
 int Game::extractInteger(QString &dG)

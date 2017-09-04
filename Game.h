@@ -22,7 +22,8 @@ public:
         OwnZone0    = 0x09,
         OwnZone2    = 0x0A,
         OwnZone3    = 0x0B,
-        Custom      = 0x0C
+        Custom      = 0x0C,
+        LtarGame    = 0x81
     };
 
     int getGameType() const;
@@ -81,6 +82,9 @@ public:
     int     getPlayerToReHost() const;
     void    setPlayerToReHost(int value);
 
+    bool getIsLTARGame() const;
+    void setIsLTARGame(bool value);
+
 signals:
     void    NumberOfTeamsHasChanged(int NumTeams);
 
@@ -102,6 +106,7 @@ private:
     int     TotalNumberOfPlayersInGame;
     int     PlayersInTeamByte[3];
     int     PlayerToReHost;
+    bool    isLTARGame;
 
     int     extractInteger(QString &dG);
 };

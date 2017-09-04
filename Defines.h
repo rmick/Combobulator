@@ -17,11 +17,12 @@
 
 
 //  Build Number
-const QString BUILD_NUMBER  = "Build : 17.8.24a";
+const QString BUILD_NUMBER  = "Build : 17.9.4a";
 
 //  WiFi stuff
-const QString HOST_IP_ADDRESS   = "192.186.2.1";
-const QString WIFI_PASSWORD     = "LTAG42";
+const QString   HOST_IP_ADDRESS     = "192.168.4.1";
+const QString   WIFI_PASSWORD       = "LTAG42";
+const int       TCP_IP_PORT         = 8000;
 
 //LTTO library packet type indentifiers
 const char  PACKET      = 'P';
@@ -71,6 +72,7 @@ const int   DEFAULT_SHEILDS         = 15;
 const int   DEFAULT_MEGAS           = 20;         // 100 - Unlimited
 const int   DEFAULT_FLAGS1          = 0x20;
 const int   DEFAULT_FLAGS2          = 0x01;
+const int   DEFAULT_FLAGS3          = 0x5C;
 
 //Packed byte, FLAGS1
 const int   NEUTRALISE_10_FLAG      = 7;
@@ -91,6 +93,16 @@ const int   SUPPLY_ZONES_REFILL_TAGS_FLAG   = 3;
 const int   HOSTILE_ZONES_FLAG              = 2;
 const int   TEAM_COUNT_MSB                  = 1;
 const int   TEAM_COUNT_LSB                  = 0;
+
+//Packed byte, FLAGS3
+const int   USE_STANDARD_BEACONS            = 7;
+const int   DISABLE_IFF_BEACONS             = 6;
+const int   DISABLE_TAG_RECVD_BEACON        = 5;
+const int   SHIELD_BUTTON_HOLD_MODE         = 4;
+const int   SUPPLY_ZONES_REFILL_AMMO        = 3;
+const int   SUPPLY_ZONES_REFILL_SHIELDS     = 2;
+const int   AUTO_RELOAD                     = 1;
+const int   ALLOW_FULL_AUTO_FIRE            = 0;
 
 //Debrief stuff
 const int   REQUEST_TAG_SUMMARY_BIT         = 1;

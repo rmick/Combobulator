@@ -7,7 +7,6 @@
 #include "Game.h"
 #include "Players.h"
 #include "LttoComms.h"
-#include "TCPComms.h"
 
 #include <QInputDialog>
 
@@ -22,12 +21,12 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
     timerAssignFailed(NULL),
     timerGameTimeRemaining(NULL),
     timerReHost(NULL),
-    timerBeacon(NULL),
-    sound_Hosting(NULL),
-    sound_Countdown(NULL),
-    sound_HostingMissedReply(NULL),
-    sound_GoodLuck(NULL),
-    sound_PlayerAdded(NULL)
+    timerBeacon(NULL)
+    //sound_Hosting(NULL),
+    //sound_Countdown(NULL),
+    //sound_HostingMissedReply(NULL),
+    //sound_GoodLuck(NULL),
+    //sound_PlayerAdded(NULL)
 {
     ui->setupUi(this);
     changeMode(HOST_MODE);
@@ -40,16 +39,16 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
     timerReHost             = new QTimer(this);
     timerBeacon             = new QTimer(this);
 
-    connect(timerAnnounce,          SIGNAL(timeout() ),             this, SLOT(announceGame())            );
-    connect(timerCountDown,         SIGNAL(timeout() ),             this, SLOT(sendCountDown())           );
-    connect(timerDeBrief,           SIGNAL(timeout() ),             this, SLOT(deBriefTaggers())          );
-    connect(timerAssignFailed,      SIGNAL(timeout() ),             this, SLOT(sendAssignFailedMessage())        );
-    connect(timerGameTimeRemaining, SIGNAL(timeout() ),             this, SLOT(updateGameTimeRemaining()) );
-    connect(timerReHost,            SIGNAL(timeout() ),             this, SLOT(TaggerReHost()) );
-    connect(timerBeacon,            SIGNAL(timeout() ),             this, SLOT(BeaconSignal()) );
-    connect(&lttoComms,      SIGNAL(RequestJoinGame(int,int,int) ), this, SLOT(AssignPlayer(int,int,int)) );
-    connect(&lttoComms,      SIGNAL(AckPlayerAssignment(int,int) ), this, SLOT(AddPlayerToGame(int,int))  );
-    connect(&serialUSBcomms, SIGNAL(SerialPortFound(QString)),      this, SLOT(AddSerialPortToListWidget(QString)) );
+    connect(timerAnnounce,          SIGNAL(timeout() ),                     this, SLOT(announceGame())            );
+    connect(timerCountDown,         SIGNAL(timeout() ),                     this, SLOT(sendCountDown())           );
+    connect(timerDeBrief,           SIGNAL(timeout() ),                     this, SLOT(deBriefTaggers())          );
+    connect(timerAssignFailed,      SIGNAL(timeout() ),                     this, SLOT(sendAssignFailedMessage())        );
+    connect(timerGameTimeRemaining, SIGNAL(timeout() ),                     this, SLOT(updateGameTimeRemaining()) );
+    connect(timerReHost,            SIGNAL(timeout() ),                     this, SLOT(TaggerReHost()) );
+    connect(timerBeacon,            SIGNAL(timeout() ),                     this, SLOT(BeaconSignal()) );
+    connect(&lttoComms,             SIGNAL(RequestJoinGame(int,int,int) ),  this, SLOT(AssignPlayer(int,int,int)) );
+    connect(&lttoComms,             SIGNAL(AckPlayerAssignment(int,int) ),  this, SLOT(AddPlayerToGame(int,int))  );
+    connect(&serialUSBcomms,        SIGNAL(SerialPortFound(QString)),       this, SLOT(AddSerialPortToListWidget(QString)) );
 
     timerAnnounce->start(HOST_TIMER_MSEC);
 
@@ -65,7 +64,7 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
     ui->btn_Cancel->setText("Cancel");
     ui->btn_Rehost->setEnabled(false);
 
-    //Init all the sound effects.
+/*    //Init all the sound effects.
     sound_Hosting            = new QSoundEffect(this);
     sound_Countdown          = new QSoundEffect(this);
     sound_HostingMissedReply = new QSoundEffect(this);
@@ -77,14 +76,17 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
     sound_GoodLuck          ->setSource(QUrl::fromLocalFile(":/resources/audio/good-luck.wav"));
     sound_PlayerAdded       ->setSource(QUrl::fromLocalFile(":/resources/audio/hosting-join-complete.wav"));
     sound_Countdown         ->setLoopCount(5);
+*/
 
-    //TCPComms tcpComms;
     if(serialUSBcomms.getIsUSBinitialised() == false)
     {
         serialUSBcomms.setIsUSBinitialised(true);
         serialUSBcomms.setUpSerialPort();
         serialUSBcomms.initialiseUSBsignalsAndSlots();
-        //tcpComms.initialiseTCPsignalsAndSlots();
+    }
+    if(tcpComms.getIsTCPinitialised() == false)
+    {
+        tcpComms.initialiseTCPsignalsAndSlots();
     }
 }
 
@@ -185,7 +187,7 @@ void HostGameWindow::hostCurrentPlayer()
         }
     }
 
-    sound_Hosting->play();
+    //sound_Hosting->play();
 
     //Change TeamTags if required for Spies.
     bool wereCurrentPlayerTeamTagsActive = playerInfo[currentPlayer].getTeamTags();
@@ -236,10 +238,18 @@ void HostGameWindow::hostCurrentPlayer()
     lttoComms.sendPacket(DATA,   gameTime,              BCD);
     lttoComms.sendPacket(DATA,   playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getHealthTags()), BCD);
     lttoComms.sendPacket(DATA,   playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getReloads()),    BCD);
+    if(gameInfo.getIsLTARGame() )
+    {
+        lttoComms.sendPacket(DATA,   playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getReloads2()),    BCD);
+    }
     lttoComms.sendPacket(DATA,   playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getShieldTime()), BCD);
     lttoComms.sendPacket(DATA,   playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getMegaTags()),   BCD);
     lttoComms.sendPacket(DATA,   playerInfo[currentPlayer].getPackedFlags1()   );
     lttoComms.sendPacket(DATA,   playerInfo[currentPlayer].getPackedFlags2()   );
+    if(gameInfo.getIsLTARGame() )
+    {
+        lttoComms.sendPacket(DATA,   playerInfo[currentPlayer].getPackedFlags3()   );
+    }
     //  Add a name for Custom Game Types, otherwise skip.
     if (gameInfo.getGameType() == 0x0C)
     {
@@ -247,6 +257,11 @@ void HostGameWindow::hostCurrentPlayer()
         lttoComms.sendPacket(DATA, gameInfo.getNameChar2() );
         lttoComms.sendPacket(DATA, gameInfo.getNameChar3() );
         lttoComms.sendPacket(DATA, gameInfo.getNameChar4() );
+    }
+    if (gameInfo.getIsLTARGame() )
+    {
+        lttoComms.sendPacket(DATA,   playerInfo[currentPlayer].getStartingAmmo()   );
+        lttoComms.sendPacket(DATA,   gameInfo.getCountDownTime()   );
     }
     //send the Checksum
     lttoComms.sendPacket(CHECKSUM);
@@ -314,7 +329,7 @@ void HostGameWindow::AssignPlayer(int Game, int Tagger, int Flags)
 
 void HostGameWindow::AddPlayerToGame(int Game, int Tagger)
 {
-    sound_PlayerAdded->play();
+    //sound_PlayerAdded->play();
     qDebug() << "\tHostGameWindow::AddPlayerToGame()" << currentPlayer << endl;
 
     if(gameInfo.getGameID() != Game || playerInfo[currentPlayer].getTaggerID() != Tagger)
@@ -349,7 +364,7 @@ void HostGameWindow::AddPlayerToGame(int Game, int Tagger)
 
 void HostGameWindow::assignPlayerFailed()       //TODO: THis is not working.
 {
-    sound_HostingMissedReply->play();
+    //sound_HostingMissedReply->play();
     qDebug() << "HostGameWindow::assignPlayerFailed() - starting Timer";
     timerAssignFailed->start(500);
     assignPlayerFailCount = 0;
@@ -369,7 +384,7 @@ void HostGameWindow::sendAssignFailedMessage()
     {
         assignPlayerFailCount++;
 
-        sound_HostingMissedReply->play();
+        //sound_HostingMissedReply->play();
 
         lttoComms.sendPacket(PACKET, ASSIGN_PLAYER_FAIL                      );
         lttoComms.sendPacket(DATA,   gameInfo.getGameID()                    );
@@ -593,8 +608,8 @@ void HostGameWindow::sendCountDown()
 {
     if(countDownTimeRemaining == 0)     // Start the game
     {
-        sound_Countdown->stop();
-        sound_GoodLuck->play();
+        //sound_Countdown->stop();
+        //sound_GoodLuck->play();
         timerCountDown->stop();
         sendingCommsActive = false;         // Otherwise it is
 
@@ -622,7 +637,7 @@ void HostGameWindow::sendCountDown()
     }
     else                                // Send the Countdown Signal
     {
-        sound_Countdown->play();
+        //sound_Countdown->play();
         lttoComms.sendPacket(PACKET ,   COUNTDOWN);
         lttoComms.sendPacket(DATA,      gameInfo.getGameID() );
         lttoComms.sendPacket(DATA,      lttoComms.ConvertDecToBCD(countDownTimeRemaining));
@@ -909,4 +924,14 @@ void HostGameWindow::deBriefTaggers()
     }
 
     deBrief->RequestTagReports(currentPlayer);
+}
+
+void HostGameWindow::on_btn_Connect_clicked()
+{
+    tcpComms.ConnectTCP();
+}
+
+void HostGameWindow::on_btn_Disconnect_clicked()
+{
+    tcpComms.DisconnectTCP();
 }

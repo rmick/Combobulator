@@ -6,12 +6,25 @@
 #include <QAbstractSocket>
 #include "Defines.h"
 
+
+
+
+
+
+
+
 class TCPComms : public QObject
 {
     Q_OBJECT
 
 public:
     explicit TCPComms(QObject *parent = 0);
+
+    bool ConnectTCP();
+    bool DisconnectTCP();
+
+    bool getIsTCPinitialised() const;
+    void setIsTCPinitialised(bool value);
 
 public slots:
     void connected();
@@ -27,6 +40,7 @@ signals:
 private:
     QTcpSocket      *tcpSocket;
     bool            isConnected;
+    bool            isTCPinitialised;                   // used to trigger a single instance of TCPsocket connectSignals.
 };
 
 extern TCPComms tcpComms;

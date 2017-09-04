@@ -8,6 +8,8 @@ DeBrief::DeBrief(QObject *parent) : QObject(parent)
 {
     connect(&lttoComms, SIGNAL(TagSummaryReceived(int,int,int,int,int,int,int,int)), this, SLOT(ReceiveTagSummary(int,int,int,int,int,int,int,int)) );
 
+    deBriefMessageType = REQUEST_TAG_SUMMARY_BIT;
+
     maxTeamNum  = 0;
     deBriefTeam = 1;
 
@@ -77,7 +79,7 @@ void DeBrief::RequestTagReports(int playerToInterogate)
     lttoComms.sendPacket(PACKET, REQUEST_TAG_REPORT);
     lttoComms.sendPacket(DATA, gameInfo.getGameID());
     lttoComms.sendPacket(DATA, (deBriefTeam << 4) + deBriefPlayer);
-    lttoComms.sendPacket(DATA, REQUEST_TAG_SUMMARY_BIT);
+    lttoComms.sendPacket(DATA, deBriefMessageType);
     lttoComms.sendPacket(CHECKSUM);
 
     // this should get an answer from a tagger.
@@ -103,6 +105,7 @@ void DeBrief::ReceiveTagSummary(int game, int teamAndPlayer, int tagsTaken, int 
     qDebug() << "Tags taken =" << playerInfo[currentPlayer].getTagsTaken();
     qDebug() << "SurvivalTime =" << playerInfo[currentPlayer].getSurvivalTimeMinutes() << ":" << playerInfo[currentPlayer].getSurvivalTimeSeconds();
     qDebug() << "ZoneTime =" << playerInfo[currentPlayer].getZoneTimeMinutes() << ":" << playerInfo[currentPlayer].getZoneTimeSeconds();
-    qDebug() << "Flags" << playerInfo[currentPlayer].getTagFlags() << "Team1:" << isTeam1TagReportDue << "Team2:" << isTeam2TagReportDue << "Team3:" << isTeam3TagReportDue;
+    qDebug() << "Flags" << playerInfo[currentPlayer].getTagFlags() << "Team1:" << isTeam1TagReportDue << "\tTeam2:" << isTeam2TagReportDue << "\tTeam3:" << isTeam3TagReportDue;
 
 }
+
