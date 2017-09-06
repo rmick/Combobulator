@@ -367,6 +367,7 @@ void PlayersWindow::RenamePlayer(int player)
         }
     }
     PlayerButtons[player]->setText(text);
+    playerInfo[player].setPlayerName(text);
 
 //    //Rename player buttons if they have the default name
 //    if (playerInfo[player].getPlayerName() == "Player " + QString::number(player))

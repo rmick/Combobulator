@@ -123,6 +123,7 @@ private:
     void    assignPlayerFailed();
     int     calculatePlayerTeam5bits(int requestedTeam);
     bool    assignSpies();
+    void    endGame();
 };
 
 #endif // HOSTGAMEWINDOW_H

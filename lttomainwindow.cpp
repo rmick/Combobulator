@@ -34,31 +34,33 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
     serialUSBcomms.setIsUSBinitialised(false);
     qsrand(static_cast<uint>(QTime::currentTime().msec()));
     for (int index = 1; index < 25; index++)    playerInfo[index].setPlayerName("Player " + QString::number(index));
+    tcpComms.initialiseTCPsignalsAndSlots();
 
+    //TODO: Remove this debug code (why don't sounds play in Release build?)
     foreach (const QAudioDeviceInfo &deviceInfo, QAudioDeviceInfo::availableDevices(QAudio::AudioOutput))
         qDebug() << "LttoMainWindow::LttoMainWindow() - Audio Device name: " << deviceInfo.deviceName();
 
-    //Init all the sound effects.
 
+    //Init all the sound effects.
     sound_PowerUp   = new QSoundEffect(this);
     sound_Powerdown = new QSoundEffect(this);
     sound_PowerUp  ->setSource(QUrl::fromLocalFile(":/resources/audio/stinger-power-on.wav"));
     sound_Powerdown->setSource(QUrl::fromLocalFile(":/resources/audio/shut-down.wav"));
     sound_PowerUp->play();
 
-    //TODO: Get rid of this, it is just debug until I store/recall this setting
-    ui->actionuse_LazerSwarm->setChecked(true);
-    serialUSBactive = true;
-    tcpCommsActive = true;
-    gameInfo.setIsSpiesTeamTagActive(false);
-    sound_PowerUp->setVolume(1.0);
-    //TODO: save position on screen to a Qsettings file
+                //TODO: Get rid of this, it is just debug until I store/recall this setting
+                ui->actionuse_LazerSwarm->setChecked(true);
+                serialUSBactive = true;
+                tcpCommsActive = true;
+                gameInfo.setIsSpiesTeamTagActive(false);
+                sound_PowerUp->setVolume(1.0);
+                //TODO: save position on screen to a Qsettings file
 
-    //TODO: Remove these, they are for testing only.
-    QWidget::move(0,0);
-    gameInfo.setIsThisPlayerInTheGame(3, true);
-    ui->btn_StartGame->setEnabled(true);
-    //End of test/debug code.
+                //TODO: Remove these, they are for testing only.
+                QWidget::move(0,0);
+                //gameInfo.setIsThisPlayerInTheGame(3, true);
+                //ui->btn_StartGame->setEnabled(true);
+                //End of test/debug code.
 }
 
 LttoMainWindow::~LttoMainWindow()
@@ -659,6 +661,7 @@ void LttoMainWindow::loadFile()
 
 void LttoMainWindow::on_actionExit_triggered()
 {
+    tcpComms.DisconnectTCP();
     sound_Powerdown->setLoopCount(1);
     sound_Powerdown->play();
     lttoComms.nonBlockingDelay(850);

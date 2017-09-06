@@ -84,6 +84,7 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
         serialUSBcomms.setUpSerialPort();
         serialUSBcomms.initialiseUSBsignalsAndSlots();
     }
+
     if(tcpComms.getIsTCPinitialised() == false)
     {
         tcpComms.initialiseTCPsignalsAndSlots();
@@ -123,6 +124,9 @@ void HostGameWindow::on_btn_Cancel_clicked()
     timerAssignFailed->stop();
     timerGameTimeRemaining->stop();
     timerReHost->stop();
+    lttoComms.sendLCDtext(""          , 1);
+    lttoComms.sendLCDtext("Wait for"  , 2);
+    lttoComms.sendLCDtext("new Game"  , 3);
     if (sendingCommsActive == false) deleteLater();     //If this is true then the deleteLater is triggered at the end of hostCurrentPlayer(), to stop the app crashing.
 }
 
@@ -150,12 +154,20 @@ void HostGameWindow::announceGame()
     {
         while (gameInfo.getIsThisPlayerInTheGame(currentPlayer) == false) currentPlayer++;  // Find next player
 
-        if (currentPlayer < 25)     ui->label->setText("Prepare to Host : " + playerInfo[currentPlayer].getPlayerName());
+        if (currentPlayer < 25)
+        {
+            ui->label->setText("Prepare to Host : " + playerInfo[currentPlayer].getPlayerName());
+            lttoComms.sendLCDtext("Hosting"                                 , 1);
+            lttoComms.sendLCDtext(playerInfo[currentPlayer].getPlayerName() , 2);
+        }
     }
     if (currentPlayer > 16 && gameInfo.getNumberOfTeams() == 2) currentPlayer = 25;         // Ignore players in Team 3
     if (currentPlayer >24)                                                                  // No more players to add
     {
         ui->label->setText("All players are hosted, press START ");
+        lttoComms.sendLCDtext("All"            , 1);
+        lttoComms.sendLCDtext("hosted"         , 2);
+        lttoComms.sendLCDtext("STANDBY"        , 4);
         ui->btn_SkipPlayer->setVisible(false);
         ui->btn_StartGame->setEnabled(true);
         currentPlayer = 0;                                                                  //Transmits global game data to keep guns sync'd
@@ -319,6 +331,9 @@ void HostGameWindow::AssignPlayer(int Game, int Tagger, int Flags)
         lttoComms.sendPacket(DATA,    calculatePlayerTeam5bits(preferedTeam) );
         lttoComms.sendPacket(CHECKSUM);
 
+        lttoComms.sendLCDtext("Adding"                                  , 1);
+        lttoComms.sendLCDtext(playerInfo[currentPlayer].getPlayerName() , 2);
+
         expectingAckPlayerAssignment = true;
 
         InsertToListWidget ("   AssignPlayer()" + QString::number(currentPlayer) + ", Tagger ID:" + QString::number(Tagger) );
@@ -331,6 +346,9 @@ void HostGameWindow::AddPlayerToGame(int Game, int Tagger)
 {
     sound_PlayerAdded->play();
     qDebug() << "\tHostGameWindow::AddPlayerToGame()" << currentPlayer << endl;
+
+    lttoComms.sendLCDtext(playerInfo[currentPlayer].getPlayerName() , 1);
+    lttoComms.sendLCDtext("Joined"                                  , 2);
 
     if(gameInfo.getGameID() != Game || playerInfo[currentPlayer].getTaggerID() != Tagger)
     {
@@ -347,6 +365,8 @@ void HostGameWindow::AddPlayerToGame(int Game, int Tagger)
         timerReHost->stop();
         //gameInfo.setPlayerToReHost(0);
         ui->label->setText(playerInfo[currentPlayer].getPlayerName() + " has joined.");
+        lttoComms.sendLCDtext("Re-hosting"                                  , 1);
+        lttoComms.sendLCDtext(playerInfo[currentPlayer].getPlayerName()     , 2);
         countDownTimeRemaining = (DEFAULT_COUNTDOWN_TIME + 5);
         ui->btn_StartGame->setEnabled(true);
         //ui->btn_StartGame->setText("End\nGame");
@@ -390,6 +410,8 @@ void HostGameWindow::sendAssignFailedMessage()
         lttoComms.sendPacket(DATA,   gameInfo.getGameID()                    );
         lttoComms.sendPacket(DATA,   playerInfo[currentPlayer].getTaggerID() );
         lttoComms.sendPacket(CHECKSUM                                        );
+        lttoComms.sendLCDtext("Attn"                                   , 1);
+        lttoComms.sendLCDtext(playerInfo[currentPlayer].getPlayerName()     , 2);
          qDebug() << "HostGameWindow::sendAssignFailedMessage()  - Sending # " << assignPlayerFailCount;
     }
 
@@ -584,17 +606,7 @@ void HostGameWindow::on_btn_StartGame_clicked()
     }
     else if(ui->btn_StartGame->text() == "End\nGame")
     {
-        deBrief = new DeBrief(this);
-        timerGameTimeRemaining->stop();
-        timerReHost->stop();
-        timerBeacon->stop();
-        timerDeBrief->start(HOST_TIMER_MSEC);
-        currentPlayer = 0;                          // Set ready for DeBriefing to search for next player
-        ui->btn_StartGame->setEnabled(false);
-        ui->btn_Rehost->setEnabled(false);
-        ui->btn_Cancel->setEnabled(true);
-        ui->btn_SkipPlayer->setVisible(true);
-        ui->label->setText("DeBriefing..... but not just yet :-)");
+        endGame();
     }
     else
     {
@@ -625,6 +637,9 @@ void HostGameWindow::sendCountDown()
         else
         {
              ui->label->setText("Player" + QString::number(currentPlayer) + " is back in the game");
+             lttoComms.sendLCDtext(playerInfo[currentPlayer].getPlayerName()     , 1);
+             lttoComms.sendLCDtext("is back"                                     , 2);
+             lttoComms.sendLCDtext("& hosted !"                                  , 3);
              rehostingActive = false;
         }
         ui->btn_Cancel->setText("Close");
@@ -648,7 +663,8 @@ void HostGameWindow::sendCountDown()
 //        lttoComms.sendPacket(DATA, gameInfo.getPlayersInTeam(2));
 //        lttoComms.sendPacket(DATA, gameInfo.getPlayersInTeam(3));
         lttoComms.sendPacket(CHECKSUM);
-
+        lttoComms.sendLCDtext("CountDown"                                , 1);
+        lttoComms.sendLCDtext(QString::number(countDownTimeRemaining)    , 3);
         InsertToListWidget("CountDownTime = " + QString::number(countDownTimeRemaining));
         ui->label->setText("CountDownTime\n\n" + QString::number(countDownTimeRemaining));
         qDebug() << "CountDownTime = " + QString::number(countDownTimeRemaining);
@@ -665,14 +681,15 @@ void HostGameWindow::updateGameTimeRemaining()
     QString remainingSeconds = QString::number(remainingGameTime % 60);
     if (remainingMinutes.length() == 1) remainingMinutes.prepend("0");
     if (remainingSeconds.length() == 1) remainingSeconds.prepend("0");
-    if (rehostingActive == false) ui->label->setText("Game Time Remaining\n\n" + remainingMinutes + ":" + remainingSeconds);
+    if (rehostingActive == false)
+    {
+        ui->label->setText("Game Time Remaining\n\n" + remainingMinutes + ":" + remainingSeconds);
+        lttoComms.sendLCDtext("Game Time"                                , 1);
+        lttoComms.sendLCDtext(remainingMinutes + ":" + remainingSeconds  , 3);
+    }
     if (remainingGameTime == 0)
     {
-        timerGameTimeRemaining->stop();
-        timerDeBrief->start(HOST_TIMER_MSEC);
-        ui->btn_StartGame->setEnabled(false);
-        ui->btn_Rehost->setEnabled(false);
-        ui->label->setText("DeBriefing..... but not just yet :-)");
+        endGame();
     }
 }
 
@@ -892,6 +909,25 @@ void HostGameWindow::on_btn_StopStartBeacon_clicked()
 }
 
 ///////////////////------------------------------
+
+
+void HostGameWindow::endGame()
+{
+    deBrief = new DeBrief(this);
+    timerGameTimeRemaining->stop();
+    timerReHost->stop();
+    timerBeacon->stop();
+    timerDeBrief->start(HOST_TIMER_MSEC);
+    currentPlayer = 0;                          // Set ready for DeBriefing to search for next player
+    ui->btn_StartGame->setEnabled(false);
+    ui->btn_Rehost->setEnabled(false);
+    ui->btn_Cancel->setEnabled(true);
+    ui->btn_SkipPlayer->setVisible(true);
+    ui->label->setText("DeBriefing..... but not just yet :-)");
+    lttoComms.sendLCDtext(""                 , 1);
+    lttoComms.sendLCDtext("GAME OVER"        , 2);
+    lttoComms.sendLCDtext("Standby"          , 3);
+}
 
 void HostGameWindow::deBriefTaggers()
 {

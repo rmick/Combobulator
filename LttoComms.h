@@ -17,6 +17,7 @@ public:
     explicit    LttoComms(QObject *parent = 0);
 
     bool        sendPacket(char type, int data = 0, bool dataFormat = false);
+    void sendLCDtext(QString textToSend, int lineNumber);
 
     bool        getUseLazerSwarm() const;
     void        setUseLazerSwarm(bool value);

@@ -11,16 +11,16 @@ TCPComms::TCPComms(QObject *parent) :
     setIsTCPinitialised(false);
     lttoComms.setTcpCommsConnected(false);
     isConnected = false;
-    DisconnectTCP();
+    //DisconnectTCP();
 }
 
 bool TCPComms::ConnectTCP()
 {
-    qDebug() << "Connecting...";
+    //qDebug() << "Connecting...";
 
     tcpSocket->connectToHost(HOST_IP_ADDRESS,TCP_IP_PORT);
 
-    if(!tcpSocket->waitForConnected(5000))
+    if(!tcpSocket->waitForConnected(1000))
     {
        qDebug() << "Error: " <<  tcpSocket->errorString();
        return false;
@@ -31,7 +31,7 @@ bool TCPComms::ConnectTCP()
 bool TCPComms::DisconnectTCP()
 {
     tcpSocket->disconnectFromHost();
-    qDebug() << "DisConnected !!!";
+    qDebug() << "TCPComms::DisconnectTCP() - Disconnected !!!";
     return false;
 }
 
@@ -44,48 +44,38 @@ void TCPComms::connected()
 
 void TCPComms::disconnected()
 {
-    qDebug() << "TCPComms::disconnected             :-(";
+    qDebug() << "\n\t\tTCPComms::disconnected :-(\n";
     isConnected = false;
     lttoComms.setTcpCommsConnected(false);
 }
 
 void TCPComms::bytesWritten (qint64 bytes)
 {
-   if(bytes > 0) qDebug() << "TCPComms::bytesWritten()";
+    return;
+    if(bytes > 0) qDebug() << "TCPComms::bytesWritten()";
 }
 
 void TCPComms::receivePacket()
 {
     QByteArray rX;
     rX = tcpSocket->readAll();
-    //emit newTCPdata(rX);          // Does not work on Android for some unknown reason.
-    lttoComms.androidRxPacket(rX);  // This is the simple workaround :-)
+    emit newTCPdata(rX);          // Does not work on Android for some unknown reason.
+    //lttoComms.androidRxPacket(rX);  // This is the simple workaround :-)
     qDebug() << "          TCPComms::receivePacket() - " + rX;
 }
 
 int retryCount = 0;
 void TCPComms::sendPacket(QByteArray data)
 {
-    tcpSocket->write(data);
-
-
     if (tcpSocket->state() == QAbstractSocket::ConnectedState  )
     {
         tcpSocket->write(data);
-        qDebug() << "          TCPComms::sendPacket() - " + data;
+        //qDebug() << "          TCPComms::sendPacket() - " + data;
     }
     else
     {
-        if (tcpSocket->state() == QAbstractSocket::ConnectingState)
-        {
-            qDebug() << "TCPComms::sendPacket() - ConnectingState.....";
-        }
-        else
-        {
-            //ConnectTCP();
-            //tcpSocket->connectToHost(HOST_IP_ADDRESS, TCP_IP_PORT);
-            qDebug() << "TCPComms::sendPacket() -  TCP not connected: " << QAbstractSocket::ConnectingState;
-        }
+        ConnectTCP();
+        //qDebug() << "TCPComms::sendPacket() -  TCP not connected: ";
     }
 }
 

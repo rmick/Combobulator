@@ -99,6 +99,15 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
     return result;
 }
 
+void LttoComms::sendLCDtext(QString textToSend, int lineNumber)
+{
+    QByteArray textBA;
+    textToSend.prepend("TXT" + QString::number(lineNumber)+ ":");
+    textBA.append(textToSend + "\r\n");
+    qDebug() << "LttoComms::sendLCDtext:" << textBA;
+    emit sendSerialData(textBA);
+}
+
 QString LttoComms::createIRstring(int data)
 {
     QString createdPacket;
