@@ -105,6 +105,7 @@ private:
     int     PackedFlags2;
     int     PackedFlags3;   //LTAR games only
     int     StartingAmmo;   //LTAR games only
+    int     SleepTimeOut;   //LTAR games only   0 = disabled
     int     TaggerID;
     int     SpyNumber;
 

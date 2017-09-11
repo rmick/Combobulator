@@ -7,7 +7,7 @@ LttoComms lttoComms;
 
 LttoComms::LttoComms(QObject *parent) : QObject(parent)
 {
-    qDebug() << "LttoComms::LttoComms() - Constructing.......";
+    //qDebug() << "LttoComms::LttoComms() - Constructing.......";
 
     useLazerSwarm = true;          //TODO: Set this up in Preferences.
     dontAnnounceGame = false;
@@ -104,7 +104,17 @@ void LttoComms::sendLCDtext(QString textToSend, int lineNumber)
     QByteArray textBA;
     textToSend.prepend("TXT" + QString::number(lineNumber)+ ":");
     textBA.append(textToSend + "\r\n");
-    qDebug() << "LttoComms::sendLCDtext:" << textBA;
+    //qDebug() << "LttoComms::sendLCDtext:" << textBA;
+    emit sendSerialData(textBA);
+}
+
+void LttoComms::sendLCDtext(int xCursor, int yCursor, QString text, int fontSize, int colour, bool clearDisp)
+{
+    QByteArray textBA;
+    QString textToSend = "";
+    textToSend.prepend("DSP," + QString::number(xCursor) + "," + QString::number(yCursor) + "," + text + "," +  QString::number(fontSize) + "," + QString::number(colour) + "," + QString::number(clearDisp));
+    textBA.append(textToSend + "\r\n");
+    //qDebug() << "LttoComms::sendLCDtext(DSPmode): " << textBA;
     emit sendSerialData(textBA);
 }
 
@@ -121,10 +131,6 @@ QString LttoComms::createIRstring(int data)
 
 void LttoComms::receivePacket(QByteArray RxData)
 {
-    //qDebug() << "LttoComms::receivePacket() triggered";
-
-    //setDontAnnounceGame(true);                        // Dont do it here, you get too many false triggers.
-    //setDontAnnounceFailedSignal(true);   //TODO: What does this do ????
     bool isPacketComplete = false;
 
     if (useLazerSwarm)
@@ -133,6 +139,11 @@ void LttoComms::receivePacket(QByteArray RxData)
 
         if(irDataIn.endsWith("\n"))
         {
+            if (irDataIn.startsWith("ERROR"))
+            {
+                irDataIn.clear();
+                return;
+            }
             rxPacketList.append(lazerswarm.decodeCommand(irDataIn));
             //qDebug() << "LttoComms::receivePacket() LazerSwarm mode - " << lazerswarm.decodeCommand(irDataIn);
             isPacketComplete = true;
@@ -233,7 +244,7 @@ void LttoComms::setUseLazerSwarm(bool value)
     useLazerSwarm = value;
 }
 
-bool LttoComms::isCheckSumCorrect(int _command, int _game, int _tagger, int _flags, int _checksum)
+bool LttoComms::isCheckSumCorrect(int _command, int _game, int _tagger, int _flags, int _checksum)  // Normal Hosting
 {
     bool result = false;
     calculatedCheckSumRx =  _command;
@@ -245,7 +256,7 @@ bool LttoComms::isCheckSumCorrect(int _command, int _game, int _tagger, int _fla
     return result;
 }
 
-bool LttoComms::isCheckSumCorrect(int _command, int _game, int _teamAndPlayer, int _tagsTaken, int _survivedMinutes, int _survivedSeconds, int _zoneTimeMinutes, int _zoneTimeSeconds, int _flags, int _checksum)
+bool LttoComms::isCheckSumCorrect(int _command, int _game, int _teamAndPlayer, int _tagsTaken, int _survivedMinutes, int _survivedSeconds, int _zoneTimeMinutes, int _zoneTimeSeconds, int _flags, int _checksum)       // Debrief mode
 {
     bool result = false;
     calculatedCheckSumRx =  _command;
@@ -268,6 +279,8 @@ void LttoComms::processPacket(QList<QByteArray> data)
     int command = extract(data);
     int game            = 0;
     int tagger          = 0;
+    int taggerInfo      = 0;
+    int smartDeviceInfo = 0;
     int flags           = 0;
     int teamAndPlayer   = 0;
     int tagsTaken       = 0;
@@ -288,7 +301,20 @@ void LttoComms::processPacket(QList<QByteArray> data)
         checksum = extract(data);
         if(isCheckSumCorrect(command, game, tagger, flags, checksum) == false) break;
 
-        emit RequestJoinGame(game, tagger, flags);
+        qDebug() << "LttoComms::processPacket() - emit RequestJoinGame";
+        emit RequestJoinGame(game, tagger, flags, false);
+        break;
+
+    case REQUEST_JOIN_LTAR_GAME:
+        game            = extract(data);
+        tagger          = extract(data);
+        taggerInfo      = extract(data);
+        smartDeviceInfo = extract(data);
+        checksum        = extract(data);
+        //if(isCheckSumCorrect(command, game, tagger, taggerInfo, smartDeviceInfo, checksum) == false) break;
+
+        qDebug() << "LttoComms::processPacket() - emit LTAR RequestJoinGame";
+        emit RequestJoinGame(game, tagger, 0, true);
         break;
 
     case ACK_PLAYER_ASSIGN:
@@ -297,7 +323,18 @@ void LttoComms::processPacket(QList<QByteArray> data)
         checksum = extract(data);
         if(isCheckSumCorrect(command, game, tagger, flags, checksum) == false) break;
 
-        emit AckPlayerAssignment(game, tagger);
+        qDebug() << "LttoComms::processPacket() - emit AckPlayerAssignment";
+        emit AckPlayerAssignment(game, tagger, false);
+        break;
+
+    case ACK_LTAR_PLAYER_ASSIGN:
+        game     = extract(data);
+        tagger   = extract(data);
+        checksum = extract(data);
+        //if(isCheckSumCorrect(command, game, tagger, flags, checksum) == false) break;
+
+        qDebug() << "LttoComms::processPacket() - emit AckLTARplayerAssignment";
+        emit AckPlayerAssignment(game, tagger, true);
         break;
 
     case TAG_SUMMARY:

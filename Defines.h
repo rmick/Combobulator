@@ -17,11 +17,11 @@
 
 
 //  Build Number
-const QString BUILD_NUMBER  = "Build : 17.9.5a";
+const QString BUILD_NUMBER  = "Build : 17.9.11b";
 
 //  WiFi stuff
 const QString   HOST_IP_ADDRESS     = "192.168.4.1";
-const QString   WIFI_PASSWORD       = "LTAG42";
+const QString   WIFI_PASSWORD       = "Lasertag42";
 const int       TCP_IP_PORT         = 8000;
 
 //LTTO library packet type indentifiers
@@ -55,6 +55,16 @@ const int   TEAM_1_TAG_REPORT       = 0x41;
 const int   TEAM_2_TAG_REPORT       = 0x42;
 const int   TEAM_3_TAG_REPORT       = 0x43;
 
+const int   ANNOUNCE_LTAR_GAME      = 0x81;
+const int   REQUEST_JOIN_LTAR_GAME  = 0x82;
+const int   ASSIGN_LTAR_PLAYER      = 0x83;
+const int   ACK_LTAR_PLAYER_ASSIGN  = 0x84;
+const int   LTAR_NAME               = 0x85;     //smart device app generated
+const int   LTAR_WHODAT             = 0x86;     //smart device app generated
+const int   ASSIGN_LTAR_PLAYER_OK   = 0x87;
+const int   COUNTDOWN_LTAR          = 0x88;
+const int   ASSIGN_LTAR_PLAYER_FAIL = 0x8F;
+
 const int   TEXT_MESSAGE            = 0x80;
 const int   SPECIAL_ATTACK          = 0x90;
 
@@ -73,6 +83,8 @@ const int   DEFAULT_MEGAS           = 20;         // 100 - Unlimited
 const int   DEFAULT_FLAGS1          = 0x20;
 const int   DEFAULT_FLAGS2          = 0x01;
 const int   DEFAULT_FLAGS3          = 0x5C;
+const int   DEFAULT_START_AMMO      = 10;         // FF - Unlimited
+const int   DEFAULT_SLEEP_TIME_OUT  = 0;          // 0 - Disabled
 
 //Packed byte, FLAGS1
 const int   NEUTRALISE_10_FLAG      = 7;

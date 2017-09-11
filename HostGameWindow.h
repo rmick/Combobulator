@@ -40,9 +40,11 @@ public:
 
 public slots:
 
-    void AssignPlayer(int Game, int Tagger, int Flags);   //Connects to RequestJoinGame signal
+    void AssignPlayer(int Game, int Tagger, int Flags, bool isLtar);   //Connects to RequestJoinGame signal
 
-    void AddPlayerToGame(int Game, int Tagger);           //Connects to AcknowledgePlayerAssignment signal
+    //void EnhancedAssignPlayer(int Game, int Tagger, int Flags, int TaggerInfo, int SmartDeviceInfo); //Connects to EnhancedRequestJoinGame signal
+
+    void AddPlayerToGame(int Game, int Tagger, bool isLtar);           //Connects to AcknowledgePlayerAssignment signal
 
     void AddSerialPortToListWidget(QString value);
 

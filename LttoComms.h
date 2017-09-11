@@ -17,7 +17,8 @@ public:
     explicit    LttoComms(QObject *parent = 0);
 
     bool        sendPacket(char type, int data = 0, bool dataFormat = false);
-    void sendLCDtext(QString textToSend, int lineNumber);
+    void        sendLCDtext(QString textToSend, int lineNumber);
+    void        sendLCDtext(int xCursor, int yCursor, QString text, int fontSize, int colour, bool clearDisp);
 
     bool        getUseLazerSwarm() const;
     void        setUseLazerSwarm(bool value);
@@ -49,8 +50,8 @@ public slots:
     void        TCPdisconnected();
 
 signals:
-    void        RequestJoinGame(int Game, int Tagger, int Flags);
-    void        AckPlayerAssignment(int Game, int Tagger);
+    void        RequestJoinGame(int Game, int Tagger, int Flags, bool isLtar);
+    void        AckPlayerAssignment(int Game, int Tagger, bool isLtar);
     void        TimerBlock(bool StartStop);
     void        sendSerialData(QByteArray dataToSend);
     void        TagSummaryReceived(int game, int teamAndPlayer, int tagsTaken, int survivedMinutes, int survivedSeconds, int zoneTimeMinutes, int zoneTimeSeconds, int flags);

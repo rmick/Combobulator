@@ -8,7 +8,7 @@ Game    gameInfo;
 
 Game::Game()    // (QObject *parent)
 {
-    qDebug() << "Game::Game() - Constructing.......";
+    //qDebug() << "Game::Game() - Constructing.......";
 
     GameType        = DEFAULT_GAME_TYPE;
     GameID          = DEFAULT_GAME_ID;

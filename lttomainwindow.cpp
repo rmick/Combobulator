@@ -58,8 +58,8 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
 
                 //TODO: Remove these, they are for testing only.
                 QWidget::move(0,0);
-                //gameInfo.setIsThisPlayerInTheGame(3, true);
-                //ui->btn_StartGame->setEnabled(true);
+        //    gameInfo.setIsThisPlayerInTheGame(3, true);
+        //    ui->btn_StartGame->setEnabled(true);
                 //End of test/debug code.
 }
 

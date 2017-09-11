@@ -6,7 +6,7 @@ TCPComms tcpComms;
 TCPComms::TCPComms(QObject *parent) :
     QObject(parent)
 {
-    qDebug() << "TCPComms::TCPComms() - Constructing.......";
+    //qDebug() << "TCPComms::TCPComms() - Constructing.......";
     tcpSocket = new QTcpSocket(this);
     setIsTCPinitialised(false);
     lttoComms.setTcpCommsConnected(false);
@@ -67,6 +67,13 @@ void TCPComms::receivePacket()
 int retryCount = 0;
 void TCPComms::sendPacket(QByteArray data)
 {
+
+    //TODO:
+    // Bypassed for Debug only
+return;
+qDebug() << "TCPComms::sendPacket() - bypassed for debug !!!";
+    // TODO: Remove the lines above
+
     if (tcpSocket->state() == QAbstractSocket::ConnectedState  )
     {
         tcpSocket->write(data);

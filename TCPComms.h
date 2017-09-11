@@ -6,13 +6,6 @@
 #include <QAbstractSocket>
 #include "Defines.h"
 
-
-
-
-
-
-
-
 class TCPComms : public QObject
 {
     Q_OBJECT

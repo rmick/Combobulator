@@ -6,7 +6,7 @@ SerialUSBcomms serialUSBcomms;
 SerialUSBcomms::SerialUSBcomms(QObject *parent) :
     QObject(parent)
 {
-    qDebug() << "SerialUSBComms::SerialUSBComms() - Constructing.......";
+    //qDebug() << "SerialUSBComms::SerialUSBComms() - Constructing.......";
 #ifdef INCLUDE_SERIAL_USB
     serialUSB = new QSerialPort(this);
     connect(serialUSB,  SIGNAL(readyRead()),                    this,       SLOT(receivePacket()) );
@@ -80,8 +80,10 @@ void SerialUSBcomms::receivePacket()
 #ifdef Q_OS_ANDROID
     lttoComms.androidRxPacket(rX);
 #endif
-
+    //#elseif
     emit newSerialUSBdata(rX);
+//#endif
+
 #endif
 }
 

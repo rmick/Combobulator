@@ -9,7 +9,7 @@ Players::Players()
     static int instanceCount = 0;
     instanceCount++;
 
-    if(instanceCount == 1) qDebug() << "Players::Players() - Constructing.......";
+    //if(instanceCount == 1) qDebug() << "Players::Players() - Constructing.......";
 
     Handicap        = 0;
     PlayerName       = "_";
@@ -23,6 +23,8 @@ Players::Players()
     PackedFlags1    = DEFAULT_FLAGS1;
     PackedFlags2    = DEFAULT_FLAGS2;
     PackedFlags3    = DEFAULT_FLAGS3;
+    StartingAmmo    = DEFAULT_START_AMMO;
+    SleepTimeOut    = DEFAULT_SLEEP_TIME_OUT;
 }
 
 int Players::getHandicap() const
