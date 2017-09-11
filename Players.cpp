@@ -145,6 +145,16 @@ void Players::setStartingAmmo(int value)
     StartingAmmo = value;
 }
 
+int Players::getSleepTimeOut() const
+{
+    return SleepTimeOut;
+}
+
+void Players::setSleepTimeOut(int value)
+{
+    SleepTimeOut = value;
+}
+
 /////////////////////////////////////////////////////////////////////////////
 /// \brief Players::streamToFile
 /// \param out

@@ -90,6 +90,9 @@ public:
     int getStartingAmmo() const;
     void setStartingAmmo(int value);
 
+    int getSleepTimeOut() const;
+    void setSleepTimeOut(int value);
+
 private:
     int     Handicap;
     QString PlayerName;

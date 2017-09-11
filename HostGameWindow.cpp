@@ -246,7 +246,10 @@ void HostGameWindow::hostCurrentPlayer()
     }
 
     // Send the message.
-    lttoComms.sendPacket(PACKET, gameInfo.getGameType()    );
+
+    int                             GamePacket = gameInfo.getGameType();
+    if (gameInfo.getIsLTARGame())   GamePacket = gameInfo.LtarGame;
+    lttoComms.sendPacket(PACKET, GamePacket                );
     lttoComms.sendPacket(DATA,   gameInfo.getGameID()      );
     lttoComms.sendPacket(DATA,   gameTime,              BCD);
     lttoComms.sendPacket(DATA,   playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getHealthTags()), BCD);
@@ -274,7 +277,7 @@ void HostGameWindow::hostCurrentPlayer()
     if (gameInfo.getIsLTARGame() )
     {
         lttoComms.sendPacket(DATA,   playerInfo[currentPlayer].getStartingAmmo()   );
-        lttoComms.sendPacket(DATA,   gameInfo.getCountDownTime()   );
+        lttoComms.sendPacket(DATA,   playerInfo[currentPlayer].getSleepTimeOut()   );
     }
     //send the Checksum
     lttoComms.sendPacket(CHECKSUM);
@@ -595,6 +598,7 @@ void HostGameWindow::setCurrentPlayer(int value)
 
 bool HostGameWindow::resetPlayersForNewGame()
 {
+    qDebug() << "HostGameWindow::resetPlayersForNewGame()";
     currentPlayer = 1;
     for(int players= 0; players < 25; players++)
     {

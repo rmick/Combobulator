@@ -82,8 +82,8 @@ public:
     int     getPlayerToReHost() const;
     void    setPlayerToReHost(int value);
 
-    bool getIsLTARGame() const;
-    void setIsLTARGame(bool value);
+    bool    getIsLTARGame() const;
+    void    setIsLTARGame(bool value);
 
 signals:
     void    NumberOfTeamsHasChanged(int NumTeams);

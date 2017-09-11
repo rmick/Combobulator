@@ -309,16 +309,17 @@ void LttoMainWindow::on_btn_CustomGame_clicked()
 
 void LttoMainWindow::on_btn_LtarGame_clicked()
 {
-    gameInfo.setGameName("LTAR");
-    ui->btn_NoTeams->setEnabled(true);
-    ui->btn_Flags->setEnabled(true);
+    gameInfo.setIsLTARGame(true);
 
-    switch(gameInfo.getNumberOfTeams())
-    {
-    default:
-        gameInfo.setGameType(gameInfo.LtarGame);
-        break;
-    }
+//    gameInfo.setGameName("LTAR");
+//    ui->btn_NoTeams->setEnabled(true);//
+//    ui->btn_Flags->setEnabled(true);
+//    switch(gameInfo.getNumberOfTeams())
+//    {
+//    default:
+//        gameInfo.setGameType(gameInfo.LtarGame);
+//        break;
+//    }
 }
 
 
