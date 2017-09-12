@@ -64,6 +64,14 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
     ui->btn_Cancel->setText("Cancel");
     ui->btn_Rehost->setEnabled(false);
 
+    //Hide Debug controls
+    ui->btn_Connect->setVisible(false);
+    ui->btn_Disconnect->setVisible(false);
+    ui->btn_StartStopHosting->setVisible(false);
+    ui->btn_StopStartBeacon->setVisible(false);
+    ui->btn_ReadyReadUSB->setVisible(false);
+    ui->btn_FailSend->setVisible(false);
+
     //Init all the sound effects.
     sound_Hosting            = new QSoundEffect(this);
     sound_Countdown          = new QSoundEffect(this);
@@ -180,7 +188,8 @@ void HostGameWindow::announceGame()
 
 void HostGameWindow::hostCurrentPlayer()
 {
-    qDebug() << "HostGameWindow::hostCurrentPlayer() = " << currentPlayer;
+    if (gameInfo.getIsLTARGame())   qDebug() << "HostGameWindow::hostCurrentPlayer() - LTAR mode = " << currentPlayer;
+    else                            qDebug() << "HostGameWindow::hostCurrentPlayer() - Std mode = "  << currentPlayer;
 
     if(lttoComms.getDontAnnounceGame() != false)                                             // We are receiving data, so dont announce.
     {
@@ -211,7 +220,8 @@ void HostGameWindow::hostCurrentPlayer()
 
     if (lttoComms.getTcpCommsConnected() == true || serialUSBcomms.getSerialCommsConnected() == true)
     {
-        InsertToListWidget("Announce Game : Player " + QString::number(currentPlayer));
+        if (gameInfo.getIsLTARGame())   InsertToListWidget("Announce LTAR Game : Player " + QString::number(currentPlayer));
+        else                            InsertToListWidget("Announce Game : Player " + QString::number(currentPlayer));
     }
     else
     {
@@ -983,4 +993,9 @@ void HostGameWindow::on_btn_Connect_clicked()
 void HostGameWindow::on_btn_Disconnect_clicked()
 {
     tcpComms.DisconnectTCP();
+}
+
+void HostGameWindow::on_btn_ReadyReadUSB_clicked()
+{
+    serialUSBcomms.readUSBdata();
 }

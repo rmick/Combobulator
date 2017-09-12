@@ -9,7 +9,7 @@ Players::Players()
     static int instanceCount = 0;
     instanceCount++;
 
-    //if(instanceCount == 1) qDebug() << "Players::Players() - Constructing.......";
+    if(instanceCount == 1) qDebug() << "Players::Players() - Constructing.......";
 
     Handicap        = 0;
     PlayerName       = "_";

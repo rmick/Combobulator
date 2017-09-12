@@ -45,6 +45,9 @@ public:
     int         ConvertDecToBCD(int dec);
     int         ConvertBCDtoDec(int bcd);
 
+    bool getSerialUSBcommsConnected() const;
+    void setSerialUSBcommsConnected(bool value);
+
 public slots:
     void        TCPconnected();
     void        TCPdisconnected();
@@ -70,6 +73,7 @@ private:
     bool            dontAnnounceGame;
     bool            dontAnnounceFailedSignal;
     bool            tcpCommsConnected;
+    bool            serialUSBcommsConnected;
     int             missedAnnounceCount;
 
 

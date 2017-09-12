@@ -84,6 +84,8 @@ private slots:
 
     void on_btn_Disconnect_clicked();
 
+    void on_btn_ReadyReadUSB_clicked();
+
 private:
     //pointers
     Ui::HostGameWindow      *ui;

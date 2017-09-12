@@ -17,6 +17,8 @@ class SerialUSBcomms : public QObject
 public:
     explicit SerialUSBcomms(QObject *parent = 0);
 
+    void readUSBdata();
+
     void        findSerialPort();
     void        setUpSerialPort();
     void        closeSerialPort();
@@ -41,7 +43,7 @@ private:
 #ifdef INCLUDE_SERIAL_USB
         QSerialPort     *serialUSB;
 #endif
-        bool            serialCommsConnected;               // is the serial port connecrted and working.
+        bool            serialCommsConnected;               // is the serial port connected and working.
         bool            isUSBinitialised;                   // used to trigger a single instance of USB port connectSignals.
 };
 

@@ -189,7 +189,8 @@ QPushbutton:disabled
    </property>
    <property name="font">
     <font>
-     <pointsize>55</pointsize>
+     <family>Verdana</family>
+     <pointsize>40</pointsize>
      <weight>75</weight>
      <bold>true</bold>
     </font>
@@ -782,6 +783,19 @@ Signal</string>
    </property>
    <property name="text">
     <string>Disconnect</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btn_ReadyReadUSB">
+   <property name="geometry">
+    <rect>
+     <x>760</x>
+     <y>130</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Read USB</string>
    </property>
   </widget>
  </widget>

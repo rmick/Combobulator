@@ -309,7 +309,8 @@ void LttoMainWindow::on_btn_CustomGame_clicked()
 
 void LttoMainWindow::on_btn_LtarGame_clicked()
 {
-    gameInfo.setIsLTARGame(true);
+    if(ui->btn_LtarGame->isChecked()) gameInfo.setIsLTARGame(true);
+    else                              gameInfo.setIsLTARGame(false);
 
 //    gameInfo.setGameName("LTAR");
 //    ui->btn_NoTeams->setEnabled(true);//

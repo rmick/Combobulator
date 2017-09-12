@@ -6,10 +6,9 @@ SerialUSBcomms serialUSBcomms;
 SerialUSBcomms::SerialUSBcomms(QObject *parent) :
     QObject(parent)
 {
-    //qDebug() << "SerialUSBComms::SerialUSBComms() - Constructing.......";
+    qDebug() << "SerialUSBComms::SerialUSBComms() - Constructing.......";
 #ifdef INCLUDE_SERIAL_USB
     serialUSB = new QSerialPort(this);
-    connect(serialUSB,  SIGNAL(readyRead()),                    this,       SLOT(receivePacket()) );
 #endif
     setSerialCommsConnected(false);
     setIsUSBinitialised(false);
@@ -20,12 +19,14 @@ void SerialUSBcomms::findSerialPort()
 #ifdef INCLUDE_SERIAL_USB
     foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts())
     {
-        if (info.manufacturer().contains("Spark") || info.manufacturer().contains("Arduino") )  // || info.portName().contains("SLAB") )
+        qDebug() << "SerialUSBcomms::findSerialPort() - Found a port:" << info.portName();
+        if (info.manufacturer().contains("Spark") || info.manufacturer().contains("Arduino") || info.portName().contains("COM") )
         {
             serialUSB->setPortName(info.portName() );
             emit SerialPortFound(info.portName() );
         }
         QString Rhubarb = "SerialUSBcomms::findSerialPort() - Using serial port " + info.portName();
+        qDebug() << "SerialUSBcomms::findSerialPort() - Using:" << info.portName();
         emit AddToHostWindowListWidget(Rhubarb);
     }
 #endif
@@ -46,6 +47,7 @@ void SerialUSBcomms::setUpSerialPort()
         serialUSB->setStopBits(QSerialPort::OneStop);
         serialUSB->setFlowControl(QSerialPort::NoFlowControl);
 
+        if (serialUSB->isReadable()) qDebug() << "SerialUSBcomms::setUpSerialPort() -" << serialUSB->portName() << "is READABLE :-)";
         if (serialUSB->isOpen() && serialUSB->isWritable())
         {
             qDebug() << "SerialUSBcomms::setUpSerialPort()" << serialUSB->portName() << " is Ready..." << endl;
@@ -64,7 +66,7 @@ void SerialUSBcomms::closeSerialPort()
 #ifdef INCLUDE_SERIAL_USB
     if(serialCommsConnected)
     {
-        //serialUSB->close();
+        serialUSB->close();
         setSerialCommsConnected(false);
         qDebug() << "SerialUSBcomms::closeSerialPort() has left the building";
     }
@@ -73,18 +75,28 @@ void SerialUSBcomms::closeSerialPort()
 
 void SerialUSBcomms::receivePacket()
 {
+    qDebug() << "SerialUSBcomms::receivePacket() triggered ";
 #ifdef INCLUDE_SERIAL_USB
     QByteArray rX;
     rX = serialUSB->readAll();
-    //qDebug() << "SerialUSBcomms::receivePacket() " << rX;
-#ifdef Q_OS_ANDROID
+    qDebug() << "SerialUSBcomms::receivePacket() " << rX;
+//#ifdef Q_OS_ANDROID
     lttoComms.androidRxPacket(rX);
-#endif
+//#endif
     //#elseif
-    emit newSerialUSBdata(rX);
+   // emit newSerialUSBdata(rX);
 //#endif
 
 #endif
+}
+
+
+void SerialUSBcomms::readUSBdata()
+{
+     qDebug() << "SerialUSBComms::readUSBdata() - ";
+     QByteArray rX;
+     rX = serialUSB->readAll();
+     qDebug() << "SerialUSBcomms::readUSBdata() " << rX;
 }
 
 void SerialUSBcomms::sendPacket(QByteArray packet)
@@ -120,6 +132,7 @@ bool SerialUSBcomms::getSerialCommsConnected() const
 void SerialUSBcomms::setSerialCommsConnected(bool value)
 {
     serialCommsConnected = value;
+    lttoComms.setSerialUSBcommsConnected(value);
 }
 
 void SerialUSBcomms::initialiseUSBsignalsAndSlots()
@@ -129,6 +142,7 @@ void SerialUSBcomms::initialiseUSBsignalsAndSlots()
     connect(&lttoComms, SIGNAL(sendSerialData(QByteArray)),     this,       SLOT(sendPacket(QByteArray)) );
     connect(this,       SIGNAL(newSerialUSBdata(QByteArray)),   &lttoComms, SLOT(receivePacket(QByteArray)) );
     connect(serialUSB,  SIGNAL(readyRead()),                    this,       SLOT(receivePacket()) );
+    //connect(serialUSB, &QSerialPort::readyRead,                 this, &SerialUSBcomms::receivePacket);
     setIsUSBinitialised(true);
 }
 

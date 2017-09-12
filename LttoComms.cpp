@@ -7,7 +7,7 @@ LttoComms lttoComms;
 
 LttoComms::LttoComms(QObject *parent) : QObject(parent)
 {
-    //qDebug() << "LttoComms::LttoComms() - Constructing.......";
+    qDebug() << "LttoComms::LttoComms() - Constructing.......";
 
     useLazerSwarm = true;          //TODO: Set this up in Preferences.
     dontAnnounceGame = false;
@@ -101,6 +101,7 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
 
 void LttoComms::sendLCDtext(QString textToSend, int lineNumber)
 {
+    if(lttoComms.getSerialUSBcommsConnected()) return;      // USB means it is a Lazerswarm, which does not accept TXT.
     QByteArray textBA;
     textToSend.prepend("TXT" + QString::number(lineNumber)+ ":");
     textBA.append(textToSend + "\r\n");
@@ -110,6 +111,7 @@ void LttoComms::sendLCDtext(QString textToSend, int lineNumber)
 
 void LttoComms::sendLCDtext(int xCursor, int yCursor, QString text, int fontSize, int colour, bool clearDisp)
 {
+    if(lttoComms.getSerialUSBcommsConnected()) return;      // USB means it is a Lazerswarm, which does not accept TXT.
     QByteArray textBA;
     QString textToSend = "";
     textToSend.prepend("DSP," + QString::number(xCursor) + "," + QString::number(yCursor) + "," + text + "," +  QString::number(fontSize) + "," + QString::number(colour) + "," + QString::number(clearDisp));
@@ -171,6 +173,16 @@ void LttoComms::receivePacket(QByteArray RxData)
             }
         }
     }
+}
+
+bool LttoComms::getSerialUSBcommsConnected() const
+{
+    return serialUSBcommsConnected;
+}
+
+void LttoComms::setSerialUSBcommsConnected(bool value)
+{
+    serialUSBcommsConnected = value;
 }
 
 bool LttoComms::getDontAnnounceFailedSignal() const
