@@ -301,6 +301,9 @@ void LttoMainWindow::on_btn_CustomGame_clicked()
 
     switch(gameInfo.getNumberOfTeams())
     {
+    case 1: //TODO:
+    case 2: //TODO:
+    case 3: //TODO:
     default:
         gameInfo.setGameType(gameInfo.Custom);
         break;

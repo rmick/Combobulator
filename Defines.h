@@ -11,13 +11,20 @@
 //      Here is the current build directory
 //              build-LTTO_Host-Desktop_Qt_5_9_1_clang_64bit-Release
 
+//windeployqt
+//      Copy the LTTO_Host.exe from the \release to \deploy
+//      Open CMD.exe prompt
+//      cd\
+//      W:
+//      cd Qt_projects\build-LTTO_Host-Desktop_Qt_5_8_0_MSVC2015_64bit-Release\LTTO_Host
+//      C:\Qt\5.9.1\msvc2015_64\bin\windeployqt LTTO_Host.exe
 
 // If enabling this #define, also remove the # from the command 'serialport' in line 9 of the LTTO_host.pro file
 #define INCLUDE_SERIAL_USB
 
 
 //  Build Number
-const QString BUILD_NUMBER  = "Build : 17.9.12b";
+const QString BUILD_NUMBER  = "Build : 17.9.13a";
 
 //  WiFi stuff
 const QString   HOST_IP_ADDRESS     = "192.168.4.1";

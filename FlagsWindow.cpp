@@ -16,32 +16,32 @@ FlagsWindow::~FlagsWindow()
 void FlagsWindow::setButtonStates()
 {
 
-    if(playerInfo[0].getBitFlags1(NEUTRALISE_10_FLAG) == true)              ui->btn_Neutralise->setChecked(true);
-    else                                                                    ui->btn_Neutralise->setChecked(false);
+    if(playerInfo[0].getBitFlags1(NEUTRALISE_10_FLAG))              ui->btn_Neutralise->setChecked(true);
+    else                                                            ui->btn_Neutralise->setChecked(false);
 
-    if(playerInfo[0].getBitFlags2(NEUTRALISE_15s_TAGGED_FLAG) == true)      ui->btn_NeutraliseWhenTagged->setChecked(true);
-    else                                                                    ui->btn_NeutraliseWhenTagged->setChecked(false);
+    if(playerInfo[0].getBitFlags2(NEUTRALISE_15s_TAGGED_FLAG))      ui->btn_NeutraliseWhenTagged->setChecked(true);
+    else                                                            ui->btn_NeutraliseWhenTagged->setChecked(false);
 
-    if(playerInfo[0].getBitFlags2(CONTESTED_ZONES_FLAG) == true)            ui->btn_ContestedZones->setChecked(true);
-    else                                                                    ui->btn_ContestedZones->setChecked(false);
+    if(playerInfo[0].getBitFlags2(CONTESTED_ZONES_FLAG))            ui->btn_ContestedZones->setChecked(true);
+    else                                                            ui->btn_ContestedZones->setChecked(false);
 
-    if(playerInfo[0].getBitFlags2(ZONES_TO_TEAMS_FLAG) == true)             ui->btn_ZonesWithTeams->setChecked(true);
-    else                                                                    ui->btn_ZonesWithTeams->setChecked(false);
+    if(playerInfo[0].getBitFlags2(ZONES_TO_TEAMS_FLAG))             ui->btn_ZonesWithTeams->setChecked(true);
+    else                                                            ui->btn_ZonesWithTeams->setChecked(false);
 
-    if(playerInfo[0].getBitFlags2(SUPPLY_ZONES_REFILL_TAGS_FLAG) == true)   ui->btn_SupplyZonesRefillTags->setChecked(true);
-    else                                                                    ui->btn_SupplyZonesRefillTags->setChecked(false);
+    if(playerInfo[0].getBitFlags2(SUPPLY_ZONES_REFILL_TAGS_FLAG))   ui->btn_SupplyZonesRefillTags->setChecked(true);
+    else                                                            ui->btn_SupplyZonesRefillTags->setChecked(false);
 
-    if(playerInfo[0].getBitFlags2(SUPPLY_ZONES_REVIVE_FLAG) == true)        ui->btn_SupplyZonesReSpawn->setChecked(true);
-    else                                                                    ui->btn_SupplyZonesReSpawn->setChecked(false);
+    if(playerInfo[0].getBitFlags2(SUPPLY_ZONES_REVIVE_FLAG))        ui->btn_SupplyZonesReSpawn->setChecked(true);
+    else                                                            ui->btn_SupplyZonesReSpawn->setChecked(false);
 
-    if(playerInfo[0].getBitFlags2(HOSTILE_ZONES_FLAG) == true)              ui->btn_HostileZones->setChecked(true);
-    else                                                                    ui->btn_HostileZones->setChecked(false);
+    if(playerInfo[0].getBitFlags2(HOSTILE_ZONES_FLAG))              ui->btn_HostileZones->setChecked(true);
+    else                                                            ui->btn_HostileZones->setChecked(false);
 
-    if(playerInfo[0].getBitFlags1(HUNT_THE_PREY_FLAG) == true)              ui->btn_HuntThePrey->setChecked(true);
-    else                                                                    ui->btn_HuntThePrey->setChecked(false);
+    if(playerInfo[0].getBitFlags1(HUNT_THE_PREY_FLAG))              ui->btn_HuntThePrey->setChecked(true);
+    else                                                            ui->btn_HuntThePrey->setChecked(false);
 
-    if(playerInfo[0].getBitFlags1(REVERSE_HUNT_DIR_FLAG) == true)           ui->btn_ReverseHuntDirection->setChecked(true);
-    else                                                                    ui->btn_ReverseHuntDirection->setChecked(false);
+    if(playerInfo[0].getBitFlags1(REVERSE_HUNT_DIR_FLAG))           ui->btn_ReverseHuntDirection->setChecked(true);
+    else                                                            ui->btn_ReverseHuntDirection->setChecked(false);
 }
 
 void FlagsWindow::updatePlayerFlags1(int bit, bool state, int firstPlayer, int lastPlayer)
