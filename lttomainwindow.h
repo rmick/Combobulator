@@ -98,6 +98,10 @@ private slots:
 
     void on_btn_LtarGame_clicked();
 
+    void on_slider_StartAmmo_valueChanged(int value);
+
+    void on_slider_SleepTime_valueChanged(int value);
+
 private:
     Ui::LttoMainWindow      *ui;
     PlayersWindow           *playersWindow;
@@ -115,6 +119,7 @@ private:
 
     void    UpdateGlobalPlayerControlSettings();
     void    UpdateGameControlSettings();
+    void    setLtarControls(bool state);
     void    saveFile();
     void    loadFile();
 };

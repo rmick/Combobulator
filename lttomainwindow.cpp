@@ -30,7 +30,8 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
     gameInfo.setNumberOfTeams(0);
     ui->btn_Spies->setEnabled(false);
     ui->btn_StartGame->setEnabled(false);
-    ui->actionuse_LazerSwarm->setVisible(false);
+    setLtarControls(false);
+    //ui->actionuse_LazerSwarm->setVisible(false);
     serialUSBcomms.setIsUSBinitialised(false);
     qsrand(static_cast<uint>(QTime::currentTime().msec()));
     for (int index = 1; index < 25; index++)    playerInfo[index].setPlayerName("Player " + QString::number(index));
@@ -312,21 +313,24 @@ void LttoMainWindow::on_btn_CustomGame_clicked()
 
 void LttoMainWindow::on_btn_LtarGame_clicked()
 {
-    if(ui->btn_LtarGame->isChecked()) gameInfo.setIsLTARGame(true);
-    else                              gameInfo.setIsLTARGame(false);
+    bool state = ui->btn_LtarGame->isChecked();
+    gameInfo.setIsLTARGame(state);
+    setLtarControls(state);
 
-//    gameInfo.setGameName("LTAR");
-//    ui->btn_NoTeams->setEnabled(true);//
-//    ui->btn_Flags->setEnabled(true);
-//    switch(gameInfo.getNumberOfTeams())
-//    {
-//    default:
-//        gameInfo.setGameType(gameInfo.LtarGame);
-//        break;
-//    }
+//    if(ui->btn_LtarGame->isChecked()) gameInfo.setIsLTARGame(true);
+//    else                              gameInfo.setIsLTARGame(false);
+
+//    if(ui->btn_LtarGame->isChecked())   setLtarControls(true);
+//    else                                setLtarControls(false);
 }
 
-
+void LttoMainWindow::setLtarControls(bool state)
+{
+    ui->slider_SleepTime->setVisible(state);
+    ui->label_SleepTime->setVisible(state);
+    ui->slider_StartAmmo->setVisible(state);
+    ui->label_StartingAmmo->setVisible(state);
+}
 //////////////////////////////////////////////////////////////////////////////////
 
 void LttoMainWindow::on_btn_NoTeams_clicked()
@@ -469,6 +473,27 @@ void LttoMainWindow::on_slider_GameTime_valueChanged(int value)
     gameInfo.setGameLength(value);
 }
 
+void LttoMainWindow::on_slider_StartAmmo_valueChanged(int value)
+{
+    if  (value == 100)  ui->label_StartingAmmo->setText("StartingShots : Unlimited");
+    else                ui->label_StartingAmmo->setText("StartingShots : " + QString::number(value) );
+
+    for (int x=0; x<25;x++)
+    {
+         playerInfo[x].setStartingAmmo(value);
+    }
+}
+
+void LttoMainWindow::on_slider_SleepTime_valueChanged(int value)
+{
+    if  (value == 0) ui->label_SleepTime->setText("SleepTimeOut : Disabled");
+    else             ui->label_SleepTime->setText("SleepTimeOut : " + QString::number(value) );
+
+    for (int x=0; x<25;x++)
+    {
+         playerInfo[x].setSleepTimeOut(value);
+    }
+}
 
 void LttoMainWindow::on_btn_Spies_clicked()
 {
@@ -549,6 +574,17 @@ void LttoMainWindow::UpdateGameControlSettings()
             break;
         default:
             qDebug() << "No match in the switch for : " << gameInfo.getGameType();
+
+        if(gameInfo.getIsLTARGame())
+        {
+            ui->btn_LtarGame->setChecked(true);
+            setLtarControls(true);
+        }
+        else
+        {
+            ui->btn_LtarGame->setChecked(false);
+            setLtarControls(false);
+        }
     }
 
     switch (gameInfo.getNumberOfSpies() )
@@ -576,9 +612,12 @@ void LttoMainWindow::UpdateGameControlSettings()
 void LttoMainWindow::UpdateGlobalPlayerControlSettings()
 {
     // Index 0 is the global setting.
-    ui->slider_Health               ->setValue  (playerInfo[0].getHealthTags() );
-    ui->slider_Shields              ->setValue  (playerInfo[0].getShieldTime() );
-    ui->slider_MegaTags             ->setValue  (playerInfo[0].getMegaTags() );
+    ui->slider_Health       ->setValue(playerInfo[0].getHealthTags()  );
+    ui->slider_Shields      ->setValue(playerInfo[0].getShieldTime()  );
+    ui->slider_MegaTags     ->setValue(playerInfo[0].getMegaTags()    );
+    ui->slider_SleepTime    ->setValue(playerInfo[0].getSleepTimeOut());
+    ui->slider_StartAmmo    ->setValue(playerInfo[0].getStartingAmmo());
+    ui->slider_Reloads      ->setValue(playerInfo[0].getReloads()     );
 
     ui->btn_SlowTags  ->setChecked(playerInfo[0].getSlowTags() );
     if (playerInfo[0].getSlowTags() == false)    ui->btn_SlowTags  ->setText("Slow Tags OFF");
@@ -591,8 +630,6 @@ void LttoMainWindow::UpdateGlobalPlayerControlSettings()
     ui->btn_MedicMode ->setChecked(playerInfo[0].getMedicMode() );
     if (playerInfo[0].getMedicMode() == false)   ui->btn_MedicMode ->setText("Medic Mode OFF");
     else                                         ui->btn_MedicMode ->setText("Medic Mode ON");
-
-      ui->slider_Reloads->setValue(playerInfo[0].getReloads());
 }
 
 //////////////////////////////////////////////////////////////////
@@ -698,7 +735,7 @@ void LttoMainWindow::on_actionLoad_triggered()
 
 void LttoMainWindow::on_btn_Flags_clicked()
 {
-    if(flagsWindow==NULL) flagsWindow = new FlagsWindow;
+    if(flagsWindow==NULL) flagsWindow = new FlagsWindow(0, this);
     flagsWindow->setButtonStates();
     flagsWindow->show();
 }
@@ -722,4 +759,3 @@ void LttoMainWindow::on_btn_SpyTeamTags_clicked()
         gameInfo.setIsSpiesTeamTagActive(true);
     }
 }
-

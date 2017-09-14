@@ -286,8 +286,8 @@ void HostGameWindow::hostCurrentPlayer()
     }
     if (gameInfo.getIsLTARGame() )
     {
-        lttoComms.sendPacket(DATA,   playerInfo[currentPlayer].getStartingAmmo()   );
-        lttoComms.sendPacket(DATA,   playerInfo[currentPlayer].getSleepTimeOut()   );
+        lttoComms.sendPacket(DATA,   playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getStartingAmmo())   );     //Dont need BCD as LTARs talk Dec.
+        lttoComms.sendPacket(DATA,   playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getSleepTimeOut())   );     //Dont need BCD as LTARs talk Dec.
     }
     //send the Checksum
     lttoComms.sendPacket(CHECKSUM);
@@ -308,6 +308,8 @@ void HostGameWindow::hostCurrentPlayer()
                             + ", MedicMode:" + QString::number(playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getMedicMode() ))
                             + ", SlowTags:" + QString::number(playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getSlowTags() ))
                             + ", TeamTags:" + QString::number(playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getTeamTags() ))
+                            + ", StartAmmo:" + QString::number(playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getStartingAmmo() ))
+                            + ", SleepTime:" + QString::number(playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getSleepTimeOut() ))
                             + ", Spy#:" + QString::number(playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getSpyNumber() ));
         InsertToListWidget(playerDebugData);
         InsertToListWidget("Flag1 = " + QString::number(playerInfo[currentPlayer].getPackedFlags1()) + " Flag2 = " + QString::number(playerInfo[currentPlayer].getPackedFlags2()));

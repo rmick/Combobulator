@@ -6,6 +6,7 @@
 #include <QSignalMapper>
 #include <QVector>
 #include <QElapsedTimer>
+#include "FlagsWindow.h"
 
 namespace Ui {
  class PlayersWindow;
@@ -53,6 +54,12 @@ private slots:
 
     void on_btn_Test_clicked();
 
+    void on_btn_Flags_clicked();
+
+    void on_slider_SleepTimeOut_valueChanged(int value);
+
+    void on_slider_StartAmmo_valueChanged(int value);
+
 private:
     Ui::PlayersWindow   *ui;
     QSignalMapper       *signalMapperClicked;
@@ -61,6 +68,7 @@ private:
     QPalette            *paletteRed;
     QPalette            *paletteGreen;
     QElapsedTimer       elapsedTime;
+    FlagsWindow         *flagsWindow;
 
     QVector <QPushButton*> PlayerButtons;
     int SelectedPlayer;

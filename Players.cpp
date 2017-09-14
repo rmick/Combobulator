@@ -137,7 +137,8 @@ void Players::setMedicMode(bool value)
 
 int Players::getStartingAmmo() const
 {
-    return StartingAmmo;
+    if (StartingAmmo == 100) return 0xFF;
+    else                    return StartingAmmo;
 }
 
 void Players::setStartingAmmo(int value)
@@ -208,6 +209,7 @@ void Players::streamFromFile(QTextStream &in)
             else if (descriptorP.contains("Flags2:") )          playerInfo[playerID].PackedFlags2 = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
             else if (descriptorP.contains("Flags3:") )          playerInfo[playerID].PackedFlags3 = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
             else if (descriptorP.contains("StartingAmmo:") )    playerInfo[playerID].StartingAmmo = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
+            else if (descriptorP.contains("SleepTimeOut:") )    playerInfo[playerID].SleepTimeOut = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
     }   while (descriptorP != "END_OF_PLAYER_SETTINGS");
 
     for (int index=0; index< 25; index++)
@@ -223,7 +225,8 @@ void Players::streamFromFile(QTextStream &in)
         qDebug() << "SlowTags:"     << playerInfo[index].SlowTags;
         qDebug() << "TeamTags:"     << playerInfo[index].TeamTags;
         qDebug() << "PlayerName:"   << playerInfo[index].PlayerName;
-        qDebug() << "StartingAmmo"  << playerInfo[index].StartingAmmo   << endl;
+        qDebug() << "StartingAmmo"  << playerInfo[index].StartingAmmo;
+        qDebug() << "SleepTimeOut"  << playerInfo[index].SleepTimeOut   << endl;
     }
     qDebug() << "Players::StreamFromFile has left the building" << endl << endl;
 }
@@ -325,6 +328,8 @@ QString Players::displayBinary(int number, int digits)
 
 int Players::handicapAdjust(int value)
 {
+    if (value == 0) value = 1;                              //Otherwise a Zero value stays zero forever.
+    //TODO: Values of 1 & 2 hardly change, need to work on a logarithmic curve - maybe.
     value += value * (static_cast<float>(Handicap)/10);
     if (value > 100) value = 100;
     if (value <0)   value = 0;

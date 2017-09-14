@@ -15,7 +15,8 @@ PlayersWindow::PlayersWindow(QWidget *parent) :
     ui(new Ui::PlayersWindow),
     signalMapperClicked(NULL),
     signalMapperPressed(NULL),
-    signalMapperReleased(NULL)
+    signalMapperReleased(NULL),
+    flagsWindow(NULL)
 {
     SelectedPlayer = 0;
     ui->setupUi(this);
@@ -27,8 +28,10 @@ PlayersWindow::PlayersWindow(QWidget *parent) :
     LoadPlayersForTeams();
     LoadPlayerSettings(0);      // 0 = Global Player
     SetActivePlayers();
-    ui->line_3->setVisible(false);
     RenamePlayerTeamButtons(gameInfo.getNumberOfTeams());
+
+    //TODO: Enable this
+    //ui->btn_Flags->setVisible(false);
 }
 
 PlayersWindow::~PlayersWindow()
@@ -111,17 +114,21 @@ void PlayersWindow::LoadPlayerSettings(int PlayerID)
     ui->slider_Health               ->setValue  (playerInfo[PlayerID].getHealthTags() );
     ui->slider_Shields              ->setValue  (playerInfo[PlayerID].getShieldTime() );
     ui->slider_MegaTags             ->setValue  (playerInfo[PlayerID].getMegaTags() );
-    ui->btn_SelectedPlayerSlowTags  ->setChecked(playerInfo[PlayerID].getSlowTags() );
+    //ui->slider_SleepTimeOut         ->setValue  (playerInfo[PlayerID].getSleepTimeOut());
+    ui->slider_StartAmmo            ->setValue  (playerInfo[PlayerID].getStartingAmmo());
 
+    ui->btn_SelectedPlayerSlowTags  ->setChecked(playerInfo[PlayerID].getSlowTags() );
     if (playerInfo[PlayerID].getSlowTags() == false)    ui->btn_SelectedPlayerSlowTags  ->setText("OFF");
     else                                                ui->btn_SelectedPlayerSlowTags  ->setText("ON");
 
     ui->btn_SelectedPlayerTeamTags  ->setChecked(playerInfo[PlayerID].getTeamTags() );
     if (playerInfo[PlayerID].getTeamTags() == false)    ui->btn_SelectedPlayerTeamTags  ->setText("OFF");
     else                                                ui->btn_SelectedPlayerTeamTags  ->setText("ON");
+
     int reLoads;
     if (playerInfo[PlayerID].getReloads() == 0) reLoads = 100;
     else reLoads = playerInfo[PlayerID].getReloads();
+
     ui->slider_Reloads              ->setValue(reLoads);
     ui->slider_Handicap             ->setValue  (playerInfo[PlayerID].getHandicap() ); // Do this last !!!
 }
@@ -171,7 +178,7 @@ void PlayersWindow::SetPlayerControls(int state, int mode)
     //Set the state of ALL the controls.
     if(state != CURRENT_MODE)
     {
-        ui->label_Handicap->setEnabled(state);
+        ui->label_Handicap->setEnabled(!state);
         ui->slider_Handicap->setEnabled(state);
         ui->slider_Health->setEnabled(state);
         ui->slider_MegaTags->setEnabled(state);
@@ -181,6 +188,9 @@ void PlayersWindow::SetPlayerControls(int state, int mode)
         ui->label_TeamTags->setEnabled(state);
         ui->btn_SelectedPlayerSlowTags->setEnabled(state);
         ui->btn_SelectedPlayerTeamTags->setEnabled(state);
+ //       ui->btn_Flags->setEnabled(state);
+        ui->slider_StartAmmo->setEnabled(state);
+
     }
 
     //Now setVisible for those we want to see
@@ -192,6 +202,20 @@ void PlayersWindow::SetPlayerControls(int state, int mode)
         ui->slider_Shields->setVisible(mode);
         ui->slider_Handicap->setVisible(!mode);
         ui->label_Handicap->setVisible(!mode);
+        if (gameInfo.getIsLTARGame() || state == false)
+        {
+            ui->slider_StartAmmo->setVisible(mode);
+
+        }
+        if (gameInfo.getIsLTARGame())
+        {
+            ui->label_StartingAmmo->setVisible(true);
+        }
+        else
+        {
+            //ui->label_SleepTimeOut->setVisible(false);
+            ui->label_StartingAmmo->setVisible(false);
+        }
     }
 }
 
@@ -388,6 +412,8 @@ void PlayersWindow::AdjustSettingsForHandicap(int currentPlayer)
     int shields     = playerInfo[currentPlayer].getShieldTime();
     int megas       = playerInfo[currentPlayer].getMegaTags();
     int reloads     = playerInfo[currentPlayer].getReloads();
+    int startAmmo   = playerInfo[currentPlayer].getStartingAmmo();
+    int sleepTime   = playerInfo[currentPlayer].getSleepTimeOut();
 
     if (playerInfo[currentPlayer].getHandicap() == 0)
     {
@@ -395,19 +421,27 @@ void PlayersWindow::AdjustSettingsForHandicap(int currentPlayer)
     }
     else
     {
-        health  = playerInfo[currentPlayer].handicapAdjust(health);
-        shields = playerInfo[currentPlayer].handicapAdjust(shields);
-        megas   = playerInfo[currentPlayer].handicapAdjust(megas);
-        reloads = playerInfo[currentPlayer].handicapAdjust(reloads);
+        health      = playerInfo[currentPlayer].handicapAdjust(health);
+        shields     = playerInfo[currentPlayer].handicapAdjust(shields);
+        megas       = playerInfo[currentPlayer].handicapAdjust(megas);
+        reloads     = playerInfo[currentPlayer].handicapAdjust(reloads);
+        startAmmo   = playerInfo[currentPlayer].handicapAdjust(startAmmo);
+        sleepTime   = playerInfo[currentPlayer].handicapAdjust(sleepTime);
     }
     ui->label_Health  ->setText("Health : "   + (QString::number(health)) + " tags");
     ui->label_Shields ->setText("Shields : "  + (QString::number(shields)) + " seconds");
 
-    if  (megas == 100) ui->label_MegaTags->setText("MegaTags : Unlimited");
-    else               ui->label_MegaTags->setText("MegaTags : " + QString::number(megas) );
+    if  (megas == 100)  ui->label_MegaTags->setText("MegaTags : Unlimited");
+    else                ui->label_MegaTags->setText("MegaTags : " + QString::number(megas) );
 
     if (reloads == 100) ui->label_Reloads->setText("Reloads : Unlimited");
     else                ui->label_Reloads->setText("Reloads : " + (QString::number(reloads)) );
+
+    if (startAmmo > 99) ui->label_StartingAmmo->setText("StartingShots : Unlimited");
+    else                ui->label_StartingAmmo->setText("StartingShots : " + (QString::number(startAmmo)) );
+
+    //if (sleepTime == 0) ui->label_SleepTimeOut->setText("SleepTimeOut : Disabled");
+    //else                ui->label_SleepTimeOut->setText("SleepTimeOut : " + (QString::number(sleepTime)) );
 }
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -461,9 +495,36 @@ void PlayersWindow::on_slider_MegaTags_valueChanged(int value)
      playerInfo[SelectedPlayer].setMegaTags(value);
 }
 
+void PlayersWindow::on_slider_SleepTimeOut_valueChanged(int value)
+{
+    //if  (value == 0)    ui->label_SleepTimeOut->setText("SleepTimeOut : Disabled");
+    //else                ui->label_SleepTimeOut->setText("SleepTimeOut : " + QString::number(value) );
+    //playerInfo[SelectedPlayer].setSleepTimeOut(value);
+}
+
+void PlayersWindow::on_slider_StartAmmo_valueChanged(int value)
+{
+    if  (value == 100)  ui->label_StartingAmmo->setText("StartingShots : Unlimited");
+    else                ui->label_StartingAmmo->setText("StartingShots : " + QString::number(value) );
+    playerInfo[SelectedPlayer].setStartingAmmo(value);
+}
+
+
+
+
+
+
 void PlayersWindow::on_btn_Test_clicked()
 {
     qDebug() << "PlayersWindow::on_btn_Test_clicked() - Team1 PlayersByte:" <<gameInfo.getPlayersInTeam(1);
     qDebug() << "PlayersWindow::on_btn_Test_clicked() - Team2 PlayersByte:" <<gameInfo.getPlayersInTeam(2);
     qDebug() << "PlayersWindow::on_btn_Test_clicked() - Team3 PlayersByte:" << gameInfo.getPlayersInTeam(3);
 }
+
+void PlayersWindow::on_btn_Flags_clicked()
+{
+    if(flagsWindow==NULL) flagsWindow = new FlagsWindow(SelectedPlayer, this);
+    flagsWindow->setButtonStates();
+    flagsWindow->show();
+}
+
