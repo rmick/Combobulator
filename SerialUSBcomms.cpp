@@ -90,7 +90,6 @@ void SerialUSBcomms::receivePacket()
 #endif
 }
 
-
 void SerialUSBcomms::readUSBdata()
 {
      qDebug() << "SerialUSBComms::readUSBdata() - ";

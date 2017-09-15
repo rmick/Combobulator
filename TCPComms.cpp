@@ -61,7 +61,7 @@ void TCPComms::receivePacket()
     rX = tcpSocket->readAll();
     emit newTCPdata(rX);          // Does not work on Android for some unknown reason.
     //lttoComms.androidRxPacket(rX);  // This is the simple workaround :-)
-    qDebug() << "          TCPComms::receivePacket() - " + rX;
+    //qDebug() << "          TCPComms::receivePacket() - " + rX;
 }
 
 int retryCount = 0;
@@ -69,8 +69,8 @@ void TCPComms::sendPacket(QByteArray data)
 {
     //TODO:
     // Bypassed for Debug only
-return;
-qDebug() << "TCPComms::sendPacket() - bypassed for debug !!!";
+//return;
+//qDebug() << "TCPComms::sendPacket() - bypassed for debug !!!";
     // TODO: Remove the lines above
 
     if (tcpSocket->state() == QAbstractSocket::ConnectedState  )

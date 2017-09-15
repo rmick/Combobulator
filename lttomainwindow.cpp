@@ -23,7 +23,7 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
     sound_Powerdown(NULL)
 {
     ui->setupUi(this);
-    this->setWindowTitle("LTTO Combobulator");
+    this->setWindowTitle("Lasertag Combobulator");
     ui->label_BuildNumber->setText(BUILD_NUMBER);
     gameInfo.setGameType(gameInfo.Ltag0);
     ui->btn_NoTeams->setChecked(true);

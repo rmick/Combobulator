@@ -147,7 +147,8 @@ void LttoComms::receivePacket(QByteArray RxData)
                 return;
             }
             rxPacketList.append(lazerswarm.decodeCommand(irDataIn));
-            //qDebug() << "LttoComms::receivePacket() LazerSwarm mode - " << lazerswarm.decodeCommand(irDataIn);
+            qDebug() << "LttoComms::receivePacket() LazerSwarm mode - " << lazerswarm.decodeCommand(irDataIn);
+            if (lazerswarm.decodeCommand(irDataIn).startsWith("C")) qDebug() << "LttoComms::receivePacket() LazerSwarm mode -   ___________";
             isPacketComplete = true;
         }
     }

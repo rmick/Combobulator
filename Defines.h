@@ -16,7 +16,7 @@
 //      Open CMD.exe prompt
 //      cd\
 //      W:
-//      cd Qt_projects\build-LTTO_Host-Desktop_Qt_5_8_0_MSVC2015_64bit-Release\LTTO_Host
+//      cd Qt_projects\build-LTTO_Host-Desktop_Qt_5_9_1_MSVC2015_64bit-Release\LTTO_Host
 //      C:\Qt\5.9.1\msvc2015_64\bin\windeployqt LTTO_Host.exe
 //      Zip up the folder and publish to Dropbox (or whereever)
 
@@ -25,7 +25,7 @@
 
 
 //  Build Number
-const QString BUILD_NUMBER  = "Build : 17.9.14b";
+const QString BUILD_NUMBER  = "Build : 17.9.14a";
 
 //  WiFi stuff
 const QString   HOST_IP_ADDRESS     = "192.168.4.1";
