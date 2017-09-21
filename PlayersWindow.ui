@@ -756,7 +756,7 @@ QFrame[frameShape=&quot;5&quot;]
    <item row="23" column="6" colspan="2">
     <widget class="QPushButton" name="btn_Flags">
      <property name="enabled">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -1871,7 +1871,10 @@ QFrame[frameShape=&quot;5&quot;]
     </widget>
    </item>
    <item row="10" column="8">
-    <widget class="QPushButton" name="btn_Test">
+    <widget class="QPushButton" name="btn_ChangePlayers">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
        <horstretch>0</horstretch>
@@ -1879,8 +1882,8 @@ QFrame[frameShape=&quot;5&quot;]
       </sizepolicy>
      </property>
      <property name="text">
-      <string>DeBug
-P.I.G. Byte</string>
+      <string>Change
+Players</string>
      </property>
     </widget>
    </item>

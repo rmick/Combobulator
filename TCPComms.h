@@ -22,7 +22,6 @@ public:
 public slots:
     void connected();
     void disconnected();
-    void bytesWritten (qint64 bytes);
     void receivePacket();
     void sendPacket(QByteArray data);
     void initialiseTCPsignalsAndSlots();

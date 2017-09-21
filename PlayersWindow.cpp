@@ -29,9 +29,6 @@ PlayersWindow::PlayersWindow(QWidget *parent) :
     LoadPlayerSettings(0);      // 0 = Global Player
     SetActivePlayers();
     RenamePlayerTeamButtons(gameInfo.getNumberOfTeams());
-
-    //TODO: Enable this
-    //ui->btn_Flags->setVisible(false);
 }
 
 PlayersWindow::~PlayersWindow()
@@ -495,12 +492,12 @@ void PlayersWindow::on_slider_MegaTags_valueChanged(int value)
      playerInfo[SelectedPlayer].setMegaTags(value);
 }
 
-void PlayersWindow::on_slider_SleepTimeOut_valueChanged(int value)
-{
-    //if  (value == 0)    ui->label_SleepTimeOut->setText("SleepTimeOut : Disabled");
-    //else                ui->label_SleepTimeOut->setText("SleepTimeOut : " + QString::number(value) );
-    //playerInfo[SelectedPlayer].setSleepTimeOut(value);
-}
+//void PlayersWindow::on_slider_SleepTimeOut_valueChanged(int value)
+//{
+//    //if  (value == 0)    ui->label_SleepTimeOut->setText("SleepTimeOut : Disabled");
+//    //else                ui->label_SleepTimeOut->setText("SleepTimeOut : " + QString::number(value) );
+//    //playerInfo[SelectedPlayer].setSleepTimeOut(value);
+//}
 
 void PlayersWindow::on_slider_StartAmmo_valueChanged(int value)
 {
@@ -510,21 +507,16 @@ void PlayersWindow::on_slider_StartAmmo_valueChanged(int value)
 }
 
 
-
-
-
-
-void PlayersWindow::on_btn_Test_clicked()
-{
-    qDebug() << "PlayersWindow::on_btn_Test_clicked() - Team1 PlayersByte:" <<gameInfo.getPlayersInTeam(1);
-    qDebug() << "PlayersWindow::on_btn_Test_clicked() - Team2 PlayersByte:" <<gameInfo.getPlayersInTeam(2);
-    qDebug() << "PlayersWindow::on_btn_Test_clicked() - Team3 PlayersByte:" << gameInfo.getPlayersInTeam(3);
-}
-
 void PlayersWindow::on_btn_Flags_clicked()
 {
     if(flagsWindow==NULL) flagsWindow = new FlagsWindow(SelectedPlayer, this);
-    flagsWindow->setButtonStates();
+    flagsWindow->setButtonStates(SelectedPlayer);
+    qDebug() << "PlayersWindow::on_btn_Flags_clicked - Selected Player =" << SelectedPlayer;
     flagsWindow->show();
 }
 
+
+void PlayersWindow::on_btn_ChangePlayers_clicked()
+{
+    //TODO: This will allow the user to drag players to new locations (eg T1-P4 to T3-P7), as well as off into an area of 'spare' players.
+}

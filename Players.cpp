@@ -156,6 +156,16 @@ void Players::setSleepTimeOut(int value)
     SleepTimeOut = value;
 }
 
+int Players::getIsKing() const
+{
+    return isKing;
+}
+
+void Players::setIsKing(int value)
+{
+    isKing = value;
+}
+
 /////////////////////////////////////////////////////////////////////////////
 /// \brief Players::streamToFile
 /// \param out

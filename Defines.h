@@ -25,7 +25,7 @@
 
 
 //  Build Number
-const QString BUILD_NUMBER  = "Build : 17.9.14a";
+const QString BUILD_NUMBER  = "Build : 17.9.20a";
 
 //  WiFi stuff
 const QString   HOST_IP_ADDRESS     = "192.168.4.1";
@@ -41,7 +41,7 @@ const char  BEACON      = 'B';
 
 //Internal timers (in mSec)
 const int   INTERPACKET_DELAY_MSEC  = 50;
-const int   HOST_TIMER_MSEC         = 1800;
+const int   HOST_TIMER_MSEC         = 2500;
 const int   PRESS_AND_HOLD_TIME     = 500;
 const int   BEACON_TIMER_MSEC       = 500;
 

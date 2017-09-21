@@ -93,6 +93,9 @@ public:
     int getSleepTimeOut() const;
     void setSleepTimeOut(int value);
 
+    int getIsKing() const;
+    void setIsKing(int value);
+
 private:
     int     Handicap;
     QString PlayerName;
@@ -111,6 +114,7 @@ private:
     int     SleepTimeOut;   //LTAR games only   0 = disabled
     int     TaggerID;
     int     SpyNumber;
+    int     isKing;
 
     int     tagsTaken;
     int     survivalTimeMinutes;

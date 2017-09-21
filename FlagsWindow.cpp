@@ -9,6 +9,7 @@ FlagsWindow::FlagsWindow(int playerToUse, QWidget *parent) :
     ui->setupUi(this);
     qDebug() << "FlagsWindow::FlagsWindow" << playerToUse;
     currentPlayer = playerToUse;
+    //setButtonStates(currentPlayer);
     if(currentPlayer != 0)
     {
         firstPlayer = currentPlayer;
@@ -26,61 +27,81 @@ FlagsWindow::~FlagsWindow()
     delete ui;
 }
 
-void FlagsWindow::setButtonStates()
+//void FlagsWindow::showEvent( QShowEvent* event )
+//{
+//    QWidget::showEvent( event );
+//    qDebug() << "FlagsWindow::FlagsWindow" << playerToUse;
+//    currentPlayer = playerToUse;
+//    if(currentPlayer != 0)
+//    {
+//        firstPlayer = currentPlayer;
+//        lastPlayer  = currentPlayer;
+//    }
+//    else
+//    {
+//        firstPlayer = 0;
+//        lastPlayer = 24;
+//    }
+//}
+
+
+////////////////////////////////////////////////////////////////////
+
+void FlagsWindow::setButtonStates(int playerNumber)
 {
     if(gameInfo.getIsLTARGame())    hideLtarControls(true);
     else                            hideLtarControls(false);
 
-    if(playerInfo[0].getBitFlags1(NEUTRALISE_10_FLAG))              ui->btn_Neutralise->setChecked(true);
-    else                                                            ui->btn_Neutralise->setChecked(false);
+    if(playerInfo[playerNumber].getBitFlags1(NEUTRALISE_10_FLAG))               ui->btn_Neutralise->setChecked(true);
+    else                                                                        ui->btn_Neutralise->setChecked(false);
 
-    if(playerInfo[0].getBitFlags1(HUNT_THE_PREY_FLAG))              ui->btn_HuntThePrey->setChecked(true);
-    else                                                            ui->btn_HuntThePrey->setChecked(false);
+    if(playerInfo[playerNumber].getBitFlags1(HUNT_THE_PREY_FLAG))               ui->btn_HuntThePrey->setChecked(true);
+    else                                                                        ui->btn_HuntThePrey->setChecked(false);
 
-    if(playerInfo[0].getBitFlags1(REVERSE_HUNT_DIR_FLAG))           ui->btn_ReverseHuntDirection->setChecked(true);
-    else                                                            ui->btn_ReverseHuntDirection->setChecked(false);
+    if(playerInfo[playerNumber].getBitFlags1(REVERSE_HUNT_DIR_FLAG))            ui->btn_ReverseHuntDirection->setChecked(true);
+    else                                                                        ui->btn_ReverseHuntDirection->setChecked(false);
 
-    if(playerInfo[0].getBitFlags2(NEUTRALISE_15s_TAGGED_FLAG))      ui->btn_NeutraliseWhenTagged->setChecked(true);
-    else                                                            ui->btn_NeutraliseWhenTagged->setChecked(false);
+    if(playerInfo[playerNumber].getBitFlags2(NEUTRALISE_15s_TAGGED_FLAG))       ui->btn_NeutraliseWhenTagged->setChecked(true);
+    else                                                                        ui->btn_NeutraliseWhenTagged->setChecked(false);
 
-    if(playerInfo[0].getBitFlags2(CONTESTED_ZONES_FLAG))            ui->btn_ContestedZones->setChecked(true);
-    else                                                            ui->btn_ContestedZones->setChecked(false);
+    if(playerInfo[playerNumber].getBitFlags2(CONTESTED_ZONES_FLAG))             ui->btn_ContestedZones->setChecked(true);
+    else                                                                        ui->btn_ContestedZones->setChecked(false);
 
-    if(playerInfo[0].getBitFlags2(ZONES_TO_TEAMS_FLAG))             ui->btn_ZonesWithTeams->setChecked(true);
-    else                                                            ui->btn_ZonesWithTeams->setChecked(false);
+    if(playerInfo[playerNumber].getBitFlags2(ZONES_TO_TEAMS_FLAG))              ui->btn_ZonesWithTeams->setChecked(true);
+    else                                                                        ui->btn_ZonesWithTeams->setChecked(false);
 
-    if(playerInfo[0].getBitFlags2(SUPPLY_ZONES_REFILL_TAGS_FLAG))   ui->btn_SupplyZonesRefillTags->setChecked(true);
-    else                                                            ui->btn_SupplyZonesRefillTags->setChecked(false);
+    if(playerInfo[playerNumber].getBitFlags2(SUPPLY_ZONES_REFILL_TAGS_FLAG))    ui->btn_SupplyZonesRefillTags->setChecked(true);
+    else                                                                        ui->btn_SupplyZonesRefillTags->setChecked(false);
 
-    if(playerInfo[0].getBitFlags2(SUPPLY_ZONES_REVIVE_FLAG))        ui->btn_SupplyZonesReSpawn->setChecked(true);
-    else                                                            ui->btn_SupplyZonesReSpawn->setChecked(false);
+    if(playerInfo[playerNumber].getBitFlags2(SUPPLY_ZONES_REVIVE_FLAG))         ui->btn_SupplyZonesReSpawn->setChecked(true);
+    else                                                                        ui->btn_SupplyZonesReSpawn->setChecked(false);
 
-    if(playerInfo[0].getBitFlags2(HOSTILE_ZONES_FLAG))              ui->btn_HostileZones->setChecked(true);
-    else                                                            ui->btn_HostileZones->setChecked(false);
+    if(playerInfo[playerNumber].getBitFlags2(HOSTILE_ZONES_FLAG))               ui->btn_HostileZones->setChecked(true);
+    else                                                                        ui->btn_HostileZones->setChecked(false);
 
-    if(playerInfo[0].getBitFlags3(USE_STANDARD_BEACONS))            ui->btn_LtarEnhancedBeacons->setChecked(false);
-    else                                                            ui->btn_LtarEnhancedBeacons->setChecked(true);
+    if(playerInfo[playerNumber].getBitFlags3(USE_STANDARD_BEACONS))             ui->btn_LtarEnhancedBeacons->setChecked(false);
+    else                                                                        ui->btn_LtarEnhancedBeacons->setChecked(true);
 
-    if(playerInfo[0].getBitFlags3(DISABLE_IFF_BEACONS))             ui->btn_LtarIFFbeacon->setChecked(true);
-    else                                                            ui->btn_LtarIFFbeacon->setChecked(false);
+    if(playerInfo[playerNumber].getBitFlags3(DISABLE_IFF_BEACONS))              ui->btn_LtarIFFbeacon->setChecked(true);
+    else                                                                        ui->btn_LtarIFFbeacon->setChecked(false);
 
-    if(playerInfo[0].getBitFlags3(DISABLE_TAG_RECVD_BEACON))        ui->btn_LtarReceivedBeacons->setChecked(true);
-    else                                                            ui->btn_LtarReceivedBeacons->setChecked(false);
+    if(playerInfo[playerNumber].getBitFlags3(DISABLE_TAG_RECVD_BEACON))         ui->btn_LtarReceivedBeacons->setChecked(true);
+    else                                                                        ui->btn_LtarReceivedBeacons->setChecked(false);
 
-    if(playerInfo[0].getBitFlags3(SHIELD_BUTTON_HOLD_MODE))         ui->btn_LtarShieldButtonMode->setChecked(true);
-    else                                                            ui->btn_LtarShieldButtonMode->setChecked(false);
+    if(playerInfo[playerNumber].getBitFlags3(SHIELD_BUTTON_HOLD_MODE))          ui->btn_LtarShieldButtonMode->setChecked(true);
+    else                                                                        ui->btn_LtarShieldButtonMode->setChecked(false);
 
-    if(playerInfo[0].getBitFlags3(SUPPLY_ZONES_REFILL_AMMO))        ui->btn_LtarSupplyZonesRefillAmmo->setChecked(true);
-    else                                                            ui->btn_LtarSupplyZonesRefillAmmo->setChecked(false);
+    if(playerInfo[playerNumber].getBitFlags3(SUPPLY_ZONES_REFILL_AMMO))         ui->btn_LtarSupplyZonesRefillAmmo->setChecked(true);
+    else                                                                        ui->btn_LtarSupplyZonesRefillAmmo->setChecked(false);
 
-    if(playerInfo[0].getBitFlags3(SUPPLY_ZONES_REFILL_SHIELDS))     ui->btn_LtarSupplyZonesRefillShields->setChecked(true);
-    else                                                            ui->btn_LtarSupplyZonesRefillShields->setChecked(false);
+    if(playerInfo[playerNumber].getBitFlags3(SUPPLY_ZONES_REFILL_SHIELDS))      ui->btn_LtarSupplyZonesRefillShields->setChecked(true);
+    else                                                                        ui->btn_LtarSupplyZonesRefillShields->setChecked(false);
 
-    if(playerInfo[0].getBitFlags3(AUTO_RELOAD))                     ui->btn_LtarAutoReload->setChecked(true);
-    else                                                            ui->btn_LtarAutoReload->setChecked(false);
+    if(playerInfo[playerNumber].getBitFlags3(AUTO_RELOAD))                      ui->btn_LtarAutoReload->setChecked(true);
+    else                                                                        ui->btn_LtarAutoReload->setChecked(false);
 
-    if(playerInfo[0].getBitFlags3(ALLOW_FULL_AUTO_FIRE))            ui->btn_LtarFullAutoMode->setChecked(true);
-    else                                                            ui->btn_LtarFullAutoMode->setChecked(false);
+    if(playerInfo[playerNumber].getBitFlags3(ALLOW_FULL_AUTO_FIRE))             ui->btn_LtarFullAutoMode->setChecked(true);
+    else                                                                        ui->btn_LtarFullAutoMode->setChecked(false);
 }
 
 void FlagsWindow::updatePlayerFlags1(int bit, bool state)

@@ -4,7 +4,6 @@
 #include <QMainWindow>
 #include <QPointer>
 #include <QSoundEffect>
-#include <QSettings>
 #include "Defines.h"
 #include "PlayersWindow.h"
 #include "HostGameWindow.h"
@@ -114,14 +113,14 @@ private:
     bool    SlowTags;
     bool    MedicMode;
     bool    TeamTags;
-    bool    serialUSBactive;
-    bool    tcpCommsActive;
 
     void    UpdateGlobalPlayerControlSettings();
     void    UpdateGameControlSettings();
     void    setLtarControls(bool state);
     void    saveFile();
     void    loadFile();
+    void    loadSettings();
+    void    saveSettings();
 };
 
 #endif // LTTOMAINWINDOW_H

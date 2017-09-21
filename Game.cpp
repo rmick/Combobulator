@@ -101,13 +101,9 @@ void Game::setGameType(int value)
             break;
 
         case LtarGame:
-            //TODO: What do I do here.
             setIsLTARGame(true);
-
         }
     }
-   // qDebug() << "\n\tFlags: "  << playerInfo[0].displayBinary(playerInfo[0].getPackedFlags1(), 8)
-   //          << "\t: "          << playerInfo[0].displayBinary(playerInfo[0].getPackedFlags2(), 8);
 }
 
 int Game::getGameID() const
@@ -212,7 +208,11 @@ void Game::setIsThisPlayerInTheGame(int index, int value)
 
 int Game::getPlayersInTeam(int TeamNumber) const
 {
-    //TODO: Get a sum of the number of players in the team (0 thru 8)
+    if (gameInfo.getIsLTARGame())
+    {
+        qDebug() << "Game::getPlayersInTeam() - LTAR Mode - PlayersInTeamByte =" << PlayersInTeamByte[TeamNumber];
+        return PlayersInTeamByte[TeamNumber];
+    }
     int numberOfPlayersInThisTeam = 0;
     int startingPlayer = 1 + (8*(TeamNumber-1));
     int endingPlayer = 1+(8*TeamNumber);
@@ -220,14 +220,14 @@ int Game::getPlayersInTeam(int TeamNumber) const
     {
         if (gameInfo.getIsThisPlayerInTheGame(index) == true) numberOfPlayersInThisTeam++;
     }
-    qDebug() << "Game::getPlayersInTeam() - Number of players = " << numberOfPlayersInThisTeam << "in Team" << TeamNumber;
+    qDebug() << "Game::getPlayersInTeam() - Number of players =" << numberOfPlayersInThisTeam << "in Team" << TeamNumber;
     return numberOfPlayersInThisTeam;
 }
 
 void Game::setPlayersInTeamByte(int TeamNumber, int PlayerNumber, bool state)
 {
-    qDebug() << "Game::setPlayersInTeamByte() -------  NOT NEEDED, delete this call";
-    //TODO: This is wrong. Just needs to be a sum of the number of players in the team.
+    //This is wrong. Just needs to be a sum of the number of players in the team.
+    //Except maybe in an LTar
     PlayersInTeamByte[TeamNumber] ^= (-state ^ PlayersInTeamByte[TeamNumber]) & (1 << (PlayerNumber-1));
 }
 ////////////////////////////////////////////////////////////////////////////////////

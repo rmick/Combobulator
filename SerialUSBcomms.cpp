@@ -75,28 +75,23 @@ void SerialUSBcomms::closeSerialPort()
 
 void SerialUSBcomms::receivePacket()
 {
-    qDebug() << "SerialUSBcomms::receivePacket() triggered ";
 #ifdef INCLUDE_SERIAL_USB
     QByteArray rX;
     rX = serialUSB->readAll();
-    qDebug() << "SerialUSBcomms::receivePacket() " << rX;
-//#ifdef Q_OS_ANDROID
+    #ifdef Q_OS_ANDROID
     lttoComms.androidRxPacket(rX);
-//#endif
-    //#elseif
-   // emit newSerialUSBdata(rX);
-//#endif
-
+    #else
+    emit newSerialUSBdata(rX);
+    #endif
 #endif
 }
 
-void SerialUSBcomms::readUSBdata()
-{
-     qDebug() << "SerialUSBComms::readUSBdata() - ";
-     QByteArray rX;
-     rX = serialUSB->readAll();
-     qDebug() << "SerialUSBcomms::readUSBdata() " << rX;
-}
+//void SerialUSBcomms::readUSBdata()
+//{
+//     QByteArray rX;
+//     rX = serialUSB->readAll();
+//     qDebug() << "SerialUSBcomms::readUSBdata() - Does this ever get called???????" << rX;
+//}
 
 void SerialUSBcomms::sendPacket(QByteArray packet)
 {
@@ -105,9 +100,7 @@ void SerialUSBcomms::sendPacket(QByteArray packet)
     {
         serialUSB->write(packet);
         serialUSB->flush();
-        //qDebug() << "SerialUSBcomms::sendPacket() - " << packet;
     }
-    //else qDebug() << "SerialUSBcomms::sendPacket() - FAILED !!!";
 #else
     packet.clear();        // to silence Compiler warning!
 #endif
@@ -136,12 +129,11 @@ void SerialUSBcomms::setSerialCommsConnected(bool value)
 
 void SerialUSBcomms::initialiseUSBsignalsAndSlots()
 {
-    //Needs to be done here not in constructor because lttoComms a static and may not exist when this static is created.
+    //Needs to be done here not in constructor because lttoComms is a static and may not exist when this static is created.
     qDebug() << "SerialUSBcomms::initialiseUSBsignalsAndSlots() - Triggered";
     connect(&lttoComms, SIGNAL(sendSerialData(QByteArray)),     this,       SLOT(sendPacket(QByteArray)) );
     connect(this,       SIGNAL(newSerialUSBdata(QByteArray)),   &lttoComms, SLOT(receivePacket(QByteArray)) );
     connect(serialUSB,  SIGNAL(readyRead()),                    this,       SLOT(receivePacket()) );
-    //connect(serialUSB, &QSerialPort::readyRead,                 this, &SerialUSBcomms::receivePacket);
     setIsUSBinitialised(true);
 }
 

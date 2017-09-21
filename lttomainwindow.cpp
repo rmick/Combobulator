@@ -6,11 +6,13 @@
 #include <QFileDialog>
 #include <QInputDialog>
 #include <QAudioDeviceInfo>
+#include <QSettings>
 #include <QTime>
 #include "Game.h"
 #include "Players.h"
 #include "Defines.h"
 #include "LttoComms.h"
+#include "Hosting.h"
 
 LttoMainWindow::LttoMainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -23,6 +25,12 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
     sound_Powerdown(NULL)
 {
     ui->setupUi(this);
+    QCoreApplication::setOrganizationName("Bush And Beyond");
+    QCoreApplication::setOrganizationDomain("www.bushandbeyond.com.au");
+    QCoreApplication::setApplicationName("Combobulator");
+    //settingsFile = QApplication::applicationDirPath().left(1) + ":/demosettings.ini";
+    loadSettings();
+
     this->setWindowTitle("Lasertag Combobulator");
     ui->label_BuildNumber->setText(BUILD_NUMBER);
     gameInfo.setGameType(gameInfo.Ltag0);
@@ -31,11 +39,11 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
     ui->btn_Spies->setEnabled(false);
     ui->btn_StartGame->setEnabled(false);
     setLtarControls(false);
-    //ui->actionuse_LazerSwarm->setVisible(false);
     serialUSBcomms.setIsUSBinitialised(false);
     qsrand(static_cast<uint>(QTime::currentTime().msec()));
     for (int index = 1; index < 25; index++)    playerInfo[index].setPlayerName("Player " + QString::number(index));
     tcpComms.initialiseTCPsignalsAndSlots();
+
 
     //TODO: Remove this debug code (why don't sounds play in Release build?)
     foreach (const QAudioDeviceInfo &deviceInfo, QAudioDeviceInfo::availableDevices(QAudio::AudioOutput))
@@ -48,17 +56,9 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
     sound_PowerUp  ->setSource(QUrl::fromLocalFile(":/resources/audio/stinger-power-on.wav"));
     sound_Powerdown->setSource(QUrl::fromLocalFile(":/resources/audio/shut-down.wav"));
     sound_PowerUp->play();
-
-                //TODO: Get rid of this, it is just debug until I store/recall this setting
-                ui->actionuse_LazerSwarm->setChecked(true);
-                serialUSBactive = true;
-                tcpCommsActive = true;
-                gameInfo.setIsSpiesTeamTagActive(false);
-                sound_PowerUp->setVolume(1.0);
-                //TODO: save position on screen to a Qsettings file
+    sound_PowerUp->setVolume(1.0);
 
                 //TODO: Remove these, they are for testing only.
-                QWidget::move(0,0);
         //    gameInfo.setIsThisPlayerInTheGame(3, true);
         //    ui->btn_StartGame->setEnabled(true);
                 //End of test/debug code.
@@ -149,7 +149,7 @@ void LttoMainWindow::on_btn_StartGame_clicked()
     }
 
     if(hostGameWindow->resetPlayersForNewGame() == false) return;
-    gameInfo.setGameID(hostGameWindow->GetRandomNumber(1,255));
+    gameInfo.setGameID(host.GetRandomNumber(1,255));
     hostGameWindow->show();
 }
 
@@ -701,9 +701,36 @@ void LttoMainWindow::loadFile()
     }
 }
 
+void LttoMainWindow::loadSettings()
+{
+    QSettings settings;
+    ui->actionuse_LazerSwarm->setChecked(settings.value("LazerswarmMode").toBool());
+    ui->btn_SpyTeamTags->setChecked(settings.value("SpiesTeamTagMode").toBool());
+
+    settings.beginGroup("MainWindow");
+    resize(settings.value("size", QSize(400, 400)).toSize());
+    move  (settings.value("pos", QPoint(200, 200)).toPoint());
+    //resize(settings.value("size", QSize(400, 400)).toSize());
+    //move(settings.value("pos", QPoint(200, 200)).toPoint());
+    settings.endGroup();
+}
+
+void LttoMainWindow::saveSettings()
+{
+    //QSettings settings(settingsFile, QSettings::NativeFormat);
+    QSettings settings;
+    settings.setValue("LazerswarmMode",   lttoComms.getUseLazerSwarm());
+    settings.setValue("SpiesTeamTagMode", gameInfo.getIsSpiesTeamTagActive());
+    settings.beginGroup("MainWindow");
+    settings.setValue("size", size());
+    settings.setValue("pos", pos());
+    settings.endGroup();
+}
+
 void LttoMainWindow::on_actionExit_triggered()
 {
     tcpComms.DisconnectTCP();
+    saveSettings();
     sound_Powerdown->setLoopCount(1);
     sound_Powerdown->play();
     lttoComms.nonBlockingDelay(850);

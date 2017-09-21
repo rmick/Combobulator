@@ -17,7 +17,7 @@ class SerialUSBcomms : public QObject
 public:
     explicit SerialUSBcomms(QObject *parent = 0);
 
-    void readUSBdata();
+    //void readUSBdata();
 
     void        findSerialPort();
     void        setUpSerialPort();

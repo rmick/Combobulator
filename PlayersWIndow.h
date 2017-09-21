@@ -52,13 +52,15 @@ private slots:
 
     void playerButtonReleased(int value);
 
-    void on_btn_Test_clicked();
+//    void on_btn_Test_clicked();
 
     void on_btn_Flags_clicked();
 
-    void on_slider_SleepTimeOut_valueChanged(int value);
+//    void on_slider_SleepTimeOut_valueChanged(int value);
 
     void on_slider_StartAmmo_valueChanged(int value);
+
+    void on_btn_ChangePlayers_clicked();
 
 private:
     Ui::PlayersWindow   *ui;

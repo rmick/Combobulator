@@ -18,7 +18,7 @@ public:
     explicit FlagsWindow(int playerToUse, QWidget *parent = 0);
     ~FlagsWindow();
 
-    void setButtonStates();
+    void setButtonStates(int playerNumber = 0);
 
 private slots:
     void on_btn_Neutralise_clicked();

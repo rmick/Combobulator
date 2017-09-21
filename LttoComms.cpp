@@ -17,8 +17,9 @@ LttoComms::LttoComms(QObject *parent) : QObject(parent)
 
 bool LttoComms::sendPacket(char type, int data, bool dataFormat)
 {
-    bool result = false;
-    QByteArray packet;
+    bool result = true;
+    bool fullTCPpacketToSend;
+    static QByteArray packet;
 
     //Calculating BCD and the CheckSum.
     //This is here because it always does my head in !!!!!
@@ -37,6 +38,7 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
     {
         case PACKET:
             calculatedCheckSumTx = data;
+            fullTCPpacketToSend = false;
             packetString = createIRstring(data);
             packetString.prepend('P');
             packet.append(packetString);
@@ -46,6 +48,7 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
             if (dataFormat == BCD)
             {
                 calculatedCheckSumTx += ConvertDecToBCD(data);
+                fullTCPpacketToSend = false;    // To silence compiler warning.
                 data = ConvertDecToBCD(data);
                 packetString = createIRstring(data);
                 packetString.prepend('D');
@@ -67,22 +70,33 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
             packetString = createIRstring(calculatedCheckSumTx);
             packetString.prepend('C');
             packet.append(packetString);
+            fullTCPpacketToSend = true;
             //qDebug() << "lttoComms::sendPacket() - CheckSum = \t" << packetString;
             break;
         case TAG:
             packetString = createIRstring(data);
             packetString.prepend('T');
             packet.append(packetString);
+            fullTCPpacketToSend = true;
             break;
         case BEACON:
             packetString = createIRstring(data);
             packetString.prepend('B');
             packet.append(packetString);
+            fullTCPpacketToSend = true;
             break;
-    default:
-        qDebug() << "lttoComms::sendPacket() - No Packet type specified. You ninkom poop.";
+        default:
+            qDebug() << "lttoComms::sendPacket() - No Packet type specified. You ninkom poop.";
+            fullTCPpacketToSend = false;  // to silence compiler warning
+            result = false;
     }
 
+
+
+//#define SEND_FULL_LTTO_PACKETS
+
+
+#ifndef SEND_FULL_LTTO_PACKETS
     if (useLazerSwarm)
     {
         QByteArray packetToTranslate;
@@ -94,7 +108,19 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
     else packet.append(":");
 
     emit sendSerialData(packet);            //Connects to TCPComms::sendPacket slot && SerialUSBcomms::sendPacket slot
+    packet.clear();
     nonBlockingDelay(INTERPACKET_DELAY_MSEC);
+
+
+#else
+    packet.append(":");
+    if (fullTCPpacketToSend == true)
+    {
+        emit sendSerialData(packet);
+        qDebug() << "lttoComms::sendPacket() - WIFIKIT32 - Full Packet = " << packet;
+        packet.clear();
+    }
+#endif
 
     return result;
 }

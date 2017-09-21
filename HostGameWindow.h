@@ -26,17 +26,17 @@ public:
     bool getIsThisPlayerHosted(int playerNumber) const;
     void setIsThisPlayerHosted(int playerNumber, bool value);
 
-    int getCurrentPlayer() const;
+    int  getCurrentPlayer() const;
     void setCurrentPlayer(int value);
 
     bool resetPlayersForNewGame();
 
-    int GetRandomNumber(int min, int max);
+//    int  GetRandomNumber(int min, int max);
 
     void changeMode(int mode);
 
-    bool getIsUSBinitialised() const;
-    void setIsUSBinitialised(bool value);
+//    bool getIsUSBinitialised() const;
+//    void setIsUSBinitialised(bool value);
 
 public slots:
 
@@ -84,7 +84,7 @@ private slots:
 
     void on_btn_Disconnect_clicked();
 
-    void on_btn_ReadyReadUSB_clicked();
+//    void on_btn_ReadyReadUSB_clicked();
 
 private:
     //pointers
@@ -126,7 +126,8 @@ private:
     void    hostCurrentPlayer();
     void    assignPlayerFailed();
     int     calculatePlayerTeam5bits(int requestedTeam);
-    bool    assignSpies();
+//    bool    assignSpies();
+//    bool    pickTheKing();
     void    endGame();
 };
 
