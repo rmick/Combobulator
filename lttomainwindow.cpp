@@ -44,12 +44,6 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
     for (int index = 1; index < 25; index++)    playerInfo[index].setPlayerName("Player " + QString::number(index));
     tcpComms.initialiseTCPsignalsAndSlots();
 
-
-    //TODO: Remove this debug code (why don't sounds play in Release build?)
-    foreach (const QAudioDeviceInfo &deviceInfo, QAudioDeviceInfo::availableDevices(QAudio::AudioOutput))
-        qDebug() << "LttoMainWindow::LttoMainWindow() - Audio Device name: " << deviceInfo.deviceName();
-
-
     //Init all the sound effects.
     sound_PowerUp   = new QSoundEffect(this);
     sound_Powerdown = new QSoundEffect(this);
@@ -57,11 +51,6 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
     sound_Powerdown->setSource(QUrl::fromLocalFile(":/resources/audio/shut-down.wav"));
     sound_PowerUp->play();
     sound_PowerUp->setVolume(1.0);
-
-                //TODO: Remove these, they are for testing only.
-        //    gameInfo.setIsThisPlayerInTheGame(3, true);
-        //    ui->btn_StartGame->setEnabled(true);
-                //End of test/debug code.
 }
 
 LttoMainWindow::~LttoMainWindow()
@@ -302,9 +291,7 @@ void LttoMainWindow::on_btn_CustomGame_clicked()
 
     switch(gameInfo.getNumberOfTeams())
     {
-    case 1: //TODO:
-    case 2: //TODO:
-    case 3: //TODO:
+    //There is actually nothing to do here, as the GameType is always the same, regardless of NumberOfTeams.
     default:
         gameInfo.setGameType(gameInfo.Custom);
         break;
@@ -704,9 +691,11 @@ void LttoMainWindow::loadFile()
 void LttoMainWindow::loadSettings()
 {
     QSettings settings;
-    ui->actionuse_LazerSwarm->setChecked(settings.value("LazerswarmMode").toBool());
-    ui->btn_SpyTeamTags->setChecked(settings.value("SpiesTeamTagMode").toBool());
+    ui->actionuse_LazerSwarm->setChecked(settings.value("LazerswarmMode", true).toBool());
+    lttoComms.setUseLazerSwarm(settings.value("LazerswarmMode", true).toBool());
+    ui->btn_SpyTeamTags->setChecked(settings.value("SpiesTeamTagMode", true).toBool());
 
+    qDebug() << "LttoMainWindow::loadSettings()" << lttoComms.getUseLazerSwarm();
     settings.beginGroup("MainWindow");
     resize(settings.value("size", QSize(400, 400)).toSize());
     move  (settings.value("pos", QPoint(200, 200)).toPoint());
@@ -746,6 +735,7 @@ void LttoMainWindow::on_actionSet_CountDown_Time_triggered()
 
 void LttoMainWindow::on_actionuse_LazerSwarm_triggered()
 {
+    qDebug() << "LttoMainWindow::on_actionuse_LazerSwarm_triggered()";
     if(ui->actionuse_LazerSwarm->isChecked() ) lttoComms.setUseLazerSwarm(true);
     else                                       lttoComms.setUseLazerSwarm(false);
 }

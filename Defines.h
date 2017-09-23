@@ -41,7 +41,7 @@ const char  BEACON      = 'B';
 
 //Internal timers (in mSec)
 const int   INTERPACKET_DELAY_MSEC  = 50;
-const int   HOST_TIMER_MSEC         = 2500;
+const int   HOST_TIMER_MSEC         = 1500;
 const int   PRESS_AND_HOLD_TIME     = 500;
 const int   BEACON_TIMER_MSEC       = 500;
 
@@ -85,6 +85,7 @@ const int   DEFAULT_GAME_ID         = 0x64;
 const int   DEFAULT_GAME_LENGTH     = 10;
 const int   DEFAULT_COUNTDOWN_TIME  = 5;
 const int   DEFAULT_RELOADS         = 100;        // 100 = Unlimited
+const int   DEFAULT_RELOADS2        = 0;         // 0xFFFF = LTAR unlimited
 const int   DEFAULT_HEALTH          = 25;
 const int   DEFAULT_SHEILDS         = 15;
 const int   DEFAULT_MEGAS           = 20;         // 100 - Unlimited

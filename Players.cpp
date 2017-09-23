@@ -14,6 +14,7 @@ Players::Players()
     Handicap        = 0;
     PlayerName       = "_";
     Reloads         = DEFAULT_RELOADS;
+    Reloads2        = DEFAULT_RELOADS2;
     HealthTags      = DEFAULT_HEALTH;
     ShieldTime      = DEFAULT_SHEILDS;
     MegaTags        = DEFAULT_MEGAS;
@@ -55,10 +56,17 @@ int Players::getReloads() const
 void Players::setReloads(int value)
 {
     Reloads = value;
-    if (Reloads == 100) setBitFlags1(LIMITED_RELOADS_FLAG, false);
-    else                setBitFlags1(LIMITED_RELOADS_FLAG, true);
+    if (Reloads == 100)
+    {
+        setBitFlags1(LIMITED_RELOADS_FLAG, false);
+        setReloads2(0xFF);
+    }
+    else
+    {
+        setBitFlags1(LIMITED_RELOADS_FLAG, true);
+        setReloads2(0);
+    }
 }
-
             int Players::getReloads2() const
             {
                 return Reloads2;
@@ -66,6 +74,7 @@ void Players::setReloads(int value)
 
             void Players::setReloads2(int value)
             {
+                //TODO: This is not ever set. Need to allow for up to 990 reloads if LTAR game.
                 Reloads2 = value;
             }
 

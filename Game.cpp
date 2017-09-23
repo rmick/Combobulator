@@ -97,7 +97,7 @@ void Game::setGameType(int value)
             break;
 
         case Custom:
-            //TODO: How to deal with different numbers of teams ????
+            // Nothing to do here.
             break;
 
         case LtarGame:
@@ -242,8 +242,9 @@ void Game::streamToFile(QTextStream &out)
     out << "NumberOfTeams:"    << NumberOfTeams    << endl;
     out << "NumberOfSpies:"    << NumberOfSpies    << endl;
     out << "CountDownTime:"    << CountDownTime    << endl;
-    out << "PlayersInGame;"    << endl;
+//    out << "PlayersInGame;"    << endl;
     out << "SpyTeamTagsActive:"<< isSpiesTeamTagActive << endl;
+    out << "LTARmode:"          << isLTARGame        << endl;
     for (int x=0; x< 25; x++)
     {
         if      (x < 10) out << " Player0" << x << ":" << isThisPlayerInTheGame[x] << endl;
@@ -272,6 +273,7 @@ void Game::streamFromFile(QTextStream &in)
             else if (descriptorG.contains(" Player") )              isThisPlayerInTheGame[descriptorG.mid(7,2).toInt()] = descriptorG.right(1).toInt();
             else if (descriptorG.contains("CountDownTime:") )       CountDownTime           = extractInteger(descriptorG);
             else if (descriptorG.contains("SpyTeamTagsActive:") )   isSpiesTeamTagActive    = extractInteger(descriptorG);
+            else if (descriptorG.contains("LTARmode:") )            isLTARGame              = extractInteger(descriptorG);
     }   while (descriptorG != "END_OF_GAME_SETTINGS");
 
     setNumberOfTeams(NumberOfTeams);    //This is required to update the Flags2 bits.
@@ -287,7 +289,9 @@ void Game::streamFromFile(QTextStream &in)
     qDebug() << "NumberOfPlayers:"  << NumberOfPlayers;
     qDebug() << "NumberOfTeams:"    << NumberOfTeams;
     qDebug() << "NumberOfSpies:"    << NumberOfSpies;
-    qDebug() << "CountDownTime"    << CountDownTime;
+    qDebug() << "CountDownTime"     << CountDownTime;
+    qDebug() << "SpyTeamTagsActive" << isSpiesTeamTagActive;
+    qDebug() << "LTARmode"          << isLTARGame;
     qDebug() << "PlayersInGame;";
     for (int x=0; x< 25; x++)
     {

@@ -48,6 +48,9 @@ public:
     bool getSerialUSBcommsConnected() const;
     void setSerialUSBcommsConnected(bool value);
 
+    bool getUseLongDataPacketsOverTCP() const;
+    void setUseLongDataPacketsOverTCP(bool value);
+
 public slots:
     void        TCPconnected();
     void        TCPdisconnected();
@@ -75,6 +78,7 @@ private:
     bool            tcpCommsConnected;
     bool            serialUSBcommsConnected;
     int             missedAnnounceCount;
+    bool            useLongDataPacketsOverTCP;
 
 
     void            processPacket(QList<QByteArray> data);

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1024</width>
-    <height>600</height>
+    <height>732</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -182,7 +182,7 @@ background: #eee;
       <property name="minimumSize">
        <size>
         <width>0</width>
-        <height>40</height>
+        <height>39</height>
        </size>
       </property>
       <property name="maximumSize">
@@ -222,7 +222,7 @@ background: #eee;
       <property name="minimumSize">
        <size>
         <width>0</width>
-        <height>40</height>
+        <height>39</height>
        </size>
       </property>
       <property name="maximumSize">
@@ -297,7 +297,7 @@ background: #eee;
       <property name="minimumSize">
        <size>
         <width>0</width>
-        <height>40</height>
+        <height>39</height>
        </size>
       </property>
       <property name="maximumSize">
@@ -648,7 +648,7 @@ background: #eee;
       <property name="minimumSize">
        <size>
         <width>0</width>
-        <height>40</height>
+        <height>39</height>
        </size>
       </property>
       <property name="maximumSize">
@@ -927,7 +927,7 @@ background: #eee;
       <property name="minimumSize">
        <size>
         <width>0</width>
-        <height>30</height>
+        <height>39</height>
        </size>
       </property>
       <property name="value">
@@ -1300,7 +1300,7 @@ background: #eee;
       <property name="minimumSize">
        <size>
         <width>0</width>
-        <height>40</height>
+        <height>39</height>
        </size>
       </property>
       <property name="maximumSize">
@@ -1469,7 +1469,7 @@ background: #eee;
       <property name="minimumSize">
        <size>
         <width>0</width>
-        <height>40</height>
+        <height>39</height>
        </size>
       </property>
       <property name="maximumSize">
@@ -2449,11 +2449,14 @@ background: #eee;
    <addaction name="separator"/>
    <addaction name="actionSet_CountDown_Time"/>
    <addaction name="separator"/>
+   <addaction name="actionuse_LazerSwarm"/>
+   <addaction name="separator"/>
    <addaction name="actionAbout"/>
    <addaction name="separator"/>
    <addaction name="separator"/>
    <addaction name="separator"/>
    <addaction name="actionExit"/>
+   <addaction name="separator"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionSave">

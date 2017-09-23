@@ -10,9 +10,12 @@ class Hosting : public QObject
     Q_OBJECT
 public:
     explicit Hosting(QObject *parent = nullptr);
-    bool pickTheKing();
-    bool assignSpies();
-    int  GetRandomNumber(int min, int max);
+    bool    pickTheKing();
+    bool    pickTheSpies();
+    int     GetRandomNumber(int min, int max);
+    int     assignTeamsAndSwapIfSpy(int currentPlayer);
+    int     swapSpyPlayers(int currentPlayer);
+    int     swapKingPlayers(int currentPlayer);
 
 signals:
     void    AddToHostWindowListWidget(QString rhubarbRhubarb);

@@ -208,8 +208,8 @@ QPushbutton:disabled
   <widget class="QPushButton" name="btn_StartStopHosting">
    <property name="geometry">
     <rect>
-     <x>740</x>
-     <y>10</y>
+     <x>620</x>
+     <y>130</y>
      <width>113</width>
      <height>41</height>
     </rect>
@@ -726,8 +726,8 @@ Base Status</string>
   <widget class="QPushButton" name="btn_FailSend">
    <property name="geometry">
     <rect>
-     <x>740</x>
-     <y>60</y>
+     <x>770</x>
+     <y>160</y>
      <width>113</width>
      <height>31</height>
     </rect>
@@ -741,7 +741,7 @@ Signal</string>
    <property name="geometry">
     <rect>
      <x>740</x>
-     <y>100</y>
+     <y>80</y>
      <width>113</width>
      <height>32</height>
     </rect>
@@ -796,6 +796,32 @@ Signal</string>
    </property>
    <property name="text">
     <string>Read USB</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btn_ShowListWidget">
+   <property name="geometry">
+    <rect>
+     <x>740</x>
+     <y>20</y>
+     <width>113</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Show Debug</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton">
+   <property name="geometry">
+    <rect>
+     <x>670</x>
+     <y>170</y>
+     <width>113</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>AckPlayer</string>
    </property>
   </widget>
  </widget>

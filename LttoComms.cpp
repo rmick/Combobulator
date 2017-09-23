@@ -8,9 +8,8 @@ LttoComms lttoComms;
 LttoComms::LttoComms(QObject *parent) : QObject(parent)
 {
     qDebug() << "LttoComms::LttoComms() - Constructing.......";
-
-    useLazerSwarm = true;          //TODO: Set this up in Preferences.
     dontAnnounceGame = false;
+    useLongDataPacketsOverTCP = false;
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -92,35 +91,33 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
     }
 
 
-
-//#define SEND_FULL_LTTO_PACKETS
-
-
-#ifndef SEND_FULL_LTTO_PACKETS
-    if (useLazerSwarm)
+    if(useLongDataPacketsOverTCP)
     {
-        QByteArray packetToTranslate;
-        packetToTranslate.append(packet);
-        packet.clear();
-        packet.append(lazerswarm.translateCommand(packetToTranslate) );
-        packet.append(" \r\n");
+        packet.append(":");
+        if (fullTCPpacketToSend == true)
+        {
+            emit sendSerialData(packet);
+            qDebug() << "lttoComms::sendPacket() - WIFIKIT32 - Full Packet = " << packet;
+            packet.clear();
+        }
     }
-    else packet.append(":");
-
-    emit sendSerialData(packet);            //Connects to TCPComms::sendPacket slot && SerialUSBcomms::sendPacket slot
-    packet.clear();
-    nonBlockingDelay(INTERPACKET_DELAY_MSEC);
-
-
-#else
-    packet.append(":");
-    if (fullTCPpacketToSend == true)
+    else
     {
-        emit sendSerialData(packet);
-        qDebug() << "lttoComms::sendPacket() - WIFIKIT32 - Full Packet = " << packet;
+        if (useLazerSwarm)
+        {
+            QByteArray packetToTranslate;
+            packetToTranslate.append(packet);
+            packet.clear();
+            packet.append(lazerswarm.translateCommand(packetToTranslate) );
+            packet.append(" \r\n");
+        }
+        else packet.append(":");
+
+        emit sendSerialData(packet);            //Connects to TCPComms::sendPacket slot && SerialUSBcomms::sendPacket slot
         packet.clear();
+        nonBlockingDelay(INTERPACKET_DELAY_MSEC);
+
     }
-#endif
 
     return result;
 }
@@ -173,8 +170,8 @@ void LttoComms::receivePacket(QByteArray RxData)
                 return;
             }
             rxPacketList.append(lazerswarm.decodeCommand(irDataIn));
-            qDebug() << "LttoComms::receivePacket() LazerSwarm mode - " << lazerswarm.decodeCommand(irDataIn);
-            if (lazerswarm.decodeCommand(irDataIn).startsWith("C")) qDebug() << "LttoComms::receivePacket() LazerSwarm mode -   ___________";
+//            qDebug() << "LttoComms::receivePacket() LazerSwarm mode - " << lazerswarm.decodeCommand(irDataIn);
+//            if (lazerswarm.decodeCommand(irDataIn).startsWith("C")) qDebug() << "LttoComms::receivePacket() LazerSwarm mode -   ___________";
             isPacketComplete = true;
         }
     }
@@ -200,6 +197,16 @@ void LttoComms::receivePacket(QByteArray RxData)
             }
         }
     }
+}
+
+bool LttoComms::getUseLongDataPacketsOverTCP() const
+{
+    return useLongDataPacketsOverTCP;
+}
+
+void LttoComms::setUseLongDataPacketsOverTCP(bool value)
+{
+    useLongDataPacketsOverTCP = value;
 }
 
 bool LttoComms::getSerialUSBcommsConnected() const

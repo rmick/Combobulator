@@ -103,7 +103,7 @@ private:
     char    NameChar3;
     char    NameChar4;
     bool    isSpiesTeamTagActive;
-    int     TotalNumberOfPlayersInGame;
+//    int     TotalNumberOfPlayersInGame;
     int     PlayersInTeamByte[3];
     int     PlayerToReHost;
     bool    isLTARGame;
