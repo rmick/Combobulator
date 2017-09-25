@@ -5,6 +5,7 @@
 #include <QSignalMapper>
 #include <QVector>
 #include <QButtonGroup>
+#include "Defines.h"
 #include "Game.h"
 #include "Players.h"
 //#include "HostGameWindow.h"
@@ -20,9 +21,6 @@ class ReHostTagger : public QDialog  //, public HostGameWindow
 public:
     explicit ReHostTagger(QWidget *parent = 0);
     ~ReHostTagger();
-
-//    bool getClosedWithoutSelectingPlayer() const;
-//    void setClosedWithoutSelectingPlayer(bool value);
 
 private slots:
     void    playerButtonPressed(int playerNumber);

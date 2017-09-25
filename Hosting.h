@@ -12,7 +12,7 @@ public:
     explicit Hosting(QObject *parent = nullptr);
     bool    pickTheKing();
     bool    pickTheSpies();
-    int     GetRandomNumber(int min, int max);
+    int     getRandomNumber(int min, int max);
     int     assignTeamsAndSwapIfSpy(int currentPlayer);
     int     swapSpyPlayers(int currentPlayer);
     int     swapKingPlayers(int currentPlayer);

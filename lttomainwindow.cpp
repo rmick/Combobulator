@@ -34,6 +34,8 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
     this->setWindowTitle("Lasertag Combobulator");
     ui->label_BuildNumber->setText(BUILD_NUMBER);
     gameInfo.setGameType(gameInfo.Ltag0);
+    ui->btn_SpyTeamTags->setChecked(true);
+    ui->btn_SpyTeamTags->setVisible(false);
     ui->btn_NoTeams->setChecked(true);
     gameInfo.setNumberOfTeams(0);
     ui->btn_Spies->setEnabled(false);
@@ -138,7 +140,7 @@ void LttoMainWindow::on_btn_StartGame_clicked()
     }
 
     if(hostGameWindow->resetPlayersForNewGame() == false) return;
-    gameInfo.setGameID(host.GetRandomNumber(1,255));
+    gameInfo.setGameID(host.getRandomNumber(1,255));
     hostGameWindow->show();
 }
 
@@ -149,6 +151,7 @@ void LttoMainWindow::on_btn_SelectPlayers_clicked()
     ui->btn_StartGame->setEnabled(true);
 }
 
+//////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
 
 void LttoMainWindow::on_btn_SlowTags_clicked()
@@ -197,13 +200,15 @@ void LttoMainWindow::on_btn_TeamTags_clicked()
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////////
-
+/// //////////////////////////////////////////////////////////////////////////////////
+/// //////////////////////////////////////////////////////////////////////////////////
+/// //////////////////////////////////////////////////////////////////////////////////
+/// //////////////////////////////////////////////////////////////////////////////////
+///
 void LttoMainWindow::on_btn_Ltag_clicked()
 {
     gameInfo.setGameName("LTAG");
     ui->btn_NoTeams->setEnabled(true);
-    //ui->btn_Flags->setEnabled(false);
 
     switch(gameInfo.getNumberOfTeams())
     {
@@ -223,7 +228,6 @@ void LttoMainWindow::on_btn_HideAndSeek_clicked()
 {
     gameInfo.setGameName("SEEK");
     ui->btn_NoTeams->setEnabled(false);
-    //ui->btn_Flags->setEnabled(false);
 
     switch(gameInfo.getNumberOfTeams())
     {
@@ -243,9 +247,7 @@ void LttoMainWindow::on_btn_HideAndSeek_clicked()
 void LttoMainWindow::on_btn_Kings_clicked()
 {
     gameInfo.setGameName("KING");
-    //TODO: Player1 is ALWAYS the king, so I need to use Spies technology to pick random player to be King and swap player numbers from the same team.
     ui->btn_NoTeams->setEnabled(false);
-    //ui->btn_Flags->setEnabled(false);
 
     switch(gameInfo.getNumberOfTeams())
     {
@@ -267,7 +269,6 @@ void LttoMainWindow::on_btn_OwnTheZone_clicked()
 {
     gameInfo.setGameName("ZONE");
     ui->btn_NoTeams->setEnabled(true);
-    //ui->btn_Flags->setEnabled(false);
 
     switch(gameInfo.getNumberOfTeams())
     {
@@ -287,7 +288,6 @@ void LttoMainWindow::on_btn_CustomGame_clicked()
 {
     gameInfo.setGameName("CUST");
     ui->btn_NoTeams->setEnabled(true);
-    ui->btn_Flags->setEnabled(true);
 
     switch(gameInfo.getNumberOfTeams())
     {
@@ -425,6 +425,7 @@ void LttoMainWindow::on_slider_Health_valueChanged(int value)
 
 void LttoMainWindow::on_slider_Reloads_valueChanged(int value)
 {
+    //TODO: Allow for 990 on LTAR.
     if  (value == 100) ui->label_Reloads->setText("Reloads : Unlimited");
     else               ui->label_Reloads->setText("Reloads : " + QString::number(value) );
 
@@ -489,13 +490,15 @@ void LttoMainWindow::on_btn_Spies_clicked()
         if (gameInfo.getNumberOfSpies() == index)
         {
             ui->btn_Spies->setText("Spies = "+QString::number(++index) );
-            ui->btn_SpyTeamTags->setEnabled(true);
+            ui->btn_SpyTeamTags->setVisible(true);
+            ui->btn_Spies->setStyleSheet(BUTTON_CHECKED);
             gameInfo.setNumberOfSpies(index);
         }
         if (gameInfo.getNumberOfSpies() == 4)
         {
             ui->btn_Spies->setText("Spies = 0");
-            ui->btn_SpyTeamTags->setEnabled(false);
+            ui->btn_SpyTeamTags->setVisible(false);
+            ui->btn_Spies->setStyleSheet(BUTTON_UNCHECKED);
             gameInfo.setNumberOfSpies(0);
         }
     }
@@ -767,12 +770,12 @@ void LttoMainWindow::on_btn_SpyTeamTags_clicked()
 {
     if      (gameInfo.getIsSpiesTeamTagActive() == false)
     {
-        ui->btn_TeamTags->setText("Spy TeamTags OFF");
-        gameInfo.setIsSpiesTeamTagActive(false);
+        ui->btn_SpyTeamTags->setText("Spy TeamTags ON");
+        gameInfo.setIsSpiesTeamTagActive(true);
     }
     else if (gameInfo.getIsSpiesTeamTagActive() == true)
     {
-        ui->btn_TeamTags->setText("Spy TeamTags ON");
-        gameInfo.setIsSpiesTeamTagActive(true);
+        ui->btn_SpyTeamTags->setText("Spy TeamTags OFF");
+        gameInfo.setIsSpiesTeamTagActive(false);
     }
 }

@@ -25,7 +25,12 @@
 
 
 //  Build Number
-const QString BUILD_NUMBER  = "Build : 17.9.20a";
+const QString BUILD_NUMBER  = "Build : 17.9.25a";
+
+// Recoil Game Hub_28f537d14fca
+
+
+
 
 //  WiFi stuff
 const QString   HOST_IP_ADDRESS     = "192.168.4.1";
@@ -116,7 +121,7 @@ const int   TEAM_COUNT_MSB                  = 1;
 const int   TEAM_COUNT_LSB                  = 0;
 
 //Packed byte, FLAGS3
-const int   USE_STANDARD_BEACONS            = 7;
+const int   DISABLE_LTAR_ENHANCED_BEACONS   = 7;
 const int   DISABLE_IFF_BEACONS             = 6;
 const int   DISABLE_TAG_RECVD_BEACON        = 5;
 const int   SHIELD_BUTTON_HOLD_MODE         = 4;
@@ -147,5 +152,11 @@ const int   SCOREBOARD_MODE                 = 6;
 //Classes for calledByWho
 const int   LTTO_MAIN_WINDOW                = 2;
 const int   PLAYERS_WINDOW                  = 3;
+
+const QString   BUTTON_SELECTED             = "border-color: cyan; color: cyan;";       //"font: bold;";
+const QString   BUTTON_UNSELECTED           = "color: black;";                          //"font: normal;";
+const QString   BUTTON_CHECKED              = "border-color: cyan; color: cyan;";       //"background-color: rgb(50,220,200)";
+const QString   BUTTON_UNCHECKED            = "border-color: grey; color: black;";      //"background-color: cyan";
+const QString   BUTTON_LAST_PRESSED         = "color:red;";     //"background-color: rgb(50,250,220)";
 
 #endif // DEFINES_H

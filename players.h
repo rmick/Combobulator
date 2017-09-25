@@ -15,8 +15,9 @@ public:
     QString getPlayerName() const;
     void    setPlayerName(const QString &value);
 
-    int  getReloads() const;
-    void setReloads(int value);    
+    int getReloads() const;
+    int  getReloads(bool isLtar);
+    void setReloads(int value);
     int  getReloads2() const;
     void setReloads2(int value);
 

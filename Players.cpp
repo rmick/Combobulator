@@ -53,30 +53,53 @@ int Players::getReloads() const
     return Reloads;
 }
 
+int Players::getReloads(bool isLtar)
+{
+    int calcReloads = 0;
+
+    if (Reloads == 100)
+    {
+        calcReloads = 0xFF;
+        Reloads2 = 0xFF;
+    }
+    else if (isLtar == true)
+    {
+        calcReloads = Reloads * 10;
+        Reloads2 = calcReloads / 256;
+        calcReloads  = calcReloads % 256;
+    }
+    else
+    {
+        calcReloads = Reloads;
+    }
+    qDebug() << "Players::getReloads(bool isLtar FALSE) -" << Reloads2 << calcReloads << Reloads;
+    return calcReloads;
+}
+
 void Players::setReloads(int value)
 {
     Reloads = value;
     if (Reloads == 100)
     {
         setBitFlags1(LIMITED_RELOADS_FLAG, false);
-        setReloads2(0xFF);
     }
     else
     {
         setBitFlags1(LIMITED_RELOADS_FLAG, true);
-        setReloads2(0);
     }
+    return;
 }
-            int Players::getReloads2() const
-            {
-                return Reloads2;
-            }
 
-            void Players::setReloads2(int value)
-            {
-                //TODO: This is not ever set. Need to allow for up to 990 reloads if LTAR game.
-                Reloads2 = value;
-            }
+int Players::getReloads2() const
+{
+    return Reloads2;
+}
+
+void Players::setReloads2(int value)
+{
+    //This mthod is never called. Reloads2 is set by Players::getReloads(int, bool)
+    Reloads2 = value;
+}
 
 int Players::getHealthTags() const
 {
@@ -347,7 +370,8 @@ QString Players::displayBinary(int number, int digits)
 
 int Players::handicapAdjust(int value)
 {
-    if (value == 0) value = 1;                              //Otherwise a Zero value stays zero forever.
+    //TODO: How to work with 0 values. Great for Shields, but crap for Reloads2
+    //if (value == 0) value = 1;                              //Otherwise a Zero value stays zero forever.
     //TODO: Values of 1 & 2 hardly change, need to work on a logarithmic curve - maybe.
     value += value * (static_cast<float>(Handicap)/10);
     if (value > 100) value = 100;

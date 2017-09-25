@@ -79,7 +79,7 @@ void FlagsWindow::setButtonStates(int playerNumber)
     if(playerInfo[playerNumber].getBitFlags2(HOSTILE_ZONES_FLAG))               ui->btn_HostileZones->setChecked(true);
     else                                                                        ui->btn_HostileZones->setChecked(false);
 
-    if(playerInfo[playerNumber].getBitFlags3(USE_STANDARD_BEACONS))             ui->btn_LtarEnhancedBeacons->setChecked(false);
+    if(playerInfo[playerNumber].getBitFlags3(DISABLE_LTAR_ENHANCED_BEACONS))             ui->btn_LtarEnhancedBeacons->setChecked(false);
     else                                                                        ui->btn_LtarEnhancedBeacons->setChecked(true);
 
     if(playerInfo[playerNumber].getBitFlags3(DISABLE_IFF_BEACONS))              ui->btn_LtarIFFbeacon->setChecked(true);
@@ -196,8 +196,8 @@ void FlagsWindow::on_btn_SupplyZonesReSpawn_clicked()
 
 void FlagsWindow::on_btn_LtarEnhancedBeacons_clicked()
 {
-    if(ui->btn_LtarEnhancedBeacons->isChecked())        updatePlayerFlags3(USE_STANDARD_BEACONS, false);
-    else                                                updatePlayerFlags3(USE_STANDARD_BEACONS, true);
+    if(ui->btn_LtarEnhancedBeacons->isChecked())        updatePlayerFlags3(DISABLE_LTAR_ENHANCED_BEACONS, true);
+    else                                                updatePlayerFlags3(DISABLE_LTAR_ENHANCED_BEACONS, false);
 }
 
 void FlagsWindow::on_btn_LtarReceivedBeacons_clicked()

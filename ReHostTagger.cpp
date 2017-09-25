@@ -12,7 +12,6 @@ ReHostTagger::ReHostTagger(QWidget *parent) :
     signalMapper = new QSignalMapper(this);
     MapPlayerButtons();
     SetActivePlayers();
-    //setClosedWithoutSelectingPlayer(false);
 }
 
 ReHostTagger::~ReHostTagger()
@@ -65,11 +64,13 @@ void ReHostTagger::SetActivePlayers()
         {
             playerButtons[index]->setEnabled(true);
             playerButtons[index]->setChecked(true);
+            playerButtons[index]->setStyleSheet(BUTTON_SELECTED);
         }
         else
         {
          playerButtons[index]->setEnabled(false);
          playerButtons[index]->setChecked(false);
+         playerButtons[index]->setStyleSheet(BUTTON_UNSELECTED);
         }
     }
 }
@@ -78,7 +79,6 @@ void ReHostTagger::playerButtonPressed(int playerNumber)
 {
     qDebug() << "Rehosting Player " << playerNumber;
     ui->label->setText("Rehosting Player " + QString::number(playerNumber) + " - Please standby.");
-    //setClosedWithoutSelectingPlayer(false);
     gameInfo.setPlayerToReHost(playerNumber);
     deleteLater();
 }
@@ -88,13 +88,3 @@ void ReHostTagger::on_btn_Close_clicked()
     //setClosedWithoutSelectingPlayer(true);
     deleteLater();
 }
-
-//bool ReHostTagger::getClosedWithoutSelectingPlayer() const
-//{
-//    return closedWithoutSelectingPlayer;
-//}
-
-//void ReHostTagger::setClosedWithoutSelectingPlayer(bool value)
-//{
-//    closedWithoutSelectingPlayer = value;
-//}

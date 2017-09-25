@@ -73,7 +73,7 @@ bool Hosting::pickTheSpies()
             loop = true;
             while (loop == true)
             {
-                spyPlayerNumber = GetRandomNumber( (1+(teamNumber*8)), (8+(teamNumber*8)) );
+                spyPlayerNumber = getRandomNumber( (1+(teamNumber*8)), (8+(teamNumber*8)) );
                 if (playerInfo[spyPlayerNumber].getSpyNumber() == 0 && gameInfo.getIsThisPlayerInTheGame(spyPlayerNumber))
                 {
                     playerInfo[spyPlayerNumber].setSpyNumber(spyNumber);
@@ -104,7 +104,7 @@ bool Hosting::pickTheKing()
         loop = true;
         while (loop == true)
         {
-            kingPlayerNumber = GetRandomNumber( (1+(teamNumber*8)), (8+(teamNumber*8)) );
+            kingPlayerNumber = getRandomNumber( (1+(teamNumber*8)), (8+(teamNumber*8)) );
             //make sure that they are not a Spy && are in the game.
             if (playerInfo[kingPlayerNumber].getSpyNumber() == 0 && gameInfo.getIsThisPlayerInTheGame(kingPlayerNumber))
             {
@@ -123,7 +123,7 @@ bool Hosting::pickTheKing()
 
 ////////////////////////////////////////////////////////////////////////////
 
-int Hosting::GetRandomNumber(int min, int max)
+int Hosting::getRandomNumber(int min, int max)
 {
     return ((qrand() % ((max + 1) - min)) + min);
 }
@@ -292,3 +292,7 @@ int Hosting::swapKingPlayers(int currentPlayer)
 
     return assignedPlayerNumber;
 }
+
+////////////////////////////////////////////////////////////////////////////
+
+

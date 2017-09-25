@@ -164,8 +164,8 @@ void PlayersWindow::SetPlayerButtons(bool state)
     {
          PlayerButtons[x]->setChecked(state);
          //The next two lines should not be required, but the stylesheet fails when SelectAll/SelectNone are triggered.
-         if (state == true) PlayerButtons[x]->setStyleSheet("font: bold;");
-         else               PlayerButtons[x]->setStyleSheet("font: normal;");
+         if (state == true) PlayerButtons[x]->setStyleSheet(BUTTON_SELECTED);
+         else               PlayerButtons[x]->setStyleSheet(BUTTON_UNSELECTED);
          gameInfo.setIsThisPlayerInTheGame(x, state);
     }
 }
@@ -361,11 +361,11 @@ void PlayersWindow::playerButtonReleased(int value)
         //Reset all buttons to default stylesheet settings.
         for (int x = 1; x < 25; x++)
         {
-            if (PlayerButtons[x]->isChecked() ) PlayerButtons[x]->setStyleSheet("background-color: rgb(50,220,200)");
-            else                                PlayerButtons[x]->setStyleSheet("background-color: cyan");
+            if (PlayerButtons[x]->isChecked() ) PlayerButtons[x]->setStyleSheet(BUTTON_CHECKED);
+            else                                PlayerButtons[x]->setStyleSheet(BUTTON_UNCHECKED);
         }
         //Set the last pressed button to a darker colour
-        PlayerButtons[value]->setStyleSheet("background-color: rgb(50,250,220)");
+        PlayerButtons[value]->setStyleSheet(BUTTON_LAST_PRESSED);
 
         LoadPlayerSettings(value);
         AdjustSettingsForHandicap(value);
@@ -445,17 +445,30 @@ void PlayersWindow::AdjustSettingsForHandicap(int currentPlayer)
 
 void PlayersWindow::on_btn_EditMode_clicked()
 {
-    if (ui->btn_EditMode->isChecked() == true)
+    if (ui->btn_EditMode->text() == "Edit Settings")
     {
-       SetPlayerControls(true, EDIT_SETTINGS_MODE);
+        SetPlayerControls(true, EDIT_SETTINGS_MODE);
         ui->btn_EditMode->setText("Edit Handicap");
-
     }
-    else if (ui->btn_EditMode->isChecked() == false)
+            else
     {
         SetPlayerControls(true, HANDICAP_MODE);
         ui->btn_EditMode->setText("Edit Settings");
     }
+
+
+//    if (ui->btn_EditMode->isChecked() == true)
+//    {
+//       SetPlayerControls(true, EDIT_SETTINGS_MODE);
+//        ui->btn_EditMode->setText("Edit Handicap");
+//        ui->btn_EditMode->setStyleSheet(BUTTON_UNSELECTED); // Hide the fact that it is selected.
+
+//    }
+//    else if (ui->btn_EditMode->isChecked() == false)
+//    {
+//        SetPlayerControls(true, HANDICAP_MODE);
+//        ui->btn_EditMode->setText("Edit Settings");
+//    }
 }
 
 void PlayersWindow::on_slider_Handicap_valueChanged(int value)
@@ -470,6 +483,7 @@ void PlayersWindow::on_slider_Reloads_valueChanged(int value)
 {
     if  (value == 100) ui->label_Reloads->setText("Reloads : Unlimited");
     else ui->label_Reloads->setText("Reloads : " + QString::number(value) );
+    //TODO: Allow for 990 on LTAR
     playerInfo[SelectedPlayer].setReloads(value);
 }
 

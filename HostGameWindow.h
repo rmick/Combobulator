@@ -80,8 +80,6 @@ private slots:
 
     void on_btn_ShowListWidget_clicked();
 
-    void on_pushButton_clicked();
-
 private:
     //pointers
     Ui::HostGameWindow      *ui;
@@ -102,9 +100,6 @@ private:
 
 
     //variables
-//    bool    bluetoothActive;                    // no longer used TODO:
-//    bool    serialUSBactive;                    // no longer used TODO:
-//    bool    wiFiActive;                         // no longer used TODO:
     bool    useLazerSwarm;                      // determines whether to use Lazerswarm coding or my own coding.
     bool    isThisPlayerHosted[25];             // an array that defines which players have joined the game.
     int     currentPlayer;                      // the current player to host.
