@@ -56,7 +56,7 @@ void TCPComms::sendPacket(QByteArray data)
     }
     else
     {
-        ConnectTCP();
+        if(lttoComms.getSerialUSBcommsConnected() == false)  ConnectTCP();
     }
 }
 

@@ -72,7 +72,6 @@ int Players::getReloads(bool isLtar)
     {
         calcReloads = Reloads;
     }
-    qDebug() << "Players::getReloads(bool isLtar FALSE) -" << Reloads2 << calcReloads << Reloads;
     return calcReloads;
 }
 
@@ -97,7 +96,7 @@ int Players::getReloads2() const
 
 void Players::setReloads2(int value)
 {
-    //This mthod is never called. Reloads2 is set by Players::getReloads(int, bool)
+    //This method is never called. Reloads2 is set by Players::getReloads(int, bool)
     Reloads2 = value;
 }
 
@@ -370,13 +369,29 @@ QString Players::displayBinary(int number, int digits)
 
 int Players::handicapAdjust(int value)
 {
-    //TODO: How to work with 0 values. Great for Shields, but crap for Reloads2
-    //if (value == 0) value = 1;                              //Otherwise a Zero value stays zero forever.
+    if (Handicap != 0)
+    {
+        if (value == 0) value = 1;                              //Otherwise a Zero value stays zero forever.
+    }
     //TODO: Values of 1 & 2 hardly change, need to work on a logarithmic curve - maybe.
     value += value * (static_cast<float>(Handicap)/10);
     if (value > 100) value = 100;
     if (value <0)   value = 0;
 
+    return value;
+}
+
+int Players::handicapAdjust(int value, int maxValue)
+{
+    if (Handicap != 0)
+    {
+        if (value == 0) value = 1;                              //Otherwise a Zero value stays zero forever.
+    }
+    //TODO: Values of 1 & 2 hardly change, need to work on a logarithmic curve - maybe.
+    value += value * (static_cast<float>(Handicap)/10);
+    if (value > maxValue) value = maxValue;
+    if (value <0)   value = 0;
+    //qDebug() << "Players::handicapAdjust(int value, int maxValue)" << value;
     return value;
 }
 

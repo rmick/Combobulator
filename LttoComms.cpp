@@ -17,7 +17,7 @@ LttoComms::LttoComms(QObject *parent) : QObject(parent)
 bool LttoComms::sendPacket(char type, int data, bool dataFormat)
 {
     bool result = true;
-    bool fullTCPpacketToSend;
+    bool fullTCPpacketToSend = false;
     static QByteArray packet;
 
     //Calculating BCD and the CheckSum.
@@ -41,18 +41,18 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
             packetString = createIRstring(data);
             packetString.prepend('P');
             packet.append(packetString);
-            //qDebug() << "lttoComms::sendPacket() - Packet =    " << data << "\t:" << packetString;
+            qDebug() << "lttoComms::sendPacket() - Packet =    " << data << "\t:" << packetString;
             break;
         case DATA:
             if (dataFormat == BCD)
             {
                 calculatedCheckSumTx += ConvertDecToBCD(data);
-                fullTCPpacketToSend = false;    // To silence compiler warning.
+                //fullTCPpacketToSend = false;    // To silence compiler warning.
                 data = ConvertDecToBCD(data);
                 packetString = createIRstring(data);
                 packetString.prepend('D');
                 packet.append(packetString);
-                //qDebug() << "lttoComms::sendPacket() - BCD Data = " << data << "\t:" << packetString << "\tBCD=" << dataFormat;
+                qDebug() << "lttoComms::sendPacket() - BCD Data = " << data << "\t:" << packetString << "\tBCD=" << dataFormat;
             }
             else
             {
@@ -60,7 +60,7 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
                 packetString = createIRstring(data);
                 packetString.prepend('D');
                 packet.append(packetString);
-                //qDebug() << "lttoComms::sendPacket() - Dec Data = " << data << "\t:" << packetString << "\tBCD=" << dataFormat;
+                qDebug() << "lttoComms::sendPacket() - Dec Data = " << data << "\t:" << packetString << "\tBCD=" << dataFormat;
             }
             break;
         case CHECKSUM:
@@ -70,34 +70,35 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
             packetString.prepend('C');
             packet.append(packetString);
             fullTCPpacketToSend = true;
-            //qDebug() << "lttoComms::sendPacket() - CheckSum = \t" << packetString;
+            qDebug() << "lttoComms::sendPacket() - CheckSum = \t" << packetString << endl << endl;
             break;
         case TAG:
             packetString = createIRstring(data);
             packetString.prepend('T');
             packet.append(packetString);
-            fullTCPpacketToSend = true;
+            //fullTCPpacketToSend = true;
             break;
         case BEACON:
             packetString = createIRstring(data);
             packetString.prepend('B');
             packet.append(packetString);
-            fullTCPpacketToSend = true;
+            //fullTCPpacketToSend = true;
             break;
         default:
             qDebug() << "lttoComms::sendPacket() - No Packet type specified. You ninkom poop.";
-            fullTCPpacketToSend = false;  // to silence compiler warning
+            //fullTCPpacketToSend = false;  // to silence compiler warning
             result = false;
     }
 
 
-    if(useLongDataPacketsOverTCP)
+    if (useLongDataPacketsOverTCP)
     {
         packet.append(":");
         if (fullTCPpacketToSend == true)
         {
             emit sendSerialData(packet);
             qDebug() << "lttoComms::sendPacket() - WIFIKIT32 - Full Packet = " << packet;
+            fullTCPpacketToSend = false;
             packet.clear();
         }
     }
@@ -112,7 +113,7 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
             packet.append(" \r\n");
         }
         else packet.append(":");
-
+        //qDebug() << "lttoComms::sendPacket() - " << packet;
         emit sendSerialData(packet);            //Connects to TCPComms::sendPacket slot && SerialUSBcomms::sendPacket slot
         packet.clear();
         nonBlockingDelay(INTERPACKET_DELAY_MSEC);
@@ -357,6 +358,7 @@ void LttoComms::processPacket(QList<QByteArray> data)
         taggerInfo      = extract(data);
         smartDeviceInfo = extract(data);
         checksum        = extract(data);
+        //TODO: Fix the Checksum that is not working - posibly due to DEC not BCD ??
         //if(isCheckSumCorrect(command, game, tagger, taggerInfo, smartDeviceInfo, checksum) == false) break;
 
         qDebug() << "LttoComms::processPacket() - emit LTAR RequestJoinGame";
@@ -377,6 +379,7 @@ void LttoComms::processPacket(QList<QByteArray> data)
         game     = extract(data);
         tagger   = extract(data);
         checksum = extract(data);
+        //TODO: Fix the Checksum that is not working
         //if(isCheckSumCorrect(command, game, tagger, flags, checksum) == false) break;
 
         qDebug() << "LttoComms::processPacket() - emit AckLTARplayerAssignment";

@@ -32,10 +32,12 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
     loadSettings();
 
     this->setWindowTitle("Lasertag Combobulator");
+    this->setWindowFlags(windowFlags() & ~Qt::FramelessWindowHint);
     ui->label_BuildNumber->setText(BUILD_NUMBER);
     gameInfo.setGameType(gameInfo.Ltag0);
     ui->btn_SpyTeamTags->setChecked(true);
     ui->btn_SpyTeamTags->setVisible(false);
+    gameInfo.setIsSpiesTeamTagActive(true);
     ui->btn_NoTeams->setChecked(true);
     gameInfo.setNumberOfTeams(0);
     ui->btn_Spies->setEnabled(false);
@@ -141,13 +143,21 @@ void LttoMainWindow::on_btn_StartGame_clicked()
 
     if(hostGameWindow->resetPlayersForNewGame() == false) return;
     gameInfo.setGameID(host.getRandomNumber(1,255));
+#ifdef Q_OS_ANDROID
+    hostGameWindow->showFullScreen();
+#else
     hostGameWindow->show();
+#endif
 }
 
 void LttoMainWindow::on_btn_SelectPlayers_clicked()
 {
     playersWindow = new PlayersWindow(this);
+#ifdef Q_OS_ANDROID
+    playersWindow->showFullScreen();
+#else
     playersWindow->show();
+#endif
     ui->btn_StartGame->setEnabled(true);
 }
 
@@ -700,10 +710,8 @@ void LttoMainWindow::loadSettings()
 
     qDebug() << "LttoMainWindow::loadSettings()" << lttoComms.getUseLazerSwarm();
     settings.beginGroup("MainWindow");
-    resize(settings.value("size", QSize(400, 400)).toSize());
-    move  (settings.value("pos", QPoint(200, 200)).toPoint());
-    //resize(settings.value("size", QSize(400, 400)).toSize());
-    //move(settings.value("pos", QPoint(200, 200)).toPoint());
+    resize(settings.value("size", QSize(1024, 800)).toSize());
+    move  (settings.value("pos",  QPoint(0, 0)).toPoint()); //TODO: Centre this on the screen !
     settings.endGroup();
 }
 
@@ -757,7 +765,11 @@ void LttoMainWindow::on_btn_Flags_clicked()
 {
     if(flagsWindow==NULL) flagsWindow = new FlagsWindow(0, this);
     flagsWindow->setButtonStates();
+#ifdef Q_OS_ANDROID
+    flagsWindow->showFullScreen();
+#else
     flagsWindow->show();
+#endif
 }
 
 void LttoMainWindow::on_actionAbout_triggered()
@@ -779,3 +791,79 @@ void LttoMainWindow::on_btn_SpyTeamTags_clicked()
         gameInfo.setIsSpiesTeamTagActive(false);
     }
 }
+
+//    /*-------------------------------------------*/
+
+//    QSlider
+//    {
+//        min-height: 35px;
+//    background: cyan;
+//        border-style: outset;
+//        border-width: 2px;
+//        border-radius: 10px;
+//        border-color: grey;
+//    }
+
+//    /*QSlider::groove:horizontal {
+//            border-style: outset;
+//            border-width: 2px;
+//            border-radius: 10px;
+//            border-color: grey;
+//        }*/
+//    QSlider::groove:horizontal {
+//                        border-style: outset;
+//    border-width: 0px;
+//    border-radius: 10px;
+//    border-color: grey;
+//    }
+
+//    QSlider::handle:horizontal {
+//                        background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #b4b4b4, stop:1 #8f8f8f);
+//    border: 1px solid #5c5c5c;
+//    width: 18px;
+//    margin: -2px 0; /* handle is placed by default on the contents rect of the groove. Expand outside the groove */
+//    border-style: outset;
+//    border-width: 2px;
+//    border-radius: 7px;
+//    border-color: grey;
+//    }
+//    /*QSlider::handle:horizontal {
+//            background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #b4b4b4, stop:1 #8f8f8f);
+//            border: 2px *solid #5c5c5c*;
+//            width: 15px;
+//            radius: 5px;
+//            margin: -18px 0; /* handle is placed by default on the contents rect of the groove. Expand outside the groove */
+//    /*    border-style: outset;
+//            border-width: 2px;
+//            border-radius: 5px;
+//            border-color: grey;
+//        }*/
+
+//    QSlider::add-page:horizontal {
+//                          background: rgb(50,220,200);
+//    border-style: outset;
+//    border-width: 0px;
+//    border-radius: 10px;
+//    }
+
+//    QSlider::sub-page:horizontal {
+//                          background: cyan;
+//    border-style: outset;
+//    border-width: 0px;
+//    border-radius: 10px;
+//    }
+
+//    QSlider::sub-page:horizontal:disabled {
+//                          background: #bbb;
+//    }
+
+//    QSlider::add-page:horizontal:disabled {
+//                          background: #eee;
+//    }
+
+//    QSlider::handle:horizontal:disabled {
+//                        background: #eee;
+//    }
+
+//    /*-------------------------------------------*/
+

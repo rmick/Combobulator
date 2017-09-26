@@ -69,6 +69,7 @@ public:
     QString displayBinary(int number, int digits);
 
     int handicapAdjust(int value);
+    int handicapAdjust(int value, int maxValue);
 
     int getTagsTaken() const;
     void setTagsTaken(int value);

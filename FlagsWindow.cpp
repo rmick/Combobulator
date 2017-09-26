@@ -48,6 +48,7 @@ FlagsWindow::~FlagsWindow()
 ////////////////////////////////////////////////////////////////////
 
 void FlagsWindow::setButtonStates(int playerNumber)
+//TODO: This does not work, the values are not loaded correctly.
 {
     if(gameInfo.getIsLTARGame())    hideLtarControls(true);
     else                            hideLtarControls(false);

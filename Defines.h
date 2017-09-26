@@ -9,15 +9,18 @@
 //              /Users/Richie/Qt/5.9.1/clang_64/bin/macdeployqt LTTO_Host.app -dmg
 //
 //      Here is the current build directory
-//              build-LTTO_Host-Desktop_Qt_5_9_1_clang_64bit-Release
+//              build-Combobulator_Mac-Release
 
 //windeployqt
-//      Copy the LTTO_Host.exe from the \release to \LTTO_Host
+//      Copy the Combobulator.exe
+//          from the        Qt_projects\build-Combobulator_Windows-Release\Combobulator\release
+//          to the          Qt_projects\build-Combobulator_Windows-Release\Combobulator\Combobulator folder
+//
 //      Open CMD.exe prompt
 //      cd\
 //      W:
-//      cd Qt_projects\build-LTTO_Host-Desktop_Qt_5_9_1_MSVC2015_64bit-Release\LTTO_Host
-//      C:\Qt\5.9.1\msvc2015_64\bin\windeployqt LTTO_Host.exe
+//      cd Qt_projects\build-Combobulator_Windows-Release\Combobulator
+//      C:\Qt\5.9.1\msvc2015_64\bin\windeployqt Combobulator.exe
 //      Zip up the folder and publish to Dropbox (or whereever)
 
 // If enabling this #define, also remove the # from the command 'serialport' in line 9 of the LTTO_host.pro file
@@ -25,7 +28,7 @@
 
 
 //  Build Number
-const QString BUILD_NUMBER  = "Build : 17.9.25a";
+const QString BUILD_NUMBER  = "Build : 17.9.25c";
 
 // Recoil Game Hub_28f537d14fca
 

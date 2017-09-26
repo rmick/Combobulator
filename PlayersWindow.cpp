@@ -418,12 +418,12 @@ void PlayersWindow::AdjustSettingsForHandicap(int currentPlayer)
     }
     else
     {
-        health      = playerInfo[currentPlayer].handicapAdjust(health);
-        shields     = playerInfo[currentPlayer].handicapAdjust(shields);
-        megas       = playerInfo[currentPlayer].handicapAdjust(megas);
-        reloads     = playerInfo[currentPlayer].handicapAdjust(reloads);
-        startAmmo   = playerInfo[currentPlayer].handicapAdjust(startAmmo);
-        sleepTime   = playerInfo[currentPlayer].handicapAdjust(sleepTime);
+        health      = playerInfo[currentPlayer].handicapAdjust(health,    100);
+        shields     = playerInfo[currentPlayer].handicapAdjust(shields,   100);
+        megas       = playerInfo[currentPlayer].handicapAdjust(megas,     100);
+        reloads     = playerInfo[currentPlayer].handicapAdjust(reloads,   100);
+        startAmmo   = playerInfo[currentPlayer].handicapAdjust(startAmmo, 100);
+        sleepTime   = playerInfo[currentPlayer].handicapAdjust(sleepTime, 100);
     }
     ui->label_Health  ->setText("Health : "   + (QString::number(health)) + " tags");
     ui->label_Shields ->setText("Shields : "  + (QString::number(shields)) + " seconds");
@@ -526,7 +526,11 @@ void PlayersWindow::on_btn_Flags_clicked()
     if(flagsWindow==NULL) flagsWindow = new FlagsWindow(SelectedPlayer, this);
     flagsWindow->setButtonStates(SelectedPlayer);
     qDebug() << "PlayersWindow::on_btn_Flags_clicked - Selected Player =" << SelectedPlayer;
+#ifdef Q_OS_ANDROID
+    flagsWindow->showFullScreen();
+#else
     flagsWindow->show();
+#endif
 }
 
 

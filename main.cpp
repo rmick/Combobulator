@@ -31,7 +31,11 @@ int main(int argc, char *argv[])
     QTimer::singleShot(2000, &loop, SLOT(quit()));
     loop.exec();
 
+#ifdef Q_OS_ANDROID
+    lttoMainWindow.showFullScreen();
+#else
     lttoMainWindow.show();
+#endif
     splashScreen.finish(&lttoMainWindow);
 
     return theApp.exec();
