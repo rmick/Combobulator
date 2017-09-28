@@ -41,7 +41,7 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
             packetString = createIRstring(data);
             packetString.prepend('P');
             packet.append(packetString);
-            qDebug() << "lttoComms::sendPacket() - Packet =    " << data << "\t:" << packetString;
+            //qDebug() << "lttoComms::sendPacket() - Packet =    " << data << "\t:" << packetString;
             break;
         case DATA:
             if (dataFormat == BCD)
@@ -52,7 +52,7 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
                 packetString = createIRstring(data);
                 packetString.prepend('D');
                 packet.append(packetString);
-                qDebug() << "lttoComms::sendPacket() - BCD Data = " << data << "\t:" << packetString << "\tBCD=" << dataFormat;
+                //qDebug() << "lttoComms::sendPacket() - BCD Data = " << data << "\t:" << packetString << "\tBCD=" << dataFormat;
             }
             else
             {
@@ -60,7 +60,7 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
                 packetString = createIRstring(data);
                 packetString.prepend('D');
                 packet.append(packetString);
-                qDebug() << "lttoComms::sendPacket() - Dec Data = " << data << "\t:" << packetString << "\tBCD=" << dataFormat;
+                //qDebug() << "lttoComms::sendPacket() - Dec Data = " << data << "\t:" << packetString << "\tBCD=" << dataFormat;
             }
             break;
         case CHECKSUM:
@@ -70,7 +70,7 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
             packetString.prepend('C');
             packet.append(packetString);
             fullTCPpacketToSend = true;
-            qDebug() << "lttoComms::sendPacket() - CheckSum = \t" << packetString << endl << endl;
+            //qDebug() << "lttoComms::sendPacket() - CheckSum = \t" << packetString << endl << endl;
             break;
         case TAG:
             packetString = createIRstring(data);
@@ -115,6 +115,7 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
         else packet.append(":");
         //qDebug() << "lttoComms::sendPacket() - " << packet;
         emit sendSerialData(packet);            //Connects to TCPComms::sendPacket slot && SerialUSBcomms::sendPacket slot
+        tcpComms.sendPacket(packet);
         packet.clear();
         nonBlockingDelay(INTERPACKET_DELAY_MSEC);
 
@@ -125,7 +126,8 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
 
 void LttoComms::sendLCDtext(QString textToSend, int lineNumber)
 {
-    if(lttoComms.getSerialUSBcommsConnected()) return;      // USB means it is a Lazerswarm, which does not accept TXT.
+    //TODO - Uncomment this for release!
+    //if(lttoComms.getSerialUSBcommsConnected()) return;      // USB means it is a Lazerswarm, which does not accept TXT.
     QByteArray textBA;
     textToSend.prepend("TXT" + QString::number(lineNumber)+ ":");
     textBA.append(textToSend + "\r\n");
@@ -135,7 +137,8 @@ void LttoComms::sendLCDtext(QString textToSend, int lineNumber)
 
 void LttoComms::sendLCDtext(int xCursor, int yCursor, QString text, int fontSize, int colour, bool clearDisp)
 {
-    if(lttoComms.getSerialUSBcommsConnected()) return;      // USB means it is a Lazerswarm, which does not accept TXT.
+    //TODO - Uncomment this for release!
+    //if(lttoComms.getSerialUSBcommsConnected()) return;      // USB means it is a Lazerswarm, which does not accept TXT.
     QByteArray textBA;
     QString textToSend = "";
     textToSend.prepend("DSP," + QString::number(xCursor) + "," + QString::number(yCursor) + "," + text + "," +  QString::number(fontSize) + "," + QString::number(colour) + "," + QString::number(clearDisp));

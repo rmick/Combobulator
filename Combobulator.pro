@@ -47,7 +47,8 @@ HEADERS  += \
 	    ReHostTagger.h \
 	    AboutForm.h \
 	    DeBrief.h \
-	    Hosting.h
+	    Hosting.h \
+    StyleSheet.h
 
 
 FORMS    += \

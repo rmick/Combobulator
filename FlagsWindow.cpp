@@ -7,9 +7,9 @@ FlagsWindow::FlagsWindow(int playerToUse, QWidget *parent) :
     ui(new Ui::FlagsWindow)
 {
     ui->setupUi(this);
-    qDebug() << "FlagsWindow::FlagsWindow" << playerToUse;
+    qDebug() << "\nFlagsWindow::FlagsWindow - Using PLAYER #" << playerToUse;
     currentPlayer = playerToUse;
-    //setButtonStates(currentPlayer);
+    setButtonStates(currentPlayer);
     if(currentPlayer != 0)
     {
         firstPlayer = currentPlayer;
@@ -27,29 +27,12 @@ FlagsWindow::~FlagsWindow()
     delete ui;
 }
 
-//void FlagsWindow::showEvent( QShowEvent* event )
-//{
-//    QWidget::showEvent( event );
-//    qDebug() << "FlagsWindow::FlagsWindow" << playerToUse;
-//    currentPlayer = playerToUse;
-//    if(currentPlayer != 0)
-//    {
-//        firstPlayer = currentPlayer;
-//        lastPlayer  = currentPlayer;
-//    }
-//    else
-//    {
-//        firstPlayer = 0;
-//        lastPlayer = 24;
-//    }
-//}
-
-
 ////////////////////////////////////////////////////////////////////
 
 void FlagsWindow::setButtonStates(int playerNumber)
 //TODO: This does not work, the values are not loaded correctly.
 {
+    qDebug() << "FlagsWindow::setButtonStates = Player " << playerNumber;
     if(gameInfo.getIsLTARGame())    hideLtarControls(true);
     else                            hideLtarControls(false);
 
@@ -80,8 +63,8 @@ void FlagsWindow::setButtonStates(int playerNumber)
     if(playerInfo[playerNumber].getBitFlags2(HOSTILE_ZONES_FLAG))               ui->btn_HostileZones->setChecked(true);
     else                                                                        ui->btn_HostileZones->setChecked(false);
 
-    if(playerInfo[playerNumber].getBitFlags3(DISABLE_LTAR_ENHANCED_BEACONS))             ui->btn_LtarEnhancedBeacons->setChecked(false);
-    else                                                                        ui->btn_LtarEnhancedBeacons->setChecked(true);
+    if(playerInfo[playerNumber].getBitFlags3(DISABLE_LTAR_ENHANCED_BEACONS))    ui->btn_LtarEnhancedBeacons->setChecked(true);
+    else                                                                        ui->btn_LtarEnhancedBeacons->setChecked(false);
 
     if(playerInfo[playerNumber].getBitFlags3(DISABLE_IFF_BEACONS))              ui->btn_LtarIFFbeacon->setChecked(true);
     else                                                                        ui->btn_LtarIFFbeacon->setChecked(false);
@@ -107,25 +90,28 @@ void FlagsWindow::setButtonStates(int playerNumber)
 
 void FlagsWindow::updatePlayerFlags1(int bit, bool state)
 {
-    for(int x = firstPlayer; x <= lastPlayer; x++)
+    for(int index = firstPlayer; index <= lastPlayer; index++)
     {
-        playerInfo[x].setBitFlags1(bit, state);
+        playerInfo[index].setBitFlags1(bit, state);
+        qDebug() << "FlagsWindow::updatePlayerFlags1 - Player" << index;
     }
 }
 
 void FlagsWindow::updatePlayerFlags2(int bit, bool state)
 {
-    for(int x = firstPlayer; x <= lastPlayer; x++)
+    for(int index = firstPlayer; index <= lastPlayer; index++)
     {
-        playerInfo[x].setBitFlags2(bit, state);
+        playerInfo[index].setBitFlags2(bit, state);
+        qDebug() << "FlagsWindow::updatePlayerFlags2 - Player" << index;
     }
 }
 
 void FlagsWindow::updatePlayerFlags3(int bit, bool state)
 {
-    for(int x = firstPlayer; x <= lastPlayer; x++)
+    for(int index = firstPlayer; index <= lastPlayer; index++)
     {
-        playerInfo[x].setBitFlags3(bit, state);
+        playerInfo[index].setBitFlags3(bit, state);
+        qDebug() << "FlagsWindow::updatePlayerFlags3 - Player" << index;
     }
 }
 
@@ -245,7 +231,7 @@ void FlagsWindow::on_btn_LtarAutoReload_clicked()
 
 void FlagsWindow::on_btn_Close_clicked()
 {
-    close();
+    deleteLater();
 }
 
 

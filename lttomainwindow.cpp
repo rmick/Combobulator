@@ -7,12 +7,15 @@
 #include <QInputDialog>
 #include <QAudioDeviceInfo>
 #include <QSettings>
+#include <QScreen>
 #include <QTime>
 #include "Game.h"
 #include "Players.h"
 #include "Defines.h"
 #include "LttoComms.h"
 #include "Hosting.h"
+#include "StyleSheet.h"
+
 
 LttoMainWindow::LttoMainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -28,7 +31,6 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
     QCoreApplication::setOrganizationName("Bush And Beyond");
     QCoreApplication::setOrganizationDomain("www.bushandbeyond.com.au");
     QCoreApplication::setApplicationName("Combobulator");
-    //settingsFile = QApplication::applicationDirPath().left(1) + ":/demosettings.ini";
     loadSettings();
 
     this->setWindowTitle("Lasertag Combobulator");
@@ -710,8 +712,14 @@ void LttoMainWindow::loadSettings()
 
     qDebug() << "LttoMainWindow::loadSettings()" << lttoComms.getUseLazerSwarm();
     settings.beginGroup("MainWindow");
-    resize(settings.value("size", QSize(1024, 800)).toSize());
-    move  (settings.value("pos",  QPoint(0, 0)).toPoint()); //TODO: Centre this on the screen !
+    resize(settings.value("size", QSize(800, 600)).toSize());
+
+    QScreen *screen = QGuiApplication::primaryScreen();
+    QRect screenGeometry = screen->availableGeometry();
+    int posX = (screenGeometry.width()  - this->width())  / 2;
+    int posY = (screenGeometry.height() - this->height()) / 2;
+    move  (settings.value("pos",  QPoint(posX, posY)).toPoint()); //TODO: Centre this on the screen !
+    //move (posX, posY);
     settings.endGroup();
 }
 

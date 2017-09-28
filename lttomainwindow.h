@@ -105,7 +105,7 @@ private:
     Ui::LttoMainWindow      *ui;
     PlayersWindow           *playersWindow;
     QPointer<HostGameWindow> hostGameWindow;
-    FlagsWindow             *flagsWindow;
+    QPointer<FlagsWindow>    flagsWindow;
     AboutForm               *aboutForm;
     QSoundEffect            *sound_PowerUp;
     QSoundEffect            *sound_Powerdown;

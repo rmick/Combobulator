@@ -15,6 +15,7 @@ TCPComms::TCPComms(QObject *parent) :
 
 bool TCPComms::ConnectTCP()
 {
+    qDebug() << "TCPComms::ConnectTCP() - Connecting";
     tcpSocket->connectToHost(HOST_IP_ADDRESS,TCP_IP_PORT);
     return true;
 }
@@ -44,8 +45,11 @@ void TCPComms::receivePacket()
 {
     QByteArray rX;
     rX = tcpSocket->readAll();
-    emit newTCPdata(rX);          // Does not work on Android for some unknown reason.
-    //lttoComms.androidRxPacket(rX);  // This is the simple workaround :-)
+#ifdef Q_OS_ANDROID
+    lttoComms.androidRxPacket(rX);  // This is the simple workaround, to issue below  :-)
+#else
+    emit newTCPdata(rX);            // Does not work on Android for some unknown reason.
+#endif
 }
 
 void TCPComms::sendPacket(QByteArray data)
@@ -56,7 +60,9 @@ void TCPComms::sendPacket(QByteArray data)
     }
     else
     {
-        if(lttoComms.getSerialUSBcommsConnected() == false)  ConnectTCP();
+        //TODO - Uncomment this for release!
+        //if(lttoComms.getSerialUSBcommsConnected() == false)
+        ConnectTCP();
     }
 }
 
