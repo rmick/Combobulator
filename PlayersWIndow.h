@@ -8,6 +8,7 @@
 #include <QElapsedTimer>
 #include <QPointer>
 #include "FlagsWindow.h"
+#include "RearrangePlayers.h"
 
 namespace Ui {
  class PlayersWindow;
@@ -64,14 +65,13 @@ private slots:
     void on_btn_ChangePlayers_clicked();
 
 private:
-    Ui::PlayersWindow       *ui;
-    QSignalMapper           *signalMapperClicked;
-    QSignalMapper           *signalMapperPressed;
-    QSignalMapper           *signalMapperReleased;
-    QPalette                *paletteRed;
-    QPalette                *paletteGreen;
-    QElapsedTimer           elapsedTime;
-    QPointer<FlagsWindow>   flagsWindow;
+    Ui::PlayersWindow           *ui;
+    QSignalMapper               *signalMapperClicked;
+    QSignalMapper               *signalMapperPressed;
+    QSignalMapper               *signalMapperReleased;
+    QElapsedTimer               elapsedTime;
+    QPointer<FlagsWindow>       flagsWindow;
+    QPointer<RearrangePlayers>  rearrangePlayers;
 
     QVector <QPushButton*> PlayerButtons;
     int SelectedPlayer;

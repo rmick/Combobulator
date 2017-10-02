@@ -70,15 +70,9 @@ private slots:
 
     void BeaconSignal();
 
-    void on_btn_StartStopHosting_clicked();
-
-    void on_btn_StopStartBeacon_clicked();
-
-    void on_btn_Connect_clicked();
-
-    void on_btn_Disconnect_clicked();
-
     void on_btn_ShowListWidget_clicked();
+
+    void on_btn_DeBugSendTag_clicked();
 
 private:
     //pointers

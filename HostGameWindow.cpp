@@ -68,14 +68,6 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
     ui->btn_Rehost->setEnabled(false);
     ui->listWidget_Status->setVisible(false);
 
-    //Hide Debug controls
-    ui->btn_Connect->setVisible(false);
-    ui->btn_Disconnect->setVisible(false);
-    ui->btn_StartStopHosting->setVisible(false);
-    ui->btn_StopStartBeacon->setVisible(false);
-    ui->btn_ReadyReadUSB->setVisible(false);
-    ui->btn_FailSend->setVisible(false);
-
     //Init all the sound effects.
     sound_Hosting            = new QSoundEffect(this);
     sound_Countdown          = new QSoundEffect(this);
@@ -230,14 +222,18 @@ void HostGameWindow::hostCurrentPlayer()
     }
     else
     {
-        InsertToListWidget("Trying to connect to Base Station");
+        //InsertToListWidget("Trying to connect to Base Station");
         ui->label->setText("Connecting to Base Station......");
     }
 
     // Set all the variables.
     int gameTime;
     //  Set gameTime to gameLength or TimeRemaining
-    if(rehostingActive) gameTime = (remainingGameTime/60)+1;
+    if(rehostingActive)
+    {
+        gameTime = (remainingGameTime/60);
+        if((remainingGameTime % 60) > 30) gameTime++;    // add a minute so that they dont finish early.
+    }
     else                gameTime = gameInfo.getGameLength();
 
     //  Set the Reloads flag to match handicapped values
@@ -311,16 +307,18 @@ void HostGameWindow::hostCurrentPlayer()
                             + ", Reloads2=" + QString::number(playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getReloads2() ))
                             + ", Shields="  + QString::number(playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getShieldTime() ))
                             + ", Megas="    + QString::number(playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getMegaTags() ))
-                            + ", MedicMode:"+ QString::number(playerInfo[currentPlayer].getMedicMode() )
-                            + ", SlowTags:" + QString::number(playerInfo[currentPlayer].getSlowTags()  )
-                            + ", TeamTags:" + QString::number(playerInfo[currentPlayer].getTeamTags()  );
+                            + ", MedicMode:"+ QString::number(playerInfo[currentPlayer].getMedicMode() );
         InsertToListWidget(playerDebugData);
 
-        playerDebugData =   "\tStartAmmo:"  + QString::number(playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getStartingAmmo() ))
+        playerDebugData =   "\tSlowTags:" + QString::number(playerInfo[currentPlayer].getSlowTags()  )
+                            + ", TeamTags:" + QString::number(playerInfo[currentPlayer].getTeamTags()  )
+                            + ", StartAmmo:"  + QString::number(playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getStartingAmmo() ))
                             + ", SleepTime:"+ QString::number(playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getSleepTimeOut() ))
                             + ", Spy#:"     + QString::number(playerInfo[currentPlayer].getSpyNumber() )
-                            + ", King?:"    + QString::number(playerInfo[currentPlayer].getIsKing() )
-                            + ", Flag1 = "  + QString::number(playerInfo[currentPlayer].getPackedFlags1())
+                            + ", King?:"    + QString::number(playerInfo[currentPlayer].getIsKing() );
+        InsertToListWidget(playerDebugData);
+
+        playerDebugData =   "\tFlag1 = "  + QString::number(playerInfo[currentPlayer].getPackedFlags1())
                             + ", Flag2 = "  + QString::number(playerInfo[currentPlayer].getPackedFlags2());
         if(gameInfo.getIsLTARGame()) playerDebugData += ", Flag3 = " + QString::number(playerInfo[currentPlayer].getPackedFlags2());
         InsertToListWidget(playerDebugData);
@@ -833,18 +831,6 @@ void HostGameWindow::on_btn_FailSend_clicked()
     sendAssignFailedMessage();
 }
 
-void HostGameWindow::on_btn_StartStopHosting_clicked()
-{
-    if (ui->btn_StartStopHosting->isChecked()) timerAnnounce->start(HOST_TIMER_MSEC);
-    else timerAnnounce->stop();
-}
-
-void HostGameWindow::on_btn_StopStartBeacon_clicked()
-{
-    if (ui->btn_StopStartBeacon->isChecked()) timerBeacon->start(BEACON_TIMER_MSEC);
-    else timerBeacon->stop();
-}
-
 ///////////////////------------------------------
 
 
@@ -868,13 +854,30 @@ void HostGameWindow::endGame()
 
 void HostGameWindow::deBriefTaggers()
 {
-    while (isThisPlayerHosted[currentPlayer] == false) currentPlayer++;                     // Find next player
+    if(deBrief->getIsPlayerDeBriefed() == true)
+    // the current player has been debriefed
+    {
+        currentPlayer++;
+        deBrief->setIsPlayerDeBriefed(false);
+    }
 
-    if (currentPlayer > 24)                                                                 // All players are debriefed
+    //if currentPlayer is not in the game, increment until a player is found.
+    while (isThisPlayerHosted[currentPlayer] == false) currentPlayer++;
+
+    if (currentPlayer > 24)
+    // All players are debriefed
     {
         timerDeBrief->stop();
         currentPlayer = 0;
         ui->label->setText("The End");
+        // Send RankReport
+        for (int index = 1; index < 10; index++)
+        {
+            deBrief->sendRankReport();
+            lttoComms.nonBlockingDelay(35);
+        }
+
+
         // Show Scores Window
         // Close this window
     }
@@ -882,17 +885,12 @@ void HostGameWindow::deBriefTaggers()
     deBrief->RequestTagReports(currentPlayer);
 }
 
-void HostGameWindow::on_btn_Connect_clicked()
-{
-    tcpComms.ConnectTCP();
-}
-
-void HostGameWindow::on_btn_Disconnect_clicked()
-{
-    tcpComms.DisconnectTCP();
-}
-
 void HostGameWindow::on_btn_ShowListWidget_clicked()
 {
     ui->listWidget_Status->setVisible(true);
+}
+
+void HostGameWindow::on_btn_DeBugSendTag_clicked()
+{
+    lttoComms.sendPacket(TAG, 7, false);
 }

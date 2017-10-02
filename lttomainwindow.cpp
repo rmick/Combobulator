@@ -28,6 +28,8 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
     sound_Powerdown(NULL)
 {
     ui->setupUi(this);
+    //setStyleSheet(QSS_Outside);
+
     QCoreApplication::setOrganizationName("Bush And Beyond");
     QCoreApplication::setOrganizationDomain("www.bushandbeyond.com.au");
     QCoreApplication::setApplicationName("Combobulator");
@@ -310,19 +312,6 @@ void LttoMainWindow::on_btn_CustomGame_clicked()
     }
 }
 
-void LttoMainWindow::on_btn_LtarGame_clicked()
-{
-    bool state = ui->btn_LtarGame->isChecked();
-    gameInfo.setIsLTARGame(state);
-    setLtarControls(state);
-
-//    if(ui->btn_LtarGame->isChecked()) gameInfo.setIsLTARGame(true);
-//    else                              gameInfo.setIsLTARGame(false);
-
-//    if(ui->btn_LtarGame->isChecked())   setLtarControls(true);
-//    else                                setLtarControls(false);
-}
-
 void LttoMainWindow::setLtarControls(bool state)
 {
     ui->slider_SleepTime->setVisible(state);
@@ -437,7 +426,6 @@ void LttoMainWindow::on_slider_Health_valueChanged(int value)
 
 void LttoMainWindow::on_slider_Reloads_valueChanged(int value)
 {
-    //TODO: Allow for 990 on LTAR.
     if  (value == 100) ui->label_Reloads->setText("Reloads : Unlimited");
     else               ui->label_Reloads->setText("Reloads : " + QString::number(value) );
 
@@ -579,12 +567,12 @@ void LttoMainWindow::UpdateGameControlSettings()
 
         if(gameInfo.getIsLTARGame())
         {
-            ui->btn_LtarGame->setChecked(true);
+            ui->actionLTAR_Mode->setChecked(true);
             setLtarControls(true);
         }
         else
         {
-            ui->btn_LtarGame->setChecked(false);
+            ui->actionLTAR_Mode->setChecked(false);
             setLtarControls(false);
         }
     }
@@ -712,15 +700,17 @@ void LttoMainWindow::loadSettings()
 
     qDebug() << "LttoMainWindow::loadSettings()" << lttoComms.getUseLazerSwarm();
     settings.beginGroup("MainWindow");
-    resize(settings.value("size", QSize(800, 600)).toSize());
+    //resize(settings.value("size", QSize(800, 600)).toSize());
 
     QScreen *screen = QGuiApplication::primaryScreen();
     QRect screenGeometry = screen->availableGeometry();
     int posX = (screenGeometry.width()  - this->width())  / 2;
     int posY = (screenGeometry.height() - this->height()) / 2;
-    move  (settings.value("pos",  QPoint(posX, posY)).toPoint()); //TODO: Centre this on the screen !
-    //move (posX, posY);
+    move  (settings.value("pos",  QPoint(posX, posY)).toPoint());
     settings.endGroup();
+
+    //TODO: Delete these !!
+    //resize(900, 500);
 }
 
 void LttoMainWindow::saveSettings()
@@ -748,6 +738,10 @@ void LttoMainWindow::on_actionExit_triggered()
 void LttoMainWindow::on_actionSet_CountDown_Time_triggered()
 {
     bool ok = false;
+    //QInputDialog Blobb;
+    //Up to here !!!!
+    //Blobb.setStyleSheet("* { font-size: 14pt; font-color: white}" );
+    //int time = Blobb.exec();
     int time = QInputDialog::getInt(this, "CountDown Time", "Enter Countdown Time (5-30 sec)", gameInfo.getCountDownTime(), 5, 30, 1, &ok);
     if(ok) gameInfo.setCountDownTime(time);
 }
@@ -786,6 +780,7 @@ void LttoMainWindow::on_actionAbout_triggered()
     aboutForm->show();
 }
 
+
 void LttoMainWindow::on_btn_SpyTeamTags_clicked()
 {
     if      (gameInfo.getIsSpiesTeamTagActive() == false)
@@ -800,78 +795,17 @@ void LttoMainWindow::on_btn_SpyTeamTags_clicked()
     }
 }
 
-//    /*-------------------------------------------*/
 
-//    QSlider
-//    {
-//        min-height: 35px;
-//    background: cyan;
-//        border-style: outset;
-//        border-width: 2px;
-//        border-radius: 10px;
-//        border-color: grey;
-//    }
+void LttoMainWindow::on_actionLTAR_Mode_triggered()
+{
+    bool state = ui->actionLTAR_Mode->isChecked();
+    gameInfo.setIsLTARGame(state);
+    setLtarControls(state);
+}
 
-//    /*QSlider::groove:horizontal {
-//            border-style: outset;
-//            border-width: 2px;
-//            border-radius: 10px;
-//            border-color: grey;
-//        }*/
-//    QSlider::groove:horizontal {
-//                        border-style: outset;
-//    border-width: 0px;
-//    border-radius: 10px;
-//    border-color: grey;
-//    }
-
-//    QSlider::handle:horizontal {
-//                        background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #b4b4b4, stop:1 #8f8f8f);
-//    border: 1px solid #5c5c5c;
-//    width: 18px;
-//    margin: -2px 0; /* handle is placed by default on the contents rect of the groove. Expand outside the groove */
-//    border-style: outset;
-//    border-width: 2px;
-//    border-radius: 7px;
-//    border-color: grey;
-//    }
-//    /*QSlider::handle:horizontal {
-//            background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #b4b4b4, stop:1 #8f8f8f);
-//            border: 2px *solid #5c5c5c*;
-//            width: 15px;
-//            radius: 5px;
-//            margin: -18px 0; /* handle is placed by default on the contents rect of the groove. Expand outside the groove */
-//    /*    border-style: outset;
-//            border-width: 2px;
-//            border-radius: 5px;
-//            border-color: grey;
-//        }*/
-
-//    QSlider::add-page:horizontal {
-//                          background: rgb(50,220,200);
-//    border-style: outset;
-//    border-width: 0px;
-//    border-radius: 10px;
-//    }
-
-//    QSlider::sub-page:horizontal {
-//                          background: cyan;
-//    border-style: outset;
-//    border-width: 0px;
-//    border-radius: 10px;
-//    }
-
-//    QSlider::sub-page:horizontal:disabled {
-//                          background: #bbb;
-//    }
-
-//    QSlider::add-page:horizontal:disabled {
-//                          background: #eee;
-//    }
-
-//    QSlider::handle:horizontal:disabled {
-//                        background: #eee;
-//    }
-
-//    /*-------------------------------------------*/
-
+void LttoMainWindow::on_btn_Debug_clicked()
+{
+    int currentPlayer = 1;
+    playerInfo[1].setTagsTaken(0, 12);
+    playerInfo[currentPlayer].setTagsTaken       (0, lttoComms.ConvertBCDtoDec(15));
+}

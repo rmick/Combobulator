@@ -33,7 +33,7 @@ public:
     bool getTeamTags() const;
     void setTeamTags(bool value);
 
-    int getNumberOfTeams() const;
+    int  getNumberOfTeams() const;
     void setNumberOfTeams(int value);
 
 public slots:
@@ -95,11 +95,13 @@ private slots:
 
     void on_btn_SpyTeamTags_clicked();
 
-    void on_btn_LtarGame_clicked();
-
     void on_slider_StartAmmo_valueChanged(int value);
 
     void on_slider_SleepTime_valueChanged(int value);
+
+    void on_actionLTAR_Mode_triggered();
+
+    void on_btn_Debug_clicked();
 
 private:
     Ui::LttoMainWindow      *ui;
@@ -121,6 +123,15 @@ private:
     void    loadFile();
     void    loadSettings();
     void    saveSettings();
+
+    QString   QSS_Inside =  "QWidget{background-color:black; font:white;} QSpinBox{color:white;}";
+    //QSS_Inside +=           "QMessageBox{font:white;} QMenu{font:white; color:white;}";
+    //QSS_INSIDE +=           "QLabel{color:white;} QListWidget{color:white;}";
+    //QSS_INSIDE +=           "QToolButton{border-width:2px; border-radius:10px; border-color:cyan; background-color:grey; padding:5px; spacing:20px; font:bold;}";
+
+    QString QSS_Outside =   "QWidget{background-color:yellow; font:purple;} QPushbutton{background-color:white;}";
+
+    //QSS_Inside = "";
 };
 
 #endif // LTTOMAINWINDOW_H

@@ -61,6 +61,10 @@ signals:
     void        TimerBlock(bool StartStop);
     void        sendSerialData(QByteArray dataToSend);
     void        TagSummaryReceived(int game, int teamAndPlayer, int tagsTaken, int survivedMinutes, int survivedSeconds, int zoneTimeMinutes, int zoneTimeSeconds, int flags);
+    void        Team1TagReportReceived(int game, int teamAndPlayer, int tagsReceivedfromPlayer[]);
+    void        Team1TagReportReceived(int game, int teamAndPlayer, int tagsP1, int tagsP2, int tagsP3, int tagsP4, int tagsP5, int tagsP6, int tagsP7, int tagsP8);
+    void        Team2TagReportReceived(int game, int teamAndPlayer, int tagsP1, int tagsP2, int tagsP3, int tagsP4, int tagsP5, int tagsP6, int tagsP7, int tagsP8);
+    void        Team3TagReportReceived(int game, int teamAndPlayer, int tagsP1, int tagsP2, int tagsP3, int tagsP4, int tagsP5, int tagsP6, int tagsP7, int tagsP8);
 
 private slots:
     void        receivePacket(QByteArray RxData);
@@ -79,6 +83,7 @@ private:
     bool            serialUSBcommsConnected;
     int             missedAnnounceCount;
     bool            useLongDataPacketsOverTCP;
+//    int             tagsReceivedfromPlayer[8];
 
 
     void            processPacket(QList<QByteArray> data);

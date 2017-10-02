@@ -29,6 +29,12 @@ PlayersWindow::PlayersWindow(QWidget *parent) :
     LoadPlayerSettings(0);      // 0 = Global Player
     SetActivePlayers();
     RenamePlayerTeamButtons(gameInfo.getNumberOfTeams());
+
+#ifdef QT_DEBUG
+    ui->btn_ChangePlayers->setVisible(true);
+#else
+    ui->btn_ChangePlayers->setVisible(false);
+#endif
 }
 
 PlayersWindow::~PlayersWindow()
@@ -483,7 +489,6 @@ void PlayersWindow::on_slider_Reloads_valueChanged(int value)
 {
     if  (value == 100) ui->label_Reloads->setText("Reloads : Unlimited");
     else ui->label_Reloads->setText("Reloads : " + QString::number(value) );
-    //TODO: Allow for 990 on LTAR
     playerInfo[SelectedPlayer].setReloads(value);
 }
 
@@ -537,4 +542,6 @@ void PlayersWindow::on_btn_Flags_clicked()
 void PlayersWindow::on_btn_ChangePlayers_clicked()
 {
     //TODO: This will allow the user to drag players to new locations (eg T1-P4 to T3-P7), as well as off into an area of 'spare' players.
+    if (!rearrangePlayers) rearrangePlayers = new RearrangePlayers(this);
+    rearrangePlayers->show();
 }

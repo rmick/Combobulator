@@ -208,7 +208,7 @@ void Game::setIsThisPlayerInTheGame(int index, int value)
 
 int Game::getPlayersInTeam(int TeamNumber) const
 {
-    //TODO: THis is BROKEN. Please fix it!
+    //TODO: This is BROKEN. Please fix it!
     if (gameInfo.getIsLTARGame())
     {
         qDebug() << "Game::getPlayersInTeam() - LTAR Mode - PlayersInTeamByte =" << PlayersInTeamByte[TeamNumber];
@@ -222,7 +222,8 @@ int Game::getPlayersInTeam(int TeamNumber) const
     {
         if (gameInfo.getIsThisPlayerInTheGame(index) == true) numberOfPlayersInThisTeam++;
     }
-    qDebug() << "Game::getPlayersInTeam() - Number of players =" << numberOfPlayersInThisTeam << "in Team" << TeamNumber;
+    //qDebug() << "Game::getPlayersInTeam() - Number of players =" << numberOfPlayersInThisTeam << "in Team" << TeamNumber;
+
     //return numberOfPlayersInThisTeam;
     return 8;
 }

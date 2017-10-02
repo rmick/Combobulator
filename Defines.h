@@ -19,6 +19,7 @@
 //      Open CMD.exe prompt
 //      cd\
 //      W:
+// STOP !!!!! (id you do step 1 above - copy the file to a new location first !!!!
 //      cd Qt_projects\build-Combobulator_Windows-Release\Combobulator
 //      C:\Qt\5.9.1\msvc2015_64\bin\windeployqt Combobulator.exe
 //      Zip up the folder and publish to Dropbox (or whereever)
@@ -28,7 +29,7 @@
 
 
 //  Build Number
-const QString BUILD_NUMBER  = "Build : 17.9.27a";
+const QString BUILD_NUMBER  = "Build : 17.10.02a";
 
 // Recoil Game Hub_28f537d14fca
 
@@ -160,6 +161,226 @@ const QString   BUTTON_SELECTED             = "border-color: cyan; color: cyan;"
 const QString   BUTTON_UNSELECTED           = "color: black;";                          //"font: normal;";
 const QString   BUTTON_CHECKED              = "border-color: cyan; color: cyan;";       //"background-color: rgb(50,220,200)";
 const QString   BUTTON_UNCHECKED            = "border-color: grey; color: black;";      //"background-color: cyan";
-const QString   BUTTON_LAST_PRESSED         = "color:red;";     //"background-color: rgb(50,250,220)";
+const QString   BUTTON_LAST_PRESSED         = "color:red;";                             //"background-color: rgb(50,250,220)";
+
+
+//        QToolBar
+//        {
+//            border: grey;
+//            border-width: 2px;
+//            background-color: rgb(50,50,50);
+//            spacing: 20px;
+//            padding: 10px;
+//        }
+
+//        /*---------------------------------------------------------------------------*/
+
+
+
+//        QtoolButton:hover
+//        {
+//            color: rgb(250,200,200)
+//        }
+
+//        QToolButton:checked
+//        {
+//            font: red;
+//        border-color: cyan
+//        }
+
+//        /*---------------------------------------------------------------------------*/
+
+//        QPushButton
+//        {
+//            background-color: grey;
+//            border-style: outset;
+//            border-width: 2px;
+//            border-radius: 10px;
+//            border-color: grey;
+//            min-width: 50;
+//            min-height: 30;
+//        }
+
+//        QPushButton:disabled
+//        {
+//            /*background-color: rgb(200,230	,230); */
+//            background-color: rgb(50, 50, 50);
+//        }
+
+//        QPushButton:checked
+//        {
+//            border-color: cyan;
+//            /*background-color: rgb(50,220,200);*/
+//            color: cyan;
+//            /*font-weight: bold;*/
+//         }
+
+//        /*---------------------------------------------------------------------------*/
+
+//        QSlider
+//        {
+//            min-height: 35px;
+//            background: grey;
+//            border-style: outset;
+//            border-width: 1px;
+//            border-radius: 10px;
+//            border-color: black;
+//        }
+
+//        QSlider::groove:horizontal {
+//            border-style: outset;
+//            border-width: 2px;
+//            border-radius: 10px;
+//            border-color: black;
+//        }
+
+//        QSlider::handle:horizontal {
+//            background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #b4b4b4, stop:1 #8f8f8f);
+//            border: 1px solid #5c5c5c;
+//            width: 18px;
+//            margin: -2px 0; /* handle is placed by default on the contents rect of the groove. Expand outside the groove*/
+//            border-style: outset;
+//            border-width: 2px;
+//            border-radius: 5px;
+//            border-color: cyan;
+//        }"
+
 
 #endif // DEFINES_H
+
+
+
+//        QSpinBox
+//        {
+//        color: white;
+//        }
+
+//        /*---------------------------------------------------------------------------*/
+
+//        QMessageBox
+//        {
+//            font:white;
+//        }
+
+//        /*---------------------------------------------------------------------------*/
+
+//        QMenu
+//        {
+//            font: white;
+//            color: white;
+//        }
+
+//        /*---------------------------------------------------------------------------*/
+
+//        QWidget
+//        {
+//            background-color: black;
+//            font: white;
+//        }
+
+//        /*---------------------------------------------------------------------------*/
+
+//        QLabel
+//        {
+//            color: white;
+//        }
+
+//        /*---------------------------------------------------------------------------*/
+
+//        QListWidget
+//        {
+//            color: white;
+//        }
+
+//        /*---------------------------------------------------------------------------*/
+
+//        QToolBar
+//        {
+//            border: grey;
+//            border-width: 2px;
+//            background-color: rgb(50,50,50);
+//            spacing: 20px;
+//            padding: 10px;
+//        }
+
+//        /*---------------------------------------------------------------------------*/
+
+//        QToolButton
+//        {
+//            border-width: 2px;
+//                border-radius: 10px;
+//                border-color: cyan;
+//            background-color:grey;
+//            padding: 5px;
+//            spacing: 20px;
+//            font: bold;
+//        }
+
+//        QtoolButton:hover
+//        {
+//            color: rgb(250,200,200)
+//        }
+
+//        QToolButton:checked
+//        {
+//            font: red;
+//        border-color: cyan
+//        }
+
+//        /*---------------------------------------------------------------------------*/
+
+//        QPushButton
+//        {
+//            background-color: grey;
+//            border-style: outset;
+//            border-width: 2px;
+//            border-radius: 10px;
+//            border-color: grey;
+//            min-width: 50;
+//            min-height: 30;
+//        }
+
+//        QPushButton:disabled
+//        {
+//            /*background-color: rgb(200,230	,230); */
+//            background-color: rgb(50, 50, 50);
+//        }
+
+//        QPushButton:checked
+//        {
+//            border-color: cyan;
+//            /*background-color: rgb(50,220,200);*/
+//            color: cyan;
+//            /*font-weight: bold;*/
+//         }
+
+//        /*---------------------------------------------------------------------------*/
+
+//        QSlider
+//        {
+//            min-height: 35px;
+//            background: grey;
+//            border-style: outset;
+//            border-width: 1px;
+//            border-radius: 10px;
+//            border-color: black;
+//        }
+
+//        QSlider::groove:horizontal {
+//            border-style: outset;
+//            border-width: 2px;
+//            border-radius: 10px;
+//            border-color: black;
+//        }
+
+//        QSlider::handle:horizontal {
+//            background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #b4b4b4, stop:1 #8f8f8f);
+//            border: 1px solid #5c5c5c;
+//            width: 18px;
+//            margin: -2px 0; /* handle is placed by default on the contents rect of the groove. Expand outside the groove*/
+//            border-style: outset;
+//            border-width: 2px;
+//            border-radius: 5px;
+//            border-color: cyan;
+//        }
+

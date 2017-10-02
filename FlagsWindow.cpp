@@ -30,7 +30,6 @@ FlagsWindow::~FlagsWindow()
 ////////////////////////////////////////////////////////////////////
 
 void FlagsWindow::setButtonStates(int playerNumber)
-//TODO: This does not work, the values are not loaded correctly.
 {
     qDebug() << "FlagsWindow::setButtonStates = Player " << playerNumber;
     if(gameInfo.getIsLTARGame())    hideLtarControls(true);

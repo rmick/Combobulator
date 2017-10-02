@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1024</width>
+    <width>800</width>
     <height>500</height>
    </rect>
   </property>
@@ -14,33 +14,13 @@
    <string>Dialog</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">/*
-QPushButton
-{
-    background-color: cyan;
-    border-style: outset;
-    border-width: 2px;
-    border-radius: 10px;
-    border-color: grey;
-}
-
-QPushbutton:checked
-{
-    background-color: rgb(100,255,255);
-	font-weight: bold;
-}
-
-QPushbutton:disabled
-{
-	background-color: grey;
-}
-*/</string>
+   <string notr="true"/>
   </property>
   <widget class="QPushButton" name="btn_Cancel">
    <property name="geometry">
     <rect>
-     <x>900</x>
-     <y>380</y>
+     <x>670</x>
+     <y>400</y>
      <width>113</width>
      <height>81</height>
     </rect>
@@ -143,9 +123,9 @@ QPushbutton:disabled
   <widget class="QListWidget" name="listWidget_Status">
    <property name="geometry">
     <rect>
-     <x>10</x>
+     <x>0</x>
      <y>10</y>
-     <width>721</width>
+     <width>671</width>
      <height>111</height>
     </rect>
    </property>
@@ -185,9 +165,15 @@ QPushbutton:disabled
     <rect>
      <x>0</x>
      <y>120</y>
-     <width>1024</width>
+     <width>800</width>
      <height>200</height>
     </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
    </property>
    <property name="font">
     <font>
@@ -206,24 +192,7 @@ QPushbutton:disabled
    <property name="alignment">
     <set>Qt::AlignCenter</set>
    </property>
-  </widget>
-  <widget class="QPushButton" name="btn_StartStopHosting">
-   <property name="geometry">
-    <rect>
-     <x>740</x>
-     <y>80</y>
-     <width>113</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Start/Stop
-(DeBug)</string>
-   </property>
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
+   <property name="wordWrap">
     <bool>true</bool>
    </property>
   </widget>
@@ -231,7 +200,7 @@ QPushbutton:disabled
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>380</y>
+     <y>390</y>
      <width>113</width>
      <height>81</height>
     </rect>
@@ -337,8 +306,8 @@ QPushbutton:disabled
    </property>
    <property name="geometry">
     <rect>
-     <x>442</x>
-     <y>360</y>
+     <x>330</x>
+     <y>370</y>
      <width>151</width>
      <height>111</height>
     </rect>
@@ -562,11 +531,17 @@ Tagger</string>
   <widget class="QFrame" name="frame">
    <property name="geometry">
     <rect>
-     <x>890</x>
+     <x>670</x>
      <y>10</y>
      <width>121</width>
      <height>111</height>
     </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
    </property>
    <property name="frameShape">
     <enum>QFrame::StyledPanel</enum>
@@ -608,9 +583,21 @@ Base Status</string>
      <rect>
       <x>44</x>
       <y>60</y>
-      <width>31</width>
+      <width>30</width>
       <height>30</height>
      </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>30</width>
+      <height>30</height>
+     </size>
     </property>
     <property name="palette">
      <palette>
@@ -725,86 +712,11 @@ Base Status</string>
     </property>
    </widget>
   </widget>
-  <widget class="QPushButton" name="btn_FailSend">
-   <property name="geometry">
-    <rect>
-     <x>740</x>
-     <y>60</y>
-     <width>113</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Send Fail
-Signal</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="btn_StopStartBeacon">
-   <property name="geometry">
-    <rect>
-     <x>740</x>
-     <y>110</y>
-     <width>113</width>
-     <height>32</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Pause Beacon</string>
-   </property>
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="autoDefault">
-    <bool>false</bool>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="btn_Connect">
-   <property name="geometry">
-    <rect>
-     <x>910</x>
-     <y>120</y>
-     <width>113</width>
-     <height>32</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Connect</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="btn_Disconnect">
-   <property name="geometry">
-    <rect>
-     <x>910</x>
-     <y>160</y>
-     <width>113</width>
-     <height>32</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Disconnect</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="btn_ReadyReadUSB">
-   <property name="geometry">
-    <rect>
-     <x>760</x>
-     <y>40</y>
-     <width>75</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Read USB</string>
-   </property>
-  </widget>
   <widget class="QPushButton" name="btn_ShowListWidget">
    <property name="geometry">
     <rect>
-     <x>740</x>
-     <y>10</y>
+     <x>670</x>
+     <y>120</y>
      <width>113</width>
      <height>32</height>
     </rect>
@@ -814,6 +726,19 @@ Signal</string>
    </property>
    <property name="text">
     <string>Show Debug</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btn_DeBugSendTag">
+   <property name="geometry">
+    <rect>
+     <x>550</x>
+     <y>120</y>
+     <width>113</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>SendTag</string>
    </property>
   </widget>
  </widget>

@@ -8,7 +8,6 @@
 #include "Defines.h"
 #include "Game.h"
 #include "Players.h"
-//#include "HostGameWindow.h"
 
 namespace Ui {
 class ReHostTagger;
@@ -24,7 +23,6 @@ public:
 
 private slots:
     void    playerButtonPressed(int playerNumber);
-
     void    on_btn_Close_clicked();
 
 private:

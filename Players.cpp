@@ -9,7 +9,7 @@ Players::Players()
     static int instanceCount = 0;
     instanceCount++;
 
-    if(instanceCount == 1) qDebug() << "Players::Players() - Constructing.......";
+    if(instanceCount == 1)  qDebug() << "Players::Players() - Constructing.......";
 
     Handicap        = 0;
     PlayerName       = "_";
@@ -26,6 +26,11 @@ Players::Players()
     PackedFlags3    = DEFAULT_FLAGS3;
     StartingAmmo    = DEFAULT_START_AMMO;
     SleepTimeOut    = DEFAULT_SLEEP_TIME_OUT;
+
+    for (int index = 0; index < 25; index++)
+    {
+        setTagsTaken(index, 0);
+    }
 }
 
 int Players::getHandicap() const
@@ -395,14 +400,14 @@ int Players::handicapAdjust(int value, int maxValue)
     return value;
 }
 
-int Players::getTagsTaken() const
+int Players::getTagsTaken(size_t playerNumber) const
 {
-    return tagsTaken;
+    return tagsTaken[playerNumber];
 }
 
-void Players::setTagsTaken(int value)
+void Players::setTagsTaken(int playerNumber, int value)
 {
-    tagsTaken = value;
+    tagsTaken[playerNumber] = value;
 }
 
 int Players::getSurvivalTimeMinutes() const
@@ -445,12 +450,12 @@ void Players::setZoneTimeSeconds(int value)
     zoneTimeSeconds = value;
 }
 
-int Players::getTagFlags() const
+int Players::getReportFlags() const
 {
-    return tagFlags;
+    return reportFlags;
 }
 
-void Players::setTagFlags(int value)
+void Players::setReportFlags(int value)
 {
-    tagFlags = value;
+    reportFlags = value;
 }

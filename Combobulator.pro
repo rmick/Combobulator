@@ -27,7 +27,8 @@ SOURCES +=  main.cpp\
 	    ReHostTagger.cpp \
 	    AboutForm.cpp \
 	    DeBrief.cpp \
-	    Hosting.cpp
+	    Hosting.cpp \
+    RearrangePlayers.cpp
 
 
 
@@ -48,7 +49,8 @@ HEADERS  += \
 	    AboutForm.h \
 	    DeBrief.h \
 	    Hosting.h \
-    StyleSheet.h
+    StyleSheet.h \
+    RearrangePlayers.h
 
 
 FORMS    += \
@@ -59,7 +61,8 @@ FORMS    += \
 	    SyncTaggers.ui \
 	    FlagsWindow.ui \
 	    ReHostTagger.ui \
-	    AboutForm.ui
+	    AboutForm.ui \
+    RearrangePlayers.ui
 
 RESOURCES += \
 	    Resources.qrc

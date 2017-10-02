@@ -71,8 +71,8 @@ public:
     int handicapAdjust(int value);
     int handicapAdjust(int value, int maxValue);
 
-    int getTagsTaken() const;
-    void setTagsTaken(int value);
+    int getTagsTaken(size_t playerNumber) const;
+    void setTagsTaken(int playerNumber, int value);
 
     int getSurvivalTimeMinutes() const;
     void setSurvivalTimeMinutes(int value);
@@ -86,8 +86,8 @@ public:
     int getZoneTimeSeconds() const;
     void setZoneTimeSeconds(int value);
 
-    int getTagFlags() const;
-    void setTagFlags(int value);
+    int getReportFlags() const;
+    void setReportFlags(int value);
 
     int getStartingAmmo() const;
     void setStartingAmmo(int value);
@@ -118,12 +118,12 @@ private:
     int     SpyNumber;
     int     isKing;
 
-    int     tagsTaken;
+    int     tagsTaken[25];
     int     survivalTimeMinutes;
     int     survivalTimeSeconds;
     int     zoneTimeMinutes;
     int     zoneTimeSeconds;
-    int     tagFlags;
+    int     reportFlags;
 };
 
 extern Players playerInfo[25];
