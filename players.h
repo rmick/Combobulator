@@ -9,6 +9,8 @@ class Players
 public:
     Players();
 
+    bool testing123;
+
     int  getHandicap() const;
     void setHandicap(int value);
 

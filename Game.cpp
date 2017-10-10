@@ -6,7 +6,7 @@
 
 Game    gameInfo;
 
-Game::Game()    // (QObject *parent)
+Game::Game()
 {
     qDebug() << "Game::Game() - Constructing.......";
 
@@ -14,11 +14,13 @@ Game::Game()    // (QObject *parent)
     GameID          = DEFAULT_GAME_ID;
     GameLength      = DEFAULT_GAME_LENGTH;
     NumberOfPlayers = 24;
+    isReSpawnGame   = false;
+    isLTARGame      = false;
     GameName        ="LTTO";
-    NameChar1       = 49;  // 1
-    NameChar2       = 50;  // 2
-    NameChar3       = 51;  // 3
-    NameChar4       = 52;  // 4
+    NameChar1       = 67;  // C
+    NameChar2       = 85;  // U
+    NameChar3       = 83;  // S
+    NameChar4       = 84;  // T
 
     PlayerToReHost = 0;
     isSpiesTeamTagActive = false;
@@ -47,10 +49,15 @@ void Game::setGameType(int value)
     for(int index = 0; index < 25; index++)
     {
         // Reset Game Specific Flags and buttons.
+        playerInfo[index].setBitFlags1(NEUTRALISE_10_FLAG, false);
         playerInfo[index].setBitFlags1(HUNT_THE_PREY_FLAG, false);
         playerInfo[index].setBitFlags1(REVERSE_HUNT_DIR_FLAG, false);
         playerInfo[index].setBitFlags2(CONTESTED_ZONES_FLAG, false);
         playerInfo[index].setBitFlags2(NEUTRALISE_15s_TAGGED_FLAG, false);
+        playerInfo[index].setBitFlags2(ZONES_TO_TEAMS_FLAG, false);
+        playerInfo[index].setBitFlags2(SUPPLY_ZONES_REVIVE_FLAG, false);
+        playerInfo[index].setBitFlags2(SUPPLY_ZONES_REFILL_TAGS_FLAG, false);
+        playerInfo[index].setBitFlags2(HOSTILE_ZONES_FLAG, false);
 
         // Set Game Specific Flags and Number of Teams Flags
         switch(value)
@@ -248,7 +255,8 @@ void Game::streamToFile(QTextStream &out)
     out << "CountDownTime:"    << CountDownTime    << endl;
 //    out << "PlayersInGame;"    << endl;
     out << "SpyTeamTagsActive:"<< isSpiesTeamTagActive << endl;
-    out << "LTARmode:"          << isLTARGame        << endl;
+    out << "LTARmode:"         << isLTARGame        << endl;
+    out << "ReSpawnEnabled:"   << isReSpawnGame     << endl;
     for (int x=0; x< 25; x++)
     {
         if      (x < 10) out << " Player0" << x << ":" << isThisPlayerInTheGame[x] << endl;
@@ -278,6 +286,7 @@ void Game::streamFromFile(QTextStream &in)
             else if (descriptorG.contains("CountDownTime:") )       CountDownTime           = extractInteger(descriptorG);
             else if (descriptorG.contains("SpyTeamTagsActive:") )   isSpiesTeamTagActive    = extractInteger(descriptorG);
             else if (descriptorG.contains("LTARmode:") )            isLTARGame              = extractInteger(descriptorG);
+            else if (descriptorG.contains("ReSpawnEnabled:") )      isReSpawnGame           = extractInteger(descriptorG);
     }   while (descriptorG != "END_OF_GAME_SETTINGS");
 
     setNumberOfTeams(NumberOfTeams);    //This is required to update the Flags2 bits.
@@ -296,6 +305,7 @@ void Game::streamFromFile(QTextStream &in)
     qDebug() << "CountDownTime"     << CountDownTime;
     qDebug() << "SpyTeamTagsActive" << isSpiesTeamTagActive;
     qDebug() << "LTARmode"          << isLTARGame;
+    qDebug() << "ReSpawnEnabled"    << isReSpawnGame;
     qDebug() << "PlayersInGame;";
     for (int x=0; x< 25; x++)
     {
@@ -402,6 +412,16 @@ bool Game::getIsLTARGame() const
 void Game::setIsLTARGame(bool value)
 {
     isLTARGame = value;
+}
+
+bool Game::getIsReSpawnGame() const
+{
+    return isReSpawnGame;
+}
+
+void Game::setIsReSpawnGame(bool value)
+{
+    isReSpawnGame = value;
 }
 
 int Game::extractInteger(QString &dG)

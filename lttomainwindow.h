@@ -103,6 +103,10 @@ private slots:
 
     void on_btn_Debug_clicked();
 
+    void on_actionOutdoorMode_triggered();
+
+    void on_btn_ReSpawn_clicked();
+
 private:
     Ui::LttoMainWindow      *ui;
     PlayersWindow           *playersWindow;
@@ -115,6 +119,7 @@ private:
     bool    SlowTags;
     bool    MedicMode;
     bool    TeamTags;
+    //bool    DaylightMode;
 
     void    UpdateGlobalPlayerControlSettings();
     void    UpdateGameControlSettings();

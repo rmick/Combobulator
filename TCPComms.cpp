@@ -24,6 +24,7 @@ bool TCPComms::DisconnectTCP()
 {
     tcpSocket->disconnectFromHost();
     qDebug() << "TCPComms::DisconnectTCP() - Disconnected !!!";
+    lttoComms.setTcpCommsConnected(false);
     return false;
 }
 

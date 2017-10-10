@@ -45,11 +45,11 @@ public:
     int         ConvertDecToBCD(int dec);
     int         ConvertBCDtoDec(int bcd);
 
-    bool getSerialUSBcommsConnected() const;
-    void setSerialUSBcommsConnected(bool value);
+    bool        getSerialUSBcommsConnected() const;
+    void        setSerialUSBcommsConnected(bool value);
 
-    bool getUseLongDataPacketsOverTCP() const;
-    void setUseLongDataPacketsOverTCP(bool value);
+    bool        getUseLongDataPacketsOverTCP() const;
+    void        setUseLongDataPacketsOverTCP(bool value);
 
 public slots:
     void        TCPconnected();

@@ -9,6 +9,7 @@
 #include "LttoMainWindow.h"
 #include "Game.h"
 #include "Players.h"
+#include "StyleSheet.h"
 
 PlayersWindow::PlayersWindow(QWidget *parent) :
     QDialog(parent),
@@ -170,14 +171,16 @@ void PlayersWindow::SetPlayerButtons(bool state)
     {
          PlayerButtons[x]->setChecked(state);
          //The next two lines should not be required, but the stylesheet fails when SelectAll/SelectNone are triggered.
-         if (state == true) PlayerButtons[x]->setStyleSheet(BUTTON_SELECTED);
-         else               PlayerButtons[x]->setStyleSheet(BUTTON_UNSELECTED);
+         if (state == true) PlayerButtons[x]->setStyleSheet(myStyleSheet.getButtonCheckedCss());
+         else               PlayerButtons[x]->setStyleSheet(myStyleSheet.getButtonUnCheckedCss());
          gameInfo.setIsThisPlayerInTheGame(x, state);
     }
 }
 
 void PlayersWindow::SetPlayerControls(int state, int mode)
 {
+    //TODO: Is broke when you change mode and no players are selected!!!!
+
     //Set the state of ALL the controls.
     if(state != CURRENT_MODE)
     {
@@ -191,7 +194,7 @@ void PlayersWindow::SetPlayerControls(int state, int mode)
         ui->label_TeamTags->setEnabled(state);
         ui->btn_SelectedPlayerSlowTags->setEnabled(state);
         ui->btn_SelectedPlayerTeamTags->setEnabled(state);
- //       ui->btn_Flags->setEnabled(state);
+        ui->btn_Flags->setEnabled(state);
         ui->slider_StartAmmo->setEnabled(state);
 
     }
@@ -367,11 +370,11 @@ void PlayersWindow::playerButtonReleased(int value)
         //Reset all buttons to default stylesheet settings.
         for (int x = 1; x < 25; x++)
         {
-            if (PlayerButtons[x]->isChecked() ) PlayerButtons[x]->setStyleSheet(BUTTON_CHECKED);
-            else                                PlayerButtons[x]->setStyleSheet(BUTTON_UNCHECKED);
+            if (PlayerButtons[x]->isChecked() ) PlayerButtons[x]->setStyleSheet(myStyleSheet.getButtonCheckedCss());
+            else                                PlayerButtons[x]->setStyleSheet(myStyleSheet.getButtonUnCheckedCss());
         }
         //Set the last pressed button to a darker colour
-        PlayerButtons[value]->setStyleSheet(BUTTON_LAST_PRESSED);
+        PlayerButtons[value]->setStyleSheet(myStyleSheet.getButtonPressedLastCss());
 
         LoadPlayerSettings(value);
         AdjustSettingsForHandicap(value);

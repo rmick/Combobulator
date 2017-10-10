@@ -163,9 +163,9 @@
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>0</x>
+     <x>10</x>
      <y>120</y>
-     <width>800</width>
+     <width>781</width>
      <height>200</height>
     </rect>
    </property>
@@ -194,6 +194,9 @@
    </property>
    <property name="wordWrap">
     <bool>true</bool>
+   </property>
+   <property name="margin">
+    <number>2</number>
    </property>
   </widget>
   <widget class="QPushButton" name="btn_SkipPlayer">
@@ -701,6 +704,8 @@ Base Status</string>
     border-width: 2px;
     border-radius: 10px;
     border-color: grey;
+	min-width: 0; 
+	min-height: 0;
 }
 </string>
     </property>

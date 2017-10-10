@@ -76,13 +76,13 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
             packetString = createIRstring(data);
             packetString.prepend('T');
             packet.append(packetString);
-            //fullTCPpacketToSend = true;
+            fullTCPpacketToSend = true;
             break;
         case BEACON:
             packetString = createIRstring(data);
             packetString.prepend('B');
             packet.append(packetString);
-            //fullTCPpacketToSend = true;
+            fullTCPpacketToSend = true;
             break;
         default:
             qDebug() << "lttoComms::sendPacket() - No Packet type specified. You ninkom poop.";
@@ -243,6 +243,7 @@ bool LttoComms::getTcpCommsConnected() const
 void LttoComms::setTcpCommsConnected(bool value)
 {
     tcpCommsConnected = value;
+    setUseLongDataPacketsOverTCP(value);
 }
 
 void LttoComms::TCPconnected()
@@ -349,7 +350,6 @@ void LttoComms::processPacket(QList<QByteArray> data)
     int teamAndPlayer           = 0;
     int tagsTaken               = 0;
     int playersInReportByte     = 0;
-    int tagsReceivedfromPlayer[]= {0,0,0,0,0,0,0,0};
     int survivedMinutes         = 0;
     int survivedSeconds         = 0;
     int zoneTimeMinutes         = 0;

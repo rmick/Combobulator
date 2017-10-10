@@ -85,6 +85,9 @@ public:
     bool    getIsLTARGame() const;
     void    setIsLTARGame(bool value);
 
+    bool getIsReSpawnGame() const;
+    void setIsReSpawnGame(bool value);
+
 signals:
     void    NumberOfTeamsHasChanged(int NumTeams);
 
@@ -107,6 +110,7 @@ private:
     int     PlayersInTeamByte[3];
     int     PlayerToReHost;
     bool    isLTARGame;
+    bool    isReSpawnGame;
 
     int     extractInteger(QString &dG);
 };

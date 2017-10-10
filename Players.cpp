@@ -332,7 +332,7 @@ void Players::setPackedFlags3(int value)
 void Players::setBitFlags3(int bitNumber, bool state)
 {
     PackedFlags3 ^= (-state ^ PackedFlags3) & (1 << bitNumber);
-    qDebug() << "\tFlags3: " << "\tBinary = " << displayBinary(PackedFlags3, 8);
+    //qDebug() << "\tFlags3: " << "\tBinary = " << displayBinary(PackedFlags3, 8);
 }
 
 int Players::getBitFlags3(int bitNumber) const

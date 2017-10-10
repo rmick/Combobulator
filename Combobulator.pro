@@ -11,6 +11,7 @@ TARGET = Combobulator
 DEPLOYMENT.display_name = Combobulator
 TEMPLATE = app
 
+QMAKE_MAC_SDK = macosx10.13
 
 SOURCES +=  main.cpp\
             PlayersWindow.cpp \
@@ -28,7 +29,8 @@ SOURCES +=  main.cpp\
 	    AboutForm.cpp \
 	    DeBrief.cpp \
 	    Hosting.cpp \
-    RearrangePlayers.cpp
+	    RearrangePlayers.cpp \
+    StyleSheet.cpp
 
 
 
@@ -49,8 +51,8 @@ HEADERS  += \
 	    AboutForm.h \
 	    DeBrief.h \
 	    Hosting.h \
-    StyleSheet.h \
-    RearrangePlayers.h
+	    StyleSheet.h \
+	    RearrangePlayers.h
 
 
 FORMS    += \
@@ -62,7 +64,7 @@ FORMS    += \
 	    FlagsWindow.ui \
 	    ReHostTagger.ui \
 	    AboutForm.ui \
-    RearrangePlayers.ui
+	    RearrangePlayers.ui
 
 RESOURCES += \
 	    Resources.qrc

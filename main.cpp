@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
     QSplashScreen   splashScreen(pixmap);
 
     sound_PowerUp.setSource(QUrl::fromLocalFile(":/resources/audio/stinger-power-on.wav"));
-    sound_PowerUp.setVolume(1.0);
+    //sound_PowerUp.setVolume(1.0);
 
     sound_PowerUp.play();
     splashScreen.show();

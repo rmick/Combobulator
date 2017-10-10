@@ -28,11 +28,11 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
     sound_Powerdown(NULL)
 {
     ui->setupUi(this);
-    //setStyleSheet(QSS_Outside);
 
     QCoreApplication::setOrganizationName("Bush And Beyond");
     QCoreApplication::setOrganizationDomain("www.bushandbeyond.com.au");
     QCoreApplication::setApplicationName("Combobulator");
+    myStyleSheet.setCurrentCSS(myStyleSheet.CssDark);
     loadSettings();
 
     this->setWindowTitle("Lasertag Combobulator");
@@ -58,7 +58,7 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
     sound_PowerUp  ->setSource(QUrl::fromLocalFile(":/resources/audio/stinger-power-on.wav"));
     sound_Powerdown->setSource(QUrl::fromLocalFile(":/resources/audio/shut-down.wav"));
     sound_PowerUp->play();
-    sound_PowerUp->setVolume(1.0);
+    //sound_PowerUp->setVolume(1.0);
 }
 
 LttoMainWindow::~LttoMainWindow()
@@ -214,6 +214,33 @@ void LttoMainWindow::on_btn_TeamTags_clicked()
     }
 }
 
+//--------------------------------------------------------
+
+void LttoMainWindow::on_btn_ReSpawn_clicked()
+{
+    if      (gameInfo.getIsReSpawnGame() == false)
+    {
+        ui->btn_ReSpawn->setText("ReSpawn ON");
+        gameInfo.setIsReSpawnGame(true);
+        for(int index = 0; index < 25; index++)
+        {
+            playerInfo[index].setBitFlags1(NEUTRALISE_10_FLAG, true);
+            playerInfo[index].setBitFlags2(NEUTRALISE_15s_TAGGED_FLAG, true);
+            playerInfo[index].setBitFlags2(SUPPLY_ZONES_REVIVE_FLAG, true);
+        }
+    }
+    else if (gameInfo.getIsReSpawnGame() == true)
+    {
+        ui->btn_ReSpawn->setText("ReSpawn OFF");
+        gameInfo.setIsReSpawnGame(false);
+        for(int index = 0; index < 25; index++)
+        {
+            playerInfo[index].setBitFlags1(NEUTRALISE_10_FLAG, false);
+            playerInfo[index].setBitFlags2(NEUTRALISE_15s_TAGGED_FLAG, false);
+            playerInfo[index].setBitFlags2(SUPPLY_ZONES_REVIVE_FLAG, false);
+        }
+    }
+}
 /// //////////////////////////////////////////////////////////////////////////////////
 /// //////////////////////////////////////////////////////////////////////////////////
 /// //////////////////////////////////////////////////////////////////////////////////
@@ -223,6 +250,7 @@ void LttoMainWindow::on_btn_Ltag_clicked()
 {
     gameInfo.setGameName("LTAG");
     ui->btn_NoTeams->setEnabled(true);
+    ui->btn_Flags->setEnabled(false);
 
     switch(gameInfo.getNumberOfTeams())
     {
@@ -242,6 +270,7 @@ void LttoMainWindow::on_btn_HideAndSeek_clicked()
 {
     gameInfo.setGameName("SEEK");
     ui->btn_NoTeams->setEnabled(false);
+    ui->btn_Flags->setEnabled(false);
 
     switch(gameInfo.getNumberOfTeams())
     {
@@ -262,6 +291,7 @@ void LttoMainWindow::on_btn_Kings_clicked()
 {
     gameInfo.setGameName("KING");
     ui->btn_NoTeams->setEnabled(false);
+    ui->btn_Flags->setEnabled(false);
 
     switch(gameInfo.getNumberOfTeams())
     {
@@ -283,6 +313,7 @@ void LttoMainWindow::on_btn_OwnTheZone_clicked()
 {
     gameInfo.setGameName("ZONE");
     ui->btn_NoTeams->setEnabled(true);
+    ui->btn_Flags->setEnabled(false);
 
     switch(gameInfo.getNumberOfTeams())
     {
@@ -302,6 +333,7 @@ void LttoMainWindow::on_btn_CustomGame_clicked()
 {
     gameInfo.setGameName("CUST");
     ui->btn_NoTeams->setEnabled(true);
+    ui->btn_Flags->setEnabled(true);
 
     switch(gameInfo.getNumberOfTeams())
     {
@@ -491,14 +523,14 @@ void LttoMainWindow::on_btn_Spies_clicked()
         {
             ui->btn_Spies->setText("Spies = "+QString::number(++index) );
             ui->btn_SpyTeamTags->setVisible(true);
-            ui->btn_Spies->setStyleSheet(BUTTON_CHECKED);
+            ui->btn_Spies->setStyleSheet(myStyleSheet.getButtonCheckedCss());
             gameInfo.setNumberOfSpies(index);
         }
         if (gameInfo.getNumberOfSpies() == 4)
         {
             ui->btn_Spies->setText("Spies = 0");
             ui->btn_SpyTeamTags->setVisible(false);
-            ui->btn_Spies->setStyleSheet(BUTTON_UNCHECKED);
+            ui->btn_Spies->setStyleSheet(myStyleSheet.getButtonUnCheckedCss());
             gameInfo.setNumberOfSpies(0);
         }
     }
@@ -698,19 +730,31 @@ void LttoMainWindow::loadSettings()
     lttoComms.setUseLazerSwarm(settings.value("LazerswarmMode", true).toBool());
     ui->btn_SpyTeamTags->setChecked(settings.value("SpiesTeamTagMode", true).toBool());
 
-    qDebug() << "LttoMainWindow::loadSettings()" << lttoComms.getUseLazerSwarm();
-    settings.beginGroup("MainWindow");
-    //resize(settings.value("size", QSize(800, 600)).toSize());
+    myStyleSheet.setCurrentCSS(settings.value("ColourScheme", myStyleSheet.CssDark).toInt());
+    if(myStyleSheet.getCurrentCSS() == myStyleSheet.CssLight)
+    {
+        ui->actionOutdoorMode->setChecked(true);
+        setStyleSheet(myStyleSheet.getCurrentCSSstring());
+    }
+    else
+    {
+        ui->actionOutdoorMode->setChecked(false);
+        setStyleSheet(myStyleSheet.getCurrentCSSstring());
+    }
+#ifdef Q_OS_ANDROID
+    showFullScreen();
+#else
+    show();
+#endif
 
+    settings.beginGroup("MainWindow");
+    resize(settings.value("size", QSize(800, 600)).toSize());
     QScreen *screen = QGuiApplication::primaryScreen();
     QRect screenGeometry = screen->availableGeometry();
     int posX = (screenGeometry.width()  - this->width())  / 2;
     int posY = (screenGeometry.height() - this->height()) / 2;
     move  (settings.value("pos",  QPoint(posX, posY)).toPoint());
     settings.endGroup();
-
-    //TODO: Delete these !!
-    //resize(900, 500);
 }
 
 void LttoMainWindow::saveSettings()
@@ -719,6 +763,7 @@ void LttoMainWindow::saveSettings()
     QSettings settings;
     settings.setValue("LazerswarmMode",   lttoComms.getUseLazerSwarm());
     settings.setValue("SpiesTeamTagMode", gameInfo.getIsSpiesTeamTagActive());
+    settings.setValue("ColourScheme", myStyleSheet.getCurrentCSS());
     settings.beginGroup("MainWindow");
     settings.setValue("size", size());
     settings.setValue("pos", pos());
@@ -808,4 +853,28 @@ void LttoMainWindow::on_btn_Debug_clicked()
     int currentPlayer = 1;
     playerInfo[1].setTagsTaken(0, 12);
     playerInfo[currentPlayer].setTagsTaken       (0, lttoComms.ConvertBCDtoDec(15));
+}
+
+void LttoMainWindow::on_actionOutdoorMode_triggered()
+{
+    if(ui->actionOutdoorMode->isChecked())
+    {
+        myStyleSheet.setCurrentCSS(myStyleSheet.CssLight);
+        setStyleSheet(myStyleSheet.getCurrentCSSstring());
+    #ifdef Q_OS_ANDROID
+        showFullScreen();
+    #else
+        show();
+    #endif
+    }
+    else
+    {
+        myStyleSheet.setCurrentCSS(myStyleSheet.CssDark);
+        setStyleSheet(myStyleSheet.getCurrentCSSstring());
+    #ifdef Q_OS_ANDROID
+        showFullScreen();
+    #else
+        show();
+    #endif
+    }
 }

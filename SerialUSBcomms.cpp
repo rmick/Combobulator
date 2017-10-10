@@ -103,6 +103,7 @@ void SerialUSBcomms::sendPacket(QByteArray packet)
     }
 #else
     packet.clear();        // to silence Compiler warning!
+    serialUSBcomms.setUpSerialPort();
 #endif
 }
 

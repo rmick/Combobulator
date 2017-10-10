@@ -128,8 +128,18 @@ void FlagsWindow::hideLtarControls(bool state)
 
 void FlagsWindow::on_btn_Neutralise_clicked()
 {
-    if(ui->btn_Neutralise->isChecked())             updatePlayerFlags1(NEUTRALISE_10_FLAG, true);
-    else                                            updatePlayerFlags1(NEUTRALISE_10_FLAG, false);
+    if(ui->btn_Neutralise->isChecked())
+    {
+        updatePlayerFlags1(NEUTRALISE_10_FLAG, true);
+        ui->btn_NeutraliseWhenTagged->setChecked(true);
+        updatePlayerFlags2(NEUTRALISE_15s_TAGGED_FLAG, true);
+    }
+    else
+    {
+        updatePlayerFlags1(NEUTRALISE_10_FLAG, false);
+        ui->btn_NeutraliseWhenTagged->setChecked(false);
+        updatePlayerFlags2(NEUTRALISE_15s_TAGGED_FLAG, false);
+    }
 }
 
 void FlagsWindow::on_btn_ContestedZones_clicked()

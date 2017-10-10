@@ -26,139 +26,7 @@
    <string>LaserTag Combobulator</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">        QSpinBox
-        {
-        color: white;
-        }
-
-        /*---------------------------------------------------------------------------*/
-
-        QMessageBox
-        {
-            font:white;
-        }
-
-        /*---------------------------------------------------------------------------*/
-
-        QMenu
-        {
-            font: white;
-            color: white;
-        }
-
-        /*---------------------------------------------------------------------------*/
-
-        QWidget
-        {
-            background-color: black;
-            font: white;
-        }
-
-        /*---------------------------------------------------------------------------*/
-
-        QLabel
-        {
-            color: white;
-        }
-
-        /*---------------------------------------------------------------------------*/
-
-        QListWidget
-        {
-            color: white;
-        }
-
-        /*---------------------------------------------------------------------------*/
-
-        QToolBar
-        {
-            border: grey;
-            border-width: 2px;
-            background-color: rgb(50,50,50);
-            spacing: 20px;
-            padding: 10px;
-        }
-
-        /*---------------------------------------------------------------------------*/
-
-        QToolButton
-        {
-            border-width: 2px;
-                border-radius: 10px;
-                border-color: cyan;
-            background-color:grey;
-            padding: 5px;
-            spacing: 20px;
-            font: bold;
-        }
-
-        QtoolButton:hover
-        {
-            color: rgb(250,200,200)
-        }
-
-        QToolButton:checked
-        {
-            font: red;
-        border-color: cyan
-        }
-
-        /*---------------------------------------------------------------------------*/
-
-        QPushButton
-        {
-            background-color: grey;
-            border-style: outset;
-            border-width: 2px;
-            border-radius: 10px;
-            border-color: grey;
-            min-width: 50;
-            min-height: 30;
-        }
-
-        QPushButton:disabled
-        {
-            /*background-color: rgb(200,230	,230); */
-            background-color: rgb(50, 50, 50);
-        }
-
-        QPushButton:checked
-        {
-            border-color: cyan;
-            /*background-color: rgb(50,220,200);*/
-            color: cyan;
-            /*font-weight: bold;*/
-         }
-
-        /*---------------------------------------------------------------------------*/
-
-        QSlider
-        {
-            min-height: 35px;
-            background: grey;
-            border-style: outset;
-            border-width: 1px;
-            border-radius: 10px;
-            border-color: black;
-        }
-
-        QSlider::groove:horizontal {
-            border-style: outset;
-            border-width: 2px;
-            border-radius: 10px;
-            border-color: black;
-        }
-
-        QSlider::handle:horizontal {
-            background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #b4b4b4, stop:1 #8f8f8f);
-            border: 1px solid #5c5c5c;
-            width: 18px;
-            margin: -2px 0; /* handle is placed by default on the contents rect of the groove. Expand outside the groove*/
-            border-style: outset;
-            border-width: 2px;
-            border-radius: 5px;
-            border-color: cyan;
-        }</string>
+   <string notr="true"/>
   </property>
   <property name="tabShape">
    <enum>QTabWidget::Triangular</enum>
@@ -1092,119 +960,6 @@
       </property>
       <property name="checked">
        <bool>false</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="0" rowspan="2">
-     <widget class="QPushButton" name="btn_Flags">
-      <property name="enabled">
-       <bool>true</bool>
-      </property>
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>54</width>
-        <height>34</height>
-       </size>
-      </property>
-      <property name="palette">
-       <palette>
-        <active>
-         <colorrole role="Button">
-          <brush brushstyle="SolidPattern">
-           <color alpha="255">
-            <red>128</red>
-            <green>128</green>
-            <blue>128</blue>
-           </color>
-          </brush>
-         </colorrole>
-         <colorrole role="Base">
-          <brush brushstyle="SolidPattern">
-           <color alpha="255">
-            <red>128</red>
-            <green>128</green>
-            <blue>128</blue>
-           </color>
-          </brush>
-         </colorrole>
-         <colorrole role="Window">
-          <brush brushstyle="SolidPattern">
-           <color alpha="255">
-            <red>128</red>
-            <green>128</green>
-            <blue>128</blue>
-           </color>
-          </brush>
-         </colorrole>
-        </active>
-        <inactive>
-         <colorrole role="Button">
-          <brush brushstyle="SolidPattern">
-           <color alpha="255">
-            <red>128</red>
-            <green>128</green>
-            <blue>128</blue>
-           </color>
-          </brush>
-         </colorrole>
-         <colorrole role="Base">
-          <brush brushstyle="SolidPattern">
-           <color alpha="255">
-            <red>128</red>
-            <green>128</green>
-            <blue>128</blue>
-           </color>
-          </brush>
-         </colorrole>
-         <colorrole role="Window">
-          <brush brushstyle="SolidPattern">
-           <color alpha="255">
-            <red>128</red>
-            <green>128</green>
-            <blue>128</blue>
-           </color>
-          </brush>
-         </colorrole>
-        </inactive>
-        <disabled>
-         <colorrole role="Button">
-          <brush brushstyle="SolidPattern">
-           <color alpha="255">
-            <red>50</red>
-            <green>50</green>
-            <blue>50</blue>
-           </color>
-          </brush>
-         </colorrole>
-         <colorrole role="Base">
-          <brush brushstyle="SolidPattern">
-           <color alpha="255">
-            <red>50</red>
-            <green>50</green>
-            <blue>50</blue>
-           </color>
-          </brush>
-         </colorrole>
-         <colorrole role="Window">
-          <brush brushstyle="SolidPattern">
-           <color alpha="255">
-            <red>50</red>
-            <green>50</green>
-            <blue>50</blue>
-           </color>
-          </brush>
-         </colorrole>
-        </disabled>
-       </palette>
-      </property>
-      <property name="text">
-       <string>Flags</string>
       </property>
      </widget>
     </item>
@@ -2467,10 +2222,139 @@
       </property>
      </widget>
     </item>
-    <item row="8" column="5">
+    <item row="14" column="5">
      <widget class="QPushButton" name="btn_Debug">
       <property name="text">
-       <string>PushButton</string>
+       <string>DeBug</string>
+      </property>
+     </widget>
+    </item>
+    <item row="8" column="5">
+     <widget class="QPushButton" name="btn_Flags">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>54</width>
+        <height>34</height>
+       </size>
+      </property>
+      <property name="palette">
+       <palette>
+        <active>
+         <colorrole role="Button">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>128</red>
+            <green>128</green>
+            <blue>128</blue>
+           </color>
+          </brush>
+         </colorrole>
+         <colorrole role="Base">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>128</red>
+            <green>128</green>
+            <blue>128</blue>
+           </color>
+          </brush>
+         </colorrole>
+         <colorrole role="Window">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>128</red>
+            <green>128</green>
+            <blue>128</blue>
+           </color>
+          </brush>
+         </colorrole>
+        </active>
+        <inactive>
+         <colorrole role="Button">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>128</red>
+            <green>128</green>
+            <blue>128</blue>
+           </color>
+          </brush>
+         </colorrole>
+         <colorrole role="Base">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>128</red>
+            <green>128</green>
+            <blue>128</blue>
+           </color>
+          </brush>
+         </colorrole>
+         <colorrole role="Window">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>128</red>
+            <green>128</green>
+            <blue>128</blue>
+           </color>
+          </brush>
+         </colorrole>
+        </inactive>
+        <disabled>
+         <colorrole role="Button">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>50</red>
+            <green>50</green>
+            <blue>50</blue>
+           </color>
+          </brush>
+         </colorrole>
+         <colorrole role="Base">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>50</red>
+            <green>50</green>
+            <blue>50</blue>
+           </color>
+          </brush>
+         </colorrole>
+         <colorrole role="Window">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>50</red>
+            <green>50</green>
+            <blue>50</blue>
+           </color>
+          </brush>
+         </colorrole>
+        </disabled>
+       </palette>
+      </property>
+      <property name="text">
+       <string>Flags</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0" rowspan="2">
+     <widget class="QPushButton" name="btn_ReSpawn">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>ReSpawn OFF</string>
+      </property>
+      <property name="checkable">
+       <bool>true</bool>
       </property>
      </widget>
     </item>
@@ -2495,6 +2379,7 @@
     <addaction name="actionSet_CountDown_Time"/>
     <addaction name="actionuse_LazerSwarm"/>
     <addaction name="actionLTAR_Mode"/>
+    <addaction name="actionOutdoorMode"/>
     <addaction name="separator"/>
     <addaction name="actionAbout"/>
     <addaction name="separator"/>
@@ -2524,13 +2409,10 @@
    <addaction name="actionSet_CountDown_Time"/>
    <addaction name="actionuse_LazerSwarm"/>
    <addaction name="actionLTAR_Mode"/>
+   <addaction name="actionOutdoorMode"/>
    <addaction name="separator"/>
    <addaction name="actionAbout"/>
-   <addaction name="separator"/>
-   <addaction name="separator"/>
-   <addaction name="separator"/>
    <addaction name="actionExit"/>
-   <addaction name="separator"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionSave">
@@ -2572,6 +2454,14 @@
    </property>
    <property name="text">
     <string>LTAR Mode</string>
+   </property>
+  </action>
+  <action name="actionOutdoorMode">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>OutdoorMode</string>
    </property>
   </action>
  </widget>

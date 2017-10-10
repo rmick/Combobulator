@@ -3,6 +3,7 @@
 
 
 #include <QDebug>
+#include "StyleSheet.h"
 
 ReHostTagger::ReHostTagger(QWidget *parent) :
     QDialog(parent),
@@ -64,13 +65,13 @@ void ReHostTagger::SetActivePlayers()
         {
             playerButtons[index]->setEnabled(true);
             playerButtons[index]->setChecked(true);
-            playerButtons[index]->setStyleSheet(BUTTON_SELECTED);
+            playerButtons[index]->setStyleSheet(myStyleSheet.getButtonSelectedCss());
         }
         else
         {
          playerButtons[index]->setEnabled(false);
          playerButtons[index]->setChecked(false);
-         playerButtons[index]->setStyleSheet(BUTTON_UNSELECTED);
+         playerButtons[index]->setStyleSheet(myStyleSheet.getButtonUnSelectedCss());
         }
     }
 }

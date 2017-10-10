@@ -7,6 +7,7 @@
 #include "Game.h"
 #include "Players.h"
 #include "LttoComms.h"
+#include "StyleSheet.h"
 
 #include <QInputDialog>
 
@@ -53,17 +54,6 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
 
     timerAnnounce->start(HOST_TIMER_MSEC);
 
-//    for (int x = 0; x<25;x++) isThisPlayerHosted[x] = false;
-//    currentPlayer = 1;
-//    noMorePlayers = false;
-//    remainingGameTime = gameInfo.getGameLength()*60;
-//    playerDebugNum = 0;
-//    closingWindow = false;
-//    sendingCommsActive = false;
-//    rehostingActive = false;
-//    countDownTimeRemaining = DEFAULT_COUNTDOWN_TIME;
-
-
     ui->btn_Cancel->setText("Cancel");
     ui->btn_Rehost->setEnabled(false);
     ui->listWidget_Status->setVisible(false);
@@ -83,13 +73,17 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
 
     if(serialUSBcomms.getIsUSBinitialised() == false)
     {
-        serialUSBcomms.setUpSerialPort();
         serialUSBcomms.initialiseUSBsignalsAndSlots();
     }
 
     if(tcpComms.getIsTCPinitialised() == false)
     {
         tcpComms.initialiseTCPsignalsAndSlots();
+    }
+
+    if(serialUSBcomms.getSerialCommsConnected() == false)
+    {
+        serialUSBcomms.setUpSerialPort();
     }
 }
 
@@ -146,11 +140,11 @@ void HostGameWindow::announceGame()
     //Set Base Station LED status
     if (lttoComms.getTcpCommsConnected() == false)
     {
-        ui->led_Status->setStyleSheet("background-color: yellow; border-style: outset; border-width: 2px; border-radius: 10px; border-color: grey;");
+        ui->led_Status->setStyleSheet(myStyleSheet.getYellowButtonCss());
     }
     else
     {
-        ui->led_Status->setStyleSheet("background-color: rgb(0,255,50); border-style: outset; border-width: 2px; border-radius: 10px; border-color: grey;");
+        ui->led_Status->setStyleSheet(myStyleSheet.getGreenButtonCss());
     }
 
 
@@ -252,9 +246,9 @@ void HostGameWindow::hostCurrentPlayer()
         playerInfo[currentPlayer].setBitFlags1(LIMITED_MEGAS_FLAG,   false);
     }
 
-    int                             GamePacket = gameInfo.getGameType();
-    if (gameInfo.getIsLTARGame())   GamePacket = gameInfo.LtarGame;
-
+    int                                 GamePacket = gameInfo.getGameType();
+    if (gameInfo.getIsReSpawnGame())    GamePacket = gameInfo.Custom;
+    if (gameInfo.getIsLTARGame())       GamePacket = gameInfo.LtarGame;
     // Send the message.
     lttoComms.sendPacket(PACKET,   GamePacket                );
     lttoComms.sendPacket(DATA,     gameInfo.getGameID()      );
@@ -267,7 +261,7 @@ void HostGameWindow::hostCurrentPlayer()
     }
     else
     {
-        lttoComms.sendPacket(DATA,     playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getReloads(gameInfo.getIsLTARGame()), 255),    BCD);
+        lttoComms.sendPacket(DATA, playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getReloads(gameInfo.getIsLTARGame()), 255),    BCD);
         lttoComms.sendPacket(DATA, playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getReloads2(),255),   BCD);
     }
     lttoComms.sendPacket(DATA,     playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getShieldTime()), BCD);
@@ -278,7 +272,7 @@ void HostGameWindow::hostCurrentPlayer()
         lttoComms.sendPacket(DATA, playerInfo[currentPlayer].getPackedFlags3()   );
 
     //  Add a name for Custom Game Types, otherwise skip.
-    if (gameInfo.getGameType() == 0x0C)
+    if (gameInfo.getGameType() == 0x0C || gameInfo.getIsReSpawnGame())
     {
         lttoComms.sendPacket(DATA, gameInfo.getNameChar1() );
         lttoComms.sendPacket(DATA, gameInfo.getNameChar2() );
@@ -812,6 +806,7 @@ void HostGameWindow::TaggerReHost()
 void HostGameWindow::BeaconSignal()
 {
     if (lttoComms.getDontAnnounceGame()) return;
+    if (rehostingActive) return;
     //Check Game Type.
 
     //Set Beacon to match game type
