@@ -133,6 +133,7 @@ void HostGameWindow::on_btn_Cancel_clicked()
 
 ////////////////////////////////////////////////////////////////////////////////
 
+int idleCount = 0;
 void HostGameWindow::announceGame()
 {
     sendingCommsActive = true;                                                              // Used to stop the class being destructed, if the Timer triggered.
@@ -162,6 +163,8 @@ void HostGameWindow::announceGame()
     if (currentPlayer > 16 && gameInfo.getNumberOfTeams() == 2) currentPlayer = 25;         // Ignore players in Team 3
     if (currentPlayer >24)                                                                  // No more players to add
     {
+        //TODO: Add a 1.5 second delay here, so that the last hosted players gets an AnnounceGame Packet,
+        //      otherwise they will not respond to the countdown time (can fail to start game if countdown < 8 sec)
         ui->label->setText("All players are hosted, press START ");
         lttoComms.sendLCDtext("All"            , 1);
         lttoComms.sendLCDtext("hosted"         , 2);
@@ -803,14 +806,16 @@ void HostGameWindow::TaggerReHost()
     hostCurrentPlayer();                                //HostGameWindow::AddPlayer starts the CountDownTimer if(rehostingActive == true).
 }
 
+int beaconType = 0;
 void HostGameWindow::BeaconSignal()
 {
     if (lttoComms.getDontAnnounceGame()) return;
     if (rehostingActive) return;
     //Check Game Type.
 
-    //Set Beacon to match game type
-    int beaconType = 2;         // Contested Zone, No Team
+    //TODO: Set Beacon to match game type
+    if(gameInfo.getIsReSpawnGame()) beaconType = 3;
+    else beaconType = 2;         // Contested Zone, No Team
 
     //Send Beacon;
     lttoComms.sendPacket(BEACON, beaconType);
@@ -841,7 +846,7 @@ void HostGameWindow::endGame()
     ui->btn_Rehost->setEnabled(false);
     ui->btn_Cancel->setEnabled(true);
     ui->btn_SkipPlayer->setVisible(true);
-    ui->label->setText("DeBriefing..... but not just yet :-)");
+    ui->label->setText("DeBriefing.....");
     lttoComms.sendLCDtext(""                 , 1);
     lttoComms.sendLCDtext("GAME OVER"        , 2);
     lttoComms.sendLCDtext("Standby"          , 3);
@@ -865,19 +870,31 @@ void HostGameWindow::deBriefTaggers()
         timerDeBrief->stop();
         currentPlayer = 0;
         ui->label->setText("The End");
-        // Send RankReport
-        for (int index = 1; index < 10; index++)
-        {
-            deBrief->sendRankReport();
-            lttoComms.nonBlockingDelay(35);
-        }
 
+//        // Send RankReport
+//        for (int index = 1; index < 10; index++)
+//        {
+//            deBrief->sendRankReport();
+//            lttoComms.nonBlockingDelay(35);
+//        }
 
         // Show Scores Window
+        if(!scoresWindow) scoresWindow = new ScoresWindow(this);
+#ifdef Q_OS_ANDROID
+        scoresWindow->showFullScreen();
+#else
+        scoresWindow->show();
+#endif
         // Close this window
+        while (scoresWindow)
+        {
+            QEventLoop loop;
+            loop.exec();
+        }
+        qDebug() << "HostGameWindow::deBriefTaggers() - has left the loop";
+        delete(this);
     }
-
-    deBrief->RequestTagReports(currentPlayer);
+    else     deBrief->RequestTagReports(currentPlayer);
 }
 
 void HostGameWindow::on_btn_ShowListWidget_clicked()

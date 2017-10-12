@@ -8,6 +8,7 @@
 #include "Hosting.h"
 #include "ReHostTagger.h"
 #include "DeBrief.h"
+#include "ScoresWindow.h"
 
 namespace Ui {
 class HostGameWindow;
@@ -85,12 +86,14 @@ private:
     QTimer                  *timerReHost;
     QTimer                  *timerBeacon;
     QPointer<ReHostTagger>  reHostTagger;
+    QPointer<ScoresWindow>  scoresWindow;
     QSoundEffect            *sound_Hosting;
     QSoundEffect            *sound_Countdown;
     QSoundEffect            *sound_HostingMissedReply;
     QSoundEffect            *sound_GoodLuck;
     QSoundEffect            *sound_PlayerAdded;
     DeBrief                 *deBrief;
+
 
 
     //variables

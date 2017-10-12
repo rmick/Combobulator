@@ -26,6 +26,10 @@ Players::Players()
     PackedFlags3    = DEFAULT_FLAGS3;
     StartingAmmo    = DEFAULT_START_AMMO;
     SleepTimeOut    = DEFAULT_SLEEP_TIME_OUT;
+    survivalTimeMinutes = 0;
+    survivalTimeSeconds = 0;
+    zoneTimeMinutes     = 0;
+    zoneTimeSeconds     = 0;
 
     for (int index = 0; index < 25; index++)
     {
@@ -200,6 +204,49 @@ int Players::getIsKing() const
 void Players::setIsKing(int value)
 {
     isKing = value;
+}
+
+QString Players::getSurvivalTimeString() const
+{
+   QString minutes = QString::number(getSurvivalTimeMinutes());
+   QString seconds = QString::number(getSurvivalTimeSeconds());
+   if(seconds.length() == 1) seconds = "0"+ seconds;
+   return minutes + ":" + seconds;
+}
+
+QString Players::getZoneTimeString() const
+{
+    QString minutes = QString::number(getZoneTimeMinutes());
+    QString seconds = QString::number(getZoneTimeSeconds());
+    if(seconds.length() == 1) seconds = "0"+ seconds;
+    return minutes + ":" + seconds;
+}
+
+QString Players::getTotalTagsLanded(int thisPlayer) const
+{
+    int totalTagsLanded = 0;
+    for (int index = 1; index < 25; index++)
+    {
+        if (thisPlayer != index)   //so that we dont count who we hit.
+        {
+            totalTagsLanded += playerInfo[index].getTagsTaken(thisPlayer);
+        }
+    }
+    return QString::number(totalTagsLanded);
+}
+
+QString Players::getHitsAndTags(int thisPlayer, int otherPlayer) const
+{
+    QString hitsAndTags = "-";
+    int tagsLanded = 0;
+    int tagsTaken  = 0;
+
+    tagsLanded  = playerInfo[otherPlayer].getTagsTaken(thisPlayer);
+    tagsTaken   = playerInfo[thisPlayer].getTagsTaken(otherPlayer);
+
+    if(thisPlayer != otherPlayer) hitsAndTags = QString::number(0-tagsTaken) + " / " + QString::number(tagsLanded);
+
+    return hitsAndTags;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -400,7 +447,7 @@ int Players::handicapAdjust(int value, int maxValue)
     return value;
 }
 
-int Players::getTagsTaken(size_t playerNumber) const
+int Players::getTagsTaken(int playerNumber) const
 {
     return tagsTaken[playerNumber];
 }

@@ -42,7 +42,7 @@ DeBrief::DeBrief(QObject *parent) : QObject(parent)
     //      Decode it
     //      Check Flags for whether there is Team1/2/3 reports
 
-    //  Request Team1/2/3 reports
+    //  No need to request Team1/2/3 reports - these are sent if requested in 0x31 packet.
     //      Wait for Team Tag Reports (0x41 Team1, 0x42 Team2, 0x43 Team3)
     //      Process all the data and push to an array
 
@@ -88,7 +88,7 @@ void DeBrief::RequestTagReports(int playerToInterogate)
     {
         teamAndPlayerByte = (deBriefTeam << 4) + deBriefPlayer;
     }
-    //qDebug() << "DeBrief::RequestTagReports() -" << playerToInterogate << ":" << deBriefTeam << deBriefPlayer << "MessageType" << deBriefMessageType;
+    qDebug() << "DeBrief::RequestTagReports() -" << playerToInterogate << ":" << deBriefTeam << deBriefPlayer << "MessageType" << deBriefMessageType;
 
     lttoComms.sendPacket(PACKET, REQUEST_TAG_REPORT);
     lttoComms.sendPacket(DATA, gameInfo.getGameID());
@@ -99,6 +99,7 @@ void DeBrief::RequestTagReports(int playerToInterogate)
 
 void DeBrief::ReceiveTagSummary(int game, int teamAndPlayer, int tagsTaken, int survivedMinutes, int survivedSeconds, int zoneTimeMinutes, int zoneTimeSeconds, int flags)
 {
+    qDebug() << "\n\tDeBrief::ReceiveTagSummary() from Player:" << currentPlayer;
     if(gameInfo.getGameID() != game)
     {
         qDebug() << "DeBrief::ReceiveTagSummary: GameID does not match !";
@@ -115,44 +116,26 @@ void DeBrief::ReceiveTagSummary(int game, int teamAndPlayer, int tagsTaken, int 
     playerInfo[currentPlayer].setZoneTimeSeconds    (lttoComms.ConvertBCDtoDec(zoneTimeSeconds));
     playerInfo[currentPlayer].setReportFlags           (flags);
 
-    //flags = 2;
-
-    isTeam1TagReportDue = (flags & 2);
-    isTeam2TagReportDue = (flags & 4);
-    isTeam3TagReportDue = (flags & 8);
-
-    if      (isTeam1TagReportDue) deBriefMessageType = REQUEST_TEAM1_REPORT_BIT;
-    else if (isTeam2TagReportDue) deBriefMessageType = REQUEST_TEAM2_REPORT_BIT;
-    else if (isTeam3TagReportDue) deBriefMessageType = REQUEST_TEAM3_REPORT_BIT;
-    else
+    if(deBriefMessageType == REQUEST_ALL_TEAM_REPORTS_BITS)
     {
-        setIsPlayerDeBriefed(true);
-        deBriefMessageType = REQUEST_TAG_SUMMARY_BIT;
+        isTeam1TagReportDue = (flags & 2);
+        isTeam2TagReportDue = (flags & 4);
+        isTeam3TagReportDue = (flags & 8);
+
+        if (isTeam1TagReportDue == false && isTeam2TagReportDue == false && isTeam3TagReportDue == false)
+        {
+            setIsPlayerDeBriefed(true);
+            deBriefMessageType = REQUEST_TAG_SUMMARY_BIT;
+            qDebug() << "---------------------" << endl;
+        }
     }
+    else deBriefMessageType = REQUEST_ALL_TEAM_REPORTS_BITS;
 
     qDebug() << "DeBrief::ReceiveTagSummary() - Game" << game  << currentPlayer;
     qDebug() << "\tTags taken =" << playerInfo[currentPlayer].getTagsTaken(0);
     qDebug() << "\tSurvivalTime =" << playerInfo[currentPlayer].getSurvivalTimeMinutes() << ":" << playerInfo[currentPlayer].getSurvivalTimeSeconds();
     qDebug() << "\tZoneTime =" << playerInfo[currentPlayer].getZoneTimeMinutes() << ":" << playerInfo[currentPlayer].getZoneTimeSeconds();
-    qDebug() << "\tFlags" << playerInfo[currentPlayer].getReportFlags() << "\tTeam1:" << isTeam1TagReportDue << "\tTeam2:" << isTeam2TagReportDue << "\tTeam3:" << isTeam3TagReportDue << endl;
-}
-
-//int Team1reportCount = 0;
-void DeBrief::ReceiveTeam1Report(int game, int teamAndPlayer, int tagsReceivedfromPlayer[])
-{
-    qDebug() << "DeBrief::ReceiveTeam1Report() - " << currentPlayer << game, tagsReceivedfromPlayer[0] << tagsReceivedfromPlayer[1] << tagsReceivedfromPlayer[2];
-    if(gameInfo.getGameID() != game) return;
-    // Check if TeamAndPlayer matches currentPlayer and bail if not.
-    if (decodeTeamAndPlayer(teamAndPlayer) == false) return;
-
-    qDebug() << "DeBrief::ReceiveTeam1Report() +++++++++++++" << tagsReceivedfromPlayer;
-
-    for (int index = 1; index < 9 ; index++)
-    {
-        playerInfo[currentPlayer].setTagsTaken(index, tagsReceivedfromPlayer[index]);
-        qDebug() << "\tDeBrief::ReceiveTeam1Report() - tags =" << currentPlayer << index << playerInfo[currentPlayer].getTagsTaken(index);
-    }
-    deBriefMessageType = REQUEST_TEAM2_REPORT_BIT;
+    qDebug() << "\tFlags" << playerInfo[currentPlayer].getReportFlags() << "\tTeam1:" << isTeam1TagReportDue << "\tTeam2:" << isTeam2TagReportDue << "\tTeam3:" << isTeam3TagReportDue;
 }
 
 void DeBrief::Team1TagReportReceived(int game, int teamAndPlayer, int tagsP1, int tagsP2, int tagsP3, int tagsP4, int tagsP5, int tagsP6, int tagsP7, int tagsP8)
@@ -172,12 +155,11 @@ void DeBrief::Team1TagReportReceived(int game, int teamAndPlayer, int tagsP1, in
     playerInfo[currentPlayer].setTagsTaken(7, tagsP7);
     playerInfo[currentPlayer].setTagsTaken(8, tagsP8);
 
-    if      (isTeam2TagReportDue)   deBriefMessageType = REQUEST_TEAM2_REPORT_BIT;
-    else if (isTeam3TagReportDue)   deBriefMessageType = REQUEST_TEAM3_REPORT_BIT;
-    else
+    if (isTeam2TagReportDue == false && isTeam3TagReportDue == false)
     {
-        deBriefMessageType = REQUEST_TAG_REPORT;
         setIsPlayerDeBriefed(true);
+        deBriefMessageType = REQUEST_TAG_SUMMARY_BIT;
+        qDebug() << "---------------------" << endl;
     }
 }
 
@@ -198,11 +180,11 @@ void DeBrief::Team2TagReportReceived(int game, int teamAndPlayer, int tagsP1, in
     playerInfo[currentPlayer].setTagsTaken(15, tagsP7);
     playerInfo[currentPlayer].setTagsTaken(16, tagsP8);
 
-    if (isTeam3TagReportDue)   deBriefMessageType = REQUEST_TEAM3_REPORT_BIT;
-    else
+    if (isTeam3TagReportDue == false)
     {
-        deBriefMessageType = REQUEST_TAG_REPORT;
         setIsPlayerDeBriefed(true);
+        deBriefMessageType = REQUEST_TAG_SUMMARY_BIT;
+        qDebug() << "---------------------" << endl;
     }
 }
 
@@ -223,8 +205,10 @@ void DeBrief::Team3TagReportReceived(int game, int teamAndPlayer, int tagsP1, in
     playerInfo[currentPlayer].setTagsTaken(23, tagsP7);
     playerInfo[currentPlayer].setTagsTaken(24, tagsP8);
 
-    deBriefMessageType = REQUEST_TAG_REPORT;
+    //deBriefMessageType = REQUEST_TAG_REPORT;
     setIsPlayerDeBriefed(true);
+    deBriefMessageType = REQUEST_TAG_SUMMARY_BIT;
+    qDebug() << "---------------------" << endl;
 }
 
 void DeBrief::sendRankReport()
@@ -250,8 +234,7 @@ void DeBrief::sendRankReport()
     lttoComms.sendPacket(DATA, 6);
     lttoComms.sendPacket(DATA, 7);
     lttoComms.sendPacket(DATA, 8);
-    // TODO: how to deal with  no - lttoComms.sendPacket(CHECKSUM);
-    // this breaks the fullTCPIP packets stuff!
+    lttoComms.sendPacket(CHECKSUM);
 }
 
 bool DeBrief::decodeTeamAndPlayer(int teamAndPlayer)

@@ -30,7 +30,8 @@ SOURCES +=  main.cpp\
 	    DeBrief.cpp \
 	    Hosting.cpp \
 	    RearrangePlayers.cpp \
-    StyleSheet.cpp
+    StyleSheet.cpp \
+    ScoresWindow.cpp
 
 
 
@@ -52,7 +53,8 @@ HEADERS  += \
 	    DeBrief.h \
 	    Hosting.h \
 	    StyleSheet.h \
-	    RearrangePlayers.h
+	    RearrangePlayers.h \
+    ScoresWindow.h
 
 
 FORMS    += \
@@ -64,7 +66,8 @@ FORMS    += \
 	    FlagsWindow.ui \
 	    ReHostTagger.ui \
 	    AboutForm.ui \
-	    RearrangePlayers.ui
+	    RearrangePlayers.ui \
+    ScoresWindow.ui
 
 RESOURCES += \
 	    Resources.qrc

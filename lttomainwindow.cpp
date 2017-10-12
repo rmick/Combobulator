@@ -59,6 +59,12 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
     sound_Powerdown->setSource(QUrl::fromLocalFile(":/resources/audio/shut-down.wav"));
     sound_PowerUp->play();
     //sound_PowerUp->setVolume(1.0);
+
+#ifdef  QT_DEBUG
+    gameInfo.setIsThisPlayerInTheGame( 1, true);
+    gameInfo.setIsThisPlayerInTheGame(24, true);
+    ui->btn_StartGame->setEnabled(true);
+#endif
 }
 
 LttoMainWindow::~LttoMainWindow()
@@ -848,19 +854,13 @@ void LttoMainWindow::on_actionLTAR_Mode_triggered()
     setLtarControls(state);
 }
 
-void LttoMainWindow::on_btn_Debug_clicked()
-{
-    int currentPlayer = 1;
-    playerInfo[1].setTagsTaken(0, 12);
-    playerInfo[currentPlayer].setTagsTaken       (0, lttoComms.ConvertBCDtoDec(15));
-}
-
 void LttoMainWindow::on_actionOutdoorMode_triggered()
 {
     if(ui->actionOutdoorMode->isChecked())
     {
         myStyleSheet.setCurrentCSS(myStyleSheet.CssLight);
         setStyleSheet(myStyleSheet.getCurrentCSSstring());
+        //TODO: Fix the Spies button !!!!
     #ifdef Q_OS_ANDROID
         showFullScreen();
     #else
@@ -877,4 +877,14 @@ void LttoMainWindow::on_actionOutdoorMode_triggered()
         show();
     #endif
     }
+}
+
+
+
+
+void LttoMainWindow::on_btn_Debug_clicked()
+{
+    scoresWindow = new ScoresWindow(this);
+    scoresWindow->showFullScreen();
+    //scoresWindow->show();
 }

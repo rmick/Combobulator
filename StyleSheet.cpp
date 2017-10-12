@@ -64,7 +64,7 @@ StyleSheet::StyleSheet()
     CssInside +=    "QToolButton            {border-width: 2px; border-radius: 10px; border-color: cyan; background-color: grey; padding: 5px; spacing: 20px;}";
     CssInside +=    "QToolButton:checked    {color: cyan; border-color: cyan;}";
     CssInside +=    "QPushButton            {background-color: grey; border-style: outset; border-width: 2px; border-radius: 10px; border-color: grey; min-width: 50; min-height: 30;}";
-    CssInside +=    "QPushButton:disabled   {background-color: rgb(50, 50, 50);}";
+    CssInside +=    "QPushButton:disabled   {background-color: rgb(50, 50, 50); color: black;}";
     CssInside +=    "QPushButton:checked    {border-color: cyan; color: cyan;}";
     CssInside +=    "QSlider                {min-height: 35px; background: grey; border-style: outset; border-width: 1px; border-radius: 10px; border-color: black;}";
     CssInside +=    "QSlider::groove:horizontal {border-style: outset; border-width: 2px; border-radius: 10px; border-color: black;}";
@@ -72,32 +72,36 @@ StyleSheet::StyleSheet()
     CssInside +=                                "border-style: outset; border-width: 2px; border-radius: 5px; border-color: cyan;}";
     CssInside +=    "QSlider:disabled           {background-color: rgb(50, 50, 50);}";
     CssInside +=    "QSlider::handle:disabled   {border-color: grey;}";
+    CssInside +=    "QTableWidget		{color: cyan; alternate-background-color: grey; background-color: black;}";
+    CssInside +=    "QHeaderView::section	{color: black; background-color: cyan;}";
     //Overides for player buttons in  PlayersWindow
     CssInsideButtonSelected      = "border-color: cyan; color: cyan;";
     CssInsideButtonUnSelected    = "color: white;";
     CssInsideButtonChecked       = "border-color: cyan; color: cyan;";
-    CssInsideButtonUnChecked     = "border-color: grey; color: white;";
+    CssInsideButtonUnChecked     = "border-color: grey; color: black;";
     CssInsideButtonPressedLast   = "color:fuchsia;";
 
     //CSS stylesheet for LIGHT interface
-    CssOutside  =    "QWidget               {background-color: white; color: fuchsia; font: bold;}";
+    CssOutside  =    "QWidget               {background-color: black; color: fuchsia; font: bold;}";
     CssOutside +=    "QSpinBox              {color: fuchsia;} ";
     CssOutside +=    "QMessageBox           {font: fuchsia;} ";
     CssOutside +=    "QMenu                 {font:fuchsia; color:fuchsia;}";
     CssOutside +=    "QLabel                {color: fuchsia;}";
     CssOutside +=    "QListWidget           {color: fuchsia;}";
-    CssOutside +=    "QToolBar              {border: lightyellow; border-width: 2px; background-color: white; spacing: 20px; padding: 10px;}";
-    CssOutside +=    "QToolButton           {border-width: 2px; border-radius: 10px; border-color: cyan; background-color: grey; padding: 5px; spacing: 20px;}";
-    CssOutside +=    "QToolButton:checked   {color: cyan; border-color: cyan;}";
+    CssOutside +=    "QToolBar              {border: lightyellow; border-width: 2px; background-color: grey; spacing: 17px; padding: 10px;}";
+    CssOutside +=    "QToolButton           {border-width: 2px; border-radius: 10px; border-color: cyan; background-color: lightyellow; padding: 5px; spacing: 10px;}";
+    CssOutside +=    "QToolButton:checked   {background-color: yellow; border-color: fuchsia; border-color: fuchsia;}";
     CssOutside +=    "QPushButton           {background-color: lightyellow; border-style: outset; border-width: 2px; border-radius: 10px; border-color: lightyellow; min-width: 50; min-height: 30;}";
-    CssOutside +=    "QPushButton:disabled  {background-color: white;}";
+    CssOutside +=    "QPushButton:disabled  {background-color: grey; border: grey; font: normal; color: black;}";
     CssOutside +=    "QPushButton:checked   {border-color: fuchsia; color: fuchsia; background-color: yellow}";
-    CssOutside +=    "QSlider               {min-height: 35px; background: grey; border-style: outset; border-width: 1px; border-radius: 10px; border-color: black;}";
+    CssOutside +=    "QSlider               {min-height: 35px; background: lightyellow; border-style: outset; border-width: 1px; border-radius: 10px; border-color: black;}";
     CssOutside +=    "QSlider::groove:horizontal {border-style: outset; border-width: 2px; border-radius: 10px; border-color: black;}";
-    CssOutside +=    "QSlider::handle:horizontal {background: grey; border: 1px solid #5c5c5c; width: 18px; margin: -2px 0;";
-    CssOutside +=                                "border-style: outset; border-width: 2px; border-radius: 5px; border-color: cyan;}";
+    CssOutside +=    "QSlider::handle:horizontal {background: fuchsia; border: 1px solid #5c5c5c; width: 18px; margin: -2px 0;";
+    CssOutside +=                                "border-style: outset; border-width: 2px; border-radius: 5px; border-color: fuchsia;}";
     CssOutside +=    "QSlider:disabled           {background-color: rgb(50, 50, 50);}";
     CssOutside +=    "QSlider::handle:disabled   {border-color: grey;}";
+    CssOutside +=    "QTableWidget		{color: fuchsia; alternate-background-color: lightyellow; background-color: white;}";
+    CssOutside +=    "QHeaderView::section	{color: fuchsia; background-color: yellow;}";
     //Overides for player buttons in  PlayersWindow
     CssOutsideButtonSelected      = "border-color: fuchsia; color: fuchsia;";
     CssOutsideButtonUnSelected    = "border-color: lightyellow; color: fuchsia;";

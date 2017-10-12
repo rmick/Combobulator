@@ -29,11 +29,9 @@
 
 
 //  Build Number
-const QString BUILD_NUMBER  = "Build : 17.10.10a";
+const QString BUILD_NUMBER  = "Build : 17.10.12a";
 
 // Recoil Game Hub_28f537d14fca
-
-
 
 
 //  WiFi stuff
@@ -94,7 +92,7 @@ const int   DEFAULT_GAME_ID         = 0x64;
 const int   DEFAULT_GAME_LENGTH     = 10;
 const int   DEFAULT_COUNTDOWN_TIME  = 5;
 const int   DEFAULT_RELOADS         = 100;        // 100 = Unlimited
-const int   DEFAULT_RELOADS2        = 0;         // 0xFFFF = LTAR unlimited
+const int   DEFAULT_RELOADS2        = 0;          // 0xFFFF = LTAR unlimited
 const int   DEFAULT_HEALTH          = 25;
 const int   DEFAULT_SHEILDS         = 15;
 const int   DEFAULT_MEGAS           = 20;         // 100 - Unlimited
@@ -136,6 +134,7 @@ const int   ALLOW_FULL_AUTO_FIRE            = 0;
 
 //Debrief stuff
 const int   REQUEST_TAG_SUMMARY_BIT         = 1;
+const int   REQUEST_ALL_TEAM_REPORTS_BITS   = 14;
 const int   REQUEST_TEAM1_REPORT_BIT        = 2;
 const int   REQUEST_TEAM2_REPORT_BIT        = 4;
 const int   REQUEST_TEAM3_REPORT_BIT        = 8;

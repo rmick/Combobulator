@@ -10,6 +10,7 @@
 #include "FlagsWindow.h"
 #include "LttoComms.h"
 #include "AboutForm.h"
+#include "ScoresWindow.h"
 
 
 namespace Ui {
@@ -112,6 +113,7 @@ private:
     PlayersWindow           *playersWindow;
     QPointer<HostGameWindow> hostGameWindow;
     QPointer<FlagsWindow>    flagsWindow;
+    QPointer<ScoresWindow>   scoresWindow;
     AboutForm               *aboutForm;
     QSoundEffect            *sound_PowerUp;
     QSoundEffect            *sound_Powerdown;

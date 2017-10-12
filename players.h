@@ -73,7 +73,7 @@ public:
     int handicapAdjust(int value);
     int handicapAdjust(int value, int maxValue);
 
-    int getTagsTaken(size_t playerNumber) const;
+    int getTagsTaken(int playerNumber) const;
     void setTagsTaken(int playerNumber, int value);
 
     int getSurvivalTimeMinutes() const;
@@ -99,6 +99,14 @@ public:
 
     int getIsKing() const;
     void setIsKing(int value);
+
+    QString getSurvivalTimeString() const;
+
+    QString getZoneTimeString() const;
+
+    QString getTotalTagsLanded(int thisPlayer) const;
+
+    QString getHitsAndTags(int thisPlayer, int otherPlayer) const;
 
 private:
     int     Handicap;
