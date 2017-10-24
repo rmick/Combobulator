@@ -22,6 +22,14 @@ Game::Game()
     NameChar3       = 83;  // S
     NameChar4       = 84;  // T
 
+    pointsPerTagLanded          = POINTS_PER_TAG_LANDED;
+    pointsPerTagLandedNegative  = POINTS_PER_TAG_LANDED_OWN_TEAM;
+    pointsPerTagTaken           = POINTS_PER_HITS_TAKEN;
+    pointsPerSurvivalMinute     = POINTS_PER_SURVIVAL_MINUTE;
+    pointsPerZoneMinute         = POINTS_PER_ZONE_MINUTE;
+    pointsPerKingHit            = POINTS_PER_KING_HIT;
+    pointsPerKingHitNegative    = POINTS_PER_OWN_KING_HIT;
+
     PlayerToReHost = 0;
     isSpiesTeamTagActive = false;
 
@@ -253,10 +261,16 @@ void Game::streamToFile(QTextStream &out)
     out << "NumberOfTeams:"    << NumberOfTeams    << endl;
     out << "NumberOfSpies:"    << NumberOfSpies    << endl;
     out << "CountDownTime:"    << CountDownTime    << endl;
-//    out << "PlayersInGame;"    << endl;
     out << "SpyTeamTagsActive:"<< isSpiesTeamTagActive << endl;
     out << "LTARmode:"         << isLTARGame        << endl;
     out << "ReSpawnEnabled:"   << isReSpawnGame     << endl;
+    out << "PointsPerTagLanded:"         << pointsPerTagLanded           << endl;
+    out << "PointsPerTagLandedNegative:" << pointsPerTagLandedNegative   << endl;
+    out << "PointsPerTagTaken:"          << pointsPerTagTaken            << endl;
+    out << "PointsPerSurvivalMinute:"    << pointsPerSurvivalMinute      << endl;
+    out << "PointsPerZoneMinute:"        <<   pointsPerZoneMinute        << endl;
+    out << "PointsPerKingHit:"           <<   pointsPerKingHit           << endl;
+    out << "PointsPermingHitNegative:"   <<   pointsPerKingHitNegative   << endl;
     for (int x=0; x< 25; x++)
     {
         if      (x < 10) out << " Player0" << x << ":" << isThisPlayerInTheGame[x] << endl;
@@ -287,13 +301,16 @@ void Game::streamFromFile(QTextStream &in)
             else if (descriptorG.contains("SpyTeamTagsActive:") )   isSpiesTeamTagActive    = extractInteger(descriptorG);
             else if (descriptorG.contains("LTARmode:") )            isLTARGame              = extractInteger(descriptorG);
             else if (descriptorG.contains("ReSpawnEnabled:") )      isReSpawnGame           = extractInteger(descriptorG);
+            else if (descriptorG.contains("PointsPerTagLanded:") )          pointsPerTagLanded          = extractInteger(descriptorG);
+            else if (descriptorG.contains("PointsPerTagLandedNegative:") )  pointsPerTagLandedNegative  = extractInteger(descriptorG);
+            else if (descriptorG.contains("PointsPerTagTaken:") )           pointsPerTagTaken           = extractInteger(descriptorG);
+            else if (descriptorG.contains("PointsPerSurvivalMinute:") )     pointsPerSurvivalMinute     = extractInteger(descriptorG);
+            else if (descriptorG.contains("PointsPerZoneMinute:") )         pointsPerZoneMinute         = extractInteger(descriptorG);
+            else if (descriptorG.contains("PointsPerKingHit:") )            pointsPerKingHit            = extractInteger(descriptorG);
+            else if (descriptorG.contains("PointsPermingHitNegative:") )    pointsPerKingHitNegative    = extractInteger(descriptorG);
     }   while (descriptorG != "END_OF_GAME_SETTINGS");
 
     setNumberOfTeams(NumberOfTeams);    //This is required to update the Flags2 bits.
-
-
-
-
 
     qDebug() << "GameID:"           << GameID;
     qDebug() << "GameLength:"       << GameLength;
@@ -422,6 +439,86 @@ bool Game::getIsReSpawnGame() const
 void Game::setIsReSpawnGame(bool value)
 {
     isReSpawnGame = value;
+}
+
+int Game::getNumberOfPlayersInGame()
+{
+    numberOfPlayersInGame = 0;
+    for (int index = 1; index < 25; index++)
+    {
+        if(isThisPlayerInTheGame[index] == true) numberOfPlayersInGame++;
+    }
+    return numberOfPlayersInGame;
+}
+
+int Game::getPointsPerTagLanded() const
+{
+    return pointsPerTagLanded;
+}
+
+void Game::setPointsPerTagLanded(int value)
+{
+    pointsPerTagLanded = value;
+}
+
+int Game::getPointsPerTagLandedNegative() const
+{
+    return pointsPerTagLandedNegative;
+}
+
+void Game::setPointsPerTagLandedNegative(int value)
+{
+    pointsPerTagLandedNegative = value;
+}
+
+int Game::getPointsPerTagTaken() const
+{
+    return pointsPerTagTaken;
+}
+
+void Game::setPointsPerTagTaken(int value)
+{
+    pointsPerTagTaken = value;
+}
+
+int Game::getPointsPerKingHit() const
+{
+    return pointsPerKingHit;
+}
+
+void Game::setPointsPerKingHit(int value)
+{
+    pointsPerKingHit = value;
+}
+
+int Game::getPointsPerKingHitNegative() const
+{
+    return pointsPerKingHitNegative;
+}
+
+void Game::setPointsPerKingHitNegative(int value)
+{
+    pointsPerKingHitNegative = value;
+}
+
+int Game::getPointsPerSurvivalMinute() const
+{
+    return pointsPerSurvivalMinute;
+}
+
+void Game::setPointsPerSurvivalMinute(int value)
+{
+    pointsPerSurvivalMinute = value;
+}
+
+int Game::getPointsPerZoneMinute() const
+{
+    return pointsPerZoneMinute;
+}
+
+void Game::setPointsPerZoneMinute(int value)
+{
+    pointsPerZoneMinute = value;
 }
 
 int Game::extractInteger(QString &dG)

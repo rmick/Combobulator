@@ -344,6 +344,10 @@ void LttoMainWindow::on_btn_CustomGame_clicked()
     switch(gameInfo.getNumberOfTeams())
     {
     //There is actually nothing to do here, as the GameType is always the same, regardless of NumberOfTeams.
+
+    case 1:
+    case 2:
+    case 3:
     default:
         gameInfo.setGameType(gameInfo.Custom);
         break;
@@ -886,5 +890,15 @@ void LttoMainWindow::on_btn_Debug_clicked()
 {
     scoresWindow = new ScoresWindow(this);
     scoresWindow->showFullScreen();
-    //scoresWindow->show();
+}
+
+void LttoMainWindow::on_actionEdit_Scoring_triggered()
+{
+
+}
+
+void LttoMainWindow::on_btn_SetScorePoints_clicked()
+{
+    setScoreParameters = new SetScoreParameters(this);
+    setScoreParameters->show();
 }

@@ -111,21 +111,7 @@ void HostGameWindow::hideEvent(QHideEvent *)
 
 void HostGameWindow::on_btn_Cancel_clicked()
 {
-    closingWindow = true;
-    ui->btn_Cancel->setEnabled(false);
-    ui->label->setText("Cancelling......");
-    timerAnnounce->stop();
-    timerCountDown->stop();
-    timerDeBrief->stop();
-    timerAssignFailed->stop();
-    timerGameTimeRemaining->stop();
-    timerReHost->stop();
-    //lttoComms.sendLCDtext(""          , 1);
-    //lttoComms.sendLCDtext("Wait for"  , 2);
-    //lttoComms.sendLCDtext("new Game"  , 3);
-    if(lttoComms.getTcpCommsConnected())
-    lttoComms.sendLCDtext(28, 24, "Online", 2, 0xFFFF, true);
-    if (sendingCommsActive == false) deleteLater();     //If this is true then the deleteLater is triggered at the end of hostCurrentPlayer(), to stop the app crashing.
+    closeHostGameWindow();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -488,16 +474,15 @@ int HostGameWindow::calculatePlayerTeam5bits(int requestedTeam)
         assignedTeamNumber = 0;
         assignedPlayerNumber = currentPlayer +7;              // For solo games: zero-based player number + 8
         playerTeam5bits = 8 + (currentPlayer-1);
+
+        //set PlayerNumberInThisGame (for DeBrief),
+        //but seeing as there are no Spies nor Kings, it is the same as currentPlayer.
+        playerInfo[currentPlayer].setPlayerNumberInThisGame(currentPlayer);
+
         return playerTeam5bits;
     }
     else    //there are teams
     {
-//       // assign Spies and Kings if required
-//       if (gameInfo.getNumberOfSpies() != 0)
-//       {
-//           host.pickTheSpies();  //swap spies between teams, 0 == not a spy
-//       }
-
        //assign Teams (and swap if a spy)
        assignedTeamNumber = host.assignTeamsAndSwapIfSpy(currentPlayer);
     }
@@ -529,7 +514,31 @@ int HostGameWindow::calculatePlayerTeam5bits(int requestedTeam)
     qDebug() << "   HostGameWindow::calculatePlayerTeam5bits() - King Player ? =    " << playerInfo[currentPlayer].getIsKing() << " - Player #" << assignedPlayerNumber+1;
     qDebug() << "----";
 
+
+    //calculate PlayerNumberInThisGame (for DeBrief)
+    int playerNumInGame = ((assignedTeamNumber - 1) *8) + (assignedPlayerNumber + 1);
+    playerInfo[currentPlayer].setPlayerNumberInThisGame(playerNumInGame);
+
     return playerTeam5bits;
+}
+
+void HostGameWindow::closeHostGameWindow()
+{
+    closingWindow = true;
+    ui->btn_Cancel->setEnabled(false);
+    ui->label->setText("Cancelling......");
+    timerAnnounce->stop();
+    timerCountDown->stop();
+    timerDeBrief->stop();
+    timerAssignFailed->stop();
+    timerGameTimeRemaining->stop();
+    timerReHost->stop();
+    //lttoComms.sendLCDtext(""          , 1);
+    //lttoComms.sendLCDtext("Wait for"  , 2);
+    //lttoComms.sendLCDtext("new Game"  , 3);
+    if(lttoComms.getTcpCommsConnected())
+    lttoComms.sendLCDtext(28, 24, "Online", 2, 0xFFFF, true);
+    if (sendingCommsActive == false) deleteLater();     //If this is true then the deleteLater is triggered at the end of hostCurrentPlayer(), to stop the app crashing.
 }
 
 
@@ -677,8 +686,10 @@ void HostGameWindow::updateGameTimeRemaining()
 
 void HostGameWindow::on_btn_SkipPlayer_clicked()
 {
-    currentPlayer++;
+    if(deBrief) deBrief->setIsPlayerDeBriefed(true);
+    gameInfo.setIsThisPlayerInTheGame(currentPlayer, false);
     lttoComms.setDontAnnounceGame(false);
+    currentPlayer++;
 }
 
 void HostGameWindow::InsertToListWidget(QString lineText)
@@ -837,64 +848,79 @@ void HostGameWindow::on_btn_FailSend_clicked()
 void HostGameWindow::endGame()
 {
     deBrief = new DeBrief(this);
+    connect(deBrief, SIGNAL(SendToHGWlistWidget(QString)), this, SLOT(InsertToListWidget(QString)) );
     timerGameTimeRemaining->stop();
     timerReHost->stop();
     timerBeacon->stop();
-    timerDeBrief->start(HOST_TIMER_MSEC);
-    currentPlayer = 0;                          // Set ready for DeBriefing to search for next player
+    timerDeBrief->start(DEBRIEF_TIMER_MSEC);
+    currentPlayer = 1;                          // Set ready for DeBriefing to search for next player
+    while (isThisPlayerHosted[currentPlayer] == false) currentPlayer++;
     ui->btn_StartGame->setEnabled(false);
     ui->btn_Rehost->setEnabled(false);
+    ui->btn_Rehost->setVisible(false);
     ui->btn_Cancel->setEnabled(true);
     ui->btn_SkipPlayer->setVisible(true);
-    ui->label->setText("DeBriefing.....");
+    ui->btn_SkipPlayer->setEnabled(true);
+    ui->label->setText("DeBriefing " + playerInfo[currentPlayer].getPlayerName());
     lttoComms.sendLCDtext(""                 , 1);
-    lttoComms.sendLCDtext("GAME OVER"        , 2);
-    lttoComms.sendLCDtext("Standby"          , 3);
+    lttoComms.sendLCDtext("DeBriefing"       , 2);
+    lttoComms.sendLCDtext(playerInfo[currentPlayer].getPlayerName(), 3);
+    deBrief->prepareNewPlayerToDebrief(currentPlayer);
 }
 
 void HostGameWindow::deBriefTaggers()
 {
-    if(deBrief->getIsPlayerDeBriefed() == true)
-    // the current player has been debriefed
+    //Work out if player is debriefed
+    deBrief->checkIfPlayerIsDebriefed();
+    if(deBrief->getIsPlayerDeBriefed())
     {
+        // the current player has been debriefed
         currentPlayer++;
-        deBrief->setIsPlayerDeBriefed(false);
+        while (isThisPlayerHosted[currentPlayer] == false) currentPlayer++;
+        if(currentPlayer < 25)
+        {
+            deBrief->prepareNewPlayerToDebrief(currentPlayer);
+            ui->label->setText("Debriefing " + playerInfo[currentPlayer].getPlayerName());
+            lttoComms.sendLCDtext(""                 , 1);
+            lttoComms.sendLCDtext("DeBriefing"       , 2);
+            lttoComms.sendLCDtext(playerInfo[currentPlayer].getPlayerName(), 3);
+        }
     }
 
-    //if currentPlayer is not in the game, increment until a player is found.
-    while (isThisPlayerHosted[currentPlayer] == false) currentPlayer++;
-
-    if (currentPlayer > 24)
+    // If currentPlayer is in range - send the message
+    if (currentPlayer < 25)
+    {
+        deBrief->RequestTagReports();
+    }
+    else
     // All players are debriefed
     {
         timerDeBrief->stop();
         currentPlayer = 0;
-        ui->label->setText("The End");
+        ui->label->setText("Finalising scores");
 
-//        // Send RankReport
-//        for (int index = 1; index < 10; index++)
-//        {
-//            deBrief->sendRankReport();
-//            lttoComms.nonBlockingDelay(35);
-//        }
+        //Sit and wait to allow time for slow messages to appear
+        lttoComms.nonBlockingDelay(1500);
+        ui->label->setText("Game Over");
+
+        //Send RankReport
+        deBrief->calculateScores();
+        deBrief->sendRankReport();
+
 
         // Show Scores Window
         if(!scoresWindow) scoresWindow = new ScoresWindow(this);
-#ifdef Q_OS_ANDROID
         scoresWindow->showFullScreen();
-#else
-        scoresWindow->show();
-#endif
-        // Close this window
-        while (scoresWindow)
-        {
-            QEventLoop loop;
-            loop.exec();
-        }
-        qDebug() << "HostGameWindow::deBriefTaggers() - has left the loop";
-        delete(this);
+
+//        // Close this window
+//        while (scoresWindow)
+//        {
+//            QEventLoop loop;
+//            loop.exec();
+//        }
+//        qDebug() << "HostGameWindow::deBriefTaggers() - has left the loop";
+//        closeHostGameWindow();
     }
-    else     deBrief->RequestTagReports(currentPlayer);
 }
 
 void HostGameWindow::on_btn_ShowListWidget_clicked()

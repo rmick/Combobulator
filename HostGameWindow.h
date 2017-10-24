@@ -33,6 +33,9 @@ public:
     bool resetPlayersForNewGame();
     void changeMode(int mode);
 
+    bool getAwaitingDeBriefPackets() const;
+    void setAwaitingDeBriefPackets(bool value);
+
 public slots:
 
     void AssignPlayer(int Game, int Tagger, int Flags, bool isLtar);   //Connects to RequestJoinGame signal
@@ -92,7 +95,7 @@ private:
     QSoundEffect            *sound_HostingMissedReply;
     QSoundEffect            *sound_GoodLuck;
     QSoundEffect            *sound_PlayerAdded;
-    DeBrief                 *deBrief;
+    QPointer<DeBrief>       deBrief;
 
 
 
@@ -114,6 +117,7 @@ private:
     void    hostCurrentPlayer();
     void    assignPlayerFailed();
     int     calculatePlayerTeam5bits(int requestedTeam);
+    void    closeHostGameWindow();
     void    endGame();
 };
 

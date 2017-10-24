@@ -31,7 +31,8 @@ SOURCES +=  main.cpp\
 	    Hosting.cpp \
 	    RearrangePlayers.cpp \
     StyleSheet.cpp \
-    ScoresWindow.cpp
+    ScoresWindow.cpp \
+    SetScoreParameters.cpp
 
 
 
@@ -54,7 +55,8 @@ HEADERS  += \
 	    Hosting.h \
 	    StyleSheet.h \
 	    RearrangePlayers.h \
-    ScoresWindow.h
+    ScoresWindow.h \
+    SetScoreParameters.h
 
 
 FORMS    += \
@@ -67,7 +69,8 @@ FORMS    += \
 	    ReHostTagger.ui \
 	    AboutForm.ui \
 	    RearrangePlayers.ui \
-    ScoresWindow.ui
+    ScoresWindow.ui \
+    SetScoreParameters.ui
 
 RESOURCES += \
 	    Resources.qrc

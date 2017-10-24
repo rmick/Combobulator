@@ -73,7 +73,7 @@ StyleSheet::StyleSheet()
     CssInside +=    "QSlider:disabled           {background-color: rgb(50, 50, 50);}";
     CssInside +=    "QSlider::handle:disabled   {border-color: grey;}";
     CssInside +=    "QTableWidget		{color: cyan; alternate-background-color: grey; background-color: black;}";
-    CssInside +=    "QHeaderView::section	{color: black; background-color: cyan;}";
+    CssInside +=    "QHeaderView::section	{color: cyan; background-color: grey;}";
     //Overides for player buttons in  PlayersWindow
     CssInsideButtonSelected      = "border-color: cyan; color: cyan;";
     CssInsideButtonUnSelected    = "color: white;";

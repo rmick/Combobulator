@@ -19,7 +19,7 @@
 //      Open CMD.exe prompt
 //      cd\
 //      W:
-// STOP !!!!! (id you do step 1 above - copy the file to a new location first !!!!
+// STOP !!!!! (Did you do step 1 above - copy the file to a new location first !!!!
 //      cd Qt_projects\build-Combobulator_Windows-Release\Combobulator
 //      C:\Qt\5.9.1\msvc2015_64\bin\windeployqt Combobulator.exe
 //      Zip up the folder and publish to Dropbox (or whereever)
@@ -29,10 +29,14 @@
 
 
 //  Build Number
-const QString BUILD_NUMBER  = "Build : 17.10.12a";
+const QString BUILD_NUMBER  = "Build : 17.10.23a";
 
 // Recoil Game Hub_28f537d14fca
 
+//Maximum number of players
+//--------------------------
+const int   MAX_PLAYERS = 24;
+//--------------------------
 
 //  WiFi stuff
 const QString   HOST_IP_ADDRESS     = "192.168.4.1";
@@ -48,7 +52,8 @@ const char  BEACON      = 'B';
 
 //Internal timers (in mSec)
 const int   INTERPACKET_DELAY_MSEC  = 50;
-const int   HOST_TIMER_MSEC         = 1500;
+const int   HOST_TIMER_MSEC         = 1200;
+const int   DEBRIEF_TIMER_MSEC      = 1200;
 const int   PRESS_AND_HOLD_TIME     = 500;
 const int   BEACON_TIMER_MSEC       = 500;
 
@@ -133,11 +138,21 @@ const int   AUTO_RELOAD                     = 1;
 const int   ALLOW_FULL_AUTO_FIRE            = 0;
 
 //Debrief stuff
+const int   REQUEST_ALL_DEBRIEF_BITS        = 15;
 const int   REQUEST_TAG_SUMMARY_BIT         = 1;
 const int   REQUEST_ALL_TEAM_REPORTS_BITS   = 14;
 const int   REQUEST_TEAM1_REPORT_BIT        = 2;
 const int   REQUEST_TEAM2_REPORT_BIT        = 4;
 const int   REQUEST_TEAM3_REPORT_BIT        = 8;
+
+//Score points values
+const int   POINTS_PER_TAG_LANDED           =  2;
+const int   POINTS_PER_HITS_TAKEN           = -1;
+const int   POINTS_PER_TAG_LANDED_OWN_TEAM  = -2;
+const int   POINTS_PER_KING_HIT             =  4;
+const int   POINTS_PER_OWN_KING_HIT         = -4;
+const int   POINTS_PER_ZONE_MINUTE          = 10;
+const int   POINTS_PER_SURVIVAL_MINUTE      = 10;
 
 //States for PlayersWindow::SetPlayerControls
 const int   CURRENT_MODE                    = 2;

@@ -26,20 +26,23 @@ private slots:
 private:
     Ui::ScoresWindow *ui;
 
+    void calibrateScreen();
     void addColumnLabels();
-    void addPlayers();
+    void addPlayerRows();
     void populateScores();
+    void hideRowsAndColumns();
 
     QTableWidgetItem *playerTaggerName[25];
     QTableWidgetItem *playerTotalTagsTaken[25];
     QTableWidgetItem *playerTotalHitsLanded[25];
-    QTableWidgetItem *playerRating[25];
+    QTableWidgetItem *playerScore[25];
     QTableWidgetItem *playerSurvivalTime[25];
     QTableWidgetItem *playerZoneTime[25];
     QTableWidgetItem *tagsByPlayer[25] [25];
     QFont             tableFont;
     QFont             headerFont;
     int               rowHeight;
+    int               columnWidth;
 
 };
 

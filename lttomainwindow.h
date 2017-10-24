@@ -11,6 +11,7 @@
 #include "LttoComms.h"
 #include "AboutForm.h"
 #include "ScoresWindow.h"
+#include "SetScoreParameters.h"
 
 
 namespace Ui {
@@ -108,12 +109,17 @@ private slots:
 
     void on_btn_ReSpawn_clicked();
 
+    void on_actionEdit_Scoring_triggered();
+
+    void on_btn_SetScorePoints_clicked();
+
 private:
     Ui::LttoMainWindow      *ui;
     PlayersWindow           *playersWindow;
     QPointer<HostGameWindow> hostGameWindow;
     QPointer<FlagsWindow>    flagsWindow;
     QPointer<ScoresWindow>   scoresWindow;
+    SetScoreParameters      *setScoreParameters;
     AboutForm               *aboutForm;
     QSoundEffect            *sound_PowerUp;
     QSoundEffect            *sound_Powerdown;

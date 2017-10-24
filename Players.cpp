@@ -30,6 +30,8 @@ Players::Players()
     survivalTimeSeconds = 0;
     zoneTimeMinutes     = 0;
     zoneTimeSeconds     = 0;
+    rankingInGame       = 0;
+    totalTagsTaken      = 0;
 
     for (int index = 0; index < 25; index++)
     {
@@ -249,6 +251,46 @@ QString Players::getHitsAndTags(int thisPlayer, int otherPlayer) const
     return hitsAndTags;
 }
 
+int Players::getRankingInGame() const
+{
+    return rankingInGame;
+}
+
+void Players::setRankingInGame(int value)
+{
+    rankingInGame = value;
+}
+
+int Players::getGameScore() const
+{
+    return gameScore;
+}
+
+void Players::setGameScore(int value)
+{
+    gameScore = value;
+}
+
+int Players::getPlayerNumberInThisGame() const
+{
+    return playerNumberInThisGame;
+}
+
+void Players::setPlayerNumberInThisGame(int value)
+{
+    playerNumberInThisGame = value;
+}
+
+int Players::getTotalTagsTaken() const
+{
+    return totalTagsTaken;
+}
+
+void Players::setTotalTagsTaken(int value)
+{
+    totalTagsTaken = value;
+}
+
 /////////////////////////////////////////////////////////////////////////////
 /// \brief Players::streamToFile
 /// \param out
@@ -455,6 +497,7 @@ int Players::getTagsTaken(int playerNumber) const
 void Players::setTagsTaken(int playerNumber, int value)
 {
     tagsTaken[playerNumber] = value;
+    totalTagsTaken += value;
 }
 
 int Players::getSurvivalTimeMinutes() const

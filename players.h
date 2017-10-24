@@ -108,6 +108,18 @@ public:
 
     QString getHitsAndTags(int thisPlayer, int otherPlayer) const;
 
+    int getRankingInGame() const;
+    void setRankingInGame(int value);
+
+    int getGameScore() const;
+    void setGameScore(int value);
+
+    int getPlayerNumberInThisGame() const;
+    void setPlayerNumberInThisGame(int value);
+
+    int getTotalTagsTaken() const;
+    void setTotalTagsTaken(int value);
+
 private:
     int     Handicap;
     QString PlayerName;
@@ -127,8 +139,12 @@ private:
     int     TaggerID;
     int     SpyNumber;
     int     isKing;
+    int     playerNumberInThisGame;
+    int     gameScore;
+    int     rankingInGame;
 
     int     tagsTaken[25];
+    int     totalTagsTaken;
     int     survivalTimeMinutes;
     int     survivalTimeSeconds;
     int     zoneTimeMinutes;

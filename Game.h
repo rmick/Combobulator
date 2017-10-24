@@ -56,9 +56,6 @@ public:
     void streamToFile(QTextStream &out);
     void streamFromFile(QTextStream &in);
 
-//    int getPlayersInGameByte() const;
-//    void setPlayersInGameByte(int value);
-
     int getCountDownTime() const;
     void setCountDownTime(int value);
 
@@ -88,6 +85,29 @@ public:
     bool getIsReSpawnGame() const;
     void setIsReSpawnGame(bool value);
 
+    int getNumberOfPlayersInGame();
+
+    int getPointsPerTagLanded() const;
+    void setPointsPerTagLanded(int value);
+
+    int getPointsPerTagLandedNegative() const;
+    void setPointsPerTagLandedNegative(int value);
+
+    int getPointsPerTagTaken() const;
+    void setPointsPerTagTaken(int value);
+
+    int getPointsPerKingHit() const;
+    void setPointsPerKingHit(int value);
+
+    int getPointsPerKingHitNegative() const;
+    void setPointsPerKingHitNegative(int value);
+
+    int getPointsPerSurvivalMinute() const;
+    void setPointsPerSurvivalMinute(int value);
+
+    int getPointsPerZoneMinute() const;
+    void setPointsPerZoneMinute(int value);
+
 signals:
     void    NumberOfTeamsHasChanged(int NumTeams);
 
@@ -106,11 +126,19 @@ private:
     char    NameChar3;
     char    NameChar4;
     bool    isSpiesTeamTagActive;
-//    int     TotalNumberOfPlayersInGame;
+    int     numberOfPlayersInGame;
     int     PlayersInTeamByte[3];
     int     PlayerToReHost;
     bool    isLTARGame;
     bool    isReSpawnGame;
+
+    int     pointsPerTagLanded;
+    int     pointsPerTagLandedNegative;
+    int     pointsPerTagTaken;
+    int     pointsPerKingHit;
+    int     pointsPerKingHitNegative;
+    int     pointsPerSurvivalMinute;
+    int     pointsPerZoneMinute;
 
     int     extractInteger(QString &dG);
 };
