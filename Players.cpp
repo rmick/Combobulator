@@ -224,7 +224,7 @@ QString Players::getZoneTimeString() const
     return minutes + ":" + seconds;
 }
 
-QString Players::getTotalTagsLanded(int thisPlayer) const
+int Players::getTotalTagsLanded(int thisPlayer) const
 {
     int totalTagsLanded = 0;
     for (int index = 1; index < 25; index++)
@@ -234,7 +234,7 @@ QString Players::getTotalTagsLanded(int thisPlayer) const
             totalTagsLanded += playerInfo[index].getTagsTaken(thisPlayer);
         }
     }
-    return QString::number(totalTagsLanded);
+    return totalTagsLanded;
 }
 
 QString Players::getHitsAndTags(int thisPlayer, int otherPlayer) const

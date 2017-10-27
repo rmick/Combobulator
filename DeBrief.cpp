@@ -4,6 +4,7 @@
 #include "LttoComms.h"
 #include "Defines.h"
 #include "HostGameWindow.h"
+#include <QMultiMap>
 
 DeBrief::DeBrief(QObject *parent) : QObject(parent)
 {
@@ -335,7 +336,7 @@ void DeBrief::calculateScores()
     for (int index = 1; index <= MAX_PLAYERS; index++)
     {
         int score = 0;
-        score += playerInfo[index].getTotalTagsLanded(index).toInt()    * gameInfo.getPointsPerTagLanded();
+        score += playerInfo[index].getTotalTagsLanded(index)            * gameInfo.getPointsPerTagLanded();
         score += playerInfo[index].getTotalTagsTaken()                  * gameInfo.getPointsPerTagTaken();
         score += playerInfo[index].getZoneTimeMinutes()                 * gameInfo.getPointsPerZoneMinute();
         score += playerInfo[index].getZoneTimeSeconds()                 *(gameInfo.getPointsPerZoneMinute() / 60.0);
@@ -352,9 +353,33 @@ void DeBrief::calculateScores()
 
 void DeBrief::calculateRankings()
 {
-    //Psuedo code
-    //make a list of players in game
-    //qsort by ???
+                for (int index = 1; index <= MAX_PLAYERS; index++)
+                {
+                    int dodgyScore = (qrand() % 100) - 50;
+                    playerInfo[index].setGameScore(dodgyScore);
+                    qDebug() << "Populating scores. Player" << playerInfo[index].getPlayerName() << ":" << playerInfo[index].getGameScore();
+                }
+
+    QMultiMap<int, int> rankingTable;
+    for (int index = 1; index <= MAX_PLAYERS; index++)
+    {
+        rankingTable.insert(playerInfo[index].getGameScore(), index);
+    }
+
+    qDebug() << "\nDeBrief::calculateRankings()";
+
+    //extract the ranking order and save to playerInfo.
+    //TODO: Need to deal with duplicate scores and adjust ranking using 1224 logic.
+
+    int counter = MAX_PLAYERS;
+    QMapIterator<int, int> rankingIterator(rankingTable);
+    while (rankingIterator.hasNext())
+    {
+        rankingIterator.next();
+        playerInfo[rankingIterator.value()].setRankingInGame(counter);  //TODO - deal with tied scores.....
+        qDebug() << counter << "Player" << rankingIterator.value() << " is Ranked #" << counter << "with a score of" << playerInfo[rankingIterator.value()].getGameScore();
+        counter--;
+    }
 }
 
 bool DeBrief::getIsPlayerDeBriefed() const

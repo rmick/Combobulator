@@ -94,7 +94,7 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
     }
 
 
-    if (useLongDataPacketsOverTCP)
+    if (1 == 0) //(useLongDataPacketsOverTCP)
     {
         packet.append(":");
         if (fullTCPpacketToSend == true)
@@ -116,7 +116,7 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
             packet.append(" \r\n");
         }
         else packet.append(":");
-        //qDebug() << "lttoComms::sendPacket() - " << packet;
+        qDebug() << "lttoComms::sendPacket() - " << packet;
         emit sendSerialData(packet);            //Connects to TCPComms::sendPacket slot && SerialUSBcomms::sendPacket slot
         tcpComms.sendPacket(packet);
         packet.clear();
@@ -129,7 +129,6 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
 
 void LttoComms::sendLCDtext(QString textToSend, int lineNumber)
 {
-    //TODO - Uncomment this for release!
     if(lttoComms.getSerialUSBcommsConnected()) return;      // USB means it is a Lazerswarm, which does not accept TXT.
     QByteArray textBA;
     textToSend.prepend("TXT" + QString::number(lineNumber)+ ":");
@@ -140,7 +139,6 @@ void LttoComms::sendLCDtext(QString textToSend, int lineNumber)
 
 void LttoComms::sendLCDtext(int xCursor, int yCursor, QString text, int fontSize, int colour, bool clearDisp)
 {
-    //TODO - Uncomment this for release!
     if(lttoComms.getSerialUSBcommsConnected()) return;      // USB means it is a Lazerswarm, which does not accept TXT.
     QByteArray textBA;
     QString textToSend = "";
@@ -344,15 +342,11 @@ bool LttoComms::isCheckSumCorrect(int _command, int _game, int _teamAndPlayer, i
     calculatedCheckSumRx += _tagsP8;
     calculatedCheckSumRx = calculatedCheckSumRx%256;
     if (calculatedCheckSumRx == _checksum%256)  result = true;
-    else qDebug() << "\tLttoComms::isCheckSumCorrect(TeamTagReport)" << _checksum%256 << ":" << calculatedCheckSumRx;
     return result;
 }
 
 void LttoComms::processPacket(QList<QByteArray> data)
 {
-    //TODO: Remove this debug bool
-    bool CheckOK = true;
-
     int command = extract(data);
     int game                    = 0;
     int tagger                  = 0;
@@ -432,74 +426,8 @@ void LttoComms::processPacket(QList<QByteArray> data)
         break;
 
     case TEAM_1_TAG_REPORT:
-        CheckOK = true; //TODO: REmove this
-
-        game                = extract(data);
-        teamAndPlayer       = extract(data);
-        playersInReportByte = extract(data);
-
-        if((playersInReportByte >> 0) & 1)  tagsP1 = extract(data);
-        if((playersInReportByte >> 1) & 1)  tagsP2 = extract(data);
-        if((playersInReportByte >> 2) & 1)  tagsP3 = extract(data);
-        if((playersInReportByte >> 3) & 1)  tagsP4 = extract(data);
-        if((playersInReportByte >> 4) & 1)  tagsP5 = extract(data);
-        if((playersInReportByte >> 5) & 1)  tagsP6 = extract(data);
-        if((playersInReportByte >> 6) & 1)  tagsP7 = extract(data);
-        if((playersInReportByte >> 7) & 1)  tagsP8 = extract(data);
-        checksum            = extract(data);
-
-        if(isCheckSumCorrect(command, game, teamAndPlayer, playersInReportByte, tagsP1, tagsP2, tagsP3, tagsP4, tagsP5, tagsP6, tagsP7, tagsP8, checksum))
-        {
-            tagsP1 = ConvertBCDtoDec(tagsP1);
-            tagsP2 = ConvertBCDtoDec(tagsP2);
-            tagsP3 = ConvertBCDtoDec(tagsP3);
-            tagsP4 = ConvertBCDtoDec(tagsP4);
-            tagsP5 = ConvertBCDtoDec(tagsP5);
-            tagsP6 = ConvertBCDtoDec(tagsP6);
-            tagsP7 = ConvertBCDtoDec(tagsP7);
-            tagsP8 = ConvertBCDtoDec(tagsP8);
-
-            emit Team1TagReportReceived(game, teamAndPlayer, tagsP1, tagsP2, tagsP3, tagsP4, tagsP5, tagsP6, tagsP7, tagsP8);
-        }
-        else    CheckOK = false;
-        qDebug() << "\tLttoComms::processPacket() - Team 1 Tag Report Summary:" << command << game << teamAndPlayer << playersInReportByte << tagsP1 << tagsP2 << tagsP3 << tagsP4 << tagsP5 << tagsP6 << tagsP7 << tagsP8 << "Check:" << checksum << CheckOK;
-        break;
-
     case TEAM_2_TAG_REPORT:
-        CheckOK = true; //TODO: REmove this
-        game                = extract(data);
-        teamAndPlayer       = extract(data);
-        playersInReportByte = extract(data);
-
-        if((playersInReportByte >> 0) & 1)  tagsP1 = extract(data);
-        if((playersInReportByte >> 1) & 1)  tagsP2 = extract(data);
-        if((playersInReportByte >> 2) & 1)  tagsP3 = extract(data);
-        if((playersInReportByte >> 3) & 1)  tagsP4 = extract(data);
-        if((playersInReportByte >> 4) & 1)  tagsP5 = extract(data);
-        if((playersInReportByte >> 5) & 1)  tagsP6 = extract(data);
-        if((playersInReportByte >> 6) & 1)  tagsP7 = extract(data);
-        if((playersInReportByte >> 7) & 1)  tagsP8 = extract(data);
-        checksum            = extract(data);
-
-        if(isCheckSumCorrect(command, game, teamAndPlayer, playersInReportByte, tagsP1, tagsP2, tagsP3, tagsP4, tagsP5, tagsP6, tagsP7, tagsP8, checksum))
-        {
-            tagsP1 = ConvertBCDtoDec(tagsP1);
-            tagsP2 = ConvertBCDtoDec(tagsP2);
-            tagsP3 = ConvertBCDtoDec(tagsP3);
-            tagsP4 = ConvertBCDtoDec(tagsP4);
-            tagsP5 = ConvertBCDtoDec(tagsP5);
-            tagsP6 = ConvertBCDtoDec(tagsP6);
-            tagsP7 = ConvertBCDtoDec(tagsP7);
-            tagsP8 = ConvertBCDtoDec(tagsP8);
-
-            emit Team2TagReportReceived(game, teamAndPlayer, tagsP1, tagsP2, tagsP3, tagsP4, tagsP5, tagsP6, tagsP7, tagsP8);
-        }
-        else    CheckOK = false;
-        qDebug() << "\tLttoComms::processPacket() - Team 2 Tag Report Summary:" << command << game << teamAndPlayer << playersInReportByte << tagsP1 << tagsP2 << tagsP3 << tagsP4 << tagsP5 << tagsP6 << tagsP7 << tagsP8 << "Check:" << checksum << CheckOK;
-        break;
-
     case TEAM_3_TAG_REPORT:
-        CheckOK = true; //TODO: REmove this
         game                = extract(data);
         teamAndPlayer       = extract(data);
         playersInReportByte = extract(data);
@@ -525,11 +453,114 @@ void LttoComms::processPacket(QList<QByteArray> data)
             tagsP7 = ConvertBCDtoDec(tagsP7);
             tagsP8 = ConvertBCDtoDec(tagsP8);
 
-            emit Team3TagReportReceived(game, teamAndPlayer, tagsP1, tagsP2, tagsP3, tagsP4, tagsP5, tagsP6, tagsP7, tagsP8);
+            switch(command)
+            {
+            case TEAM_1_TAG_REPORT:
+                emit Team1TagReportReceived(game, teamAndPlayer, tagsP1, tagsP2, tagsP3, tagsP4, tagsP5, tagsP6, tagsP7, tagsP8);
+                break;
+            case TEAM_2_TAG_REPORT:
+                emit Team2TagReportReceived(game, teamAndPlayer, tagsP1, tagsP2, tagsP3, tagsP4, tagsP5, tagsP6, tagsP7, tagsP8);
+                break;
+            case TEAM_3_TAG_REPORT:
+                emit Team3TagReportReceived(game, teamAndPlayer, tagsP1, tagsP2, tagsP3, tagsP4, tagsP5, tagsP6, tagsP7, tagsP8);
+                break;
+            }
         }
-        else    CheckOK = false;
-        qDebug() << "\tLttoComms::processPacket() - Team 3 Tag Report Summary:" << command << game << teamAndPlayer << playersInReportByte << tagsP1 << tagsP2 << tagsP3 << tagsP4 << tagsP5 << tagsP6 << tagsP7 << tagsP8 << "Check:" << checksum << CheckOK;
-        break;
+        else break;
+
+//    case TEAM_1_TAG_REPORT:
+
+//        game                = extract(data);
+//        teamAndPlayer       = extract(data);
+//        playersInReportByte = extract(data);
+
+//        if((playersInReportByte >> 0) & 1)  tagsP1 = extract(data);
+//        if((playersInReportByte >> 1) & 1)  tagsP2 = extract(data);
+//        if((playersInReportByte >> 2) & 1)  tagsP3 = extract(data);
+//        if((playersInReportByte >> 3) & 1)  tagsP4 = extract(data);
+//        if((playersInReportByte >> 4) & 1)  tagsP5 = extract(data);
+//        if((playersInReportByte >> 5) & 1)  tagsP6 = extract(data);
+//        if((playersInReportByte >> 6) & 1)  tagsP7 = extract(data);
+//        if((playersInReportByte >> 7) & 1)  tagsP8 = extract(data);
+//        checksum            = extract(data);
+
+//        if(isCheckSumCorrect(command, game, teamAndPlayer, playersInReportByte, tagsP1, tagsP2, tagsP3, tagsP4, tagsP5, tagsP6, tagsP7, tagsP8, checksum))
+//        {
+//            tagsP1 = ConvertBCDtoDec(tagsP1);
+//            tagsP2 = ConvertBCDtoDec(tagsP2);
+//            tagsP3 = ConvertBCDtoDec(tagsP3);
+//            tagsP4 = ConvertBCDtoDec(tagsP4);
+//            tagsP5 = ConvertBCDtoDec(tagsP5);
+//            tagsP6 = ConvertBCDtoDec(tagsP6);
+//            tagsP7 = ConvertBCDtoDec(tagsP7);
+//            tagsP8 = ConvertBCDtoDec(tagsP8);
+
+//            emit Team1TagReportReceived(game, teamAndPlayer, tagsP1, tagsP2, tagsP3, tagsP4, tagsP5, tagsP6, tagsP7, tagsP8);
+//        }
+//        qDebug() << "\tLttoComms::processPacket() - Team 1 Tag Report Summary:" << command << game << teamAndPlayer << playersInReportByte << tagsP1 << tagsP2 << tagsP3 << tagsP4 << tagsP5 << tagsP6 << tagsP7 << tagsP8;
+//        break;
+
+//    case TEAM_2_TAG_REPORT:
+//        game                = extract(data);
+//        teamAndPlayer       = extract(data);
+//        playersInReportByte = extract(data);
+
+//        if((playersInReportByte >> 0) & 1)  tagsP1 = extract(data);
+//        if((playersInReportByte >> 1) & 1)  tagsP2 = extract(data);
+//        if((playersInReportByte >> 2) & 1)  tagsP3 = extract(data);
+//        if((playersInReportByte >> 3) & 1)  tagsP4 = extract(data);
+//        if((playersInReportByte >> 4) & 1)  tagsP5 = extract(data);
+//        if((playersInReportByte >> 5) & 1)  tagsP6 = extract(data);
+//        if((playersInReportByte >> 6) & 1)  tagsP7 = extract(data);
+//        if((playersInReportByte >> 7) & 1)  tagsP8 = extract(data);
+//        checksum            = extract(data);
+
+//        if(isCheckSumCorrect(command, game, teamAndPlayer, playersInReportByte, tagsP1, tagsP2, tagsP3, tagsP4, tagsP5, tagsP6, tagsP7, tagsP8, checksum))
+//        {
+//            tagsP1 = ConvertBCDtoDec(tagsP1);
+//            tagsP2 = ConvertBCDtoDec(tagsP2);
+//            tagsP3 = ConvertBCDtoDec(tagsP3);
+//            tagsP4 = ConvertBCDtoDec(tagsP4);
+//            tagsP5 = ConvertBCDtoDec(tagsP5);
+//            tagsP6 = ConvertBCDtoDec(tagsP6);
+//            tagsP7 = ConvertBCDtoDec(tagsP7);
+//            tagsP8 = ConvertBCDtoDec(tagsP8);
+
+//            emit Team2TagReportReceived(game, teamAndPlayer, tagsP1, tagsP2, tagsP3, tagsP4, tagsP5, tagsP6, tagsP7, tagsP8);
+//        }
+//        qDebug() << "\tLttoComms::processPacket() - Team 2 Tag Report Summary:" << command << game << teamAndPlayer << playersInReportByte << tagsP1 << tagsP2 << tagsP3 << tagsP4 << tagsP5 << tagsP6 << tagsP7 << tagsP8;
+//        break;
+
+//    case TEAM_3_TAG_REPORT:
+//        game                = extract(data);
+//        teamAndPlayer       = extract(data);
+//        playersInReportByte = extract(data);
+
+//        if((playersInReportByte >> 0) & 1)  tagsP1 = extract(data);
+//        if((playersInReportByte >> 1) & 1)  tagsP2 = extract(data);
+//        if((playersInReportByte >> 2) & 1)  tagsP3 = extract(data);
+//        if((playersInReportByte >> 3) & 1)  tagsP4 = extract(data);
+//        if((playersInReportByte >> 4) & 1)  tagsP5 = extract(data);
+//        if((playersInReportByte >> 5) & 1)  tagsP6 = extract(data);
+//        if((playersInReportByte >> 6) & 1)  tagsP7 = extract(data);
+//        if((playersInReportByte >> 7) & 1)  tagsP8 = extract(data);
+//        checksum            = extract(data);
+
+//        if(isCheckSumCorrect(command, game, teamAndPlayer, playersInReportByte, tagsP1, tagsP2, tagsP3, tagsP4, tagsP5, tagsP6, tagsP7, tagsP8, checksum))
+//        {
+//            tagsP1 = ConvertBCDtoDec(tagsP1);
+//            tagsP2 = ConvertBCDtoDec(tagsP2);
+//            tagsP3 = ConvertBCDtoDec(tagsP3);
+//            tagsP4 = ConvertBCDtoDec(tagsP4);
+//            tagsP5 = ConvertBCDtoDec(tagsP5);
+//            tagsP6 = ConvertBCDtoDec(tagsP6);
+//            tagsP7 = ConvertBCDtoDec(tagsP7);
+//            tagsP8 = ConvertBCDtoDec(tagsP8);
+
+//            emit Team3TagReportReceived(game, teamAndPlayer, tagsP1, tagsP2, tagsP3, tagsP4, tagsP5, tagsP6, tagsP7, tagsP8);
+//        }
+//        qDebug() << "\tLttoComms::processPacket() - Team 3 Tag Report Summary:" << command << game << teamAndPlayer << playersInReportByte << tagsP1 << tagsP2 << tagsP3 << tagsP4 << tagsP5 << tagsP6 << tagsP7 << tagsP8;
+//        break;
     }
     rxPacketList.clear();
 }

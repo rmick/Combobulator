@@ -104,7 +104,7 @@ public:
 
     QString getZoneTimeString() const;
 
-    QString getTotalTagsLanded(int thisPlayer) const;
+    int getTotalTagsLanded(int thisPlayer) const;
 
     QString getHitsAndTags(int thisPlayer, int otherPlayer) const;
 

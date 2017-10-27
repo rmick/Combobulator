@@ -18,6 +18,8 @@ public:
     void    RequestTagReports();
     void    calculateScores();                      // calculate the scores using POINTS_FOR_XXX in Defines.h
 
+    void    calculateRankings();                    // assign rankings to each player
+
 
 signals:
     void    SendToHGWlistWidget(QString message);
@@ -52,7 +54,7 @@ private:
     bool    isSummaryTagReportReceived; // have we recevied a valid Suammary Tag report.
 
     bool    decodeTeamAndPlayer(int teamAndPlayer); // translates TeamAndPlayer Byte into player and team, then checks it matches currentPlayer;
-    void    calculateRankings();                    // assign rankings to each player
+    //void    calculateRankings();                    // assign rankings to each player
 };
 
 #endif // DEBRIEF_H

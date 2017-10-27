@@ -7,6 +7,8 @@
 
 #include "Game.h"
 #include "Players.h"
+#include "Defines.h"
+#include "DeBrief.h"
 
 namespace Ui {
 class ScoresWindow;
@@ -23,16 +25,22 @@ public:
 private slots:
     void on_btn_Close_clicked();
 
+    void on_btn_ViewMode_clicked();
+
+    void on_btn_Debug_clicked();
+
 private:
     Ui::ScoresWindow *ui;
 
-    void calibrateScreen();
-    void addColumnLabels();
+    void calibrateScreen(int modus);
+    void addColumnLabels(int modus);
     void addPlayerRows();
-    void populateScores();
-    void hideRowsAndColumns();
+    void populateScores(int modus);
+    void setOrder(int modus);
 
+    QTableWidgetItem *playerNumber[25];
     QTableWidgetItem *playerTaggerName[25];
+    QTableWidgetItem *playerRanking[25];
     QTableWidgetItem *playerTotalTagsTaken[25];
     QTableWidgetItem *playerTotalHitsLanded[25];
     QTableWidgetItem *playerScore[25];
@@ -43,6 +51,9 @@ private:
     QFont             headerFont;
     int               rowHeight;
     int               columnWidth;
+    int               displayMode;
+
+    const int         COLUMNS_IN_SUMMARY = 8;
 
 };
 

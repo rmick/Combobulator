@@ -29,7 +29,7 @@
 
 
 //  Build Number
-const QString BUILD_NUMBER  = "Build : 17.10.23a";
+const QString BUILD_NUMBER  = "Build : 17.10.27a";
 
 // Recoil Game Hub_28f537d14fca
 
@@ -166,6 +166,12 @@ const int   GAME_MODE                       = 3;
 const int   REHOST_MODE                     = 4;
 const int   DEBRIEF_MODE                    = 5;
 const int   SCOREBOARD_MODE                 = 6;
+
+//ScoresWindow modes
+const int   ALL_IN_ONE_VIEW                 = 0;
+const int   SUMMARY_VIEW                    = 1;
+const int   PLAYER_GRID_VIEW                = 2;
+
 
 //Classes for calledByWho
 const int   LTTO_MAIN_WINDOW                = 2;
