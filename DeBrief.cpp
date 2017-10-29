@@ -250,7 +250,6 @@ void DeBrief::sendRankReport()
 
     qDebug() << "DeBrief::sendRankReport()";
     int teamPlayerByte  = 0;
-    int teamNumber      = 0;
     int loopCount       = 1;
 
     qDebug() << "\nDeBrief::sendRankReport()  - Team 1 Rank =" << gameInfo.getTeam1rank();
@@ -262,11 +261,12 @@ void DeBrief::sendRankReport()
     {
          qDebug() << "DeBrief::sendRankReport() - Loop" << loopCount << "\tTeam:" << index;
 
-         //Set the TeamPlayerByte, but not for Solo games/
-         teamPlayerByte = 0;
+         //Set the TeamPlayerByte
+         teamPlayerByte = index << 4;
+
+         //Add TeamRanks for non solo games only.
          if(gameInfo.getNumberOfTeams() != 0)
          {
-             teamPlayerByte = index << 4;
              if         (index == 1)
              {
                  teamPlayerByte += gameInfo.getTeam1rank();
@@ -295,9 +295,8 @@ void DeBrief::sendRankReport()
          lttoComms.sendPacket(DATA, playerInfo[7 + ((loopCount-1)*8)].getRankingInGame());
          lttoComms.sendPacket(DATA, playerInfo[8 + ((loopCount-1)*8)].getRankingInGame());
          lttoComms.sendPacket(CHECKSUM);
-         lttoComms.nonBlockingDelay(200);
+         lttoComms.nonBlockingDelay(100);
 
-    //teamNumber++;
         //reset index to 1 and exit if done 3x5 times
         if (index == 3 && loopCount < 5)
         {

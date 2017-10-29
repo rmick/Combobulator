@@ -29,7 +29,7 @@
 
 
 //  Build Number
-const QString BUILD_NUMBER  = "Build : 17.10.27b";
+const QString BUILD_NUMBER  = "Build : 17.10.30a";
 
 // Recoil Game Hub_28f537d14fca
 

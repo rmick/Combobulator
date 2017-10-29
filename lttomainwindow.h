@@ -109,8 +109,6 @@ private slots:
 
     void on_btn_ReSpawn_clicked();
 
-    void on_actionEdit_Scoring_triggered();
-
     void on_btn_SetScorePoints_clicked();
 
 private:

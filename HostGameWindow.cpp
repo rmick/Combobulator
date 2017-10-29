@@ -686,6 +686,9 @@ void HostGameWindow::updateGameTimeRemaining()
 
 void HostGameWindow::on_btn_SkipPlayer_clicked()
 {
+    //TODO Why does this crash !!!!!
+    if (currentPlayer > MAX_PLAYERS) return;
+
     if(deBrief) deBrief->setIsPlayerDeBriefed(true);
     gameInfo.setIsThisPlayerInTheGame(currentPlayer, false);
     lttoComms.setDontAnnounceGame(false);
@@ -887,7 +890,7 @@ void HostGameWindow::deBriefTaggers()
         }
     }
 
-    // If currentPlayer is in range - send the message
+    // If currentPlayer is valid - send the message
     if (currentPlayer < 25)
     {
         deBrief->RequestTagReports();
@@ -903,14 +906,15 @@ void HostGameWindow::deBriefTaggers()
         lttoComms.nonBlockingDelay(1500);
         ui->label->setText("Game Over");
 
-        //Send RankReport
+        // Show Scores Window
         deBrief->calculateScores();
+        if(!scoresWindow) scoresWindow = new ScoresWindow(this);
+        scoresWindow->showFullScreen();
+
+        //Send RankReport
         deBrief->sendRankReport();
 
 
-        // Show Scores Window
-        if(!scoresWindow) scoresWindow = new ScoresWindow(this);
-        scoresWindow->showFullScreen();
 
 //        // Close this window
 //        while (scoresWindow)
