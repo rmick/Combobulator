@@ -108,6 +108,15 @@ public:
     int getPointsPerZoneMinute() const;
     void setPointsPerZoneMinute(int value);
 
+    int getTeam1rank() const;
+    void setTeam1rank(int value);
+
+    int getTeam2rank() const;
+    void setTeam2rank(int value);
+
+    int getTeam3rank() const;
+    void setTeam3rank(int value);
+
 signals:
     void    NumberOfTeamsHasChanged(int NumTeams);
 
@@ -139,6 +148,10 @@ private:
     int     pointsPerKingHitNegative;
     int     pointsPerSurvivalMinute;
     int     pointsPerZoneMinute;
+
+    int     team1rank;
+    int     team2rank;
+    int     team3rank;
 
     int     extractInteger(QString &dG);
 };

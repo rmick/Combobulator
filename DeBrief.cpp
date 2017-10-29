@@ -144,11 +144,8 @@ void DeBrief::ReceiveTagSummary(int game, int teamAndPlayer, int tagsTaken, int 
     playerInfo[currentPlayer].setZoneTimeSeconds    (lttoComms.ConvertBCDtoDec(zoneTimeSeconds));
     playerInfo[currentPlayer].setReportFlags           (flags);
 
-    //    //Set the flags based on what we know we should receive.
-    //    //NB. Packets can arrive out of order (if one is corrupted), so we check to see if we have already received these packets.
-    //if(isTeam1TagReportReceived == false)   isTeam1TagReportDue = (flags & 2);
-    //if(isTeam2TagReportReceived == false)   isTeam2TagReportDue = (flags & 4);
-    //if(isTeam3TagReportReceived == false)   isTeam3TagReportDue = (flags & 8);
+    //Set the flags based on what we know we should receive.
+    //NB. Packets can arrive out of order (if one is corrupted), so we check to see if we have already received these packets.
     isTeam1TagReportDue = (flags & 2);
     isTeam2TagReportDue = (flags & 4);
     isTeam3TagReportDue = (flags & 8);
@@ -158,15 +155,7 @@ void DeBrief::ReceiveTagSummary(int game, int teamAndPlayer, int tagsTaken, int 
     if(isTeam2TagReportDue == false)        isTeam2TagReportReceived = true;
     if(isTeam3TagReportDue == false)        isTeam3TagReportReceived = true;
 
-//       if (isTeam1TagReportReceived == true && isTeam2TagReportReceived == true && isTeam3TagReportReceived == true)
-//       {
-//            setIsPlayerDeBriefed(true);
-//            deBriefMessageType = REQUEST_ALL_DEBRIEF_BITS;
-//            qDebug() << "---------------------" << endl;
-//            lttoComms.setDontAnnounceGame(false);
-//       }
-
-       isSummaryTagReportReceived = true;
+    isSummaryTagReportReceived = true;
 
     qDebug() << "DeBrief::ReceiveTagSummary() - Game" << game  << currentPlayer;
     qDebug() << "\tTags taken =" << playerInfo[currentPlayer].getTagsTaken(0);
@@ -175,8 +164,6 @@ void DeBrief::ReceiveTagSummary(int game, int teamAndPlayer, int tagsTaken, int 
     qDebug() << "\tFlags" << playerInfo[currentPlayer].getReportFlags() << "\tTeam1:" << isTeam1TagReportDue << "\tTeam2:" << isTeam2TagReportDue << "\tTeam3:" << isTeam3TagReportDue;
     SendToHGWlistWidget("DeBrief::ReceiveTagSummary() - Game" +QString::number(game) + ", Player" +QString::number(currentPlayer));
     SendToHGWlistWidget("\tTags taken =" +QString::number(playerInfo[currentPlayer].getTagsTaken(0)));
-    //TODO:UpToHere
-
 }
 
 void DeBrief::Team1TagReportReceived(int game, int teamAndPlayer, int tagsP1, int tagsP2, int tagsP3, int tagsP4, int tagsP5, int tagsP6, int tagsP7, int tagsP8)
@@ -255,11 +242,6 @@ void DeBrief::Team3TagReportReceived(int game, int teamAndPlayer, int tagsP1, in
     playerInfo[currentPlayer].setTagsTaken(24, tagsP8);
 
     isTeam3TagReportReceived = true;
-
-//    //deBriefMessageType = REQUEST_TAG_REPORT;
-//    setIsPlayerDeBriefed(true);
-//    deBriefMessageType = REQUEST_TAG_SUMMARY_BIT;
-//    qDebug() << "---------------------" << endl;
 }
 
 void DeBrief::sendRankReport()
@@ -267,27 +249,62 @@ void DeBrief::sendRankReport()
     calculateRankings();
 
     qDebug() << "DeBrief::sendRankReport()";
-    int teamPlayerByte = 0;
-    if(gameInfo.getNumberOfTeams() == 0)
-    {
-        teamPlayerByte = 0;
-    }
-    else
-    {
-        //set Teams/Players
-    }
+    int teamPlayerByte  = 0;
+    int teamNumber      = 0;
+    int loopCount       = 1;
 
-    lttoComms.sendPacket(PACKET, gameInfo.getGameID());
-    lttoComms.sendPacket(DATA, teamPlayerByte);
-    lttoComms.sendPacket(DATA, 1);
-    lttoComms.sendPacket(DATA, 2);
-    lttoComms.sendPacket(DATA, 3);
-    lttoComms.sendPacket(DATA, 4);
-    lttoComms.sendPacket(DATA, 5);
-    lttoComms.sendPacket(DATA, 6);
-    lttoComms.sendPacket(DATA, 7);
-    lttoComms.sendPacket(DATA, 8);
-    lttoComms.sendPacket(CHECKSUM);
+    qDebug() << "\nDeBrief::sendRankReport()  - Team 1 Rank =" << gameInfo.getTeam1rank();
+    qDebug() <<   "DeBrief::sendRankReport()  - Team 2 Rank =" << gameInfo.getTeam2rank();
+    qDebug() <<   "DeBrief::sendRankReport()  - Team 3 Rank =" << gameInfo.getTeam3rank();
+
+    //There are 3 rankReport messages, for players 1-8, 9-1, 17-24
+    for (int index = 1; index <= 4; index++)
+    {
+         qDebug() << "DeBrief::sendRankReport() - Loop" << loopCount << "\tTeam:" << index;
+
+         //Set the TeamPlayerByte, but not for Solo games/
+         teamPlayerByte = 0;
+         if(gameInfo.getNumberOfTeams() != 0)
+         {
+             teamPlayerByte = index << 4;
+             if         (index == 1)
+             {
+                 teamPlayerByte += gameInfo.getTeam1rank();
+             }
+             else if    (index == 2)
+             {
+                 teamPlayerByte += gameInfo.getTeam2rank();
+             }
+             else if    (index == 3)
+             {
+                 teamPlayerByte += gameInfo.getTeam3rank();
+             }
+         }
+         qDebug() << teamPlayerByte;
+
+//         //Send the message
+         lttoComms.sendPacket(PACKET, SEND_RANK_REPORT);
+         lttoComms.sendPacket(DATA, gameInfo.getGameID());
+         lttoComms.sendPacket(DATA, teamPlayerByte);
+         lttoComms.sendPacket(DATA, playerInfo[1 + ((loopCount-1)*8)].getRankingInGame());
+         lttoComms.sendPacket(DATA, playerInfo[2 + ((loopCount-1)*8)].getRankingInGame());
+         lttoComms.sendPacket(DATA, playerInfo[3 + ((loopCount-1)*8)].getRankingInGame());
+         lttoComms.sendPacket(DATA, playerInfo[4 + ((loopCount-1)*8)].getRankingInGame());
+         lttoComms.sendPacket(DATA, playerInfo[5 + ((loopCount-1)*8)].getRankingInGame());
+         lttoComms.sendPacket(DATA, playerInfo[6 + ((loopCount-1)*8)].getRankingInGame());
+         lttoComms.sendPacket(DATA, playerInfo[7 + ((loopCount-1)*8)].getRankingInGame());
+         lttoComms.sendPacket(DATA, playerInfo[8 + ((loopCount-1)*8)].getRankingInGame());
+         lttoComms.sendPacket(CHECKSUM);
+         lttoComms.nonBlockingDelay(200);
+
+    //teamNumber++;
+        //reset index to 1 and exit if done 3x5 times
+        if (index == 3 && loopCount < 5)
+        {
+            loopCount++;
+            index = 0;
+        }
+    }
 }
 
 bool DeBrief::decodeTeamAndPlayer(int teamAndPlayer)
@@ -353,33 +370,90 @@ void DeBrief::calculateScores()
 
 void DeBrief::calculateRankings()
 {
-                for (int index = 1; index <= MAX_PLAYERS; index++)
-                {
-                    int dodgyScore = (qrand() % 100) - 50;
-                    playerInfo[index].setGameScore(dodgyScore);
-                    qDebug() << "Populating scores. Player" << playerInfo[index].getPlayerName() << ":" << playerInfo[index].getGameScore();
-                }
+    int counter = MAX_PLAYERS;
+    int team1rankTotals = 0;
+    int team2rankTotals = 0;
+    int team3rankTotals = 0;
 
-    QMultiMap<int, int> rankingTable;
+//TODO: DEBUG - please remove!!!
+//             for (int faker = 1; faker <= MAX_PLAYERS; faker++)
+//                 playerInfo[faker].setGameScore(qrand() %100);
+
+
+
+    //Create a QMultimap with scores as key, and playerNumber as value.
+    QMultiMap<int, int> scoresTable;
     for (int index = 1; index <= MAX_PLAYERS; index++)
     {
-        rankingTable.insert(playerInfo[index].getGameScore(), index);
+        scoresTable.insert(playerInfo[index].getGameScore(), index);
     }
-
-    qDebug() << "\nDeBrief::calculateRankings()";
 
     //extract the ranking order and save to playerInfo.
-    //TODO: Need to deal with duplicate scores and adjust ranking using 1224 logic.
-
-    int counter = MAX_PLAYERS;
-    QMapIterator<int, int> rankingIterator(rankingTable);
-    while (rankingIterator.hasNext())
+    QMapIterator<int, int> scoresIterator(scoresTable);
+    while (scoresIterator.hasNext())
     {
-        rankingIterator.next();
-        playerInfo[rankingIterator.value()].setRankingInGame(counter);  //TODO - deal with tied scores.....
-        qDebug() << counter << "Player" << rankingIterator.value() << " is Ranked #" << counter << "with a score of" << playerInfo[rankingIterator.value()].getGameScore();
+        scoresIterator.next();
+        playerInfo[scoresIterator.value()].setRankingInGame(counter);
         counter--;
     }
+
+    //Adjust ranks to 1224 system
+    int currentRankedPlayer = 0;
+
+    for (int rankIndex = MAX_PLAYERS; rankIndex >= 1; rankIndex--)
+    {
+        //find the player whose rank == rankIndex
+        for (int thisPlayer = 1; thisPlayer <= MAX_PLAYERS; thisPlayer++)
+        {
+            if(playerInfo[thisPlayer].getRankingInGame() == rankIndex)
+            {
+                currentRankedPlayer = thisPlayer;
+            }
+        }
+        //get their score
+        int scoreToCheck = playerInfo[currentRankedPlayer].getGameScore();
+
+        //does anyone else have the same score? if so match the rank
+        for (int playerToCompare = 1; playerToCompare <= MAX_PLAYERS; playerToCompare++)
+        {
+            if (playerInfo[playerToCompare].getGameScore() == scoreToCheck)
+            {
+                playerInfo[playerToCompare].setRankingInGame(rankIndex);
+            }
+        }
+    }
+    //Assign TeamRanking
+
+    //Total all the rankings for each team.
+    for (int index = 1;  index <= 8;  index++)    team1rankTotals += playerInfo[index].getRankingInGame();
+    for (int index = 9;  index <= 16; index++)    team2rankTotals += playerInfo[index].getRankingInGame();
+    for (int index = 17; index <= 24; index++)    team3rankTotals += playerInfo[index].getRankingInGame();
+
+    //Force team3 ranking to a stupidly high number if only 2 teams in the game.
+    if (gameInfo.getNumberOfTeams() == 2) team3rankTotals += 32768;
+
+    qDebug() << "-----------------------------------\nDeBrief::calculateRankings()";
+    qDebug() << "team1rankTotals" << team1rankTotals;
+    qDebug() << "team2rankTotals" << team2rankTotals;
+    qDebug() << "team3rankTotals" << team3rankTotals;
+
+    //Compare the rankings
+    QMultiMap<int, int> teamRankTable;
+    teamRankTable.insert(team1rankTotals, 1);
+    teamRankTable.insert(team2rankTotals, 2);
+    teamRankTable.insert(team3rankTotals, 3);
+
+    //extract the ranking order and save to playerInfo.
+    QMapIterator<int, int> teamRankIterator(teamRankTable);
+
+        for (int index = 1; index <=3; index++)
+        {
+            teamRankIterator.next();
+            if      (teamRankIterator.value() == 1)  gameInfo.setTeam1rank(index);
+            else if (teamRankIterator.value() == 2)  gameInfo.setTeam2rank(index);
+            else if (teamRankIterator.value() == 3)  gameInfo.setTeam3rank(index);
+        }
+        qDebug() << "DeBrief::calculateRankings()" << teamRankTable.values();
 }
 
 bool DeBrief::getIsPlayerDeBriefed() const

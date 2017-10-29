@@ -888,6 +888,11 @@ void LttoMainWindow::on_actionOutdoorMode_triggered()
 
 void LttoMainWindow::on_btn_Debug_clicked()
 {
+    DeBrief debrifInst;
+    debrifInst.sendRankReport();
+
+    return;
+
     scoresWindow = new ScoresWindow(this);
     scoresWindow->showFullScreen();
 }

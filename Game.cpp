@@ -33,6 +33,10 @@ Game::Game()
     PlayerToReHost = 0;
     isSpiesTeamTagActive = false;
 
+    team1rank = 0;
+    team2rank = 0;
+    team3rank = 0;
+
     CountDownTime   = DEFAULT_COUNTDOWN_TIME;
     isThisPlayerInTheGame[0] = true;        //this is required so that Announce continues after all Taggers are hosted.
     for (int x= 1; x<25; x++)
@@ -519,6 +523,36 @@ int Game::getPointsPerZoneMinute() const
 void Game::setPointsPerZoneMinute(int value)
 {
     pointsPerZoneMinute = value;
+}
+
+int Game::getTeam1rank() const
+{
+    return team1rank;
+}
+
+void Game::setTeam1rank(int value)
+{
+    team1rank = value;
+}
+
+int Game::getTeam2rank() const
+{
+    return team2rank;
+}
+
+void Game::setTeam2rank(int value)
+{
+    team2rank = value;
+}
+
+int Game::getTeam3rank() const
+{
+    return team3rank;
+}
+
+void Game::setTeam3rank(int value)
+{
+    team3rank = value;
 }
 
 int Game::extractInteger(QString &dG)

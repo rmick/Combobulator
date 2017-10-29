@@ -50,7 +50,6 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
             if (dataFormat == BCD)
             {
                 calculatedCheckSumTx += ConvertDecToBCD(data);
-                //fullTCPpacketToSend = false;    // To silence compiler warning.
                 data = ConvertDecToBCD(data);
                 packetString = createIRstring(data);
                 packetString.prepend('D');
@@ -89,12 +88,11 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
             break;
         default:
             qDebug() << "lttoComms::sendPacket() - No Packet type specified. You ninkom poop.";
-            //fullTCPpacketToSend = false;  // to silence compiler warning
             result = false;
     }
 
 
-    if (1 == 0) //(useLongDataPacketsOverTCP)
+    if (useLongDataPacketsOverTCP)
     {
         packet.append(":");
         if (fullTCPpacketToSend == true)
@@ -244,7 +242,7 @@ bool LttoComms::getTcpCommsConnected() const
 void LttoComms::setTcpCommsConnected(bool value)
 {
     tcpCommsConnected = value;
-    setUseLongDataPacketsOverTCP(value);
+    setUseLongDataPacketsOverTCP(value);                        // Activated/Deactivated here !!!!
 }
 
 void LttoComms::TCPconnected()
