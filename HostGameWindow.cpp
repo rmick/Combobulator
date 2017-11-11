@@ -934,5 +934,12 @@ void HostGameWindow::on_btn_ShowListWidget_clicked()
 
 void HostGameWindow::on_btn_DeBugSendTag_clicked()
 {
-    lttoComms.sendPacket(TAG, 7, false);
+    lttoComms.sendPacket(TAG, 7);
+    lttoComms.nonBlockingDelay(30);
+    lttoComms.sendPacket(TAG, 1);
+}
+
+void HostGameWindow::on_btn_DeBug_clicked()
+{
+    tcpComms.DisconnectTCP();
 }

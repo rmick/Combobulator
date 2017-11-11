@@ -27,8 +27,6 @@ private slots:
 
     void on_btn_ViewMode_clicked();
 
-    void on_btn_Debug_clicked();
-
 private:
     Ui::ScoresWindow *ui;
 
@@ -49,6 +47,8 @@ private:
     QTableWidgetItem *tagsByPlayer[25] [25];
     QFont             tableFont;
     QFont             headerFont;
+    int               screenWidth;
+    int               screenHeight;
     int               rowHeight;
     int               columnWidth;
     int               displayMode;

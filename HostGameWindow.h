@@ -78,6 +78,8 @@ private slots:
 
     void on_btn_DeBugSendTag_clicked();
 
+    void on_btn_DeBug_clicked();
+
 private:
     //pointers
     Ui::HostGameWindow      *ui;

@@ -97,6 +97,7 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
         packet.append(":");
         if (fullTCPpacketToSend == true)
         {
+            packet.append(" \r\n");
             emit sendSerialData(packet);
             qDebug() << "lttoComms::sendPacket() - WIFIKIT32 - Full Packet = " << packet;
             fullTCPpacketToSend = false;
@@ -161,30 +162,48 @@ void LttoComms::receivePacket(QByteArray RxData)
 {
     bool isPacketComplete = false;
 
-    if (useLazerSwarm)
-    {
-        irDataIn.append(RxData);
+    irDataIn.append(RxData);
 
-        if(irDataIn.endsWith("\n"))
+    if (irDataIn.endsWith("\r\n"))
+    {
+        //Remove the \r\n
+        irDataIn = irDataIn.trimmed();
+
+       //Check for an Error message
+        if      (irDataIn.startsWith("ERROR"))
         {
-            if (irDataIn.startsWith("ERROR"))
+            irDataIn.clear();
+            return;
+        }
+
+        //Check if this is a CombobulatorHost or LazerSwarm packet.
+        if      (irDataIn.endsWith("@"))
+        // CombobulatorHost packet
+        {
+            // remove the @
+            irDataIn.remove((irDataIn.size()-1), 1);
+
+            //BreakUp messages into "Pxx", "Dxx", "Dxx", "Cxxx,"
+            int delimiter = 0;
+            QByteArray packetToAdd;
+            while(irDataIn.length() > 0)
             {
-                irDataIn.clear();
-                return;
+                delimiter = irDataIn.indexOf(",");
+                packetToAdd = irDataIn.left(delimiter);
+                irDataIn.remove(0, delimiter + 1);
+                //qDebug() << "** - " << irDataIn;
+                rxPacketList.append(packetToAdd);
             }
-            rxPacketList.append(lazerswarm.decodeCommand(irDataIn));
-//            qDebug() << "LttoComms::receivePacket() LazerSwarm mode - " << lazerswarm.decodeCommand(irDataIn);
-//            if (lazerswarm.decodeCommand(irDataIn).startsWith("C")) qDebug() << "LttoComms::receivePacket() LazerSwarm mode -   ___________";
+
+            qDebug() << "LttoComms::receivePacket() -> LTTO library mode - " << " - " << rxPacketList;
             isPacketComplete = true;
         }
-    }
-    else
-    {
-        irDataIn.append(RxData);
-        if (irDataIn.endsWith(":"))
+        else if (irDataIn.startsWith("RCV"))
+        // Lazerswarm packet
         {
-            rxPacketList.append(irDataIn);
-            //qDebug() << "LttoComms::receivePacket() LTTO library mode - " << irDataIn;
+            rxPacketList.append(lazerswarm.decodeCommand(irDataIn));
+                        qDebug() << "LttoComms::receivePacket() LazerSwarm mode - " << lazerswarm.decodeCommand(irDataIn);
+                        if (lazerswarm.decodeCommand(irDataIn).startsWith("C")) qDebug() << "LttoComms::receivePacket() LazerSwarm mode -   ___________";
             isPacketComplete = true;
         }
     }
@@ -194,8 +213,10 @@ void LttoComms::receivePacket(QByteArray RxData)
         irDataIn.clear();
         if (!rxPacketList.empty())
         {
-            if (rxPacketList.last().startsWith("C") )
+            qDebug() << "isPacketCmplete:" << rxPacketList.last();
+            if (!rxPacketList.last().startsWith("D") || !rxPacketList.first().startsWith("P"))
             {
+                qDebug() << "LttoComms::receivePacket()  - FULL PACKET!" << rxPacketList;
                 processPacket(rxPacketList);
             }
         }
@@ -345,6 +366,8 @@ bool LttoComms::isCheckSumCorrect(int _command, int _game, int _teamAndPlayer, i
 
 void LttoComms::processPacket(QList<QByteArray> data)
 {
+    qDebug() << "LttoComms::processPacket()";
+
     int command = extract(data);
     int game                    = 0;
     int tagger                  = 0;

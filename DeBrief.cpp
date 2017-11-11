@@ -378,8 +378,6 @@ void DeBrief::calculateRankings()
 //             for (int faker = 1; faker <= MAX_PLAYERS; faker++)
 //                 playerInfo[faker].setGameScore(qrand() %100);
 
-
-
     //Create a QMultimap with scores as key, and playerNumber as value.
     QMultiMap<int, int> scoresTable;
     for (int index = 1; index <= MAX_PLAYERS; index++)

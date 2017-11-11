@@ -11,9 +11,9 @@ ScoresWindow::ScoresWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    displayMode = SUMMARY_VIEW;
+    ui->scoreTable->setSortingEnabled(false);
     ui->btn_ViewMode->setText("Player Grid View");
-
+    displayMode = SUMMARY_VIEW;
     calibrateScreen(SUMMARY_VIEW);
     addColumnLabels(SUMMARY_VIEW);
     addPlayerRows();
@@ -34,57 +34,48 @@ void ScoresWindow::on_btn_Close_clicked()
 
 void ScoresWindow::calibrateScreen(int modus)
 {
-    int cellWidth = 0;
-    int cellHeight = 0;
+    //2560 X 1596   QSize(2520, 1512)
+    //2048 X 1276   QSize(2008, 1192)
+    //1650 x 1046   QSize(1610, 962)
+    //1440 X  896   QSize(1400, 812)
+    //1280 X  796   QSize(1240, 712)
+    //1152 X  716   QSize(1112, 632)
+    //1024 x  764   QSize( 984, 680)
+    // 800 x  596   QSize( 760, 512)
 
     QScreen *screen = QGuiApplication::primaryScreen();
     QRect screenGeometry = screen->availableGeometry();
-    int screenWidth   = screenGeometry.width();
-    int screenHeight  = screenGeometry.height() - 75;
-
+    screenWidth   = screenGeometry.width()  - 40;   // allows for the border
+    screenHeight  = screenGeometry.height() - 84;   // allows for the border
+    qDebug() << "ScoresWindow::calibrateScreen W x H:" << screenWidth << screenHeight;
     switch (modus)
     {
+
     case ALL_IN_ONE_VIEW:
         //TODO: these are untested!
-        cellWidth   = screenWidth  / (gameInfo.getNumberOfPlayersInGame() + COLUMNS_IN_SUMMARY);
-        cellHeight  = screenHeight / (gameInfo.getNumberOfPlayersInGame());
+        columnWidth = screenWidth  / (gameInfo.getNumberOfPlayersInGame() + COLUMNS_IN_SUMMARY);
+        rowHeight   = screenHeight / (gameInfo.getNumberOfPlayersInGame() + 1); // + 1 allows for title row
         break;
     case SUMMARY_VIEW:
-        cellWidth   = screenWidth  / COLUMNS_IN_SUMMARY;
-        cellHeight  = screenHeight / (gameInfo.getNumberOfPlayersInGame() + 1);
+        columnWidth = (screenWidth  / (COLUMNS_IN_SUMMARY) ) + 3;
+        rowHeight   = screenHeight / (gameInfo.getNumberOfPlayersInGame() + 1);  // + 1 allows for title row
         break;
     case PLAYER_GRID_VIEW:
-        //if ()
-        cellWidth   = (screenWidth - (40 + gameInfo.getNumberOfPlayersInGame())) / (gameInfo.getNumberOfPlayersInGame() + 2);
-        cellHeight  = screenHeight / (gameInfo.getNumberOfPlayersInGame() + 1);
+        columnWidth = screenWidth  / (gameInfo.getNumberOfPlayersInGame() + 2); //+2 allows for ID and PlayerName
+        rowHeight   = screenHeight / (gameInfo.getNumberOfPlayersInGame() + 1); // +1 allows for title row
         break;
     }
 
-    qDebug() << "ScoresWindow::calibrateScreen() W x H" << cellWidth << cellHeight;
 
-    //TODO: Set font and table size to match screen resolution.
-    if(cellWidth < 25)                      tableFont.setPointSize(8);
-    if(cellWidth > 24 && cellWidth < 50)    tableFont.setPointSize(12);
-    if(cellWidth > 49 && cellWidth < 75)    tableFont.setPointSize(16);
-    if(cellWidth > 74 && cellWidth < 100)   tableFont.setPointSize(20);
-    if(cellWidth > 100)                     tableFont.setPointSize(24);
+    //TODO: Set font size more accurately
+    if(columnWidth < 25)                        tableFont.setPointSize(8);
+    if(columnWidth > 24 && columnWidth < 50)    tableFont.setPointSize(12);
+    if(columnWidth > 49 && columnWidth < 75)    tableFont.setPointSize(16);
+    if(columnWidth > 74 && columnWidth < 100)   tableFont.setPointSize(20);
+    if(columnWidth > 100)                       tableFont.setPointSize(32);
 
-    //ui->scoreTable->setColumnCount(COLUMNS_IN_SUMMARY + gameInfo.getNumberOfPlayersInGame());
     ui->scoreTable->setRowCount(gameInfo.getNumberOfPlayersInGame());
-
     tableFont.setFamily("Verdana");
-
-    if (modus == SUMMARY_VIEW)
-    {
-        rowHeight   = cellHeight;
-        columnWidth = cellWidth - (COLUMNS_IN_SUMMARY + 1);
-    }
-    else if (modus == PLAYER_GRID_VIEW)
-    {
-        rowHeight   = cellHeight-1;
-        columnWidth = cellWidth;
-    }
-
     headerFont.setPointSize(12);
 }
 
@@ -97,14 +88,16 @@ void ScoresWindow::addColumnLabels(int modus)
     QTableWidgetItem *playerID = new QTableWidgetItem("ID");
     playerID->setFont(headerFont);
     ui->scoreTable->setHorizontalHeaderItem(columnIndex++, playerID);
-    ui->scoreTable->setColumnWidth(columnIndex-1, tableFont.pointSize()*2);  //      columnWidth/2);
+    if (modus != SUMMARY_VIEW)  ui->scoreTable->setColumnWidth(columnIndex-1, columnWidth / 1.5);
+    else                        ui->scoreTable->setColumnWidth(columnIndex-1, columnWidth / 3.0);
 
 
     QTableWidgetItem *PlayersName = new QTableWidgetItem("Players\nName");
     PlayersName->setFont(headerFont);
     ui->scoreTable->setHorizontalHeaderItem(columnIndex++, PlayersName);
-    if (modus != SUMMARY_VIEW)  ui->scoreTable->setColumnWidth(columnIndex-1, columnWidth + gameInfo.getNumberOfPlayersInGame());
-    else                        ui->scoreTable->setColumnWidth(columnIndex-1, columnWidth);
+    int sizeAdjust = screenWidth - ((gameInfo.getNumberOfPlayersInGame()+2)*columnWidth);  // adds any spare pixels into the PlayerNamme column
+    if (modus != SUMMARY_VIEW)  ui->scoreTable->setColumnWidth(columnIndex-1, (columnWidth * 1.3) + sizeAdjust);
+    else                        ui->scoreTable->setColumnWidth(columnIndex-1,  columnWidth * 1.5);
 
     if (modus != PLAYER_GRID_VIEW)
     {
@@ -266,6 +259,8 @@ void ScoresWindow::populateScores(int modus)
 
 void ScoresWindow::setOrder(int modus)
 {
+    qDebug() << "ScoresWindow::setOrder() - TableSize = " << ui->scoreTable->size();
+
     ui->scoreTable->horizontalHeader()->setSortIndicatorShown(true);
     if (modus == PLAYER_GRID_VIEW)  ui->scoreTable->horizontalHeader()->setSortIndicator(0, Qt::AscendingOrder);
     else                            ui->scoreTable->horizontalHeader()->setSortIndicator(2, Qt::AscendingOrder);
@@ -297,10 +292,4 @@ void ScoresWindow::on_btn_ViewMode_clicked()
         displayMode = PLAYER_GRID_VIEW;
         ui->btn_ViewMode->setText("Summary View");
     }
-}
-
-void ScoresWindow::on_btn_Debug_clicked()
-{
-    DeBrief debrifInst;
-    debrifInst.calculateRankings();
 }
