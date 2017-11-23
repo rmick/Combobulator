@@ -14,5 +14,6 @@
         <file>audio/stinger-power-on.wav</file>
         <file>images/Combobulator Logo.jpg</file>
         <file>images/UpArrow.png</file>
+        <file>images/DownArrow.png</file>
     </qresource>
 </RCC>

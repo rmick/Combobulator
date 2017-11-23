@@ -71,29 +71,31 @@ void DeBrief::RequestTagReports()
 
     }
 
+
     //--------------------------------------
     //TODO: Deal with Spies and Kings.......
     //--------------------------------------
     //--------------------------------------
     //--------------------------------------
 
+    int playerToDeBrief = playerInfo[currentPlayer].getPlayerNumberInThisGame();
 
-    if(currentPlayer < 9)
+    if(playerToDeBrief <= 8)
     {
         deBriefTeam = 1;
-        deBriefPlayer = currentPlayer - 1;       //deBriefPlayer is 0 based.
+        deBriefPlayer = playerToDeBrief - 1;      //deBriefPlayer is 0 based.
     }
 
-    if(currentPlayer > 8 && currentPlayer < 17)
+    if(playerToDeBrief >= 9 && playerToDeBrief <= 16)
     {
         deBriefTeam = 2;
-        deBriefPlayer = currentPlayer - 9;       //deBriefPlayer is 0 based.
+        deBriefPlayer = playerToDeBrief - 9;      //deBriefPlayer is 0 based.
     }
 
-    if(currentPlayer > 16 && currentPlayer < 25)
+    if(playerToDeBrief >= 17 && playerToDeBrief <= 24)
     {
         deBriefTeam = 3;
-        deBriefPlayer = currentPlayer - 17;       //deBriefPlayer is 0 based.
+        deBriefPlayer = playerToDeBrief - 17;     //deBriefPlayer is 0 based.
     }
 
     int teamAndPlayerByte;
@@ -105,7 +107,7 @@ void DeBrief::RequestTagReports()
     {
         teamAndPlayerByte = (deBriefTeam << 4) + deBriefPlayer;
     }
-    qDebug() << "\nDeBrief::RequestTagReports() -" << currentPlayer << ":" << deBriefTeam << deBriefPlayer << "MessageType" << deBriefMessageType;
+    qDebug() << "\nDeBrief::RequestTagReports() -" << currentPlayer << playerToDeBrief << ":" << deBriefTeam << deBriefPlayer << "MessageType" << deBriefMessageType;
     emit SendToHGWlistWidget("Debriefing Player =" + QString::number(currentPlayer) + ", MessageType:" + QString::number(deBriefMessageType));
 
     lttoComms.sendPacket(PACKET, REQUEST_TAG_REPORT);
@@ -373,10 +375,6 @@ void DeBrief::calculateRankings()
     int team1rankTotals = 0;
     int team2rankTotals = 0;
     int team3rankTotals = 0;
-
-//TODO: DEBUG - please remove!!!
-//             for (int faker = 1; faker <= MAX_PLAYERS; faker++)
-//                 playerInfo[faker].setGameScore(qrand() %100);
 
     //Create a QMultimap with scores as key, and playerNumber as value.
     QMultiMap<int, int> scoresTable;

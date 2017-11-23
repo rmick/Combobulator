@@ -74,6 +74,11 @@ StyleSheet::StyleSheet()
     CssInside +=    "QSlider::handle:disabled   {border-color: grey;}";
     CssInside +=    "QTableWidget		{color: cyan; alternate-background-color: grey; background-color: black;}";
     CssInside +=    "QHeaderView::section	{color: cyan; background-color: grey;}";
+    CssInside +=    "QSpinBox::up-button	{width: 32px; border-width: 2px; border-style: solid; border-color:cyan; border-radius: 10px; image: url(:/resources/images/UpArrow.png);}";
+    CssInside +=    "QSpinBox::down-button	{width: 32px; border-width: 2px; border-style: solid; border-color:cyan; border-radius: 10px; image: url(:/resources/images/DownArrow.png);}";
+    CssInside +=    "QSpinBox			{background-color: grey;}";
+    CssInside +=    "QSpinBox			{border-width: 2px; border-style: solid; border-color: cyan; border-radius: 10px;}";
+
     //Overides for player buttons in  PlayersWindow
     CssInsideButtonSelected      = "border-color: cyan; color: cyan;";
     CssInsideButtonUnSelected    = "color: white;";
@@ -102,6 +107,10 @@ StyleSheet::StyleSheet()
     CssOutside +=    "QSlider::handle:disabled   {border-color: grey;}";
     CssOutside +=    "QTableWidget		{color: fuchsia; alternate-background-color: lightyellow; background-color: white;}";
     CssOutside +=    "QHeaderView::section	{color: fuchsia; background-color: yellow;}";
+    CssOutside +=    "QSpinBox::up-button	{width: 32px; border-width: 2px; border-style: solid; border-color:fuchsia; border-radius: 10px; image: url(:/resources/images/UpArrow.png);}";
+    CssOutside +=    "QSpinBox::down-button	{width: 32px; border-width: 2px; border-style: solid; border-color:fuchsia; border-radius: 10px; image: url(:/resources/images/DownArrow.png);}";
+    CssOutside +=    "QSpinBox			{background-color: lightyellow;}";
+    CssOutside +=    "QSpinBox			{border-width: 2px; border-style: solid; border-color: lightyellow; border-radius: 10px;}";
     //Overides for player buttons in  PlayersWindow
     CssOutsideButtonSelected      = "border-color: fuchsia; color: fuchsia;";
     CssOutsideButtonUnSelected    = "border-color: lightyellow; color: fuchsia;";

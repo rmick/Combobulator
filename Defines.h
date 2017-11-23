@@ -29,7 +29,7 @@
 
 
 //  Build Number
-const QString BUILD_NUMBER  = "Build : 17.11.11a";
+const QString BUILD_NUMBER  = "Build : 17.11.16a";
 
 // Recoil Game Hub_28f537d14fca
 
@@ -52,7 +52,7 @@ const char  BEACON      = 'B';
 
 //Internal timers (in mSec)
 const int   INTERPACKET_DELAY_MSEC  = 50;
-const int   HOST_TIMER_MSEC         = 1200;
+const int   HOST_TIMER_MSEC         = 2000;
 const int   DEBRIEF_TIMER_MSEC      = 1200;
 const int   PRESS_AND_HOLD_TIME     = 500;
 const int   BEACON_TIMER_MSEC       = 500;

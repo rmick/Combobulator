@@ -72,17 +72,20 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
             packetString.prepend('C');
             packet.append(packetString);
             fullTCPpacketToSend = true;
-            //qDebug() << "lttoComms::sendPacket() - CheckSum = \t" << packetString << endl << endl;
+            //qDebug() << "lttoComms::sendPacket() - CheckSum = \t" << packetString;
             break;
         case TAG:
             packetString = createIRstring(data);
             packetString.prepend('T');
+            if(lttoComms.getUseLongDataPacketsOverTCP()) packetString.prepend("ltto:");
             packet.append(packetString);
             fullTCPpacketToSend = true;
+            //qDebug() << "lttoComms::sendPacket() - Tag = \t" << packetString << endl << endl;
             break;
         case BEACON:
             packetString = createIRstring(data);
             packetString.prepend('B');
+            if(lttoComms.getUseLongDataPacketsOverTCP()) packetString.prepend("ltto:");
             packet.append(packetString);
             fullTCPpacketToSend = true;
             break;
@@ -99,7 +102,7 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
         {
             packet.append(" \r\n");
             emit sendSerialData(packet);
-            qDebug() << "lttoComms::sendPacket() - WIFIKIT32 - Full Packet = " << packet;
+            qDebug() << "lttoComms::sendPacket() - WIFIKIT32 - Full Packet = " << packet << endl << endl;
             fullTCPpacketToSend = false;
             packet.clear();
         }
@@ -115,12 +118,11 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
             packet.append(" \r\n");
         }
         else packet.append(":");
-        qDebug() << "lttoComms::sendPacket() - " << packet;
+        //qDebug() << "lttoComms::sendPacket() LazerSwarm Mode- " << packet;
         emit sendSerialData(packet);            //Connects to TCPComms::sendPacket slot && SerialUSBcomms::sendPacket slot
         tcpComms.sendPacket(packet);
         packet.clear();
         nonBlockingDelay(INTERPACKET_DELAY_MSEC);
-
     }
 
     return result;
@@ -128,6 +130,9 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
 
 void LttoComms::sendLCDtext(QString textToSend, int lineNumber)
 {
+    return;
+
+
     if(lttoComms.getSerialUSBcommsConnected()) return;      // USB means it is a Lazerswarm, which does not accept TXT.
     QByteArray textBA;
     textToSend.prepend("TXT" + QString::number(lineNumber)+ ":");
@@ -138,6 +143,8 @@ void LttoComms::sendLCDtext(QString textToSend, int lineNumber)
 
 void LttoComms::sendLCDtext(int xCursor, int yCursor, QString text, int fontSize, int colour, bool clearDisp)
 {
+    return;
+
     if(lttoComms.getSerialUSBcommsConnected()) return;      // USB means it is a Lazerswarm, which does not accept TXT.
     QByteArray textBA;
     QString textToSend = "";
@@ -150,8 +157,8 @@ void LttoComms::sendLCDtext(int xCursor, int yCursor, QString text, int fontSize
 QString LttoComms::createIRstring(int data)
 {
     QString createdPacket;
-    if (useLazerSwarm) createdPacket = QString::number(data,16).toUpper();
-    else               createdPacket = QString::number(data,10);
+    if (useLazerSwarm)  createdPacket = QString::number(data,16).toUpper();
+    else                createdPacket = QString::number(data,10);
     if (createdPacket.length() == 1) createdPacket.prepend('0');
     return createdPacket;
 }
@@ -168,18 +175,40 @@ void LttoComms::receivePacket(QByteArray RxData)
     {
         //Remove the \r\n
         irDataIn = irDataIn.trimmed();
+        irDataIn = irDataIn.trimmed();  //there is a bug in the ESP32 code that sometimes sends a double \r\n\
 
        //Check for an Error message
         if      (irDataIn.startsWith("ERROR"))
         {
+            qDebug() <<"LttoComms::receivePacket() Error:" << irDataIn;
+            irDataIn.clear();
+            return;
+        }
+
+        else if (irDataIn.startsWith("STOP"))
+        {
+            setDontAnnounceGame(true);
+   setDontAnnounceFailedSignal(true);
+            qDebug() << "LttoComms::receivePacket - ESP is receiving, so lets be quiet please.";
+            irDataIn.clear();
+            return;
+        }
+
+        else if (irDataIn.startsWith("START"))
+        {
+            setDontAnnounceGame(false);
+   setDontAnnounceFailedSignal(false);
+            qDebug() << "LttoComms::receivePacket - Resuming transmission.";
             irDataIn.clear();
             return;
         }
 
         //Check if this is a CombobulatorHost or LazerSwarm packet.
-        if      (irDataIn.endsWith("@"))
+        else if (irDataIn.endsWith("@"))
         // CombobulatorHost packet
         {
+            setDontAnnounceGame(true);
+   setDontAnnounceFailedSignal(true);
             // remove the @
             irDataIn.remove((irDataIn.size()-1), 1);
 
@@ -202,9 +231,25 @@ void LttoComms::receivePacket(QByteArray RxData)
         // Lazerswarm packet
         {
             rxPacketList.append(lazerswarm.decodeCommand(irDataIn));
-                        qDebug() << "LttoComms::receivePacket() LazerSwarm mode - " << lazerswarm.decodeCommand(irDataIn);
-                        if (lazerswarm.decodeCommand(irDataIn).startsWith("C")) qDebug() << "LttoComms::receivePacket() LazerSwarm mode -   ___________";
-            isPacketComplete = true;
+              qDebug() << "LttoComms::receivePacket() LazerSwarm mode - " << lazerswarm.decodeCommand(irDataIn);
+            if (lazerswarm.decodeCommand(irDataIn).startsWith("C"))
+            {
+                qDebug() << "LttoComms::receivePacket() LazerSwarm mode -   ___________";
+                isPacketComplete = true;
+            }
+            irDataIn = "";
+        }
+
+        //TODO: Somewhere here I should process Beacons so I can be hostile, and Tags to know which team to be hostile towards.
+        //      Or do I do that inside the WiFiKit32 ??????
+
+        else
+        {
+            //The message is invalid, so start Tx again.
+            qDebug() << "\t\tLttoComms::receivePacket() - bad packet receveived, bailing out" << irDataIn;
+   //lttoComms.setDontAnnounceFailedSignal(false);
+            lttoComms.setDontAnnounceGame(false);
+            irDataIn="";
         }
     }
 
@@ -213,12 +258,13 @@ void LttoComms::receivePacket(QByteArray RxData)
         irDataIn.clear();
         if (!rxPacketList.empty())
         {
-            qDebug() << "isPacketCmplete:" << rxPacketList.last();
-            if (!rxPacketList.last().startsWith("D") || !rxPacketList.first().startsWith("P"))
-            {
-                qDebug() << "LttoComms::receivePacket()  - FULL PACKET!" << rxPacketList;
+            //qDebug() << "isPacketComplete:" << rxPacketList.last();
+            //if (!rxPacketList.last().startsWith("D") || !rxPacketList.first().startsWith("P"))
+//            if (rxPacketList.last().startsWith("C") || rxPacketList.first().startsWith("B") || rxPacketList.first().startsWith("T") )
+//            {
+                qDebug() << "\tLttoComms::receivePacket()  - FULL PACKET!" << rxPacketList;
                 processPacket(rxPacketList);
-            }
+//            }
         }
     }
 }
@@ -264,6 +310,7 @@ void LttoComms::setTcpCommsConnected(bool value)
 {
     tcpCommsConnected = value;
     setUseLongDataPacketsOverTCP(value);                        // Activated/Deactivated here !!!!
+    lttoComms.setUseLazerSwarm(!value);
 }
 
 void LttoComms::TCPconnected()
@@ -366,7 +413,7 @@ bool LttoComms::isCheckSumCorrect(int _command, int _game, int _teamAndPlayer, i
 
 void LttoComms::processPacket(QList<QByteArray> data)
 {
-    qDebug() << "LttoComms::processPacket()";
+    qDebug() << "\t\tLttoComms::processPacket()" << data;
 
     int command = extract(data);
     int game                    = 0;
@@ -487,101 +534,7 @@ void LttoComms::processPacket(QList<QByteArray> data)
                 break;
             }
         }
-        else break;
-
-//    case TEAM_1_TAG_REPORT:
-
-//        game                = extract(data);
-//        teamAndPlayer       = extract(data);
-//        playersInReportByte = extract(data);
-
-//        if((playersInReportByte >> 0) & 1)  tagsP1 = extract(data);
-//        if((playersInReportByte >> 1) & 1)  tagsP2 = extract(data);
-//        if((playersInReportByte >> 2) & 1)  tagsP3 = extract(data);
-//        if((playersInReportByte >> 3) & 1)  tagsP4 = extract(data);
-//        if((playersInReportByte >> 4) & 1)  tagsP5 = extract(data);
-//        if((playersInReportByte >> 5) & 1)  tagsP6 = extract(data);
-//        if((playersInReportByte >> 6) & 1)  tagsP7 = extract(data);
-//        if((playersInReportByte >> 7) & 1)  tagsP8 = extract(data);
-//        checksum            = extract(data);
-
-//        if(isCheckSumCorrect(command, game, teamAndPlayer, playersInReportByte, tagsP1, tagsP2, tagsP3, tagsP4, tagsP5, tagsP6, tagsP7, tagsP8, checksum))
-//        {
-//            tagsP1 = ConvertBCDtoDec(tagsP1);
-//            tagsP2 = ConvertBCDtoDec(tagsP2);
-//            tagsP3 = ConvertBCDtoDec(tagsP3);
-//            tagsP4 = ConvertBCDtoDec(tagsP4);
-//            tagsP5 = ConvertBCDtoDec(tagsP5);
-//            tagsP6 = ConvertBCDtoDec(tagsP6);
-//            tagsP7 = ConvertBCDtoDec(tagsP7);
-//            tagsP8 = ConvertBCDtoDec(tagsP8);
-
-//            emit Team1TagReportReceived(game, teamAndPlayer, tagsP1, tagsP2, tagsP3, tagsP4, tagsP5, tagsP6, tagsP7, tagsP8);
-//        }
-//        qDebug() << "\tLttoComms::processPacket() - Team 1 Tag Report Summary:" << command << game << teamAndPlayer << playersInReportByte << tagsP1 << tagsP2 << tagsP3 << tagsP4 << tagsP5 << tagsP6 << tagsP7 << tagsP8;
-//        break;
-
-//    case TEAM_2_TAG_REPORT:
-//        game                = extract(data);
-//        teamAndPlayer       = extract(data);
-//        playersInReportByte = extract(data);
-
-//        if((playersInReportByte >> 0) & 1)  tagsP1 = extract(data);
-//        if((playersInReportByte >> 1) & 1)  tagsP2 = extract(data);
-//        if((playersInReportByte >> 2) & 1)  tagsP3 = extract(data);
-//        if((playersInReportByte >> 3) & 1)  tagsP4 = extract(data);
-//        if((playersInReportByte >> 4) & 1)  tagsP5 = extract(data);
-//        if((playersInReportByte >> 5) & 1)  tagsP6 = extract(data);
-//        if((playersInReportByte >> 6) & 1)  tagsP7 = extract(data);
-//        if((playersInReportByte >> 7) & 1)  tagsP8 = extract(data);
-//        checksum            = extract(data);
-
-//        if(isCheckSumCorrect(command, game, teamAndPlayer, playersInReportByte, tagsP1, tagsP2, tagsP3, tagsP4, tagsP5, tagsP6, tagsP7, tagsP8, checksum))
-//        {
-//            tagsP1 = ConvertBCDtoDec(tagsP1);
-//            tagsP2 = ConvertBCDtoDec(tagsP2);
-//            tagsP3 = ConvertBCDtoDec(tagsP3);
-//            tagsP4 = ConvertBCDtoDec(tagsP4);
-//            tagsP5 = ConvertBCDtoDec(tagsP5);
-//            tagsP6 = ConvertBCDtoDec(tagsP6);
-//            tagsP7 = ConvertBCDtoDec(tagsP7);
-//            tagsP8 = ConvertBCDtoDec(tagsP8);
-
-//            emit Team2TagReportReceived(game, teamAndPlayer, tagsP1, tagsP2, tagsP3, tagsP4, tagsP5, tagsP6, tagsP7, tagsP8);
-//        }
-//        qDebug() << "\tLttoComms::processPacket() - Team 2 Tag Report Summary:" << command << game << teamAndPlayer << playersInReportByte << tagsP1 << tagsP2 << tagsP3 << tagsP4 << tagsP5 << tagsP6 << tagsP7 << tagsP8;
-//        break;
-
-//    case TEAM_3_TAG_REPORT:
-//        game                = extract(data);
-//        teamAndPlayer       = extract(data);
-//        playersInReportByte = extract(data);
-
-//        if((playersInReportByte >> 0) & 1)  tagsP1 = extract(data);
-//        if((playersInReportByte >> 1) & 1)  tagsP2 = extract(data);
-//        if((playersInReportByte >> 2) & 1)  tagsP3 = extract(data);
-//        if((playersInReportByte >> 3) & 1)  tagsP4 = extract(data);
-//        if((playersInReportByte >> 4) & 1)  tagsP5 = extract(data);
-//        if((playersInReportByte >> 5) & 1)  tagsP6 = extract(data);
-//        if((playersInReportByte >> 6) & 1)  tagsP7 = extract(data);
-//        if((playersInReportByte >> 7) & 1)  tagsP8 = extract(data);
-//        checksum            = extract(data);
-
-//        if(isCheckSumCorrect(command, game, teamAndPlayer, playersInReportByte, tagsP1, tagsP2, tagsP3, tagsP4, tagsP5, tagsP6, tagsP7, tagsP8, checksum))
-//        {
-//            tagsP1 = ConvertBCDtoDec(tagsP1);
-//            tagsP2 = ConvertBCDtoDec(tagsP2);
-//            tagsP3 = ConvertBCDtoDec(tagsP3);
-//            tagsP4 = ConvertBCDtoDec(tagsP4);
-//            tagsP5 = ConvertBCDtoDec(tagsP5);
-//            tagsP6 = ConvertBCDtoDec(tagsP6);
-//            tagsP7 = ConvertBCDtoDec(tagsP7);
-//            tagsP8 = ConvertBCDtoDec(tagsP8);
-
-//            emit Team3TagReportReceived(game, teamAndPlayer, tagsP1, tagsP2, tagsP3, tagsP4, tagsP5, tagsP6, tagsP7, tagsP8);
-//        }
-//        qDebug() << "\tLttoComms::processPacket() - Team 3 Tag Report Summary:" << command << game << teamAndPlayer << playersInReportByte << tagsP1 << tagsP2 << tagsP3 << tagsP4 << tagsP5 << tagsP6 << tagsP7 << tagsP8;
-//        break;
+        break;
     }
     rxPacketList.clear();
 }

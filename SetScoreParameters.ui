@@ -14,37 +14,7 @@
    <string>Dialog</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">QSpinBox::up-button
-{
-	width: 32px;
-	border-width: 2px;
-	border-style: solid; 
-	border-color:cyan;
-	border-radius: 10px;
-	image: url(:/resources/images/UpArrow.png);
-
-}
-QSpinBox::down-button
-{
-	width: 32px;
-	border-width: 2px;
-	border-style: solid; 
-	border-color:cyan;
-	border-radius: 10px;
-}
-
-QSpinBox { background-color: grey; }
-
-QSpinBox
-{
-	border-width: 2px;
-    border-style: solid;
-    border-color: cyan;
-    border-radius: 10px;
-}
-
-
-</string>
+   <string notr="true"/>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="13" column="0">

@@ -85,7 +85,7 @@ QByteArray LazerSwarm::decodeCommand(QString messageIn)
 
         decodedMessage.append(packetTypeIn);
         decodedMessage.append(QString::number(packetDataIn, 10).toUpper() );
-        qDebug() << "LazerSwarm::decodeCommand() - Decoded Message = " << decodedMessage;
+        //qDebug() << "LazerSwarm::decodeCommand() - Decoded Message = " << decodedMessage;
     }
     else
     {

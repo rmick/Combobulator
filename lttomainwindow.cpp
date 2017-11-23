@@ -153,6 +153,8 @@ void LttoMainWindow::on_btn_StartGame_clicked()
 
     if(hostGameWindow->resetPlayersForNewGame() == false) return;
     gameInfo.setGameID(host.getRandomNumber(1,255));
+    //TODO: Debug - remove this
+    gameInfo.setGameID(42);
 #ifdef Q_OS_ANDROID
     hostGameWindow->showFullScreen();
 #else
@@ -366,6 +368,9 @@ void LttoMainWindow::setLtarControls(bool state)
 void LttoMainWindow::on_btn_NoTeams_clicked()
 {
     gameInfo.setNumberOfTeams(0);
+    //force Spies to Four, then trigger the button to roll # over to zero.
+    gameInfo.setNumberOfSpies(4);
+    on_btn_Spies_clicked();
     SetSpiesButtonState(false);
 
     switch(gameInfo.getGameType() )                         // Find the current gameType and change it to the NoTeams variant.
@@ -863,23 +868,23 @@ void LttoMainWindow::on_actionOutdoorMode_triggered()
     {
         myStyleSheet.setCurrentCSS(myStyleSheet.CssLight);
         setStyleSheet(myStyleSheet.getCurrentCSSstring());
-        //TODO: Fix the Spies button !!!!
-    #ifdef Q_OS_ANDROID
-        showFullScreen();
-    #else
-        show();
-    #endif
     }
     else
     {
         myStyleSheet.setCurrentCSS(myStyleSheet.CssDark);
         setStyleSheet(myStyleSheet.getCurrentCSSstring());
-    #ifdef Q_OS_ANDROID
-        showFullScreen();
-    #else
-        show();
-    #endif
+
     }
+    //Update the Spy button CSS (as it may have been customised if pressed)
+    if ( gameInfo.getNumberOfSpies() > 0)   ui->btn_Spies->setStyleSheet(myStyleSheet.getButtonCheckedCss());
+    else                                    ui->btn_Spies->setStyleSheet(myStyleSheet.getButtonUnCheckedCss());
+
+    //Refresh the screen
+#ifdef Q_OS_ANDROID
+    showFullScreen();
+#else
+    show();
+#endif
 }
 
 void LttoMainWindow::on_btn_Debug_clicked()
