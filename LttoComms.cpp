@@ -3,6 +3,10 @@
 #include <QDebug>
 #include "Game.h"
 
+//#define LOCAL_DEBUG_RX
+//#define LOCAL_DEBUG_TX
+//#define LCD_DISABLED
+
 LttoComms lttoComms;
 
 LttoComms::LttoComms(QObject *parent) : QObject(parent)
@@ -19,8 +23,6 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
     bool result = true;
     bool fullTCPpacketToSend = false;
     static QByteArray packet;
-
-    //qDebug() << "LttoComms::sendPacket()" << type << data;
 
     //Calculating BCD and the CheckSum.
     //This is here because it always does my head in !!!!!
@@ -102,7 +104,9 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
         {
             packet.append(" \r\n");
             emit sendSerialData(packet);
-            qDebug() << "lttoComms::sendPacket() - WIFIKIT32 - Full Packet = " << packet << endl << endl;
+            #ifdef LOCAL_DEBUG_TX
+                qDebug() << "lttoComms::sendPacket() - WIFIKIT32 - Full Packet = " << packet;
+            #endif
             fullTCPpacketToSend = false;
             packet.clear();
         }
@@ -130,20 +134,27 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
 
 void LttoComms::sendLCDtext(QString textToSend, int lineNumber)
 {
-    return;
 
+#ifdef LCD_DISABLED
+    return;
+#endif
 
     if(lttoComms.getSerialUSBcommsConnected()) return;      // USB means it is a Lazerswarm, which does not accept TXT.
     QByteArray textBA;
     textToSend.prepend("TXT" + QString::number(lineNumber)+ ":");
     textBA.append(textToSend + "\r\n");
     //qDebug() << "LttoComms::sendLCDtext:" << textBA;
-    emit sendSerialData(textBA);
+    //emit sendSerialData(textBA);
+    tcpComms.sendPacket(textBA);
+    //lttoComms.nonBlockingDelay(TEXT_SENT_DELAY);
 }
 
 void LttoComms::sendLCDtext(int xCursor, int yCursor, QString text, int fontSize, int colour, bool clearDisp)
 {
+
+#ifdef LCD_DISABLED
     return;
+#endif
 
     if(lttoComms.getSerialUSBcommsConnected()) return;      // USB means it is a Lazerswarm, which does not accept TXT.
     QByteArray textBA;
@@ -151,7 +162,9 @@ void LttoComms::sendLCDtext(int xCursor, int yCursor, QString text, int fontSize
     textToSend.prepend("DSP," + QString::number(xCursor) + "," + QString::number(yCursor) + "," + text + "," +  QString::number(fontSize) + "," + QString::number(colour) + "," + QString::number(clearDisp));
     textBA.append(textToSend + "\r\n");
     //qDebug() << "LttoComms::sendLCDtext(DSPmode): " << textBA;
-    emit sendSerialData(textBA);
+    tcpComms.sendPacket(textBA);
+    //emit sendSerialData(textBA);
+    //lttoComms.nonBlockingDelay(TEXT_SENT_DELAY);
 }
 
 QString LttoComms::createIRstring(int data)
@@ -169,13 +182,17 @@ void LttoComms::receivePacket(QByteArray RxData)
 {
     bool isPacketComplete = false;
 
+    //qDebug() << "\tLttoComms::receivePacket() -"<< RxData;
+
     irDataIn.append(RxData);
 
     if (irDataIn.endsWith("\r\n"))
     {
+        //qDebug() << "LttoComms::receivePacket()" << irDataIn;
+
         //Remove the \r\n
         irDataIn = irDataIn.trimmed();
-        irDataIn = irDataIn.trimmed();  //there is a bug in the ESP32 code that sometimes sends a double \r\n\
+        //irDataIn = irDataIn.trimmed();  //there is a bug in the ESP32 code that sometimes sends a double \r\n
 
        //Check for an Error message
         if      (irDataIn.startsWith("ERROR"))
@@ -188,8 +205,7 @@ void LttoComms::receivePacket(QByteArray RxData)
         else if (irDataIn.startsWith("STOP"))
         {
             setDontAnnounceGame(true);
-   setDontAnnounceFailedSignal(true);
-            qDebug() << "LttoComms::receivePacket - ESP is receiving, so lets be quiet please.";
+            qDebug() << "STOP - LttoComms::receivePacket - ESP is receiving, so lets be quiet please.";
             irDataIn.clear();
             return;
         }
@@ -197,7 +213,7 @@ void LttoComms::receivePacket(QByteArray RxData)
         else if (irDataIn.startsWith("START"))
         {
             setDontAnnounceGame(false);
-   setDontAnnounceFailedSignal(false);
+            setDontAnnounceFailedSignal(false);
             qDebug() << "LttoComms::receivePacket - Resuming transmission.";
             irDataIn.clear();
             return;
@@ -208,7 +224,7 @@ void LttoComms::receivePacket(QByteArray RxData)
         // CombobulatorHost packet
         {
             setDontAnnounceGame(true);
-   setDontAnnounceFailedSignal(true);
+   //setDontAnnounceFailedSignal(true);
             // remove the @
             irDataIn.remove((irDataIn.size()-1), 1);
 
@@ -223,18 +239,23 @@ void LttoComms::receivePacket(QByteArray RxData)
                 //qDebug() << "** - " << irDataIn;
                 rxPacketList.append(packetToAdd);
             }
-
+#ifdef LOCAL_DEBUG_RX
             qDebug() << "LttoComms::receivePacket() -> LTTO library mode - " << " - " << rxPacketList;
+#endif
             isPacketComplete = true;
         }
         else if (irDataIn.startsWith("RCV"))
         // Lazerswarm packet
         {
             rxPacketList.append(lazerswarm.decodeCommand(irDataIn));
-              qDebug() << "LttoComms::receivePacket() LazerSwarm mode - " << lazerswarm.decodeCommand(irDataIn);
+           #ifdef LOCAL_DEBUG_RX
+                qDebug() << "LttoComms::receivePacket() LazerSwarm mode - " << lazerswarm.decodeCommand(irDataIn);
+            #endif
             if (lazerswarm.decodeCommand(irDataIn).startsWith("C"))
             {
+            #ifdef LOCAL_DEBUG_RX
                 qDebug() << "LttoComms::receivePacket() LazerSwarm mode -   ___________";
+            #endif
                 isPacketComplete = true;
             }
             irDataIn = "";
@@ -247,7 +268,6 @@ void LttoComms::receivePacket(QByteArray RxData)
         {
             //The message is invalid, so start Tx again.
             qDebug() << "\t\tLttoComms::receivePacket() - bad packet receveived, bailing out" << irDataIn;
-   //lttoComms.setDontAnnounceFailedSignal(false);
             lttoComms.setDontAnnounceGame(false);
             irDataIn="";
         }
@@ -262,7 +282,9 @@ void LttoComms::receivePacket(QByteArray RxData)
             //if (!rxPacketList.last().startsWith("D") || !rxPacketList.first().startsWith("P"))
 //            if (rxPacketList.last().startsWith("C") || rxPacketList.first().startsWith("B") || rxPacketList.first().startsWith("T") )
 //            {
+              #ifdef LOCAL_DEBUG_RX
                 qDebug() << "\tLttoComms::receivePacket()  - FULL PACKET!" << rxPacketList;
+              #endif
                 processPacket(rxPacketList);
 //            }
         }
@@ -413,7 +435,9 @@ bool LttoComms::isCheckSumCorrect(int _command, int _game, int _teamAndPlayer, i
 
 void LttoComms::processPacket(QList<QByteArray> data)
 {
-    qDebug() << "\t\tLttoComms::processPacket()" << data;
+    //#ifdef LOCAL_DEBUG_RX
+        qDebug() << "\tLttoComms::processPacket()" << data;
+    //#endif
 
     int command = extract(data);
     int game                    = 0;
@@ -535,8 +559,19 @@ void LttoComms::processPacket(QList<QByteArray> data)
             }
         }
         break;
+
+//    case BEACON:
+//        //TODO: Add some code to action Beacons
+//        break;
+
+//    default:
+//        //We end up here if the ESP32 misses the Packet Header
+//        qDebug() << "Missed P header !!!!";
+//        break;
+
     }
     rxPacketList.clear();
+    data.clear();
 }
 
 int LttoComms::extract(QList<QByteArray> &data)

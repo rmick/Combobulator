@@ -84,6 +84,8 @@ private slots:
 
     void on_btn_AnnounceOnce_clicked();
 
+    void on_btn_ForceAdd_clicked();
+
 private:
     //pointers
     Ui::HostGameWindow      *ui;
@@ -117,7 +119,8 @@ private:
     bool    sendingCommsActive;
     bool    rehostingActive;
     int     assignPlayerFailCount;
-    bool    dontAnnounceFailedSignal;
+    //bool    dontAnnounceFailedSignal;
+    //bool    firstPassThisPlayer;
 
     //methods
     void    hostCurrentPlayer();

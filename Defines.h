@@ -1,35 +1,38 @@
 #ifndef DEFINES_H
 #define DEFINES_H
 
-//macdeployqt terminal command (copy into terminal window to build a .dmg)
-//          Source - https://dragly.org/2012/01/13/deploy-qt-applications-for-mac-os-x/
-//      Navigate to the QT Build directory for the App. (e.g. build-Combobulator-Desktop..........)
-//      Right click on the folder and go to 'services', then 'New Terminal At Folder'.
-//      Copy/paste the following line into the terminal window and wait.....
-//              /Users/Richie/Qt/5.9.1/clang_64/bin/macdeployqt LTTO_Host.app -dmg
-//
-//      Here is the current build directory
-//              build-Combobulator_Mac-Release
+/*
+macdeployqt terminal command (copy into terminal window to build a .dmg)
+          Source - https://dragly.org/2012/01/13/deploy-qt-applications-for-mac-os-x/
+      Navigate to the QT Build directory for the App. (e.g. build-Combobulator-Desktop..........)
+      Right click on the folder and go to 'services', then 'New Terminal At Folder'.
+      Copy/paste the following line into the terminal window and wait.....
+              /Users/Richie/Qt/5.9.1/clang_64/bin/macdeployqt LTTO_Host.app -dmg
 
-//windeployqt
-//      Copy the Combobulator.exe
-//          from the        Qt_projects\build-Combobulator_Windows-Release\Combobulator\release
-//          to the          Qt_projects\build-Combobulator_Windows-Release\Combobulator\Combobulator folder
-//
-//      Open CMD.exe prompt
-//      cd\
-//      W:
-// STOP !!!!! (Did you do step 1 above - copy the file to a new location first !!!!
-//      cd Qt_projects\build-Combobulator_Windows-Release\Combobulator
-//      C:\Qt\5.9.1\msvc2015_64\bin\windeployqt Combobulator.exe
-//      Zip up the folder and publish to Dropbox (or whereever)
+      Here is the current build directory
+              build-Combobulator_Mac-Release
+
+windeployqt
+      Copy the Combobulator.exe
+          from the        Qt_projects\build-Combobulator_Windows-Release\Combobulator\release
+          to the          Qt_projects\build-Combobulator_Windows-Release\Combobulator\Combobulator folder
+
+      Open CMD.exe prompt
+      cd\
+      W:
+ STOP !!!!! (Did you do step 1 above - copy the file to a new location first !!!!
+      cd Qt_projects\build-Combobulator_Windows-Release\Combobulator
+      C:\Qt\5.9.1\msvc2015_64\bin\windeployqt Combobulator.exe
+      Zip up the folder and publish to Dropbox (or whereever)
+*/
+
 
 // If enabling this #define, also remove the # from the command 'serialport' in line 9 of the LTTO_host.pro file
 #define INCLUDE_SERIAL_USB
 
 
 //  Build Number
-const QString BUILD_NUMBER  = "Build : 17.11.16a";
+const QString BUILD_NUMBER  = "Build : 18.1.21";
 
 // Recoil Game Hub_28f537d14fca
 
@@ -52,10 +55,12 @@ const char  BEACON      = 'B';
 
 //Internal timers (in mSec)
 const int   INTERPACKET_DELAY_MSEC  = 50;
-const int   HOST_TIMER_MSEC         = 2000;
+const int   HOST_TIMER_MSEC         = 1200;
 const int   DEBRIEF_TIMER_MSEC      = 1200;
+const int   TEXT_SENT_DELAY         = 15;
 const int   PRESS_AND_HOLD_TIME     = 500;
 const int   BEACON_TIMER_MSEC       = 500;
+const int   ASSIGNED_PLAYER_FAIL_TIMER = 1000;
 
 //Packet Header Type Codes
 const int   ANNOUNCE    = 0x00;

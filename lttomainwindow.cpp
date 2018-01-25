@@ -153,8 +153,6 @@ void LttoMainWindow::on_btn_StartGame_clicked()
 
     if(hostGameWindow->resetPlayersForNewGame() == false) return;
     gameInfo.setGameID(host.getRandomNumber(1,255));
-    //TODO: Debug - remove this
-    gameInfo.setGameID(42);
 #ifdef Q_OS_ANDROID
     hostGameWindow->showFullScreen();
 #else

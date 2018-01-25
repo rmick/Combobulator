@@ -50,7 +50,7 @@ void TCPComms::receivePacket()
     lttoComms.androidRxPacket(rX);  // This is the simple workaround, to issue below  :-)
 #else
     emit newTCPdata(rX);            // Does not work on Android for some unknown reason.
-    qDebug() << "TCPComms::receivePacket() - " << rX;
+    //qDebug() << "\nTCPComms::receivePacket() - " << rX;
 #endif
 }
 

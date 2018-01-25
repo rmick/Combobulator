@@ -20,7 +20,7 @@ void SerialUSBcomms::findSerialPort()
     foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts())
     {
         qDebug() << "SerialUSBcomms::findSerialPort() - Found a port:" << info.portName();
-        if (info.manufacturer().contains("Spark") || info.manufacturer().contains("Arduino") || info.portName().contains("COM") )
+        if (info.manufacturer().contains("Spark") || info.manufacturer().contains("Arduino") || info.portName().contains("COM") )  //  || info.portName().contains("SLAB") )
         {
             serialUSB->setPortName(info.portName() );
             emit SerialPortFound(info.portName() );
@@ -98,6 +98,7 @@ void SerialUSBcomms::sendPacket(QByteArray packet)
 #ifdef INCLUDE_SERIAL_USB
     if (serialUSB->isOpen() && serialUSB->isWritable())
     {
+        //qDebug() << "\tSending serial to USB";
         serialUSB->write(packet);
         serialUSB->flush();
     }

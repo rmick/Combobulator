@@ -248,7 +248,7 @@ void DeBrief::Team3TagReportReceived(int game, int teamAndPlayer, int tagsP1, in
 
 void DeBrief::sendRankReport()
 {
-    calculateRankings();
+    //calculateRankings();
 
     qDebug() << "DeBrief::sendRankReport()";
     int teamPlayerByte  = 0;
@@ -259,7 +259,7 @@ void DeBrief::sendRankReport()
     qDebug() <<   "DeBrief::sendRankReport()  - Team 3 Rank =" << gameInfo.getTeam3rank();
 
     //There are 3 rankReport messages, for players 1-8, 9-1, 17-24
-    for (int index = 1; index <= 4; index++)
+    for (int index = 1; index <4; index++)
     {
          qDebug() << "DeBrief::sendRankReport() - Loop" << loopCount << "\tTeam:" << index;
 
@@ -303,7 +303,7 @@ void DeBrief::sendRankReport()
         if (index == 3 && loopCount < 5)
         {
             loopCount++;
-            index = 0;
+            index = 1;
         }
     }
 }
@@ -324,7 +324,7 @@ bool DeBrief::decodeTeamAndPlayer(int teamAndPlayer)
         player = (teamAndPlayer & 15) + 1;
     }
 
-    int checkPlayer;
+    int checkPlayer = 0;
     switch (team)
     {
     case 1:
@@ -360,7 +360,10 @@ void DeBrief::calculateScores()
         score += playerInfo[index].getZoneTimeSeconds()                 *(gameInfo.getPointsPerZoneMinute() / 60.0);
         score += playerInfo[index].getSurvivalTimeMinutes()             * gameInfo.getPointsPerSurvivalMinute();
         score += playerInfo[index].getSurvivalTimeSeconds()             *(gameInfo.getPointsPerSurvivalMinute() / 60.0);
-         //TODO: playerInfo[index..setXxxxxXxxxXxxxx() do not exist yet.
+         //TODO: playerInfo[index].setKingsTagsLanded()
+        //       playerInfo[index].setOwnKingTagsLanded()
+        //       playerInfo[index].setOwnTeamTagsLanded()
+        //       do not exist yet.
 //        score += playerInfo[index].getKingTagsLanded()                 * gameInfo.getPointsPerKingHit();
 //        score += playerInfo[index].getOwnKingTagsLanded()              * gameInfo.getPointsPerZoneMinute();
 //        score += playerInfo[index].getOwnTeamTagsLanded()              * gameInfo.getPointsPerTagLandedNegative();
