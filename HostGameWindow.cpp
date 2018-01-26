@@ -85,6 +85,11 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
     {
         serialUSBcomms.setUpSerialPort();
     }
+
+    //TODO: Get rid of these debug buttons
+    ui->btn_AnnounceOnce->setVisible(false);
+    ui->btn_DeBug->setVisible(false);
+    ui->btn_DeBugSendTag->setVisible(false);
 }
 
 HostGameWindow::~HostGameWindow()
@@ -139,7 +144,7 @@ void HostGameWindow::announceGame()
     {
         while (gameInfo.getIsThisPlayerInTheGame(currentPlayer) == false)   currentPlayer++;  // Find next player
 
-        if (lttoComms.getDontAnnounceGame() != true)
+        if (lttoComms.getDontAnnounceGame() == false)
         {
             if (currentPlayer < 25)
             {
@@ -181,9 +186,6 @@ void HostGameWindow::announceGame()
 
 void HostGameWindow::hostCurrentPlayer()
 {
-    //if (gameInfo.getIsLTARGame())   qDebug() << "HostGameWindow::hostCurrentPlayer() - LTAR mode = " << currentPlayer;
-    //else                            qDebug() << "HostGameWindow::hostCurrentPlayer() - Std mode = "  << currentPlayer;
-
     if(lttoComms.getDontAnnounceGame() == true)                                             // We are receiving data, so dont announce.
     {
         //TODO: Test if this fixes the lockup when clicking Cancel when in this loop.
@@ -195,7 +197,10 @@ void HostGameWindow::hostCurrentPlayer()
         }
 
         lttoComms.setMissedAnnounceCount(lttoComms.getMissedAnnounceCount()+1);             // Increment counter
-        qDebug() << "HostGameWindow::hostCurrentPlayer() - listening for reply. Count = " << lttoComms.getMissedAnnounceCount();
+
+
+        qDebug() << "HostGameWindow::hostCurrentPlayer() - DontAnnouceGame is active. Count = " << lttoComms.getMissedAnnounceCount();
+
         if (lttoComms.getMissedAnnounceCount() < 3) return;
 
         if (expectingAckPlayerAssignment == true)                                           // We appear to have missed the AckPlayerAssignment message.
@@ -209,6 +214,9 @@ void HostGameWindow::hostCurrentPlayer()
             qDebug() << "HostGameWindow::hostCurrentPlayer() - Reset/Clearing DontAnnounceGameFlag due to inactivity !!!!!!!";
         }
     }
+
+    if (gameInfo.getIsLTARGame())   qDebug() << "HostGameWindow::hostCurrentPlayer() - LTAR mode = " << currentPlayer;
+    else                            qDebug() << "HostGameWindow::hostCurrentPlayer() - Std mode = "  << currentPlayer;
 
     sound_Hosting->play();
 
@@ -342,6 +350,12 @@ void HostGameWindow::hostCurrentPlayer()
 void HostGameWindow::AssignPlayer(int Game, int Tagger, int Flags, bool isLtar)
 
 {
+    if(currentPlayer > 24 || currentPlayer == 0)  //All taggers have been hosted, so ignore any new requests.
+    {
+        lttoComms.setDontAnnounceGame(false);
+        return;
+    }
+
     lttoComms.setDontAnnounceGame(true);
 
     //Check if the gameID from the tagger is correct.
@@ -402,11 +416,10 @@ void HostGameWindow::AddPlayerToGame(int Game, int Tagger, bool isLtar)
 
     if(gameInfo.getGameID() != Game || playerInfo[currentPlayer].getTaggerID() != Tagger)
     {
-        qDebug() << "HostGameWindow::AddPlayerToGame() - GameID or TaggerID mismatched !!!!!!   ERROR";
+        qDebug() << "\t\tHostGameWindow::AddPlayerToGame() - GameID or TaggerID mismatched !!!!!!   ERROR";
         return;
     }
     InsertToListWidget("   AddPlayerToGame()" + QString::number(currentPlayer));
-    lttoComms.setDontAnnounceFailedSignal(false);
     isThisPlayerHosted[currentPlayer] = true;
     expectingAckPlayerAssignment = false;
     timerAssignFailed->stop();
@@ -432,12 +445,14 @@ void HostGameWindow::AddPlayerToGame(int Game, int Tagger, bool isLtar)
     {
         if (currentPlayer != 0) currentPlayer++;
     }
+
     lttoComms.setDontAnnounceGame(false);
     lttoComms.setDontAnnounceFailedSignal(false);
+    qDebug() << "\t\tHostGameWindow::AddPlayerToGame() - setDontAnnounce x2 = false";
     if (closingWindow) deleteLater();   // Delete the window, as the cancel button has been pressed.
 }
 
-void HostGameWindow::assignPlayerFailed()       //TODO: THis is not working.
+void HostGameWindow::assignPlayerFailed()       //TODO: This is not working.
 {
     lttoComms.setDontAnnounceGame(true);
     lttoComms.setDontAnnounceFailedSignal(false);
@@ -450,11 +465,13 @@ void HostGameWindow::assignPlayerFailed()       //TODO: THis is not working.
 
 void HostGameWindow::sendAssignFailedMessage()
 {
-    if(lttoComms.getDontAnnounceFailedSignal() == false)
-    {
-        assignPlayerFailCount++;
+    assignPlayerFailCount++;
 
+    if(lttoComms.getDontAnnounceFailedSignal() == false)
+    {  
         sound_HostingMissedReply->play();
+
+        qDebug() << "HostGameWindow::sendAssignFailedMessage()  - Sending # " << assignPlayerFailCount;
 
         lttoComms.sendLCDtext("Attn"                                      , 1);
         lttoComms.sendLCDtext(playerInfo[currentPlayer].getPlayerName()   , 2);
@@ -467,8 +484,10 @@ void HostGameWindow::sendAssignFailedMessage()
         lttoComms.sendPacket(DATA,   gameInfo.getGameID()                    );
         lttoComms.sendPacket(DATA,   playerInfo[currentPlayer].getTaggerID() );
         lttoComms.sendPacket(CHECKSUM                                        );
-        qDebug() << "HostGameWindow::sendAssignFailedMessage()  - Sending # " << assignPlayerFailCount;
+
     }
+
+    qDebug() << "HostGameWindow::sendAssignFailedMessage() - looping";
 
     if (assignPlayerFailCount >= 5)   //give up and start again
     {
@@ -981,8 +1000,16 @@ void HostGameWindow::on_btn_DeBug_clicked()
 
 void HostGameWindow::on_btn_StopHosting_clicked()
 {
-    if(timerAnnounce->isActive())    timerAnnounce->stop();
-    else                             timerAnnounce->start();
+    if(timerAnnounce->isActive())
+    {
+        timerAnnounce->stop();
+        ui->btn_StopHosting->setText("Start Hosting");
+    }
+    else
+    {
+        timerAnnounce->start();
+        ui->btn_StopHosting->setText("Stop Hosting");
+    }
 
 }
 

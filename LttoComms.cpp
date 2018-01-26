@@ -224,7 +224,7 @@ void LttoComms::receivePacket(QByteArray RxData)
         // CombobulatorHost packet
         {
             setDontAnnounceGame(true);
-   //setDontAnnounceFailedSignal(true);
+            setDontAnnounceFailedSignal(true);
             // remove the @
             irDataIn.remove((irDataIn.size()-1), 1);
 
@@ -465,12 +465,13 @@ void LttoComms::processPacket(QList<QByteArray> data)
 
     switch (command)
     {
-    case REQUEST_JOIN_GAME:
+    case REQUEST_JOIN_GAME:         //P16
         game     = extract(data);
         tagger   = extract(data);
         flags    = extract(data);
         checksum = extract(data);
         if(isCheckSumCorrect(command, game, tagger, flags, checksum))   emit RequestJoinGame(game, tagger, flags, false);
+        //else                                                            setDontAnnounceGame(false);
         break;
 
     case REQUEST_JOIN_LTAR_GAME:
@@ -480,15 +481,17 @@ void LttoComms::processPacket(QList<QByteArray> data)
         smartDeviceInfo = extract(data);
         checksum        = extract(data);
         //TODO: Fix the Checksum that is not working - posibly due to DEC not BCD ??
-        //if(isCheckSumCorrect(command, game, tagger, taggerInfo, smartDeviceInfo, checksum) == false) break;
+        //if(isCheckSumCorrect(command, game, tagger, taggerInfo, smartDeviceInfo, checksum)) emit RequestJoinGame(game, tagger, 0, true);
+        //else                                                                                setDontAnnounceGame(false);
              emit RequestJoinGame(game, tagger, 0, true);
         break;
 
-    case ACK_PLAYER_ASSIGN:
+    case ACK_PLAYER_ASSIGN:         //P17
         game     = extract(data);
         tagger   = extract(data);
         checksum = extract(data);
         if(isCheckSumCorrect(command, game, tagger, flags, checksum))   emit AckPlayerAssignment(game, tagger, false);
+        else                                                            setDontAnnounceFailedSignal(true);
         break;
 
     case ACK_LTAR_PLAYER_ASSIGN:
@@ -496,9 +499,10 @@ void LttoComms::processPacket(QList<QByteArray> data)
         tagger   = extract(data);
         checksum = extract(data);
         //TODO: Fix the Checksum that is not working
-        //if(isCheckSumCorrect(command, game, tagger, flags, checksum) == false) break;
+        //if(isCheckSumCorrect(command, game, tagger, flags, checksum)) emit AckPlayerAssignment(game, tagger, true);
+        //else                                                          setDontAnnounceGame(false);
+        //break;
 
-        //qDebug() << "LttoComms::processPacket() - emit AckLTARplayerAssignment";
         emit AckPlayerAssignment(game, tagger, true);
         break;
 
@@ -514,7 +518,8 @@ void LttoComms::processPacket(QList<QByteArray> data)
         checksum            = extract(data);
 
         if(isCheckSumCorrect(command, game, teamAndPlayer, tagsTaken, survivedMinutes, survivedSeconds, zoneTimeMinutes, zoneTimeSeconds, flags, checksum))
-                   emit TagSummaryReceived(game, teamAndPlayer, tagsTaken, survivedMinutes, survivedSeconds, zoneTimeMinutes, zoneTimeSeconds, flags);
+                emit TagSummaryReceived(game, teamAndPlayer, tagsTaken, survivedMinutes, survivedSeconds, zoneTimeMinutes, zoneTimeSeconds, flags);
+        else    setDontAnnounceGame(false);
         break;
 
     case TEAM_1_TAG_REPORT:
@@ -558,16 +563,21 @@ void LttoComms::processPacket(QList<QByteArray> data)
                 break;
             }
         }
+        else    setDontAnnounceGame(false);
         break;
 
-//    case BEACON:
-//        //TODO: Add some code to action Beacons
-//        break;
+    //TODO: BEACON and TEAM_@_TAG_REPORT both have a value of 0x66, so this barks!!!
+    //case BEACON:
+        //TODO: Add some code to action Beacons
+        break;
 
-//    default:
-//        //We end up here if the ESP32 misses the Packet Header
-//        qDebug() << "Missed P header !!!!";
-//        break;
+    case TAG:
+        break;
+
+    default:
+        //We end up here if the ESP32 misses the Packet Header
+        qDebug() << "LttoComms::processPacket() - How did we get here ????";
+        break;
 
     }
     rxPacketList.clear();

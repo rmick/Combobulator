@@ -60,7 +60,7 @@ const int   DEBRIEF_TIMER_MSEC      = 1200;
 const int   TEXT_SENT_DELAY         = 15;
 const int   PRESS_AND_HOLD_TIME     = 500;
 const int   BEACON_TIMER_MSEC       = 500;
-const int   ASSIGNED_PLAYER_FAIL_TIMER = 1000;
+const int   ASSIGNED_PLAYER_FAIL_TIMER = 500;
 
 //Packet Header Type Codes
 const int   ANNOUNCE    = 0x00;
