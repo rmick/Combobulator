@@ -6,6 +6,8 @@
 #include <QMouseEvent>
 #include <QVector>
 #include <QButtonGroup>
+#include <QTableWidget>
+#include <QTableWidgetItem>
 #include "Defines.h"
 #include "Game.h"
 #include "Players.h"
@@ -23,27 +25,24 @@ public:
     ~RearrangePlayers();
 
 private slots:
-    void    playerButtonPressed (int playerNumber);
-    void    playerButtonReleased(int playerNumber);
     void    on_btn_Close_clicked();
+    void    populateListWithPlayers();
+    void    reAssignPlayerData();
+    void    reSizeListWidgetButtonWidth();
+
+    void on_btn_DeBug_clicked();
 
 private:
     Ui::RearrangePlayers    *ui;
-    QSignalMapper           *signalMapperClicked;
-    QSignalMapper           *signalMapperPressed;
-    QSignalMapper           *signalMapperReleased;
-    QVector <QPushButton*>   playerButtons;
-    QPoint                   offset;
-    QPushButton             *activeButton;
+    void    resizeEvent(QResizeEvent *);
 
-    bool    firstPass;
+    int     numberOfPlayersInEachTeam;
 
-    void    mapPlayerButtons();
+signals:
+    void    dataUpdated();
 
 protected:
-    void mouseMoveEvent     (QMouseEvent *event) override;
-    void mousePressEvent    (QMouseEvent *event) override;
-    void mouseReleaseEvent  (QMouseEvent *event) override;
+
 };
 
 #endif // REARRANGEPLAYERS_H

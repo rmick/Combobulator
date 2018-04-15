@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QTextStream>
+#include <Defines.h>
 
 class Players
 {
@@ -88,7 +89,7 @@ public:
     int getZoneTimeSeconds() const;
     void setZoneTimeSeconds(int value);
 
-    int getReportFlags() const;
+    int copyTo() const;
     void setReportFlags(int value);
 
     int getStartingAmmo() const;
@@ -120,7 +121,12 @@ public:
     int getTotalTagsTaken() const;
     void setTotalTagsTaken(int value);
 
+    void copyPlayerSettings(int copyFrom, int copyTo);
+
+    void moveAllPlayersFromTempToMain();
+
 private:
+    // Player settings - stored in saved games
     int     Handicap;
     QString PlayerName;
     int     Reloads;
@@ -136,13 +142,14 @@ private:
     int     PackedFlags3;   //LTAR games only
     int     StartingAmmo;   //LTAR games only
     int     SleepTimeOut;   //LTAR games only   0 = disabled
+
+    //  Setting used in Hosted Games - not stored in saved games
     int     TaggerID;
     int     SpyNumber;
     int     isKing;
     int     playerNumberInThisGame;
     int     gameScore;
     int     rankingInGame;
-
     int     tagsTaken[25];
     int     totalTagsTaken;
     int     survivalTimeMinutes;
@@ -152,6 +159,8 @@ private:
     int     reportFlags;
 };
 
-extern Players playerInfo[25];
+extern Players playerInfo[MAX_PLAYERS+1];
+
+extern  Players playerInfoTemp[MAX_PLAYERS+1];
 
 #endif // PLAYERS_H

@@ -54,6 +54,8 @@ private slots:
 
     void playerButtonReleased(int value);
 
+    void updatePlayerButtons();
+
 //    void on_btn_Test_clicked();
 
     void on_btn_Flags_clicked();

@@ -59,7 +59,14 @@ StyleSheet::StyleSheet()
     CssInside +=    "QMessageBox            {font: white;} ";
     CssInside +=    "QMenu                  {font:white; color:white;}";
     CssInside +=    "QLabel                 {color: white;}";
-    CssInside +=    "QListWidget            {color: white;}";
+
+    CssInside +=    "QListWidget            {color: white; border: solid grey; border-width: 2px; border-radius: 10px;}";
+    CssInside +=    "QListWidget::item	    {border-top: 2px solid lightgrey;}";
+    CssInside +=    "QListWidget::item	    {border-left: 2px solid lightgrey;}";
+    CssInside +=    "QListWidget::item	    {border-radius: 10px}";
+    CssInside +=    "QListWidget::item	    {background-color: grey;}";
+    CssInside +=    "QListWidget::item	    {color: white}";
+
     CssInside +=    "QToolBar               {border: grey; border-width: 2px; background-color: rgb(50,50,50); spacing: 20px; padding: 10px;}";
     CssInside +=    "QToolButton            {border-width: 2px; border-radius: 10px; border-color: cyan; background-color: grey; padding: 5px; spacing: 20px;}";
     CssInside +=    "QToolButton:checked    {color: cyan; border-color: cyan;}";
@@ -92,7 +99,15 @@ StyleSheet::StyleSheet()
     CssOutside +=    "QMessageBox           {font: fuchsia;} ";
     CssOutside +=    "QMenu                 {font:fuchsia; color:fuchsia;}";
     CssOutside +=    "QLabel                {color: fuchsia;}";
-    CssOutside +=    "QListWidget           {color: fuchsia;}";
+
+    //CssOutside +=    "QListWidget           {color: fuchsia;}";
+    CssOutside +=    "QListWidget           {color: fuchsia; border: solid lightyellow; border-width: 2px; border-radius: 10px;}";
+    CssOutside +=    "QListWidget::item	    {border-top: 2px solid lightyellow;}";
+    CssOutside +=    "QListWidget::item	    {border-left: 2px solid lightyellow;}";
+    CssOutside +=    "QListWidget::item	    {border-radius: 10px}";
+    CssOutside +=    "QListWidget::item	    {background-color: lightyellow;}";
+    CssOutside +=    "QListWidget::item	    {color: fuchsia}";
+
     CssOutside +=    "QToolBar              {border: lightyellow; border-width: 2px; background-color: grey; spacing: 17px; padding: 10px;}";
     CssOutside +=    "QToolButton           {border-width: 2px; border-radius: 10px; border-color: cyan; background-color: lightyellow; padding: 5px; spacing: 10px;}";
     CssOutside +=    "QToolButton:checked   {background-color: yellow; border-color: fuchsia; border-color: fuchsia;}";

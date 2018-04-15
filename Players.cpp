@@ -2,7 +2,9 @@
 #include <QDebug>
 #include "Defines.h"
 
-Players playerInfo[25];
+Players playerInfo[MAX_PLAYERS+1];
+
+Players playerInfoTemp[MAX_PLAYERS+1];
 
 Players::Players()
 {
@@ -315,11 +317,11 @@ void Players::streamToFile(QTextStream &out)
         out << "Flags2:"        << playerInfo[index].PackedFlags2 << endl;
         out << "Flags3:"        << playerInfo[index].PackedFlags3 << endl;
         out << "StartingAmmo: " << playerInfo[index].StartingAmmo << endl;
+        out << "SleepTimeOut"   << playerInfo[index].SleepTimeOut << endl;
         out << "------------------------" << endl;
     }
     out << "END_OF_PLAYER_SETTINGS" << endl;
 }
-
 
 void Players::streamFromFile(QTextStream &in)
 {
@@ -332,14 +334,14 @@ void Players::streamFromFile(QTextStream &in)
             if      (descriptorP.contains("PlayerID:") )        playerID                          = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
             else if (descriptorP.contains("Handicap:") )        playerInfo[playerID].Handicap     = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
             else if (descriptorP.contains("HealthTags:") )      playerInfo[playerID].HealthTags   = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
-            else if (descriptorP.contains("MegaTags:") )        playerInfo[playerID].MegaTags     = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
-            else if (descriptorP.contains("ShieldTime:") )      playerInfo[playerID].ShieldTime   = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
             else if (descriptorP.contains("MedicMode:") )       playerInfo[playerID].MedicMode    = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
-            else if (descriptorP.contains("SlowTags:") )        playerInfo[playerID].SlowTags     = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
-            else if (descriptorP.contains("TeamTags:") )        playerInfo[playerID].TeamTags     = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
+            else if (descriptorP.contains("MegaTags:") )        playerInfo[playerID].MegaTags     = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
             else if (descriptorP.contains("PlayerName:") )      playerInfo[playerID].PlayerName   = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) ));
             else if (descriptorP.contains("Reloads:") )         playerInfo[playerID].Reloads      = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
             else if (descriptorP.contains("Reloads2:") )        playerInfo[playerID].Reloads2     = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
+            else if (descriptorP.contains("ShieldTime:") )      playerInfo[playerID].ShieldTime   = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
+            else if (descriptorP.contains("SlowTags:") )        playerInfo[playerID].SlowTags     = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
+            else if (descriptorP.contains("TeamTags:") )        playerInfo[playerID].TeamTags     = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
             else if (descriptorP.contains("Flags1:") )          playerInfo[playerID].PackedFlags1 = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
             else if (descriptorP.contains("Flags2:") )          playerInfo[playerID].PackedFlags2 = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
             else if (descriptorP.contains("Flags3:") )          playerInfo[playerID].PackedFlags3 = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
@@ -352,18 +354,62 @@ void Players::streamFromFile(QTextStream &in)
         qDebug() << "PlayerID:"     << index;
         qDebug() << "Handicap:"     << playerInfo[index].Handicap;
         qDebug() << "HealthTags:"   << playerInfo[index].HealthTags;
+        qDebug() << "MedicMode:"    << playerInfo[index].MedicMode;
         qDebug() << "MegaTags:"     << playerInfo[index].MegaTags;
+        qDebug() << "PlayerName:"   << playerInfo[index].PlayerName;
         qDebug() << "Reloads:"      << playerInfo[index].Reloads;
         qDebug() << "Reloads2:"     << playerInfo[index].Reloads2;
         qDebug() << "ShieldTime:"   << playerInfo[index].ShieldTime;
-        qDebug() << "MedicMode:"    << playerInfo[index].MedicMode;
         qDebug() << "SlowTags:"     << playerInfo[index].SlowTags;
         qDebug() << "TeamTags:"     << playerInfo[index].TeamTags;
-        qDebug() << "PlayerName:"   << playerInfo[index].PlayerName;
+        qDebug() << "PackedFlags1:" << playerInfo[index].PackedFlags1;
+        qDebug() << "PackedFlags2:" << playerInfo[index].PackedFlags2;
+        qDebug() << "PackedFlags3:" << playerInfo[index].PackedFlags3;
         qDebug() << "StartingAmmo"  << playerInfo[index].StartingAmmo;
         qDebug() << "SleepTimeOut"  << playerInfo[index].SleepTimeOut   << endl;
     }
     qDebug() << "Players::StreamFromFile has left the building" << endl << endl;
+}
+
+void Players::copyPlayerSettings(int copyFrom, int copyTo)
+{
+    qDebug() << "Players::copyPlayerSettings(int copyFrom, int copyTo)" << copyFrom << copyTo;
+    playerInfoTemp[copyTo].Handicap     = playerInfo[copyFrom].Handicap;
+    playerInfoTemp[copyTo].HealthTags   = playerInfo[copyFrom].HealthTags;
+    playerInfoTemp[copyTo].MedicMode    = playerInfo[copyFrom].MedicMode;
+    playerInfoTemp[copyTo].MegaTags     = playerInfo[copyFrom].MegaTags;
+    playerInfoTemp[copyTo].PlayerName   = playerInfo[copyFrom].PlayerName;
+    playerInfoTemp[copyTo].Reloads      = playerInfo[copyFrom].Reloads;
+    playerInfoTemp[copyTo].Reloads2     = playerInfo[copyFrom].Reloads2;
+    playerInfoTemp[copyTo].ShieldTime   = playerInfo[copyFrom].ShieldTime;
+    playerInfoTemp[copyTo].SlowTags     = playerInfo[copyFrom].SlowTags;
+    playerInfoTemp[copyTo].PackedFlags1 = playerInfo[copyFrom].PackedFlags1;
+    playerInfoTemp[copyTo].PackedFlags2 = playerInfo[copyFrom].PackedFlags2;
+    playerInfoTemp[copyTo].PackedFlags3 = playerInfo[copyFrom].PackedFlags3;
+    playerInfoTemp[copyTo].StartingAmmo = playerInfo[copyFrom].StartingAmmo;
+    playerInfoTemp[copyTo].SleepTimeOut = playerInfo[copyFrom].SleepTimeOut;
+}
+
+void Players::moveAllPlayersFromTempToMain()
+{
+    qDebug() << "Players::moveAllPlayersFromTempToMain()";
+    for(int index = 0;index <= MAX_PLAYERS; index++)
+    {
+        playerInfo[index].Handicap     = playerInfoTemp[index].Handicap;
+        playerInfo[index].HealthTags   = playerInfoTemp[index].HealthTags;
+        playerInfo[index].MedicMode    = playerInfoTemp[index].MedicMode;
+        playerInfo[index].MegaTags     = playerInfoTemp[index].MegaTags;
+        playerInfo[index].PlayerName   = playerInfoTemp[index].PlayerName;
+        playerInfo[index].Reloads      = playerInfoTemp[index].Reloads;
+        playerInfo[index].Reloads2     = playerInfoTemp[index].Reloads2;
+        playerInfo[index].ShieldTime   = playerInfoTemp[index].ShieldTime;
+        playerInfo[index].SlowTags     = playerInfoTemp[index].SlowTags;
+        playerInfo[index].PackedFlags1 = playerInfoTemp[index].PackedFlags1;
+        playerInfo[index].PackedFlags2 = playerInfoTemp[index].PackedFlags2;
+        playerInfo[index].PackedFlags3 = playerInfoTemp[index].PackedFlags3;
+        playerInfo[index].StartingAmmo = playerInfoTemp[index].StartingAmmo;
+        playerInfo[index].SleepTimeOut = playerInfoTemp[index].SleepTimeOut;
+    }
 }
 
 int Players::getPackedFlags1() const
@@ -540,7 +586,7 @@ void Players::setZoneTimeSeconds(int value)
     zoneTimeSeconds = value;
 }
 
-int Players::getReportFlags() const
+int Players::copyTo() const
 {
     return reportFlags;
 }

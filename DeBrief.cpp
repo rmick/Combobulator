@@ -163,7 +163,7 @@ void DeBrief::ReceiveTagSummary(int game, int teamAndPlayer, int tagsTaken, int 
     qDebug() << "\tTags taken =" << playerInfo[currentPlayer].getTagsTaken(0);
     qDebug() << "\tSurvivalTime =" << playerInfo[currentPlayer].getSurvivalTimeMinutes() << ":" << playerInfo[currentPlayer].getSurvivalTimeSeconds();
     qDebug() << "\tZoneTime =" << playerInfo[currentPlayer].getZoneTimeMinutes() << ":" << playerInfo[currentPlayer].getZoneTimeSeconds();
-    qDebug() << "\tFlags" << playerInfo[currentPlayer].getReportFlags() << "\tTeam1:" << isTeam1TagReportDue << "\tTeam2:" << isTeam2TagReportDue << "\tTeam3:" << isTeam3TagReportDue;
+    qDebug() << "\tFlags" << playerInfo[currentPlayer].copyTo() << "\tTeam1:" << isTeam1TagReportDue << "\tTeam2:" << isTeam2TagReportDue << "\tTeam3:" << isTeam3TagReportDue;
     SendToHGWlistWidget("DeBrief::ReceiveTagSummary() - Game" +QString::number(game) + ", Player" +QString::number(currentPlayer));
     SendToHGWlistWidget("\tTags taken =" +QString::number(playerInfo[currentPlayer].getTagsTaken(0)));
 }

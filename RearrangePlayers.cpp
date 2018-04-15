@@ -2,19 +2,17 @@
 #include "ui_RearrangePlayers.h"
 
 #include <QDebug>
+#include <QMessageBox>
 
 RearrangePlayers::RearrangePlayers(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::RearrangePlayers)
 {
     ui->setupUi(this);
-    //signalMapper = new QSignalMapper(this);
-    signalMapperClicked  = new QSignalMapper(this);
-    signalMapperPressed  = new QSignalMapper(this);
-    signalMapperReleased = new QSignalMapper(this);
 
-    mapPlayerButtons();
-    firstPass = true;
+    numberOfPlayersInEachTeam = MAX_PLAYERS/3;
+    populateListWithPlayers();
+    reSizeListWidgetButtonWidth();
 }
 
 RearrangePlayers::~RearrangePlayers()
@@ -22,86 +20,122 @@ RearrangePlayers::~RearrangePlayers()
     delete ui;
 }
 
-void RearrangePlayers::mouseMoveEvent(QMouseEvent *event)
+void RearrangePlayers::resizeEvent(QResizeEvent*)
 {
-    if(event->buttons() & Qt::LeftButton)
+    reSizeListWidgetButtonWidth();
+}
+
+
+void RearrangePlayers::on_btn_Close_clicked()
+{
+    //Check for too many players in any team
+    bool tooManyPlayers = false;
+    if(ui->list_Team1->count() > numberOfPlayersInEachTeam) tooManyPlayers = true;
+    if(ui->list_Team2->count() > numberOfPlayersInEachTeam) tooManyPlayers = true;
+    if(ui->list_Team3->count() > numberOfPlayersInEachTeam) tooManyPlayers = true;
+    if(tooManyPlayers)
     {
-        if (activeButton != 0)
+        //QMessageBox("Error", "There are too many players in one of the teams. Please fix and try again.",)
+        QMessageBox::critical(0,"Error","There are too many players in one of the teams.\nPlease fix and try again.");
+        return;
+    }
+    else
+    {
+        reAssignPlayerData();
+        close();
+    }
+
+}
+
+void RearrangePlayers::populateListWithPlayers()
+{
+    for(int index = 1;index < (numberOfPlayersInEachTeam+1); index++)
+    {
+        ui->list_Team1->addItem(playerInfo[index].getPlayerName());
+        ui->list_Team1->item(index-1)->setTextAlignment(Qt::AlignCenter);
+        ui->list_Team1->item(index-1)->setData(Qt::UserRole, index);
+        ui->list_Team2->addItem(playerInfo[index+8].getPlayerName());
+        ui->list_Team2->item(index-1)->setTextAlignment(Qt::AlignCenter);
+        ui->list_Team2->item(index-1)->setData(Qt::UserRole, index+8);
+        ui->list_Team3->addItem(playerInfo[index+16].getPlayerName());
+        ui->list_Team3->item(index-1)->setTextAlignment(Qt::AlignCenter);
+        ui->list_Team3->item(index-1)->setData(Qt::UserRole, index+16);
+        if(index < 5)
         {
-            //activeButton->move(event->pos() - offset);
-            activeButton->move(activeButton->parentWidget()->mapFromGlobal((QCursor::pos() - offset)));
-            //if(activeButton->pos()) qRound(110)
+            ui->list_Bench->addItem("Sub " + QString::number(index));
+            ui->list_Bench->item(index-1)->setTextAlignment(Qt::AlignCenter);
+            ui->list_Bench->item(index-1)->setData(Qt::UserRole, index+24);
         }
     }
 }
 
-void RearrangePlayers::mousePressEvent(QMouseEvent *event)
+void RearrangePlayers::reSizeListWidgetButtonWidth()
 {
+    int minSize = (ui->list_Bench->width() / numberOfPlayersInEachTeam ) - 11;
+    //reduce the size slightly so that you can a bit of any excess players in a team.
+    minSize--;
 
-}
-
-void RearrangePlayers::mouseReleaseEvent(QMouseEvent *event)
-{
-    if(event->buttons() & Qt::LeftButton)
+    for(int index = 0; index < ui->list_Team1->count(); index++)
     {
-        firstPass = true;
-        qDebug() << "RearrangePlayers::mouseReleaseEvent";
+        ui->list_Team1->item(index)->setSizeHint(QSize(minSize, ui->list_Team1->sizeHint().height() ));
+    }
+    for(int index = 0; index < ui->list_Team2->count(); index++)
+    {
+        ui->list_Team2->item(index)->setSizeHint(QSize(minSize, ui->list_Team2->sizeHint().height() ));
+    }
+    for(int index = 0; index < ui->list_Team3->count(); index++)
+    {
+        ui->list_Team3->item(index)->setSizeHint(QSize(minSize, ui->list_Team3->sizeHint().height() ));
+    }
+    for(int index = 0; index < ui->list_Bench->count(); index++)
+    {
+        ui->list_Bench->item(index)->setSizeHint(QSize(minSize, ui->list_Bench->sizeHint().height() ));
     }
 }
 
-void RearrangePlayers::playerButtonPressed(int playerNumber)
+void RearrangePlayers::reAssignPlayerData()
 {
-    activeButton = playerButtons[playerNumber];
-    offset = this->pos();
-    qDebug() << "RearrangePlayers::playerButtonPressed" << playerNumber <<  offset;
-}
+    int playerToCopy    = 0;
 
-void RearrangePlayers::playerButtonReleased(int playerNumber)
-{
-    activeButton = 0;
-    qDebug() << "RearrangePlayers::playerButtonReleased" << playerNumber;
-}
-void RearrangePlayers::on_btn_Close_clicked()
-{
-    close();
-}
-
-void RearrangePlayers::mapPlayerButtons()
-{
-    playerButtons.append(0);    // Fake button for Player 0
-    playerButtons.append(ui->btn_Player1);
-    playerButtons.append(ui->btn_Player2);
-    playerButtons.append(ui->btn_Player3);
-    playerButtons.append(ui->btn_Player4);
-    playerButtons.append(ui->btn_Player5);
-    playerButtons.append(ui->btn_Player6);
-    playerButtons.append(ui->btn_Player7);
-    playerButtons.append(ui->btn_Player8);
-    playerButtons.append(ui->btn_Player9);
-    playerButtons.append(ui->btn_Player10);
-    playerButtons.append(ui->btn_Player11);
-    playerButtons.append(ui->btn_Player12);
-    playerButtons.append(ui->btn_Player13);
-    playerButtons.append(ui->btn_Player14);
-    playerButtons.append(ui->btn_Player15);
-    playerButtons.append(ui->btn_Player16);
-    playerButtons.append(ui->btn_Player17);
-    playerButtons.append(ui->btn_Player18);
-    playerButtons.append(ui->btn_Player19);
-    playerButtons.append(ui->btn_Player20);
-    playerButtons.append(ui->btn_Player21);
-    playerButtons.append(ui->btn_Player22);
-    playerButtons.append(ui->btn_Player23);
-    playerButtons.append(ui->btn_Player24);
-
-    //Connect button array to SignalMapper
-    for (int index = 1; index < 25; index++)
+    for(int index = 1; index <= MAX_PLAYERS; index++)
     {
-        connect (playerButtons[index],  SIGNAL(pressed()),  signalMapperPressed,  SLOT (map()) );
-        connect (playerButtons[index],  SIGNAL(released()), signalMapperReleased, SLOT (map()) );
-        signalMapperPressed ->setMapping(playerButtons[index] ,  index);
-        signalMapperReleased->setMapping(playerButtons[index] ,  index);
+        if      (index <= numberOfPlayersInEachTeam)
+        {
+            playerToCopy = ui->list_Team1->item(index-1)->data(Qt::UserRole).toInt();
+            qDebug() << "Team1: Copying Player" << playerToCopy << ui->list_Team1->item(index-1)->text() << "to Player" << index ;
+        }
+        else if (index <= numberOfPlayersInEachTeam * 2 )
+        {
+            qDebug() << "Team2 : Index -" << index;
+            playerToCopy = ui->list_Team2->item(index-9)->data(Qt::UserRole).toInt();
+            qDebug() << "Team2: Copying Player" << playerToCopy << ui->list_Team1->item(index-9)->text() << "to Player" << index ;
+        }
+        else if (index <= numberOfPlayersInEachTeam * 3)
+        {
+            playerToCopy = ui->list_Team3->item(index-17)->data(Qt::UserRole).toInt();
+            qDebug() << "Team3: Copying Player" << playerToCopy << ui->list_Team1->item(index-17)->text() << "to Player" << index ;
+        }
+
+        playerInfo[0].copyPlayerSettings(playerToCopy, index);
     }
-    connect (signalMapperPressed,  SIGNAL(mapped(int)), this, SLOT(playerButtonPressed(int))   );
-    //connect (signalMapperReleased, SIGNAL(mapped(int)), this, SLOT(playerButtonReleased(int))   );
+    qDebug() << "RearrangePlayers::reAssignPlayerData() - MOVING DATA BACK TO PLAYERINFO[]";
+    playerInfo[0].moveAllPlayersFromTempToMain();
+
+    emit dataUpdated();
+
+
+    // TODO: Clean out the PlayerInfoTemp database
+    // TODO: Also reset/disable missing players with default data and set as not in the game !
+}
+
+void RearrangePlayers::on_btn_DeBug_clicked()
+{
+    qDebug() << " Debug button";
+    reSizeListWidgetButtonWidth();
+    qDebug() << ui->list_Bench->width();
+
+    for(int index = 0; index < ui->list_Bench->count(); index++)
+    {
+         qDebug() << ui->list_Bench->item(index)->text();
+    }
 }

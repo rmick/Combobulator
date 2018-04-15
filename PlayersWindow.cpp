@@ -118,7 +118,7 @@ void PlayersWindow::LoadPlayerSettings(int PlayerID)
     ui->slider_Health               ->setValue  (playerInfo[PlayerID].getHealthTags() );
     ui->slider_Shields              ->setValue  (playerInfo[PlayerID].getShieldTime() );
     ui->slider_MegaTags             ->setValue  (playerInfo[PlayerID].getMegaTags() );
-    //ui->slider_SleepTimeOut         ->setValue  (playerInfo[PlayerID].getSleepTimeOut());
+  //ui->slider_SleepTimeOut         ->setValue  (playerInfo[PlayerID].getSleepTimeOut());
     ui->slider_StartAmmo            ->setValue  (playerInfo[PlayerID].getStartingAmmo());
 
     ui->btn_SelectedPlayerSlowTags  ->setChecked(playerInfo[PlayerID].getSlowTags() );
@@ -381,6 +381,13 @@ void PlayersWindow::playerButtonReleased(int value)
     }
 }
 
+void PlayersWindow::updatePlayerButtons()
+{
+    LoadPlayerSettings(0);      // 0 = Global Player
+    SetActivePlayers();
+    RenamePlayerTeamButtons(gameInfo.getNumberOfTeams());
+}
+
 void PlayersWindow::RenamePlayer(int player)
 {
     QString text = QInputDialog::getText(this, tr("Rename Player"), tr("Enter Player name:"), QLineEdit::Normal, playerInfo[player].getPlayerName());
@@ -546,5 +553,6 @@ void PlayersWindow::on_btn_ChangePlayers_clicked()
 {
     //TODO: This will allow the user to drag players to new locations (eg T1-P4 to T3-P7), as well as off into an area of 'spare' players.
     if (!rearrangePlayers) rearrangePlayers = new RearrangePlayers(this);
+    connect (rearrangePlayers,  SIGNAL(dataUpdated()),   this, SLOT(updatePlayerButtons() ));
     rearrangePlayers->show();
 }

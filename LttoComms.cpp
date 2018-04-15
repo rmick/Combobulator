@@ -501,7 +501,6 @@ void LttoComms::processPacket(QList<QByteArray> data)
         //TODO: Fix the Checksum that is not working
         //if(isCheckSumCorrect(command, game, tagger, flags, checksum)) emit AckPlayerAssignment(game, tagger, true);
         //else                                                          setDontAnnounceGame(false);
-        //break;
 
         emit AckPlayerAssignment(game, tagger, true);
         break;
