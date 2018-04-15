@@ -32,7 +32,7 @@ windeployqt
 
 
 //  Build Number
-const QString BUILD_NUMBER  = "Build : 18.1.21";
+const QString BUILD_NUMBER  = "Build : 18.4.15";
 
 // Recoil Game Hub_28f537d14fca
 

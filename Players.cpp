@@ -373,7 +373,6 @@ void Players::streamFromFile(QTextStream &in)
 
 void Players::copyPlayerSettings(int copyFrom, int copyTo)
 {
-    qDebug() << "Players::copyPlayerSettings(int copyFrom, int copyTo)" << copyFrom << copyTo;
     playerInfoTemp[copyTo].Handicap     = playerInfo[copyFrom].Handicap;
     playerInfoTemp[copyTo].HealthTags   = playerInfo[copyFrom].HealthTags;
     playerInfoTemp[copyTo].MedicMode    = playerInfo[copyFrom].MedicMode;
@@ -392,7 +391,6 @@ void Players::copyPlayerSettings(int copyFrom, int copyTo)
 
 void Players::moveAllPlayersFromTempToMain()
 {
-    qDebug() << "Players::moveAllPlayersFromTempToMain()";
     for(int index = 0;index <= MAX_PLAYERS; index++)
     {
         playerInfo[index].Handicap     = playerInfoTemp[index].Handicap;

@@ -553,6 +553,7 @@ void PlayersWindow::on_btn_ChangePlayers_clicked()
 {
     //TODO: This will allow the user to drag players to new locations (eg T1-P4 to T3-P7), as well as off into an area of 'spare' players.
     if (!rearrangePlayers) rearrangePlayers = new RearrangePlayers(this);
+    rearrangePlayers->setAttribute( Qt::WA_DeleteOnClose );
     connect (rearrangePlayers,  SIGNAL(dataUpdated()),   this, SLOT(updatePlayerButtons() ));
     rearrangePlayers->show();
 }

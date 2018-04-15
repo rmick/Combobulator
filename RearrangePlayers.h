@@ -30,8 +30,6 @@ private slots:
     void    reAssignPlayerData();
     void    reSizeListWidgetButtonWidth();
 
-    void on_btn_DeBug_clicked();
-
 private:
     Ui::RearrangePlayers    *ui;
     void    resizeEvent(QResizeEvent *);
