@@ -114,6 +114,8 @@ private slots:
 
 	void updateFileName(QString newFileName);
 
+	void on_actionEdit_Scoring_triggered();
+
 private:
     Ui::LttoMainWindow      *ui;
     PlayersWindow           *playersWindow;

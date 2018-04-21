@@ -56,7 +56,7 @@ StyleSheet::StyleSheet()
     //CSS stylesheet for DARK interface
     CssInside  =    "QWidget                {background-color: black; color: white; font: normal;}";
     CssInside +=    "QSpinBox               {color: white;} ";
-    CssInside +=    "QMessageBox            {font: white;} ";
+    CssInside +=    "QMessageBox            {font: white;}";   // border: solid white; border-width: 2px; border-radius: 2px;} ";
     CssInside +=    "QMenu                  {font:white; color:white;}";
     CssInside +=    "QLabel                 {color: white;}";
 
@@ -73,19 +73,27 @@ StyleSheet::StyleSheet()
     CssInside +=    "QPushButton            {background-color: grey; border-style: outset; border-width: 2px; border-radius: 10px; border-color: grey; min-width: 50; min-height: 30;}";
     CssInside +=    "QPushButton:disabled   {background-color: rgb(50, 50, 50); color: black;}";
     CssInside +=    "QPushButton:checked    {border-color: cyan; color: cyan;}";
+
     CssInside +=    "QSlider                {min-height: 35px; background: grey; border-style: outset; border-width: 1px; border-radius: 10px; border-color: black;}";
     CssInside +=    "QSlider::groove:horizontal {border-style: outset; border-width: 2px; border-radius: 10px; border-color: black;}";
     CssInside +=    "QSlider::handle:horizontal {background: grey; border: 1px solid #5c5c5c; width: 18px; margin: -2px 0;";
     CssInside +=                                "border-style: outset; border-width: 2px; border-radius: 5px; border-color: cyan;}";
     CssInside +=    "QSlider:disabled           {background-color: rgb(50, 50, 50);}";
     CssInside +=    "QSlider::handle:disabled   {border-color: grey;}";
+
+		     CssInside +=    "QInputDialog		{border-color: white; border-width: 5px; border-radius: 5px; }";
+		     CssInside +=    "QInputDialog		{font-size: 40px; 	    }";
+
     CssInside +=    "QTableWidget		{color: cyan; alternate-background-color: grey; background-color: black;}";
     CssInside +=    "QHeaderView::section	{color: cyan; background-color: grey;}";
+
     CssInside +=    "QSpinBox::up-button	{width: 32px; border-width: 2px; border-style: solid; border-color:cyan; border-radius: 10px; image: url(:/resources/images/UpArrow.png);}";
     CssInside +=    "QSpinBox::down-button	{width: 32px; border-width: 2px; border-style: solid; border-color:cyan; border-radius: 10px; image: url(:/resources/images/DownArrow.png);}";
     CssInside +=    "QSpinBox			{background-color: grey;}";
     CssInside +=    "QSpinBox			{border-width: 2px; border-style: solid; border-color: cyan; border-radius: 10px;}";
+
     CssInside +=    "QLineEdit			{color: white; background-color: black; border: solid white; border-width: 2px; border-radius: 5px;}";
+
     CssInside +=    "QTreeView			{color: white; border: solid white; border-width: 2px; border-radius: 1px; padding: 5px;}";
     CssInside +=    "QTreeView::item		{height: 30px;}";
     CssInside +=    "QTreeView::item		{border-style: solid; border-color: black; border-width: 5px; border-radius: 10px;}";

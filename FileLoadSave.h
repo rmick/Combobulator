@@ -34,7 +34,7 @@ private:
 	Ui::FileLoadSave *ui;
 
 	QFileSystemModel	*fileModel;
-	QModelIndex			*fileModelIndex;
+	//QModelIndex			*fileModelIndex;
 	QString				filePath;
 	QDir				thisDir;
 	bool				saveMode;
