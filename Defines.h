@@ -32,7 +32,7 @@ windeployqt
 
 
 //  Build Number
-const QString BUILD_NUMBER  = "Build : 18.4.20";
+const QString BUILD_NUMBER  = "Build : 18.4.21";
 
 // Recoil Game Hub_28f537d14fca
 
@@ -178,6 +178,9 @@ const int   ALL_IN_ONE_VIEW                 = 0;
 const int   SUMMARY_VIEW                    = 1;
 const int   PLAYER_GRID_VIEW                = 2;
 
+//FileLoadSave window modes
+const int	SAVE_MODE						= 1;
+const int	LOAD_MODE						= 2;
 
 //Classes for calledByWho
 const int   LTTO_MAIN_WINDOW                = 2;

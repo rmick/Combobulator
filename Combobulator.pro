@@ -32,7 +32,8 @@ SOURCES +=  main.cpp\
 	    RearrangePlayers.cpp \
     StyleSheet.cpp \
     ScoresWindow.cpp \
-    SetScoreParameters.cpp
+    SetScoreParameters.cpp \
+    FileLoadSave.cpp
 
 
 
@@ -56,7 +57,8 @@ HEADERS  += \
 	    StyleSheet.h \
 	    RearrangePlayers.h \
     ScoresWindow.h \
-    SetScoreParameters.h
+    SetScoreParameters.h \
+    FileLoadSave.h
 
 
 FORMS    += \
@@ -70,7 +72,8 @@ FORMS    += \
 	    AboutForm.ui \
 	    RearrangePlayers.ui \
     ScoresWindow.ui \
-    SetScoreParameters.ui
+    SetScoreParameters.ui \
+    FileLoadSave.ui
 
 RESOURCES += \
 	    Resources.qrc

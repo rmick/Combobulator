@@ -15,6 +15,7 @@
 #include "LttoComms.h"
 #include "Hosting.h"
 #include "StyleSheet.h"
+#include "FileLoadSave.h"
 
 
 LttoMainWindow::LttoMainWindow(QWidget *parent) :
@@ -675,30 +676,64 @@ void LttoMainWindow::UpdateGlobalPlayerControlSettings()
 //////////////////////////////////////////////////////////////////
 
 void LttoMainWindow::saveFile()
-{
-    QString path = QStandardPaths::standardLocations( QStandardPaths::AppDataLocation ).value(0);
+{	
+	if (!fileLoadSave) fileLoadSave = new FileLoadSave(SAVE_MODE, this);
+	connect(fileLoadSave, SIGNAL(fileNameUpdated(QString)),	this, SLOT(updateFileName(QString)));
+	fileLoadSave->exec();
 
-    QDir myDir(path);
-    if (!myDir.exists()) myDir.mkpath(path);
-    QDir::setCurrent(path);
+	QString fileName = fileSaveName;
+	qDebug() << "LttoMainWindow::saveFile() - FileName =" << fileSaveName;
 
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Save Game Configuration"), "", tr("Ltto Game (*.lto);; All Files (*)"));
-    if (fileName.isEmpty()) return;
-    else
-    {
-        QFile fileToSave(fileName);
-        if (!fileToSave.open(QIODevice::WriteOnly))
-        {
-            QMessageBox::information(this, tr("Unable to open file"), fileToSave.errorString() );
-            return;
-        }
-        QTextStream gameDataOut (&fileToSave);
+	if (fileName.isEmpty()) return;
+	else
+	{
+		if (!fileName.endsWith(".lto"))
+			fileName += ".lto";
 
-        gameInfo.streamToFile(gameDataOut);
-        playerInfo[0].streamToFile(gameDataOut);            //index 0 is a dummy, the class saves the entire array.
-        gameDataOut << "<><><><><><><><><>" << endl;
-        gameDataOut << "EOF" << endl;
-    }
+		QFile fileToSave(fileName);
+		if (!fileToSave.open(QIODevice::WriteOnly))
+		{
+			QMessageBox::information(this, tr("Unable to open file"), fileToSave.errorString() );
+			return;
+		}
+		QTextStream gameDataOut (&fileToSave);
+
+		gameInfo.streamToFile(gameDataOut);
+		playerInfo[0].streamToFile(gameDataOut);            //index 0 is a dummy, the class saves the entire array.
+		gameDataOut << "<><><><><><><><><>" << endl;
+		gameDataOut << "EOF" << endl;
+	}
+
+//	QString path = QStandardPaths::standardLocations( QStandardPaths::AppDataLocation ).value(0);
+
+//    QDir myDir(path);
+//    if (!myDir.exists()) myDir.mkpath(path);
+//    QDir::setCurrent(path);
+
+//	//QString fileName =	QFileDialog::getSaveFileName(this, tr("Save Game Configuration"), "Game.lto", fileFilter, & fileFilter);
+//	//fileName =	fileDialog.getSaveFileName(this, tr("Save Game Configuration"), "Game.lto", tr("Ltto Game (*.lto);; All Files (*)"));
+
+
+//	if (fileName.isEmpty()) return;
+////	if(!fileToSave) return;
+//    else
+//    {
+//		if (!fileName.endsWith(".lto"))
+//			fileName += ".lto";
+
+//		QFile fileToSave(fileName);
+//        if (!fileToSave.open(QIODevice::WriteOnly))
+//        {
+//            QMessageBox::information(this, tr("Unable to open file"), fileToSave.errorString() );
+//            return;
+//        }
+//        QTextStream gameDataOut (&fileToSave);
+
+//        gameInfo.streamToFile(gameDataOut);
+//        playerInfo[0].streamToFile(gameDataOut);            //index 0 is a dummy, the class saves the entire array.
+//        gameDataOut << "<><><><><><><><><>" << endl;
+//        gameDataOut << "EOF" << endl;
+//    }
 
 }
 
@@ -887,12 +922,18 @@ void LttoMainWindow::on_actionOutdoorMode_triggered()
 
 void LttoMainWindow::on_btn_Debug_clicked()
 {
-    scoresWindow = new ScoresWindow(this);
+	scoresWindow = new ScoresWindow(this);
     scoresWindow->showFullScreen();
 }
 
 void LttoMainWindow::on_btn_SetScorePoints_clicked()
 {
     setScoreParameters = new SetScoreParameters(this);
-    setScoreParameters->show();
+	setScoreParameters->show();
+}
+
+void LttoMainWindow::updateFileName(QString newFileName)
+{
+	fileSaveName = newFileName;
+	qDebug() << "LttoMainWindow::updateFileName(QString newFileName) - " << newFileName;
 }

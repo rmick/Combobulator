@@ -8,6 +8,7 @@
 #include "Players.h"
 #include "LttoComms.h"
 #include "StyleSheet.h"
+#include "FileLoadSave.h"
 
 #include <QInputDialog>
 

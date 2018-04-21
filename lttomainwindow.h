@@ -12,6 +12,7 @@
 #include "AboutForm.h"
 #include "ScoresWindow.h"
 #include "SetScoreParameters.h"
+#include "FileLoadSave.h"
 
 
 namespace Ui {
@@ -111,12 +112,15 @@ private slots:
 
     void on_btn_SetScorePoints_clicked();
 
+	void updateFileName(QString newFileName);
+
 private:
     Ui::LttoMainWindow      *ui;
     PlayersWindow           *playersWindow;
     QPointer<HostGameWindow> hostGameWindow;
     QPointer<FlagsWindow>    flagsWindow;
     QPointer<ScoresWindow>   scoresWindow;
+	QPointer<FileLoadSave>   fileLoadSave;
     SetScoreParameters      *setScoreParameters;
     AboutForm               *aboutForm;
     QSoundEffect            *sound_PowerUp;
@@ -125,7 +129,7 @@ private:
     bool    SlowTags;
     bool    MedicMode;
     bool    TeamTags;
-    //bool    DaylightMode;
+	QString	fileSaveName;	// Updated by SIGNAL from FileLoadSave, used by FileSave.
 
     void    UpdateGlobalPlayerControlSettings();
     void    UpdateGameControlSettings();
