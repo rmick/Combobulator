@@ -282,6 +282,7 @@ void Game::streamToFile(QTextStream &out)
     }
 
     out << "END_OF_GAME_SETTINGS" << endl;
+	qDebug() << "Game::StreamToFile has left the building";
 }
 
 
@@ -316,34 +317,25 @@ void Game::streamFromFile(QTextStream &in)
 
     setNumberOfTeams(NumberOfTeams);    //This is required to update the Flags2 bits.
 
-    qDebug() << "GameID:"           << GameID;
-    qDebug() << "GameLength:"       << GameLength;
-    qDebug() << "GameName:"         << GameName;
-    qDebug() << "GameType:"         << GameType;
-    qDebug() << "NumberOfPlayers:"  << NumberOfPlayers;
-    qDebug() << "NumberOfTeams:"    << NumberOfTeams;
-    qDebug() << "NumberOfSpies:"    << NumberOfSpies;
-    qDebug() << "CountDownTime"     << CountDownTime;
-    qDebug() << "SpyTeamTagsActive" << isSpiesTeamTagActive;
-    qDebug() << "LTARmode"          << isLTARGame;
-    qDebug() << "ReSpawnEnabled"    << isReSpawnGame;
-    qDebug() << "PlayersInGame;";
-    for (int x=0; x< 25; x++)
-    {
-        qDebug() << "  Player"  << x << ":" << isThisPlayerInTheGame[x];
-    }
-    qDebug() << endl << "Game::StreamFromFile has left the building" << endl;
+//    qDebug() << "GameID:"           << GameID;
+//    qDebug() << "GameLength:"       << GameLength;
+//    qDebug() << "GameName:"         << GameName;
+//    qDebug() << "GameType:"         << GameType;
+//    qDebug() << "NumberOfPlayers:"  << NumberOfPlayers;
+//    qDebug() << "NumberOfTeams:"    << NumberOfTeams;
+//    qDebug() << "NumberOfSpies:"    << NumberOfSpies;
+//    qDebug() << "CountDownTime"     << CountDownTime;
+//    qDebug() << "SpyTeamTagsActive" << isSpiesTeamTagActive;
+//    qDebug() << "LTARmode"          << isLTARGame;
+//    qDebug() << "ReSpawnEnabled"    << isReSpawnGame;
+//    qDebug() << "PlayersInGame;";
+//    for (int x=0; x< 25; x++)
+//    {
+//        qDebug() << "  Player"  << x << ":" << isThisPlayerInTheGame[x];
+//    }
+
+	qDebug() << "Game::StreamFromFile has left the building" << endl;
 }
-
-//int Game::getPlayersInGameByte() const
-//{
-//    return PlayersInGameByte;
-//}
-
-//void Game::setPlayersInGameByte(int value)
-//{
-//    PlayersInGameByte = value;
-//}
 
 int Game::getCountDownTime() const
 {

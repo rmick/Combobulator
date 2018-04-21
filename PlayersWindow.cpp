@@ -31,11 +31,11 @@ PlayersWindow::PlayersWindow(QWidget *parent) :
     SetActivePlayers();
     RenamePlayerTeamButtons(gameInfo.getNumberOfTeams());
 
-#ifdef QT_DEBUG
-    ui->btn_ChangePlayers->setVisible(true);
-#else
-    ui->btn_ChangePlayers->setVisible(false);
-#endif
+//#ifdef QT_DEBUG
+//    ui->btn_ChangePlayers->setVisible(true);
+//#else
+//    ui->btn_ChangePlayers->setVisible(false);
+//#endif
 }
 
 PlayersWindow::~PlayersWindow()

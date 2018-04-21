@@ -321,6 +321,7 @@ void Players::streamToFile(QTextStream &out)
         out << "------------------------" << endl;
     }
     out << "END_OF_PLAYER_SETTINGS" << endl;
+	qDebug() << "Players::StreamToFile has left the building" << endl << endl;
 }
 
 void Players::streamFromFile(QTextStream &in)
@@ -349,25 +350,25 @@ void Players::streamFromFile(QTextStream &in)
             else if (descriptorP.contains("SleepTimeOut:") )    playerInfo[playerID].SleepTimeOut = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
     }   while (descriptorP != "END_OF_PLAYER_SETTINGS");
 
-    for (int index=0; index< 25; index++)
-    {
-        qDebug() << "PlayerID:"     << index;
-        qDebug() << "Handicap:"     << playerInfo[index].Handicap;
-        qDebug() << "HealthTags:"   << playerInfo[index].HealthTags;
-        qDebug() << "MedicMode:"    << playerInfo[index].MedicMode;
-        qDebug() << "MegaTags:"     << playerInfo[index].MegaTags;
-        qDebug() << "PlayerName:"   << playerInfo[index].PlayerName;
-        qDebug() << "Reloads:"      << playerInfo[index].Reloads;
-        qDebug() << "Reloads2:"     << playerInfo[index].Reloads2;
-        qDebug() << "ShieldTime:"   << playerInfo[index].ShieldTime;
-        qDebug() << "SlowTags:"     << playerInfo[index].SlowTags;
-        qDebug() << "TeamTags:"     << playerInfo[index].TeamTags;
-        qDebug() << "PackedFlags1:" << playerInfo[index].PackedFlags1;
-        qDebug() << "PackedFlags2:" << playerInfo[index].PackedFlags2;
-        qDebug() << "PackedFlags3:" << playerInfo[index].PackedFlags3;
-        qDebug() << "StartingAmmo"  << playerInfo[index].StartingAmmo;
-        qDebug() << "SleepTimeOut"  << playerInfo[index].SleepTimeOut   << endl;
-    }
+//    for (int index=0; index< 25; index++)
+//    {
+//        qDebug() << "PlayerID:"     << index;
+//        qDebug() << "Handicap:"     << playerInfo[index].Handicap;
+//        qDebug() << "HealthTags:"   << playerInfo[index].HealthTags;
+//        qDebug() << "MedicMode:"    << playerInfo[index].MedicMode;
+//        qDebug() << "MegaTags:"     << playerInfo[index].MegaTags;
+//        qDebug() << "PlayerName:"   << playerInfo[index].PlayerName;
+//        qDebug() << "Reloads:"      << playerInfo[index].Reloads;
+//        qDebug() << "Reloads2:"     << playerInfo[index].Reloads2;
+//        qDebug() << "ShieldTime:"   << playerInfo[index].ShieldTime;
+//        qDebug() << "SlowTags:"     << playerInfo[index].SlowTags;
+//        qDebug() << "TeamTags:"     << playerInfo[index].TeamTags;
+//        qDebug() << "PackedFlags1:" << playerInfo[index].PackedFlags1;
+//        qDebug() << "PackedFlags2:" << playerInfo[index].PackedFlags2;
+//        qDebug() << "PackedFlags3:" << playerInfo[index].PackedFlags3;
+//        qDebug() << "StartingAmmo"  << playerInfo[index].StartingAmmo;
+//        qDebug() << "SleepTimeOut"  << playerInfo[index].SleepTimeOut   << endl;
+//    }
     qDebug() << "Players::StreamFromFile has left the building" << endl << endl;
 }
 

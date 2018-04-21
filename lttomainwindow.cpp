@@ -680,13 +680,21 @@ void LttoMainWindow::saveFile()
 	if (!fileLoadSave) fileLoadSave = new FileLoadSave(SAVE_MODE, this);
 	connect(fileLoadSave, SIGNAL(fileNameUpdated(QString)),	this, SLOT(updateFileName(QString)));
 	fileLoadSave->exec();
+	delete(fileLoadSave);
 
-	QString fileName = fileSaveName;
-	qDebug() << "LttoMainWindow::saveFile() - FileName =" << fileSaveName;
+//	fileLoadSave->show();
+//	while (fileLoadSave)
+//	{
+//		QEventLoop loop;
+//		loop.exec();
+//	}
 
-	if (fileName.isEmpty()) return;
+	if (fileLoadSaveName.isEmpty()) return;		// this means the [cancel] button was pressed.
 	else
 	{
+		QString fileName = fileLoadSaveName;
+		qDebug() << "LttoMainWindow::saveFile() - FileName =" << fileLoadSaveName;
+
 		if (!fileName.endsWith(".lto"))
 			fileName += ".lto";
 
@@ -715,7 +723,6 @@ void LttoMainWindow::saveFile()
 
 
 //	if (fileName.isEmpty()) return;
-////	if(!fileToSave) return;
 //    else
 //    {
 //		if (!fileName.endsWith(".lto"))
@@ -739,36 +746,67 @@ void LttoMainWindow::saveFile()
 
 void LttoMainWindow::loadFile()
 {
-    QString path = QStandardPaths::standardLocations( QStandardPaths::AppDataLocation ).value(0);
+	if (!fileLoadSave) fileLoadSave = new FileLoadSave(LOAD_MODE, this);
+	connect(fileLoadSave, SIGNAL(fileNameUpdated(QString)),	this, SLOT(updateFileName(QString)));
+	fileLoadSave->exec();
+	delete(fileLoadSave);
 
-    QDir myDir(path);
-    if (!myDir.exists()) myDir.mkpath(path);
-    QDir::setCurrent(path);
+	//QString fileName = fileLoadSaveName;
+	qDebug() << "LttoMainWindow::loadFile() - FileName =" << fileLoadSaveName;
 
-    qDebug() << "Loading show file";
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Ltto Game"), "", tr("Ltto Game (*.lto);; All Files (*)") );
-    if (fileName.isEmpty()) return;
-    else
-    {
-        QFile fileToLoad(fileName);
-        if (!fileToLoad.open(QIODevice::ReadOnly))
-        {
-            QMessageBox::information(this, tr("Unable to open file"), fileToLoad.errorString() );
-            return;
-        }
-        QTextStream gameDataIn (&fileToLoad);
+	if (fileLoadSaveName.isEmpty()) return;		// this means the [cancel] button was pressed.
+	else
+	{
+		QFile fileToLoad(fileLoadSaveName);
+		if (!fileToLoad.open(QIODevice::ReadOnly))
+		{
+		QMessageBox::information(this, tr("Unable to open file"), fileToLoad.errorString() );
+		return;
+		}
+		QTextStream gameDataIn (&fileToLoad);
 
-        gameInfo.streamFromFile(gameDataIn);
-        playerInfo[0].streamFromFile(gameDataIn);
+		gameInfo.streamFromFile(gameDataIn);
+		playerInfo[0].streamFromFile(gameDataIn);
 
-        UpdateGameControlSettings();
-        UpdateGlobalPlayerControlSettings();
-        gameInfo.setNumberOfTeams(gameInfo.getNumberOfTeams()); //This updates the Flags2 bits 1+2
+		UpdateGameControlSettings();
+		UpdateGlobalPlayerControlSettings();
+		gameInfo.setNumberOfTeams(gameInfo.getNumberOfTeams()); //This updates the Flags2 bits 1+2
 
-        //Check for Players, if there are at least two players, enable the Start button.
-        if (gameInfo.getTotalNumberOfPlayersInGame() > 1) ui->btn_StartGame->setEnabled(true);
+		//Check for Players, if there are at least two players, enable the Start button.
+		if (gameInfo.getTotalNumberOfPlayersInGame() > 1) ui->btn_StartGame->setEnabled(true);
+	}
 
-    }
+//	QString path = QStandardPaths::standardLocations( QStandardPaths::AppDataLocation ).value(0);
+
+//    QDir myDir(path);
+//    if (!myDir.exists()) myDir.mkpath(path);
+//    QDir::setCurrent(path);
+
+//    qDebug() << "Loading show file";
+//    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Ltto Game"), "", tr("Ltto Game (*.lto);; All Files (*)") );
+
+//    if (fileName.isEmpty()) return;
+//    else
+//    {
+//        QFile fileToLoad(fileName);
+//        if (!fileToLoad.open(QIODevice::ReadOnly))
+//        {
+//            QMessageBox::information(this, tr("Unable to open file"), fileToLoad.errorString() );
+//            return;
+//        }
+//        QTextStream gameDataIn (&fileToLoad);
+
+//        gameInfo.streamFromFile(gameDataIn);
+//        playerInfo[0].streamFromFile(gameDataIn);
+
+//        UpdateGameControlSettings();
+//        UpdateGlobalPlayerControlSettings();
+//        gameInfo.setNumberOfTeams(gameInfo.getNumberOfTeams()); //This updates the Flags2 bits 1+2
+
+//        //Check for Players, if there are at least two players, enable the Start button.
+//        if (gameInfo.getTotalNumberOfPlayersInGame() > 1) ui->btn_StartGame->setEnabled(true);
+
+//    }
 }
 
 void LttoMainWindow::loadSettings()
@@ -934,6 +972,6 @@ void LttoMainWindow::on_btn_SetScorePoints_clicked()
 
 void LttoMainWindow::updateFileName(QString newFileName)
 {
-	fileSaveName = newFileName;
+	fileLoadSaveName = newFileName;
 	qDebug() << "LttoMainWindow::updateFileName(QString newFileName) - " << newFileName;
 }

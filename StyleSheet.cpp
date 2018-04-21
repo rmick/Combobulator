@@ -54,7 +54,7 @@ StyleSheet::StyleSheet()
     GreenButtonCss  =  "background-color: rgb(0,255,50); border-style: outset; border-width: 2px; border-radius: 10px; border-color: grey; min-width: 0; min-height: 0";
 
     //CSS stylesheet for DARK interface
-    CssInside  =    "QWidget                {background-color: black; color: white;}";
+    CssInside  =    "QWidget                {background-color: black; color: white; font: normal;}";
     CssInside +=    "QSpinBox               {color: white;} ";
     CssInside +=    "QMessageBox            {font: white;} ";
     CssInside +=    "QMenu                  {font:white; color:white;}";
@@ -85,6 +85,13 @@ StyleSheet::StyleSheet()
     CssInside +=    "QSpinBox::down-button	{width: 32px; border-width: 2px; border-style: solid; border-color:cyan; border-radius: 10px; image: url(:/resources/images/DownArrow.png);}";
     CssInside +=    "QSpinBox			{background-color: grey;}";
     CssInside +=    "QSpinBox			{border-width: 2px; border-style: solid; border-color: cyan; border-radius: 10px;}";
+    CssInside +=    "QLineEdit			{color: white; background-color: black; border: solid white; border-width: 2px; border-radius: 5px;}";
+    CssInside +=    "QTreeView			{color: white; border: solid white; border-width: 2px; border-radius: 1px; padding: 5px;}";
+    CssInside +=    "QTreeView::item		{height: 30px;}";
+    CssInside +=    "QTreeView::item		{border-style: solid; border-color: black; border-width: 5px; border-radius: 10px;}";
+    CssInside +=    "QTreeView::item		{background-color: gray;}";
+    CssInside +=    "QTreeView::item:selected	{color: cyan; background-color: grey;}";
+    CssInside +=    "QTreeView::item:selected	{border-top: 2px solid cyan; border-bottom: 2px solid cyan; border-left: 2px solid cyan; border-right: 2px solid cyan;}";
 
     //Overides for player buttons in  PlayersWindow
     CssInsideButtonSelected      = "border-color: cyan; color: cyan;";
@@ -92,6 +99,8 @@ StyleSheet::StyleSheet()
     CssInsideButtonChecked       = "border-color: cyan; color: cyan;";
     CssInsideButtonUnChecked     = "border-color: grey; color: black;";
     CssInsideButtonPressedLast   = "color:fuchsia;";
+
+//------------------------------------------------------------------------------------------------------------
 
     //CSS stylesheet for LIGHT interface
     CssOutside  =    "QWidget               {background-color: black; color: fuchsia; font: bold;}";
@@ -126,6 +135,14 @@ StyleSheet::StyleSheet()
     CssOutside +=    "QSpinBox::down-button	{width: 32px; border-width: 2px; border-style: solid; border-color:fuchsia; border-radius: 10px; image: url(:/resources/images/DownArrow.png);}";
     CssOutside +=    "QSpinBox			{background-color: lightyellow;}";
     CssOutside +=    "QSpinBox			{border-width: 2px; border-style: solid; border-color: lightyellow; border-radius: 10px;}";
+    CssOutside +=    "QLineEdit			{color: fuchsia; background-color: lightyellow; border: solid fuchsia; border-width: 2px; border-radius: 5px;}";
+    CssOutside +=    "QTreeView		    {color: fuchsia; border: solid fuchsia; border-width: 2px; border-radius: 1px; padding: 5px;}";
+    CssOutside +=    "QTreeView::item	    {height: 30px;}";
+    CssOutside +=    "QTreeView::item	    {border-style: solid; border-color: black; border-width: 5px; border-radius: 10px;}";
+    CssOutside +=    "QTreeView::item	    {background-color: lightyellow;}";
+    CssOutside +=    "QTreeView::item:selected    {color: fuchsia;background-color: yellow;}";
+    CssOutside +=    "QTreeView::item:selected    {border-top: 2px solid fuchsia; border-bottom: 2px solid fuchsia; border-left: 2px solid fuchsia; border-right: 2px solid fuchsia;}";
+
     //Overides for player buttons in  PlayersWindow
     CssOutsideButtonSelected      = "border-color: fuchsia; color: fuchsia;";
     CssOutsideButtonUnSelected    = "border-color: lightyellow; color: fuchsia;";

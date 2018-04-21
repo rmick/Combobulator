@@ -129,7 +129,7 @@ private:
     bool    SlowTags;
     bool    MedicMode;
     bool    TeamTags;
-	QString	fileSaveName;	// Updated by SIGNAL from FileLoadSave, used by FileSave.
+	QString	fileLoadSaveName;	// Updated by SIGNAL from FileLoadSave, used by FileSave.
 
     void    UpdateGlobalPlayerControlSettings();
     void    UpdateGameControlSettings();

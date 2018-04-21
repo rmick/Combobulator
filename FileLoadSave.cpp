@@ -16,15 +16,22 @@ FileLoadSave::FileLoadSave(int loadSaveMode, QWidget *parent) :
 	setWorkingDirectory();
 	populateFileList();
 
+	qDebug() << "FileLoadSave::FileLoadSave(int loadSaveMode, QWidget *parent)";
 	if(loadSaveMode == SAVE_MODE)
 	{
+		qDebug() << "FileLoadSave::FileLoadSave(int loadSaveMode, QWidget *parent)  - SAVE MODE";
 		saveMode = true;
 		ui->btn_LoadSave->setText("Save");
+		ui->lineEdit_FileName->setEnabled(true);
+		ui->label_TitleBox->setText("Save Game");
 	}
 	else
 	{
+		qDebug() << "FileLoadSave::FileLoadSave(int loadSaveMode, QWidget *parent)  - LOAD MODE";
 		saveMode = false;
 		ui->btn_LoadSave->setText("Load");
+		ui->lineEdit_FileName->setEnabled(false);
+		ui->label_TitleBox->setText("Load Game");
 	}
 
 	connect(ui->treeView_FileTree, SIGNAL(clicked(QModelIndex)), this, SLOT(upDateFileName(QModelIndex)));
@@ -53,7 +60,7 @@ void FileLoadSave::populateFileList()
 	fileExtensions << "*.lto";
 	fileModel = new QFileSystemModel(this);
 	fileModel->setRootPath(QDir::currentPath());
-	fileModel->setReadOnly(saveMode);
+	fileModel->setReadOnly(true);
 	fileModel->setNameFilters(fileExtensions);
 	fileModel->setNameFilterDisables(false);
 
@@ -72,13 +79,12 @@ void FileLoadSave::upDateFileName(QModelIndex selectedFileIndex)
 {
 	QString selectedFileName = fileModel->fileName(selectedFileIndex);
 	ui->lineEdit_FileName->setText(selectedFileName);
-	emit fileNameUpdated(selectedFileName);
+	//emit fileNameUpdated(selectedFileName);
 }
 
 void FileLoadSave::saveFile()
 {
 	QString fileName;
-	//fileName = ui->textEdit->toPlainText();
 	fileName = ui->lineEdit_FileName->text();
 
 	if(fileName == "")
@@ -92,29 +98,43 @@ void FileLoadSave::saveFile()
 
 	//Check Filename
 	fileModelIndex = new QModelIndex();
-	fileModelIndex->
+//fileModelIndex->
+
 	//qDebug() << "FileLoadSave::saveFile()" << fileModel->rowCount()
 	//Iterate through the list
 	//Show dialog if exists
 
 	//else Save show.
-
-	qDebug() << "FileLoadSave::saveFile() - Returning to MainWindow";
-	qDebug() << "File to be saved is - " << fileName;
+	emit fileNameUpdated(fileName);
+	qDebug() << "FileLoadSave::saveFile() - Returning to MainWindow" << fileName;
+	close();
 }
 
 void FileLoadSave::loadFile()
 {
-
+	QString fileName;
+	fileName = ui->lineEdit_FileName->text();
+	emit fileNameUpdated(fileName);
+	close();
 }
 
 void FileLoadSave::on_btn_Cancel_clicked()
 {
+	emit fileNameUpdated("");	//sets fileName to empty, so that no action takes place.
 	close();
 }
 
 void FileLoadSave::on_btn_LoadSave_clicked()
 {
-	if(saveMode)	saveFile();
-	else			loadFile();
+	qDebug() << "FileLoadSave::on_btn_LoadSave_clicked()  -";
+	if(saveMode)
+	{
+		saveFile();
+		qDebug() << "\tSaving Show";
+	}
+	else
+	{
+		loadFile();
+		qDebug() << "\tLoading Show";
+	}
 }

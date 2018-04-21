@@ -23,7 +23,14 @@ windeployqt
  STOP !!!!! (Did you do step 1 above - copy the file to a new location first !!!!
       cd Qt_projects\build-Combobulator_Windows-Release\Combobulator
       C:\Qt\5.9.1\msvc2015_64\bin\windeployqt Combobulator.exe
-      Zip up the folder and publish to Dropbox (or whereever)
+	  Zip up the folder and publish to Dropbox
+
+
+androiddeployqt
+	  Copy............
+
+
+
 */
 
 
@@ -32,7 +39,7 @@ windeployqt
 
 
 //  Build Number
-const QString BUILD_NUMBER  = "Build : 18.4.21";
+const QString BUILD_NUMBER  = "Build : 18.4.22";
 
 // Recoil Game Hub_28f537d14fca
 
