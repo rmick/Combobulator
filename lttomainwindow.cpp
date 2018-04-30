@@ -47,20 +47,16 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
     gameInfo.setNumberOfTeams(0);
     ui->btn_Spies->setEnabled(false);
     ui->btn_StartGame->setEnabled(false);
+	ui->btn_SetScorePoints->setVisible(false);
 	ui->btn_Debug->setVisible(false);
     setLtarControls(false);
-    serialUSBcomms.setIsUSBinitialised(false);
+	//serialUSBcomms.setIsUSBinitialised(false);
     qsrand(static_cast<uint>(QTime::currentTime().msec()));
     for (int index = 1; index < 25; index++)    playerInfo[index].setPlayerName("Player " + QString::number(index));
-    tcpComms.initialiseTCPsignalsAndSlots();
+	//tcpComms.initialiseTCPsignalsAndSlots();
 
-    //Init all the sound effects.
-    sound_PowerUp   = new QSoundEffect(this);
     sound_Powerdown = new QSoundEffect(this);
-    sound_PowerUp  ->setSource(QUrl::fromLocalFile(":/resources/audio/stinger-power-on.wav"));
     sound_Powerdown->setSource(QUrl::fromLocalFile(":/resources/audio/shut-down.wav"));
-    sound_PowerUp->play();
-    //sound_PowerUp->setVolume(1.0);
 
 #ifdef  QT_DEBUG
     gameInfo.setIsThisPlayerInTheGame( 1, true);
@@ -73,7 +69,7 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
 LttoMainWindow::~LttoMainWindow()
 {
     delete ui;
-}
+}	
 
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -149,29 +145,26 @@ void LttoMainWindow::on_btn_StartGame_clicked()
         return;
     }
 
-    if ( ! hostGameWindow)
-    {
-        hostGameWindow = new HostGameWindow(this);
-    }
-
-    if(hostGameWindow->resetPlayersForNewGame() == false) return;
+	if (!hostGameWindow)	hostGameWindow = new HostGameWindow(this);
+	if(hostGameWindow->resetPlayersForNewGame() == false) return;
     gameInfo.setGameID(host.getRandomNumber(1,255));
-#ifdef Q_OS_ANDROID
-    hostGameWindow->showFullScreen();
+#ifdef QT_DEBUG
+	hostGameWindow->show();
 #else
-    hostGameWindow->show();
+	hostGameWindow->showFullScreen();
 #endif
 }
 
 void LttoMainWindow::on_btn_SelectPlayers_clicked()
-{
-    playersWindow = new PlayersWindow(this);
-#ifdef Q_OS_ANDROID
-    playersWindow->showFullScreen();
+{	
+	ui->btn_StartGame->setEnabled(true);
+	if(!playersWindow)  playersWindow = new PlayersWindow(this);
+#ifdef QT_DEBUG
+	playersWindow->show();
 #else
-    playersWindow->show();
+	playersWindow->showFullScreen();
+	//playersWindow->show();
 #endif
-    ui->btn_StartGame->setEnabled(true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -233,9 +226,9 @@ void LttoMainWindow::on_btn_ReSpawn_clicked()
         gameInfo.setIsReSpawnGame(true);
         for(int index = 0; index < 25; index++)
         {
-            playerInfo[index].setBitFlags1(NEUTRALISE_10_FLAG, true);
-            playerInfo[index].setBitFlags2(NEUTRALISE_15s_TAGGED_FLAG, true);
-            playerInfo[index].setBitFlags2(SUPPLY_ZONES_REVIVE_FLAG, true);
+			playerInfo[index].setBitFlags1(NEUTRALISE_10_FLAG,			true);
+			playerInfo[index].setBitFlags2(NEUTRALISE_15s_TAGGED_FLAG,	true);
+			playerInfo[index].setBitFlags2(SUPPLY_ZONES_REVIVE_FLAG,	true);
         }
     }
     else if (gameInfo.getIsReSpawnGame() == true)
@@ -244,9 +237,9 @@ void LttoMainWindow::on_btn_ReSpawn_clicked()
         gameInfo.setIsReSpawnGame(false);
         for(int index = 0; index < 25; index++)
         {
-            playerInfo[index].setBitFlags1(NEUTRALISE_10_FLAG, false);
-            playerInfo[index].setBitFlags2(NEUTRALISE_15s_TAGGED_FLAG, false);
-            playerInfo[index].setBitFlags2(SUPPLY_ZONES_REVIVE_FLAG, false);
+			playerInfo[index].setBitFlags1(NEUTRALISE_10_FLAG,			false);
+			playerInfo[index].setBitFlags2(NEUTRALISE_15s_TAGGED_FLAG,	false);
+			playerInfo[index].setBitFlags2(SUPPLY_ZONES_REVIVE_FLAG,	false);
         }
     }
 }
@@ -556,7 +549,7 @@ void LttoMainWindow::on_btn_Spies_clicked()
 
 void LttoMainWindow::UpdateGameControlSettings()
 {
-    switch (gameInfo.getGameType() )
+	switch (gameInfo.getGameType() )
     {
         case Game::Ltag0:
             ui->btn_Ltag->setChecked(true);
@@ -612,6 +605,7 @@ void LttoMainWindow::UpdateGameControlSettings()
             break;
         default:
             qDebug() << "No match in the switch for : " << gameInfo.getGameType();
+	}
 
         if(gameInfo.getIsLTARGame())
         {
@@ -623,7 +617,17 @@ void LttoMainWindow::UpdateGameControlSettings()
             ui->actionLTAR_Mode->setChecked(false);
             setLtarControls(false);
         }
-    }
+
+		if(gameInfo.getIsReSpawnGame())
+		{
+			ui->btn_ReSpawn->setChecked(true);
+			ui->btn_ReSpawn->setText("ReSpawn ON");
+		}
+		else
+		{
+			ui->btn_ReSpawn->setChecked(false);
+			ui->btn_ReSpawn->setText("ReSpawn OFF");
+		}
 
     switch (gameInfo.getNumberOfSpies() )
     {
@@ -668,6 +672,10 @@ void LttoMainWindow::UpdateGlobalPlayerControlSettings()
     ui->btn_MedicMode ->setChecked(playerInfo[0].getMedicMode() );
     if (playerInfo[0].getMedicMode() == false)   ui->btn_MedicMode ->setText("Medic Mode OFF");
     else                                         ui->btn_MedicMode ->setText("Medic Mode ON");
+
+//	ui->btn_ReSpawn	  ->setChecked(gameInfo.getIsReSpawnGame() );
+//	if (gameInfo.getIsReSpawnGame()  == false)	 ui->btn_ReSpawn ->setText("ReSpawn OFF");
+//	else                                         ui->btn_MedicMode ->setText("ReSpawn ON");
 }
 
 //////////////////////////////////////////////////////////////////
@@ -683,13 +691,6 @@ void LttoMainWindow::saveFile()
 	connect(fileLoadSave, SIGNAL(fileNameUpdated(QString)),	this, SLOT(updateFileName(QString)));
 	fileLoadSave->exec();
 	delete(fileLoadSave);
-
-//	fileLoadSave->show();
-//	while (fileLoadSave)
-//	{
-//		QEventLoop loop;
-//		loop.exec();
-//	}
 
 	if (fileLoadSaveName.isEmpty())		// this means the [cancel] button was pressed.
 	{
@@ -726,11 +727,8 @@ void LttoMainWindow::loadFile()
 	fileLoadSave->exec();
 	delete(fileLoadSave);
 
-	qDebug() << "LttoMainWindow::loadFile() - FileName =" << fileLoadSaveName;
-
 	if (fileLoadSaveName.isEmpty())		// this means the [cancel] button was pressed.
 	{
-		qDebug() << "LttoMainWindow::loadFile() - ABORTED !";
 		return;
 	}
 	else
@@ -758,8 +756,8 @@ void LttoMainWindow::loadFile()
 void LttoMainWindow::loadSettings()
 {
     QSettings settings;
-    ui->actionuse_LazerSwarm->setChecked(settings.value("LazerswarmMode", true).toBool());
-    lttoComms.setUseLazerSwarm(settings.value("LazerswarmMode", true).toBool());
+	//ui->actionuse_LazerSwarm->setChecked(settings.value("LazerswarmMode", true).toBool());
+	//lttoComms.setUseLazerSwarm(settings.value("LazerswarmMode", true).toBool());
     ui->btn_SpyTeamTags->setChecked(settings.value("SpiesTeamTagMode", true).toBool());
 
     myStyleSheet.setCurrentCSS(settings.value("ColourScheme", myStyleSheet.CssDark).toInt());
@@ -773,12 +771,12 @@ void LttoMainWindow::loadSettings()
         ui->actionOutdoorMode->setChecked(false);
         setStyleSheet(myStyleSheet.getCurrentCSSstring());
     }
-#ifdef Q_OS_ANDROID
-    showFullScreen();
-#else
-    show();
-#endif
 
+#ifdef QT_DEBUG
+	show();
+#else
+	showFullScreen();
+#endif
     settings.beginGroup("MainWindow");
     resize(settings.value("size", QSize(800, 600)).toSize());
     QScreen *screen = QGuiApplication::primaryScreen();
@@ -793,22 +791,29 @@ void LttoMainWindow::saveSettings()
 {
     //QSettings settings(settingsFile, QSettings::NativeFormat);
     QSettings settings;
-    settings.setValue("LazerswarmMode",   lttoComms.getUseLazerSwarm());
+	//settings.setValue("LazerswarmMode",   lttoComms.getUseLazerSwarm());
     settings.setValue("SpiesTeamTagMode", gameInfo.getIsSpiesTeamTagActive());
     settings.setValue("ColourScheme", myStyleSheet.getCurrentCSS());
+#ifdef QT_DEBUG
     settings.beginGroup("MainWindow");
     settings.setValue("size", size());
     settings.setValue("pos", pos());
     settings.endGroup();
+#endif
 }
 
 void LttoMainWindow::on_actionExit_triggered()
 {
-    tcpComms.DisconnectTCP();
-    saveSettings();
+	tcpComms.DisconnectTCP();
+	saveSettings();
+#ifndef QT_DEBUG
     sound_Powerdown->setLoopCount(1);
     sound_Powerdown->play();
-    lttoComms.nonBlockingDelay(850);
+	   QEventLoop      loop;
+	   QTimer::singleShot(850, &loop, SLOT(quit()));
+	   loop.exec();
+	lttoComms.nonBlockingDelay(850);
+#endif
     QApplication::quit();
 }
 
@@ -827,9 +832,9 @@ void LttoMainWindow::on_actionSet_CountDown_Time_triggered()
 
 void LttoMainWindow::on_actionuse_LazerSwarm_triggered()
 {
-    qDebug() << "LttoMainWindow::on_actionuse_LazerSwarm_triggered()";
-    if(ui->actionuse_LazerSwarm->isChecked() ) lttoComms.setUseLazerSwarm(true);
-    else                                       lttoComms.setUseLazerSwarm(false);
+//    qDebug() << "LttoMainWindow::on_actionuse_LazerSwarm_triggered()";
+//    if(ui->actionuse_LazerSwarm->isChecked() ) lttoComms.setUseLazerSwarm(true);
+//    else                                       lttoComms.setUseLazerSwarm(false);
 }
 
 void LttoMainWindow::on_actionSave_triggered()
@@ -846,17 +851,21 @@ void LttoMainWindow::on_btn_Flags_clicked()
 {
     if(flagsWindow==NULL) flagsWindow = new FlagsWindow(0, this);
     flagsWindow->setButtonStates();
-#ifdef Q_OS_ANDROID
-    flagsWindow->showFullScreen();
+#ifdef QT_DEBUG
+	flagsWindow->show();
 #else
-    flagsWindow->show();
+	flagsWindow->showFullScreen();
 #endif
 }
 
 void LttoMainWindow::on_actionAbout_triggered()
 {
     aboutForm = new AboutForm(this);
-    aboutForm->show();
+#ifdef QT_DEBUG
+	aboutForm->show();
+#else
+	aboutForm->showFullScreen();
+#endif
 }
 
 
@@ -899,10 +908,10 @@ void LttoMainWindow::on_actionOutdoorMode_triggered()
     else                                    ui->btn_Spies->setStyleSheet(myStyleSheet.getButtonUnCheckedCss());
 
     //Refresh the screen
-#ifdef Q_OS_ANDROID
-    showFullScreen();
+#ifdef QT_DEBUG
+	show();
 #else
-    show();
+	showFullScreen();
 #endif
 }
 
@@ -915,17 +924,16 @@ void LttoMainWindow::on_btn_Debug_clicked()
 void LttoMainWindow::on_btn_SetScorePoints_clicked()
 {
     setScoreParameters = new SetScoreParameters(this);
-	setScoreParameters->show();
+	setScoreParameters->showFullScreen();
 }
 
 void LttoMainWindow::updateFileName(QString newFileName)
 {
 	fileLoadSaveName = newFileName;
-	qDebug() << "LttoMainWindow::updateFileName(QString newFileName) - " << newFileName;
 }
 
 void LttoMainWindow::on_actionEdit_Scoring_triggered()
 {
 	setScoreParameters = new SetScoreParameters(this);
-	setScoreParameters->show();
+	setScoreParameters->showFullScreen();
 }

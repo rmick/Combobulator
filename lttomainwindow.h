@@ -14,7 +14,6 @@
 #include "SetScoreParameters.h"
 #include "FileLoadSave.h"
 
-
 namespace Ui {
 class LttoMainWindow;
 }
@@ -118,13 +117,13 @@ private slots:
 
 private:
     Ui::LttoMainWindow      *ui;
-    PlayersWindow           *playersWindow;
-    QPointer<HostGameWindow> hostGameWindow;
-    QPointer<FlagsWindow>    flagsWindow;
-    QPointer<ScoresWindow>   scoresWindow;
-	QPointer<FileLoadSave>   fileLoadSave;
-    SetScoreParameters      *setScoreParameters;
-    AboutForm               *aboutForm;
+	QPointer<PlayersWindow>			playersWindow;
+	QPointer<HostGameWindow>		hostGameWindow;
+	QPointer<FlagsWindow>			flagsWindow;
+	QPointer<ScoresWindow>			scoresWindow;
+	QPointer<FileLoadSave>			fileLoadSave;
+	QPointer<SetScoreParameters>	setScoreParameters;
+	QPointer<AboutForm>             aboutForm;
     QSoundEffect            *sound_PowerUp;
     QSoundEffect            *sound_Powerdown;
 

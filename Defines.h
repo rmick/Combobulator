@@ -39,7 +39,7 @@ androiddeployqt
 
 
 //  Build Number
-const QString BUILD_NUMBER  = "Build : 18.4.22b";
+const QString BUILD_NUMBER  = "Build : 18.4.30";
 
 // Recoil Game Hub_28f537d14fca
 

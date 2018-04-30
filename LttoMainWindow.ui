@@ -2240,6 +2240,9 @@
     </item>
     <item row="7" column="5">
      <widget class="QPushButton" name="btn_Debug">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
       <property name="text">
        <string>DeBug</string>
       </property>
@@ -2361,6 +2364,9 @@ Players</string>
     </item>
     <item row="11" column="5">
      <widget class="QPushButton" name="btn_SetScorePoints">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="text">
        <string>Adjust Scoring
 Points</string>
@@ -2417,7 +2423,7 @@ Points</string>
    <addaction name="actionSave"/>
    <addaction name="separator"/>
    <addaction name="actionSet_CountDown_Time"/>
-   <addaction name="actionuse_LazerSwarm"/>
+   <addaction name="actionEdit_Scoring"/>
    <addaction name="actionLTAR_Mode"/>
    <addaction name="actionOutdoorMode"/>
    <addaction name="separator"/>

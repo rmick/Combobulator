@@ -16,10 +16,8 @@ FileLoadSave::FileLoadSave(int loadSaveMode, QWidget *parent) :
 	setWorkingDirectory();
 	populateFileList();
 
-	qDebug() << "FileLoadSave::FileLoadSave(int loadSaveMode, QWidget *parent)";
 	if(loadSaveMode == SAVE_MODE)
 	{
-		qDebug() << "FileLoadSave::FileLoadSave(int loadSaveMode, QWidget *parent)  - SAVE MODE";
 		saveMode = true;
 		ui->btn_LoadSave->setText("Save");
 		ui->lineEdit_FileName->setEnabled(true);
@@ -27,7 +25,6 @@ FileLoadSave::FileLoadSave(int loadSaveMode, QWidget *parent) :
 	}
 	else
 	{
-		qDebug() << "FileLoadSave::FileLoadSave(int loadSaveMode, QWidget *parent)  - LOAD MODE";
 		saveMode = false;
 		ui->btn_LoadSave->setText("Load");
 		ui->lineEdit_FileName->setEnabled(false);
@@ -97,28 +94,23 @@ void FileLoadSave::saveFile()
 
 	//Check if Filename already exists, and give warning.
 	QModelIndex parentIndex = fileModel->index(filePath);
-	qDebug() << "FileLoadSave::saveFile() - rowCount =" << fileModel->rowCount(parentIndex); //fileModel->rowCount() << fileModel->columnCount();
 	int numberOfRows = fileModel->rowCount(parentIndex);
 
 	for (int index = 0; index < numberOfRows; index++)
 	{
 		QModelIndex childIndex = fileModel->index(index, 0, parentIndex);
 		QString thisFileName = fileModel->data(childIndex).toString();
-		qDebug() << "FileLoadSave::saveFile() - row" << index << " - FileName =" << thisFileName;
 		if (fileName == thisFileName)
 		{
-			qDebug() << "\tDUPLICATE !!!!";
 			int responseAction = QMessageBox::critical(this, "Duplicate", "The filename exists, press [Ok] to overwrite, or [cancel] to change the name" , QMessageBox::Cancel, QMessageBox::Ok);
-			qDebug() << "Response =" << responseAction;
 			if (responseAction == QMessageBox::Cancel)
 			{
-				fileName = "";
+				fileName = "";	//sets fileName to empty, so that no action takes place.
 			}
 		}
 	}
 	//Save show.
 	emit fileNameUpdated(fileName);
-	qDebug() << "FileLoadSave::saveFile() - Returning to MainWindow" << fileName;
 	close();
 }
 
@@ -138,15 +130,12 @@ void FileLoadSave::on_btn_Cancel_clicked()
 
 void FileLoadSave::on_btn_LoadSave_clicked()
 {
-	qDebug() << "FileLoadSave::on_btn_LoadSave_clicked()  -";
 	if(saveMode)
 	{
 		saveFile();
-		qDebug() << "\tFileLoadSave::on_btn_LoadSave_clicked() - Saving Show";
 	}
 	else
 	{
 		loadFile();
-		qDebug() << "\tFileLoadSave::on_btn_LoadSave_clicked() - Loading Show";
 	}
 }

@@ -86,11 +86,6 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
     {
         serialUSBcomms.setUpSerialPort();
     }
-
-    //TODO: Get rid of these debug buttons
-    ui->btn_AnnounceOnce->setVisible(false);
-    ui->btn_DeBug->setVisible(false);
-    ui->btn_DeBugSendTag->setVisible(false);
 }
 
 HostGameWindow::~HostGameWindow()

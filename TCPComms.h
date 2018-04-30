@@ -28,6 +28,7 @@ public slots:
 
 signals:
     void newTCPdata(QByteArray dataReceived);
+	void TcpCommsConnectionStatus(bool status);
 
 private:
     QTcpSocket      *tcpSocket;

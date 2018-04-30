@@ -94,12 +94,12 @@ StyleSheet::StyleSheet()
 
     CssInside +=    "QLineEdit			{color: white; background-color: black; border: solid white; border-width: 2px; border-radius: 5px;}";
 
-    CssInside +=    "QTreeView			{color: white; border: solid white; border-width: 2px; border-radius: 1px; padding: 5px;}";
-    CssInside +=    "QTreeView::item		{height: 30px;}";
-    CssInside +=    "QTreeView::item		{border-style: solid; border-color: black; border-width: 5px; border-radius: 10px;}";
-    CssInside +=    "QTreeView::item		{background-color: gray;}";
-    CssInside +=    "QTreeView::item:selected	{color: cyan; background-color: grey;}";
-    CssInside +=    "QTreeView::item:selected	{border-top: 2px solid cyan; border-bottom: 2px solid cyan; border-left: 2px solid cyan; border-right: 2px solid cyan;}";
+//    CssInside +=    "QTreeView			{color: white; border: solid white; border-width: 2px; border-radius: 1px; padding: 5px;}";
+//    CssInside +=    "QTreeView::item		{height: 30px;}";
+//    CssInside +=    "QTreeView::item		{border-style: solid; border-color: black; border-width: 5px; border-radius: 10px;}";
+//    CssInside +=    "QTreeView::item		{background-color: gray;}";
+//    CssInside +=    "QTreeView::item:selected	{color: cyan; background-color: grey;}";
+//    CssInside +=    "QTreeView::item:selected	{border-top: 2px solid cyan; border-bottom: 2px solid cyan; border-left: 2px solid cyan; border-right: 2px solid cyan;}";
 
     //Overides for player buttons in  PlayersWindow
     CssInsideButtonSelected      = "border-color: cyan; color: cyan;";

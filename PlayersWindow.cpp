@@ -21,15 +21,15 @@ PlayersWindow::PlayersWindow(QWidget *parent) :
 {
     SelectedPlayer = 0;
     ui->setupUi(this);
-    signalMapperClicked  = new QSignalMapper(this);
-    signalMapperPressed  = new QSignalMapper(this);
-    signalMapperReleased = new QSignalMapper(this);
-    SetUpPlayerButtonMapping();
-    SetPlayerControls(false, HANDICAP_MODE);
-    LoadPlayersForTeams();
-    LoadPlayerSettings(0);      // 0 = Global Player
-    SetActivePlayers();
-    RenamePlayerTeamButtons(gameInfo.getNumberOfTeams());
+	signalMapperClicked  = new QSignalMapper(this);
+	signalMapperPressed  = new QSignalMapper(this);
+	signalMapperReleased = new QSignalMapper(this);
+	SetUpPlayerButtonMapping();
+	SetPlayerControls(false, HANDICAP_MODE);
+	LoadPlayersForTeams();
+	LoadPlayerSettings(0);      // 0 = Global Player
+	SetActivePlayers();
+	RenamePlayerTeamButtons(gameInfo.getNumberOfTeams());
 
 //#ifdef QT_DEBUG
 //    ui->btn_ChangePlayers->setVisible(true);
@@ -541,10 +541,10 @@ void PlayersWindow::on_btn_Flags_clicked()
     if(flagsWindow==NULL) flagsWindow = new FlagsWindow(SelectedPlayer, this);
     flagsWindow->setButtonStates(SelectedPlayer);
     qDebug() << "PlayersWindow::on_btn_Flags_clicked - Selected Player =" << SelectedPlayer;
-#ifdef Q_OS_ANDROID
-    flagsWindow->showFullScreen();
+#ifdef QT_DEBUG
+	flagsWindow->show();
 #else
-    flagsWindow->show();
+	flagsWindow->showFullScreen();
 #endif
 }
 
@@ -555,5 +555,9 @@ void PlayersWindow::on_btn_ChangePlayers_clicked()
     if (!rearrangePlayers) rearrangePlayers = new RearrangePlayers(this);
     rearrangePlayers->setAttribute( Qt::WA_DeleteOnClose );
     connect (rearrangePlayers,  SIGNAL(dataUpdated()),   this, SLOT(updatePlayerButtons() ));
-    rearrangePlayers->show();
+#ifdef QT_DEBUG
+	rearrangePlayers->show();
+#else
+	rearrangePlayers->showFullScreen();
+#endif
 }

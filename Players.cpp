@@ -176,7 +176,7 @@ void Players::setMedicMode(bool value)
 {
     MedicMode = value;
     setBitFlags1(MEDIC_MODE_FLAG, value);
-    //setBitFlags1(NEUTRALISE_10_FLAG, value);
+	//setBitFlags1(NEUTRALISE_10_FLAG, value);
 }
 
 int Players::getStartingAmmo() const
@@ -369,7 +369,7 @@ void Players::streamFromFile(QTextStream &in)
 //        qDebug() << "StartingAmmo"  << playerInfo[index].StartingAmmo;
 //        qDebug() << "SleepTimeOut"  << playerInfo[index].SleepTimeOut   << endl;
 //    }
-    qDebug() << "Players::StreamFromFile has left the building" << endl << endl;
+//    qDebug() << "Players::StreamFromFile has left the building" << endl << endl;
 }
 
 void Players::copyPlayerSettings(int copyFrom, int copyTo)

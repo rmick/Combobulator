@@ -2,40 +2,33 @@
 #include <QApplication>
 #include <QSplashScreen>
 #include <QSoundEffect>
-
-class mofta : public QThread
-{
-public:
-    static void sleep(unsigned long secs) { QThread::sleep(secs); }
-};
+#include "Defines.h"
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication::setApplicationName( QString("The Combobulator") );
-    //QApplication::setDesktopSettingsAware(false);
+//    QCoreApplication::setApplicationName( QString("The Combobulator") );
+//	QApplication::setDesktopSettingsAware(false);
 
-    QApplication    theApp(argc, argv);
+	QApplication    theApp(argc, argv);
     LttoMainWindow  lttoMainWindow;
     qDebug() << "Starting the main application.";
+	qDebug() << "------------------------------" << endl;
     QEventLoop      loop;
-    QSoundEffect    sound_PowerUp;
+	QSoundEffect    sound_PowerUp;
     QPixmap         pixmap(":/resources/images/Combobulator Logo.jpg");
     QSplashScreen   splashScreen(pixmap);
 
-    sound_PowerUp.setSource(QUrl::fromLocalFile(":/resources/audio/stinger-power-on.wav"));
-    //sound_PowerUp.setVolume(1.0);
-
-    sound_PowerUp.play();
-    splashScreen.show();
-
-    QTimer::singleShot(2000, &loop, SLOT(quit()));
-    loop.exec();
-
-#ifdef Q_OS_ANDROID
-    lttoMainWindow.showFullScreen();
+#ifndef QT_DEBUG
+	sound_PowerUp.setSource(QUrl::fromLocalFile(":/resources/audio/stinger-power-on.wav"));
+	sound_PowerUp.play();
+	splashScreen.show();
+	QTimer::singleShot(2000, &loop, SLOT(quit()));
+	loop.exec();
+	lttoMainWindow.showFullScreen();
 #else
-    lttoMainWindow.show();
+	lttoMainWindow.show();
 #endif
+
     splashScreen.finish(&lttoMainWindow);
 
     return theApp.exec();

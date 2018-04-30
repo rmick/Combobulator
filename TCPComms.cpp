@@ -4,41 +4,46 @@
 TCPComms tcpComms;
 
 TCPComms::TCPComms(QObject *parent) :
-    QObject(parent)
+	QObject(parent)
 {
     qDebug() << "TCPComms::TCPComms() - Constructing.......";
     tcpSocket = new QTcpSocket(this);
-    lttoComms.setTcpCommsConnected(false);
+	//lttoComms.setTcpCommsConnected(false);
+	emit TcpCommsConnectionStatus(false);
     setIsTCPinitialised(false);
     isConnected = false;
 }
 
 bool TCPComms::ConnectTCP()
 {
-    qDebug() << "TCPComms::ConnectTCP() - Connecting";
-    tcpSocket->connectToHost(HOST_IP_ADDRESS,TCP_IP_PORT);
-    return true;
+	qDebug() << "TCPComms::ConnectTCP() - Connecting";
+	tcpSocket->connectToHost(HOST_IP_ADDRESS,TCP_IP_PORT);
+	return true;
 }
 
 bool TCPComms::DisconnectTCP()
 {
     tcpSocket->disconnectFromHost();
     qDebug() << "TCPComms::DisconnectTCP() - Disconnected !!!";
-    lttoComms.setTcpCommsConnected(false);
+	//lttoComms.setTcpCommsConnected(false);
+	emit TcpCommsConnectionStatus(false);
     return false;
 }
 
 void TCPComms::connected()
 {
     qDebug() << "\n\tTCPComms::connected !!!!        :-)\n";
-    lttoComms.setTcpCommsConnected(true);
+	//lttoComms.setTcpCommsConnected(true);
+	emit TcpCommsConnectionStatus(true);
+	qDebug() << "TCPComms::connected() - \tCONNECTION ESTABLISHED";
     isConnected = true;
 }
 
 void TCPComms::disconnected()
 {
     qDebug() << "\n\t\tTCPComms::disconnected :-(\n";
-    lttoComms.setTcpCommsConnected(false);
+	//lttoComms.setTcpCommsConnected(false);
+	emit TcpCommsConnectionStatus(false);
     isConnected = false;
 }
 
@@ -60,11 +65,11 @@ void TCPComms::sendPacket(QByteArray data)
     {
         tcpSocket->write(data);
     }
-    else
-    {
-        if(lttoComms.getSerialUSBcommsConnected() == false)
-        ConnectTCP();
-    }
+//    else
+//    {
+//        if(lttoComms.getSerialUSBcommsConnected() == false)
+//        ConnectTCP();
+//    }
 }
 
 void TCPComms::initialiseTCPsignalsAndSlots()
@@ -75,13 +80,13 @@ void TCPComms::initialiseTCPsignalsAndSlots()
     setIsTCPinitialised(true);
 
     connect(tcpSocket,     SIGNAL(connected()),                this,       SLOT(connected()) );
-    connect(tcpSocket,     SIGNAL(connected()),                &lttoComms, SLOT(TCPconnected()) );
+	//connect(tcpSocket,     SIGNAL(connected()),                lttoComms, SLOT(TCPconnected()) );
     connect(tcpSocket,     SIGNAL(disconnected()),             this,       SLOT(disconnected()) );
-    connect(tcpSocket,     SIGNAL(disconnected()),             &lttoComms, SLOT(TCPdisconnected()) );
-    connect(tcpSocket,     SIGNAL(readyRead()),                this,       SLOT(receivePacket()) );
+	//connect(tcpSocket,     SIGNAL(disconnected()),             lttoComms, SLOT(TCPdisconnected()) );
+	connect(tcpSocket,     SIGNAL(readyRead()),                this,       SLOT(receivePacket()), Qt::DirectConnection );
 
-    connect(&lttoComms,    SIGNAL(sendSerialData(QByteArray)), this,       SLOT(sendPacket(QByteArray)) );
-    connect(this,          SIGNAL(newTCPdata(QByteArray)),     &lttoComms, SLOT(receivePacket(QByteArray)) );
+	//connect(lttoComms,    SIGNAL(sendSerialData(QByteArray)), this,       SLOT(sendPacket(QByteArray)) );
+	//connect(this,          SIGNAL(newTCPdata(QByteArray)),     lttoComms, SLOT(receivePacket(QByteArray)) );
 }
 
 bool TCPComms::getIsTCPinitialised() const

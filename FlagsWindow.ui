@@ -14,27 +14,7 @@
    <string>Dialog</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">/*
-QPushButton
-{
-    background-color: cyan;
-    border-style: outset;
-    border-width: 2px;
-    border-radius: 10px;
-    border-color: grey;
-}
-
-QPushButton:disabled
-{
-    background-color: rgb(200,230	,230); 
-}
-
-QPushButton:checked 
-{ 
-    background-color: rgb(50,220,200);
-	font-weight: bold
- }
-*/</string>
+   <string notr="true"/>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="1">
