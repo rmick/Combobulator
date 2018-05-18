@@ -8,12 +8,13 @@
 #include "Defines.h"
 #include "Game.h"
 #include "Players.h"
+#include "LttoComms.h"
 
 namespace Ui {
 class ReHostTagger;
 }
 
-class ReHostTagger : public QDialog  //, public HostGameWindow
+class ReHostTagger : public QDialog
 {
     Q_OBJECT
 
@@ -29,6 +30,8 @@ private:
     Ui::ReHostTagger        *ui;
     QSignalMapper           *signalMapper;
     QVector <QPushButton*>   playerButtons;
+
+	//LttoComms lttoComms;
 
     bool    closedWithoutSelectingPlayer;
 

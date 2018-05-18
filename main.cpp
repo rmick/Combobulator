@@ -6,11 +6,11 @@
 
 int main(int argc, char *argv[])
 {
-//    QCoreApplication::setApplicationName( QString("The Combobulator") );
-//	QApplication::setDesktopSettingsAware(false);
-
+	QCoreApplication::setApplicationName( QString("The Combobulator") );
+	QApplication::setDesktopSettingsAware(false);
 	QApplication    theApp(argc, argv);
     LttoMainWindow  lttoMainWindow;
+	lttoMainWindow.setWindowIcon(QIcon(":/resources/images/Combobulator.ico"));
     qDebug() << "Starting the main application.";
 	qDebug() << "------------------------------" << endl;
     QEventLoop      loop;

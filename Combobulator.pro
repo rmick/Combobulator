@@ -11,78 +11,80 @@ TARGET = Combobulator
 DEPLOYMENT.display_name = Combobulator
 TEMPLATE = app
 
+RC_FILE = Combobulator.rc
+ICON	= Combobulator.icns
+
 QMAKE_MAC_SDK = macosx10.13
 
-SOURCES +=  main.cpp\
-            PlayersWindow.cpp \
-            Game.cpp \
-            Players.cpp \
-            HostGameWindow.cpp \
-	    LazerSwarm.cpp \
-	    PortConnect.cpp \
-	    TCPComms.cpp \
-            LttoMainWindow.cpp \
-	    LttoComms.cpp \
-	    FlagsWindow.cpp \
-	    SerialUSBcomms.cpp \
-	    ReHostTagger.cpp \
-	    AboutForm.cpp \
-	    DeBrief.cpp \
-	    Hosting.cpp \
-	    RearrangePlayers.cpp \
+SOURCES +=  \
+    main.cpp\
+    PlayersWindow.cpp \
+    Game.cpp \
+    Players.cpp \
+    HostGameWindow.cpp \
+    LazerSwarm.cpp \
+    PortConnect.cpp \
+    TCPComms.cpp \
+    LttoMainWindow.cpp \
+    LttoComms.cpp \
+    FlagsWindow.cpp \
+    SerialUSBcomms.cpp \
+    ReHostTagger.cpp \
+    AboutForm.cpp \
+    DeBrief.cpp \
+    Hosting.cpp \
+    RearrangePlayers.cpp \
     StyleSheet.cpp \
     ScoresWindow.cpp \
     SetScoreParameters.cpp \
     FileLoadSave.cpp
 
 
-
 HEADERS  += \
-            PlayersWindow.h \
-            Game.h \
-            Players.h \
-            HostGameWindow.h \
-	    LazerSwarm.h \
-	    PortConnect.h \
-	    TCPComms.h \
-	    Defines.h \
-	    LttoMainWindow.h \
-	    LttoComms.h \
-	    FlagsWindow.h \
-	    SerialUSBcomms.h \
-	    ReHostTagger.h \
-	    AboutForm.h \
-	    DeBrief.h \
-	    Hosting.h \
-	    StyleSheet.h \
-	    RearrangePlayers.h \
+    PlayersWindow.h \
+    Game.h \
+    Players.h \
+    HostGameWindow.h \
+    LazerSwarm.h \
+    PortConnect.h \
+    TCPComms.h \
+    Defines.h \
+    LttoMainWindow.h \
+    LttoComms.h \
+    FlagsWindow.h \
+    SerialUSBcomms.h \
+    ReHostTagger.h \
+    AboutForm.h \
+    DeBrief.h \
+    Hosting.h \
+    StyleSheet.h \
+    RearrangePlayers.h \
     ScoresWindow.h \
     SetScoreParameters.h \
     FileLoadSave.h
 
 
 FORMS    += \
-            PlayersWindow.ui \
-	    HostGameWindow.ui \
-	    PortConnect.ui \
-	    LttoMainWindow.ui \
-	    SyncTaggers.ui \
-	    FlagsWindow.ui \
-	    ReHostTagger.ui \
-	    AboutForm.ui \
-	    RearrangePlayers.ui \
+    PlayersWindow.ui \
+    HostGameWindow.ui \
+    PortConnect.ui \
+    LttoMainWindow.ui \
+    SyncTaggers.ui \
+    FlagsWindow.ui \
+    ReHostTagger.ui \
+    AboutForm.ui \
+    RearrangePlayers.ui \
     ScoresWindow.ui \
     SetScoreParameters.ui \
     FileLoadSave.ui
 
+
 RESOURCES += \
-	    Resources.qrc
+    Resources.qrc
+
 
 DISTFILES += \
     resources/images/Combobulator Logo.jpg \
-    resources/files/sound_hosting-join-complete.wav \
-    resources/files/sound_hosting-listening.wav \
-    resources/files/sound_hosting-problem.wav \
     resources/audio/countdown/wav \
     resources/audio/game-over.wav \
     resources/audio/good-luck.wav \
@@ -95,3 +97,4 @@ DISTFILES += \
     resources/audio/power-up.wav \
     resources/audio/shut-down.wav \
     resources/audio/stinger-power-on.wav
+

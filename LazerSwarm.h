@@ -18,6 +18,6 @@ private:
     QString     isBeacon;           //true if the message is a Beacon
 };
 
-extern LazerSwarm lazerswarm;
+//extern LazerSwarm lazerswarm;
 
 #endif // LAZERSWARM_H

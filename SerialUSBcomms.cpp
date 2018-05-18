@@ -1,7 +1,7 @@
 #include "SerialUSBcomms.h"
 #include "LttoComms.h"
 
-SerialUSBcomms serialUSBcomms;
+//SerialUSBcomms serialUSBcomms;
 
 SerialUSBcomms::SerialUSBcomms(QObject *parent) :
     QObject(parent)
@@ -79,7 +79,9 @@ void SerialUSBcomms::receivePacket()
     QByteArray rX;
     rX = serialUSB->readAll();
     #ifdef Q_OS_ANDROID
-    lttoComms.androidRxPacket(rX);
+	//lttoComms.androidRxPacket(rX);
+	//TODO: Is this fixed?
+	emit newSerialUSBdata(rX);
     #else
     emit newSerialUSBdata(rX);
     #endif
@@ -126,15 +128,13 @@ bool SerialUSBcomms::getSerialCommsConnected() const
 void SerialUSBcomms::setSerialCommsConnected(bool value)
 {
     serialCommsConnected = value;
-    lttoComms.setSerialUSBcommsConnected(value);
+//TODO1: Hmmmmmmmm			lttoComms.setSerialUSBcommsConnected(value);
 }
 
 void SerialUSBcomms::initialiseUSBsignalsAndSlots()
 {
     //Needs to be done here not in constructor because lttoComms is a static and may not exist when this static is created.
     qDebug() << "SerialUSBcomms::initialiseUSBsignalsAndSlots() - Triggered";
-    connect(&lttoComms, SIGNAL(sendSerialData(QByteArray)),     this,       SLOT(sendPacket(QByteArray)) );
-    connect(this,       SIGNAL(newSerialUSBdata(QByteArray)),   &lttoComms, SLOT(receivePacket(QByteArray)) );
     connect(serialUSB,  SIGNAL(readyRead()),                    this,       SLOT(receivePacket()) );
     setIsUSBinitialised(true);
 }

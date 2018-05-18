@@ -47,6 +47,6 @@ private:
         bool            isUSBinitialised;                   // used to trigger a single instance of USB port connectSignals.
 };
 
-extern SerialUSBcomms serialUSBcomms;
+//extern SerialUSBcomms serialUSBcomms;
 
 #endif // SERIALUSBCOMMS_H

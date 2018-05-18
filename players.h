@@ -161,6 +161,6 @@ private:
 
 extern Players playerInfo[MAX_PLAYERS+1];
 
-extern  Players playerInfoTemp[MAX_PLAYERS+1];
+extern Players playerInfoTemp[MAX_PLAYERS+1];
 
 #endif // PLAYERS_H

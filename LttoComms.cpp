@@ -7,16 +7,64 @@
 //#define LOCAL_DEBUG_TX
 //#define LCD_DISABLED
 
-LttoComms lttoComms;
-
 LttoComms::LttoComms(QObject *parent) : QObject(parent)
 {
-    qDebug() << "LttoComms::LttoComms() - Constructing.......";
+	qDebug() << "LttoComms::LttoComms() - Constructing.......";
     dontAnnounceGame = false;
     useLongDataPacketsOverTCP = false;
+	setTcpCommsConnected(false);
+
+	//TODO: These are only needed due to 2nd instance
+	//setUseLazerSwarm(false);
+	//setUseLongDataPacketsOverTCP(true);
+
+
+	tcpComms		= new TCPComms(this);
+	serialUSBcomms	= new SerialUSBcomms(this);
+	lazerSwarm		= new LazerSwarm;
+
+	connect(this,			SIGNAL(sendSerialData(QByteArray)),     serialUSBcomms,	SLOT(sendPacket(QByteArray)) );
+	connect(serialUSBcomms,	SIGNAL(newSerialUSBdata(QByteArray)),   this,			SLOT(receivePacket(QByteArray)) );
+	connect(tcpComms,		SIGNAL(TcpCommsConnectionStatus(bool)), this,			SLOT(setTcpCommsConnected(bool)));
+	connect(this,			SIGNAL(sendSerialData(QByteArray)),		tcpComms,       SLOT(sendPacket(QByteArray)) );
+	connect(tcpComms,		SIGNAL(newTCPdata(QByteArray)),     this,				SLOT(receivePacket(QByteArray)) );
+}
+
+LttoComms *LttoComms::getInstance()
+{
+	static LttoComms *instance = new LttoComms();
+	return instance;
 }
 
 ////////////////////////////////////////////////////////////////////
+
+void LttoComms::initialise()
+{
+	qDebug() << "LttoComms::initialise() - Triggered";
+	if(serialUSBcomms->getIsUSBinitialised() == false)
+	{
+		serialUSBcomms->initialiseUSBsignalsAndSlots();
+	}
+
+	if(tcpComms->getIsTCPinitialised() == false)
+	{
+		tcpComms->initialiseTCPsignalsAndSlots();
+
+	}
+
+	if(serialUSBcomms->getSerialCommsConnected() == false)
+	{
+		serialUSBcomms->setUpSerialPort();
+	}
+}
+
+bool LttoComms::getConnectionStatus()
+{
+	bool status = false;
+	if (getTcpCommsConnected() == true || serialUSBcomms->getSerialCommsConnected() == true) status = true;
+	return status;
+}
+
 
 bool LttoComms::sendPacket(char type, int data, bool dataFormat)
 {
@@ -44,7 +92,7 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
             fullTCPpacketToSend = false;
             packetString = createIRstring(data);
             packetString.prepend('P');
-            if(lttoComms.getUseLongDataPacketsOverTCP()) packetString.prepend("ltto:");
+			if(getUseLongDataPacketsOverTCP()) packetString.prepend("ltto:");
             packet.append(packetString);
             //qDebug() << "lttoComms::sendPacket() - Packet =    " << data << "\t:" << packetString;
             break;
@@ -79,7 +127,7 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
         case TAG:
             packetString = createIRstring(data);
             packetString.prepend('T');
-            if(lttoComms.getUseLongDataPacketsOverTCP()) packetString.prepend("ltto:");
+			if(getUseLongDataPacketsOverTCP()) packetString.prepend("ltto:");
             packet.append(packetString);
             fullTCPpacketToSend = true;
             //qDebug() << "lttoComms::sendPacket() - Tag = \t" << packetString << endl << endl;
@@ -87,7 +135,7 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
         case BEACON:
             packetString = createIRstring(data);
             packetString.prepend('B');
-            if(lttoComms.getUseLongDataPacketsOverTCP()) packetString.prepend("ltto:");
+			if(getUseLongDataPacketsOverTCP()) packetString.prepend("ltto:");
             packet.append(packetString);
             fullTCPpacketToSend = true;
             break;
@@ -113,18 +161,18 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
     }
     else
     {
-        if (useLazerSwarm)
+		if (getUseLazerSwarm())
         {
             QByteArray packetToTranslate;
             packetToTranslate.append(packet);
             packet.clear();
-            packet.append(lazerswarm.translateCommand(packetToTranslate) );
+			packet.append(lazerSwarm->translateCommand(packetToTranslate) );
             packet.append(" \r\n");
         }
         else packet.append(":");
         //qDebug() << "lttoComms::sendPacket() LazerSwarm Mode- " << packet;
         emit sendSerialData(packet);            //Connects to TCPComms::sendPacket slot && SerialUSBcomms::sendPacket slot
-        tcpComms.sendPacket(packet);
+		tcpComms->sendPacket(packet);
         packet.clear();
         nonBlockingDelay(INTERPACKET_DELAY_MSEC);
     }
@@ -134,44 +182,60 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
 
 void LttoComms::sendLCDtext(QString textToSend, int lineNumber)
 {
-
 #ifdef LCD_DISABLED
     return;
 #endif
 
-    if(lttoComms.getSerialUSBcommsConnected()) return;      // USB means it is a Lazerswarm, which does not accept TXT.
+	if(!tcpCommsConnected) return;      // USB means it is a Lazerswarm, which does not accept TXT.
     QByteArray textBA;
     textToSend.prepend("TXT" + QString::number(lineNumber)+ ":");
     textBA.append(textToSend + "\r\n");
-    //qDebug() << "LttoComms::sendLCDtext:" << textBA;
-    //emit sendSerialData(textBA);
-    tcpComms.sendPacket(textBA);
+	tcpComms->sendPacket(textBA);
     //lttoComms.nonBlockingDelay(TEXT_SENT_DELAY);
 }
 
 void LttoComms::sendLCDtext(int xCursor, int yCursor, QString text, int fontSize, int colour, bool clearDisp)
 {
-
 #ifdef LCD_DISABLED
     return;
 #endif
 
-    if(lttoComms.getSerialUSBcommsConnected()) return;      // USB means it is a Lazerswarm, which does not accept TXT.
+	if(!tcpCommsConnected) return;      // USB means it is a Lazerswarm, which does not accept TXT.
     QByteArray textBA;
     QString textToSend = "";
     textToSend.prepend("DSP," + QString::number(xCursor) + "," + QString::number(yCursor) + "," + text + "," +  QString::number(fontSize) + "," + QString::number(colour) + "," + QString::number(clearDisp));
     textBA.append(textToSend + "\r\n");
-    //qDebug() << "LttoComms::sendLCDtext(DSPmode): " << textBA;
-    tcpComms.sendPacket(textBA);
-    //emit sendSerialData(textBA);
-    //lttoComms.nonBlockingDelay(TEXT_SENT_DELAY);
+	tcpComms->sendPacket(textBA);
+	//lttoComms.nonBlockingDelay(TEXT_SENT_DELAY);
+}
+
+void LttoComms::sendLEDcolour(int Red, int Green, int Blue)
+{
+	if(!tcpCommsConnected) return;      // USB means it is a Lazerswarm, which does not accept TXT.
+	QByteArray textBA;
+	QString textToSend = "";
+	textToSend.prepend("LED," + QString::number(Red) + "," + QString::number(Green) + "," +  QString::number(Blue));
+	textBA.append(textToSend + "\r\n");
+	qDebug() << "LttoComms::sendLEDcolour() -" << textBA;
+	tcpComms->sendPacket(textBA);
+}
+
+void LttoComms::sendLEDcolour(QString colour)
+{
+	if(!tcpCommsConnected) return;      // USB means it is a Lazerswarm, which does not accept TXT.
+	QByteArray textBA;
+	QString textToSend = "";
+	textToSend.prepend("LED," + colour);
+	textBA.append(textToSend + "\r\n");
+	qDebug() << "LttoComms::sendLEDcolour() -" << textBA;
+	tcpComms->sendPacket(textBA);
 }
 
 QString LttoComms::createIRstring(int data)
 {
     QString createdPacket;
-    if (useLazerSwarm)  createdPacket = QString::number(data,16).toUpper();
-    else                createdPacket = QString::number(data,10);
+	if (getUseLazerSwarm())	createdPacket = QString::number(data,16).toUpper();
+	else					createdPacket = QString::number(data,10);
     if (createdPacket.length() == 1) createdPacket.prepend('0');
     return createdPacket;
 }
@@ -180,21 +244,15 @@ QString LttoComms::createIRstring(int data)
 
 void LttoComms::receivePacket(QByteArray RxData)
 {
-    bool isPacketComplete = false;
-
-    //qDebug() << "\tLttoComms::receivePacket() -"<< RxData;
-
+	//qDebug() << "\tLttoComms::receivePacket() -"<< RxData;
+	bool isPacketComplete = false;
     irDataIn.append(RxData);
 
     if (irDataIn.endsWith("\r\n"))
     {
-        //qDebug() << "LttoComms::receivePacket()" << irDataIn;
-
         //Remove the \r\n
         irDataIn = irDataIn.trimmed();
-        //irDataIn = irDataIn.trimmed();  //there is a bug in the ESP32 code that sometimes sends a double \r\n
 
-       //Check for an Error message
         if      (irDataIn.startsWith("ERROR"))
         {
             qDebug() <<"LttoComms::receivePacket() Error:" << irDataIn;
@@ -247,11 +305,11 @@ void LttoComms::receivePacket(QByteArray RxData)
         else if (irDataIn.startsWith("RCV"))
         // Lazerswarm packet
         {
-            rxPacketList.append(lazerswarm.decodeCommand(irDataIn));
+			rxPacketList.append(lazerSwarm->decodeCommand(irDataIn));
            #ifdef LOCAL_DEBUG_RX
-                qDebug() << "LttoComms::receivePacket() LazerSwarm mode - " << lazerswarm.decodeCommand(irDataIn);
+				qDebug() << "LttoComms::receivePacket() LazerSwarm mode - " << lazerSwarm->decodeCommand(irDataIn);
             #endif
-            if (lazerswarm.decodeCommand(irDataIn).startsWith("C"))
+			if (lazerSwarm->decodeCommand(irDataIn).startsWith("C"))
             {
             #ifdef LOCAL_DEBUG_RX
                 qDebug() << "LttoComms::receivePacket() LazerSwarm mode -   ___________";
@@ -268,7 +326,7 @@ void LttoComms::receivePacket(QByteArray RxData)
         {
             //The message is invalid, so start Tx again.
             qDebug() << "\t\tLttoComms::receivePacket() - bad packet receveived, bailing out" << irDataIn;
-            lttoComms.setDontAnnounceGame(false);
+			setDontAnnounceGame(false);
             irDataIn="";
         }
     }
@@ -298,8 +356,21 @@ bool LttoComms::getUseLongDataPacketsOverTCP() const
 
 void LttoComms::setUseLongDataPacketsOverTCP(bool value)
 {
-    useLongDataPacketsOverTCP = value;
+	useLongDataPacketsOverTCP = value;
 }
+
+void LttoComms::closePorts()
+{
+	tcpComms->DisconnectTCP();
+	serialUSBcomms->closeSerialPort();
+	setTcpCommsConnected(false);
+	setSerialUSBcommsConnected(false);
+}
+
+//void LttoComms::setTcpCommsStatus(bool value)
+//{
+//	setTcpCommsConnected(value);
+//}
 
 bool LttoComms::getSerialUSBcommsConnected() const
 {
@@ -332,17 +403,7 @@ void LttoComms::setTcpCommsConnected(bool value)
 {
     tcpCommsConnected = value;
     setUseLongDataPacketsOverTCP(value);                        // Activated/Deactivated here !!!!
-    lttoComms.setUseLazerSwarm(!value);
-}
-
-void LttoComms::TCPconnected()
-{
-    tcpCommsConnected = true;
-}
-
-void LttoComms::TCPdisconnected()
-{
-    tcpCommsConnected = false;
+	setUseLazerSwarm(!value);
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -428,6 +489,7 @@ bool LttoComms::isCheckSumCorrect(int _command, int _game, int _teamAndPlayer, i
     calculatedCheckSumRx += _tagsP6;
     calculatedCheckSumRx += _tagsP7;
     calculatedCheckSumRx += _tagsP8;
+	qDebug() << "LttoComms::isCheckSumCorrect() -" << calculatedCheckSumRx << ":" << calculatedCheckSumRx%256;
     calculatedCheckSumRx = calculatedCheckSumRx%256;
     if (calculatedCheckSumRx == _checksum%256)  result = true;
     return result;
@@ -480,8 +542,12 @@ void LttoComms::processPacket(QList<QByteArray> data)
         taggerInfo      = extract(data);
         smartDeviceInfo = extract(data);
         checksum        = extract(data);
+
+		qDebug() << "\nLttoComms::processPacket() -  case REQUEST_JOIN_LTAR_GAME:";
+		qDebug() << game << tagger << taggerInfo << smartDeviceInfo << checksum << " : " << CHECKSUM << endl;
+
         //TODO: Fix the Checksum that is not working - posibly due to DEC not BCD ??
-        //if(isCheckSumCorrect(command, game, tagger, taggerInfo, smartDeviceInfo, checksum)) emit RequestJoinGame(game, tagger, 0, true);
+		//if(isCheckSumCorrect(command, game, tagger, taggerInfo, smartDeviceInfo, checksum)) emit RequestJoinGame(game, tagger, 0, true);
         //else                                                                                setDontAnnounceGame(false);
              emit RequestJoinGame(game, tagger, 0, true);
         break;
@@ -549,33 +615,35 @@ void LttoComms::processPacket(QList<QByteArray> data)
             tagsP7 = ConvertBCDtoDec(tagsP7);
             tagsP8 = ConvertBCDtoDec(tagsP8);
 
-            switch(command)
-            {
-            case TEAM_1_TAG_REPORT:
-                emit Team1TagReportReceived(game, teamAndPlayer, tagsP1, tagsP2, tagsP3, tagsP4, tagsP5, tagsP6, tagsP7, tagsP8);
-                break;
-            case TEAM_2_TAG_REPORT:
-                emit Team2TagReportReceived(game, teamAndPlayer, tagsP1, tagsP2, tagsP3, tagsP4, tagsP5, tagsP6, tagsP7, tagsP8);
-                break;
-            case TEAM_3_TAG_REPORT:
-                emit Team3TagReportReceived(game, teamAndPlayer, tagsP1, tagsP2, tagsP3, tagsP4, tagsP5, tagsP6, tagsP7, tagsP8);
-                break;
-            }
+			switch(command)
+			{
+				case TEAM_1_TAG_REPORT:
+					emit Team1TagReportReceived(game, teamAndPlayer, tagsP1, tagsP2, tagsP3, tagsP4, tagsP5, tagsP6, tagsP7, tagsP8);
+					break;
+				case TEAM_2_TAG_REPORT:
+					emit Team2TagReportReceived(game, teamAndPlayer, tagsP1, tagsP2, tagsP3, tagsP4, tagsP5, tagsP6, tagsP7, tagsP8);
+					break;
+				case TEAM_3_TAG_REPORT:
+					emit Team3TagReportReceived(game, teamAndPlayer, tagsP1, tagsP2, tagsP3, tagsP4, tagsP5, tagsP6, tagsP7, tagsP8);
+					break;
+			}
         }
         else    setDontAnnounceGame(false);
         break;
 
-    //TODO: BEACON and TEAM_@_TAG_REPORT both have a value of 0x66, so this barks!!!
-    //case BEACON:
-        //TODO: Add some code to action Beacons
-        break;
+	case BEACON:
+		qDebug() << "LttoComms::processPacket() - BEACON !";
+		//setDontAnnounceGame(false);
+		break;
 
     case TAG:
+		qDebug() << "LttoComms::processPacket() - TAG !";
+		//setDontAnnounceGame(false);
         break;
 
     default:
         //We end up here if the ESP32 misses the Packet Header
-        qDebug() << "LttoComms::processPacket() - How did we get here ????";
+		qDebug() << "LttoComms::processPacket() - ESP32 missed the packet header again:" << command << data;
         break;
 
     }

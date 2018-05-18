@@ -30,6 +30,8 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+	lttoComms = LttoComms::getInstance();
+
     QCoreApplication::setOrganizationName("Bush And Beyond");
     QCoreApplication::setOrganizationDomain("www.bushandbeyond.com.au");
     QCoreApplication::setApplicationName("Combobulator");
@@ -50,6 +52,7 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
 	ui->btn_SetScorePoints->setVisible(false);
 	ui->btn_Debug->setVisible(false);
     setLtarControls(false);
+	ui->btn_StartGame->setVisible(false);
 	//serialUSBcomms.setIsUSBinitialised(false);
     qsrand(static_cast<uint>(QTime::currentTime().msec()));
     for (int index = 1; index < 25; index++)    playerInfo[index].setPlayerName("Player " + QString::number(index));
@@ -147,7 +150,7 @@ void LttoMainWindow::on_btn_StartGame_clicked()
 
 	if (!hostGameWindow)	hostGameWindow = new HostGameWindow(this);
 	if(hostGameWindow->resetPlayersForNewGame() == false) return;
-    gameInfo.setGameID(host.getRandomNumber(1,255));
+
 #ifdef QT_DEBUG
 	hostGameWindow->show();
 #else
@@ -804,7 +807,7 @@ void LttoMainWindow::saveSettings()
 
 void LttoMainWindow::on_actionExit_triggered()
 {
-	tcpComms.DisconnectTCP();
+	lttoComms->closePorts();
 	saveSettings();
 #ifndef QT_DEBUG
     sound_Powerdown->setLoopCount(1);
@@ -812,7 +815,6 @@ void LttoMainWindow::on_actionExit_triggered()
 	   QEventLoop      loop;
 	   QTimer::singleShot(850, &loop, SLOT(quit()));
 	   loop.exec();
-	lttoComms.nonBlockingDelay(850);
 #endif
     QApplication::quit();
 }

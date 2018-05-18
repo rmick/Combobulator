@@ -5,7 +5,7 @@
 
 #include "HostGameWindow.h"
 
-Hosting host;
+//Hosting host;
 
 Hosting::Hosting(QObject *parent) : QObject(parent)
 {

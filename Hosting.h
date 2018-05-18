@@ -26,6 +26,6 @@ private:
 
 };
 
-extern Hosting host;
+//extern Hosting host;
 
 #endif // HOSTING_H

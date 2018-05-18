@@ -6,12 +6,16 @@
 #include "HostGameWindow.h"
 #include <QMultiMap>
 
+
+
 DeBrief::DeBrief(QObject *parent) : QObject(parent)
 {
-    connect(&lttoComms, SIGNAL(TagSummaryReceived(int,int,int,int,int,int,int,int)), this, SLOT(ReceiveTagSummary(int,int,int,int,int,int,int,int)) );
-    connect(&lttoComms, SIGNAL(Team1TagReportReceived(int,int,int,int,int,int,int,int,int,int)), this, SLOT(Team1TagReportReceived(int,int,int,int,int,int,int,int,int,int)));
-    connect(&lttoComms, SIGNAL(Team2TagReportReceived(int,int,int,int,int,int,int,int,int,int)), this, SLOT(Team2TagReportReceived(int,int,int,int,int,int,int,int,int,int)));
-    connect(&lttoComms, SIGNAL(Team3TagReportReceived(int,int,int,int,int,int,int,int,int,int)), this, SLOT(Team3TagReportReceived(int,int,int,int,int,int,int,int,int,int)));
+	lttoComms = LttoComms::getInstance();
+
+	connect(lttoComms, SIGNAL(TagSummaryReceived(int,int,int,int,int,int,int,int)),				this, SLOT(ReceiveTagSummary(int,int,int,int,int,int,int,int)) );
+	connect(lttoComms, SIGNAL(Team1TagReportReceived(int,int,int,int,int,int,int,int,int,int)), this, SLOT(Team1TagReportReceived(int,int,int,int,int,int,int,int,int,int)));
+	connect(lttoComms, SIGNAL(Team2TagReportReceived(int,int,int,int,int,int,int,int,int,int)), this, SLOT(Team2TagReportReceived(int,int,int,int,int,int,int,int,int,int)));
+	connect(lttoComms, SIGNAL(Team3TagReportReceived(int,int,int,int,int,int,int,int,int,int)), this, SLOT(Team3TagReportReceived(int,int,int,int,int,int,int,int,int,int)));
 
     deBriefMessageType = REQUEST_TAG_SUMMARY_BIT;
     currentPlayer = 0;
@@ -59,11 +63,11 @@ DeBrief::DeBrief(QObject *parent) : QObject(parent)
 
 void DeBrief::RequestTagReports()
 {   
-    if (lttoComms.getDontAnnounceGame())
+	if (lttoComms->getDontAnnounceGame())
     {
         if(timeOutCount++ == 3)
         {
-            lttoComms.setDontAnnounceGame(false);
+			lttoComms->setDontAnnounceGame(false);
             emit SendToHGWlistWidget("Listening...." + QString::number(timeOutCount));
             qDebug() << "Listening....." << timeOutCount;
             return;
@@ -110,11 +114,11 @@ void DeBrief::RequestTagReports()
     qDebug() << "\nDeBrief::RequestTagReports() -" << currentPlayer << playerToDeBrief << ":" << deBriefTeam << deBriefPlayer << "MessageType" << deBriefMessageType;
     emit SendToHGWlistWidget("Debriefing Player =" + QString::number(currentPlayer) + ", MessageType:" + QString::number(deBriefMessageType));
 
-    lttoComms.sendPacket(PACKET, REQUEST_TAG_REPORT);
-    lttoComms.sendPacket(DATA, gameInfo.getGameID());
-    lttoComms.sendPacket(DATA, teamAndPlayerByte);
-    lttoComms.sendPacket(DATA, deBriefMessageType);
-    lttoComms.sendPacket(CHECKSUM);
+	lttoComms->sendPacket(PACKET, REQUEST_TAG_REPORT);
+	lttoComms->sendPacket(DATA, gameInfo.getGameID());
+	lttoComms->sendPacket(DATA, teamAndPlayerByte);
+	lttoComms->sendPacket(DATA, deBriefMessageType);
+	lttoComms->sendPacket(CHECKSUM);
 
 
 }
@@ -137,13 +141,13 @@ void DeBrief::ReceiveTagSummary(int game, int teamAndPlayer, int tagsTaken, int 
         return;
     }
 
-    lttoComms.setDontAnnounceGame(true);
+	lttoComms->setDontAnnounceGame(true);
 
-    playerInfo[currentPlayer].setTagsTaken       (0, lttoComms.ConvertBCDtoDec(tagsTaken));  //Player 0 is global
-    playerInfo[currentPlayer].setSurvivalTimeMinutes(lttoComms.ConvertBCDtoDec(survivedMinutes));
-    playerInfo[currentPlayer].setSurvivalTimeSeconds(lttoComms.ConvertBCDtoDec(survivedSeconds));
-    playerInfo[currentPlayer].setZoneTimeMinutes    (lttoComms.ConvertBCDtoDec(zoneTimeMinutes));
-    playerInfo[currentPlayer].setZoneTimeSeconds    (lttoComms.ConvertBCDtoDec(zoneTimeSeconds));
+	playerInfo[currentPlayer].setTagsTaken       (0, lttoComms->ConvertBCDtoDec(tagsTaken));  //Player 0 is global
+	playerInfo[currentPlayer].setSurvivalTimeMinutes(lttoComms->ConvertBCDtoDec(survivedMinutes));
+	playerInfo[currentPlayer].setSurvivalTimeSeconds(lttoComms->ConvertBCDtoDec(survivedSeconds));
+	playerInfo[currentPlayer].setZoneTimeMinutes    (lttoComms->ConvertBCDtoDec(zoneTimeMinutes));
+	playerInfo[currentPlayer].setZoneTimeSeconds    (lttoComms->ConvertBCDtoDec(zoneTimeSeconds));
     playerInfo[currentPlayer].setReportFlags           (flags);
 
     //Set the flags based on what we know we should receive.
@@ -177,7 +181,7 @@ void DeBrief::Team1TagReportReceived(int game, int teamAndPlayer, int tagsP1, in
     qDebug() << "\nDeBrief::ReceiveTeam1Report() - " << tagsP1 << tagsP2 << tagsP3 << tagsP4 << tagsP5 << tagsP6 << tagsP7 << tagsP8;
     SendToHGWlistWidget("DeBrief::ReceiveTeam1Report() -" + QString::number(tagsP1) + QString::number(tagsP2) + QString::number(tagsP3) + QString::number(tagsP4) + QString::number(tagsP5) + QString::number(tagsP6) + QString::number(tagsP7) + QString::number(tagsP8) );
 
-    lttoComms.setDontAnnounceGame(true);
+	lttoComms->setDontAnnounceGame(true);
 
     playerInfo[currentPlayer].setTagsTaken(1, tagsP1);
     playerInfo[currentPlayer].setTagsTaken(2, tagsP2);
@@ -209,7 +213,7 @@ void DeBrief::Team2TagReportReceived(int game, int teamAndPlayer, int tagsP1, in
     qDebug() << "\nDeBrief::ReceiveTeam2Report() - " << tagsP1 << tagsP2 << tagsP3 << tagsP4 << tagsP5 << tagsP6 << tagsP7 << tagsP8;
     SendToHGWlistWidget("DeBrief::ReceiveTeam2Report() -" + QString::number(tagsP1) + QString::number(tagsP2) + QString::number(tagsP3) + QString::number(tagsP4) + QString::number(tagsP5) + QString::number(tagsP6) + QString::number(tagsP7) + QString::number(tagsP8) );
 
-    lttoComms.setDontAnnounceGame(true);
+	lttoComms->setDontAnnounceGame(true);
 
     playerInfo[currentPlayer].setTagsTaken(9,  tagsP1);
     playerInfo[currentPlayer].setTagsTaken(10, tagsP2);
@@ -232,7 +236,7 @@ void DeBrief::Team3TagReportReceived(int game, int teamAndPlayer, int tagsP1, in
     qDebug() << "\nDeBrief::ReceiveTeam3Report() - " << tagsP1 << tagsP2 << tagsP3 << tagsP4 << tagsP5 << tagsP6 << tagsP7 << tagsP8;
     SendToHGWlistWidget("DeBrief::ReceiveTeam3Report() -" + QString::number(tagsP1) + QString::number(tagsP2) + QString::number(tagsP3) + QString::number(tagsP4) + QString::number(tagsP5) + QString::number(tagsP6) + QString::number(tagsP7) + QString::number(tagsP8) );
 
-    lttoComms.setDontAnnounceGame(true);
+	lttoComms->setDontAnnounceGame(true);
 
     playerInfo[currentPlayer].setTagsTaken(17, tagsP1);
     playerInfo[currentPlayer].setTagsTaken(18, tagsP2);
@@ -285,19 +289,19 @@ void DeBrief::sendRankReport()
          qDebug() << teamPlayerByte;
 
 //         //Send the message
-         lttoComms.sendPacket(PACKET, SEND_RANK_REPORT);
-         lttoComms.sendPacket(DATA, gameInfo.getGameID());
-         lttoComms.sendPacket(DATA, teamPlayerByte);
-         lttoComms.sendPacket(DATA, playerInfo[1 + ((loopCount-1)*8)].getRankingInGame());
-         lttoComms.sendPacket(DATA, playerInfo[2 + ((loopCount-1)*8)].getRankingInGame());
-         lttoComms.sendPacket(DATA, playerInfo[3 + ((loopCount-1)*8)].getRankingInGame());
-         lttoComms.sendPacket(DATA, playerInfo[4 + ((loopCount-1)*8)].getRankingInGame());
-         lttoComms.sendPacket(DATA, playerInfo[5 + ((loopCount-1)*8)].getRankingInGame());
-         lttoComms.sendPacket(DATA, playerInfo[6 + ((loopCount-1)*8)].getRankingInGame());
-         lttoComms.sendPacket(DATA, playerInfo[7 + ((loopCount-1)*8)].getRankingInGame());
-         lttoComms.sendPacket(DATA, playerInfo[8 + ((loopCount-1)*8)].getRankingInGame());
-         lttoComms.sendPacket(CHECKSUM);
-         lttoComms.nonBlockingDelay(100);
+		 lttoComms->sendPacket(PACKET, SEND_RANK_REPORT);
+		 lttoComms->sendPacket(DATA, gameInfo.getGameID());
+		 lttoComms->sendPacket(DATA, teamPlayerByte);
+		 lttoComms->sendPacket(DATA, playerInfo[1 + ((loopCount-1)*8)].getRankingInGame());
+		 lttoComms->sendPacket(DATA, playerInfo[2 + ((loopCount-1)*8)].getRankingInGame());
+		 lttoComms->sendPacket(DATA, playerInfo[3 + ((loopCount-1)*8)].getRankingInGame());
+		 lttoComms->sendPacket(DATA, playerInfo[4 + ((loopCount-1)*8)].getRankingInGame());
+		 lttoComms->sendPacket(DATA, playerInfo[5 + ((loopCount-1)*8)].getRankingInGame());
+		 lttoComms->sendPacket(DATA, playerInfo[6 + ((loopCount-1)*8)].getRankingInGame());
+		 lttoComms->sendPacket(DATA, playerInfo[7 + ((loopCount-1)*8)].getRankingInGame());
+		 lttoComms->sendPacket(DATA, playerInfo[8 + ((loopCount-1)*8)].getRankingInGame());
+		 lttoComms->sendPacket(CHECKSUM);
+		 lttoComms->nonBlockingDelay(100);
 
         //reset index to 1 and exit if done 3x5 times
         if (index == 3 && loopCount < 5)
@@ -506,7 +510,7 @@ bool DeBrief::checkIfPlayerIsDebriefed()
             setIsPlayerDeBriefed(true);
             deBriefMessageType = REQUEST_ALL_DEBRIEF_BITS;
             qDebug() << "---------------------" << endl;
-            lttoComms.setDontAnnounceGame(false);
+			lttoComms->setDontAnnounceGame(false);
             result = true;
         }
     }

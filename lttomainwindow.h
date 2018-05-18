@@ -124,8 +124,9 @@ private:
 	QPointer<FileLoadSave>			fileLoadSave;
 	QPointer<SetScoreParameters>	setScoreParameters;
 	QPointer<AboutForm>             aboutForm;
-    QSoundEffect            *sound_PowerUp;
-    QSoundEffect            *sound_Powerdown;
+	QSoundEffect					*sound_PowerUp;
+	QSoundEffect					*sound_Powerdown;
+	LttoComms						*lttoComms;
 
     bool    SlowTags;
     bool    MedicMode;

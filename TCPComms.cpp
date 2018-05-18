@@ -1,7 +1,7 @@
 #include "TCPComms.h"
 #include "LttoComms.h"
 
-TCPComms tcpComms;
+//TCPComms tcpComms;
 
 TCPComms::TCPComms(QObject *parent) :
 	QObject(parent)
@@ -51,25 +51,22 @@ void TCPComms::receivePacket()
 {
     QByteArray rX;
     rX = tcpSocket->readAll();
-#ifdef Q_OS_ANDROID
-    lttoComms.androidRxPacket(rX);  // This is the simple workaround, to issue below  :-)
-#else
-    emit newTCPdata(rX);            // Does not work on Android for some unknown reason.
-    //qDebug() << "\nTCPComms::receivePacket() - " << rX;
-#endif
+	emit newTCPdata(rX);
 }
 
 void TCPComms::sendPacket(QByteArray data)
 {
-    if (tcpSocket->state() == QAbstractSocket::ConnectedState)
+
+	if (tcpSocket->state() == QAbstractSocket::ConnectedState)
     {
-        tcpSocket->write(data);
+		//qDebug() << "TCPComms::sendPacket(QByteArray data)" << data;
+		tcpSocket->write(data);
     }
-//    else
-//    {
-//        if(lttoComms.getSerialUSBcommsConnected() == false)
-//        ConnectTCP();
-//    }
+	else
+	{
+		//TODO1:  FIX THIS ASAP		if(lttoComms.getSerialUSBcommsConnected() == false)
+		ConnectTCP();
+	}
 }
 
 void TCPComms::initialiseTCPsignalsAndSlots()
@@ -78,13 +75,11 @@ void TCPComms::initialiseTCPsignalsAndSlots()
 
     //Needs to be done here not in constructor because lttoComms a static and may not exist when this static is created.
     setIsTCPinitialised(true);
-
     connect(tcpSocket,     SIGNAL(connected()),                this,       SLOT(connected()) );
-	//connect(tcpSocket,     SIGNAL(connected()),                lttoComms, SLOT(TCPconnected()) );
     connect(tcpSocket,     SIGNAL(disconnected()),             this,       SLOT(disconnected()) );
-	//connect(tcpSocket,     SIGNAL(disconnected()),             lttoComms, SLOT(TCPdisconnected()) );
 	connect(tcpSocket,     SIGNAL(readyRead()),                this,       SLOT(receivePacket()), Qt::DirectConnection );
-
+	//connect(tcpSocket,     SIGNAL(disconnected()),             lttoComms, SLOT(TCPdisconnected()) );
+	//connect(tcpSocket,     SIGNAL(connected()),                lttoComms, SLOT(TCPconnected()) );
 	//connect(lttoComms,    SIGNAL(sendSerialData(QByteArray)), this,       SLOT(sendPacket(QByteArray)) );
 	//connect(this,          SIGNAL(newTCPdata(QByteArray)),     lttoComms, SLOT(receivePacket(QByteArray)) );
 }

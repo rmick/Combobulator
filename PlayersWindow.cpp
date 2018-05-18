@@ -5,6 +5,7 @@
 #include <QButtonGroup>
 #include <QElapsedTimer>
 #include <QInputDialog>
+#include <QMessageBox>
 
 #include "LttoMainWindow.h"
 #include "Game.h"
@@ -24,6 +25,7 @@ PlayersWindow::PlayersWindow(QWidget *parent) :
 	signalMapperClicked  = new QSignalMapper(this);
 	signalMapperPressed  = new QSignalMapper(this);
 	signalMapperReleased = new QSignalMapper(this);
+	ui->btn_StartGame->setEnabled(false);
 	SetUpPlayerButtonMapping();
 	SetPlayerControls(false, HANDICAP_MODE);
 	LoadPlayersForTeams();
@@ -139,11 +141,19 @@ void PlayersWindow::LoadPlayerSettings(int PlayerID)
 
 void PlayersWindow::SetActivePlayers()
 {
-    for (int index = 1; index < 25; index++)
+	bool	atLeastOneActivePlayer = false;
+	for (int index = 1; index < 25; index++)
     {
-        if      (gameInfo.getIsThisPlayerInTheGame(index) == true)  PlayerButtons[index]->setChecked(true);
-        else                                                        PlayerButtons[index]->setChecked(false);
+		if      (gameInfo.getIsThisPlayerInTheGame(index) == true)
+		{
+			PlayerButtons[index]->setChecked(true);
+			atLeastOneActivePlayer = true;
+
+		}
+		else
+			PlayerButtons[index]->setChecked(false);
     }
+	if(atLeastOneActivePlayer)	ui->btn_StartGame->setEnabled(true);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -157,12 +167,14 @@ void PlayersWindow::on_btn_SelectNone_clicked()
 {
     SetPlayerButtons(false);
     SetPlayerControls(false, CURRENT_MODE);
+	ui->btn_StartGame->setEnabled(false);
 }
 
 void PlayersWindow::on_btn_SelectAll_clicked()
 {
     SetPlayerControls(false, CURRENT_MODE);
     SetPlayerButtons(true);
+	ui->btn_StartGame->setEnabled(true);
 }
 
 void PlayersWindow::SetPlayerButtons(bool state)
@@ -366,6 +378,7 @@ void PlayersWindow::playerButtonReleased(int value)
     else
     {
         setSelectedPlayer(value);
+		if(value) ui->btn_StartGame->setEnabled(true);
 
         //Reset all buttons to default stylesheet settings.
         for (int x = 1; x < 25; x++)
@@ -378,6 +391,7 @@ void PlayersWindow::playerButtonReleased(int value)
 
         LoadPlayerSettings(value);
         AdjustSettingsForHandicap(value);
+
     }
 }
 
@@ -559,5 +573,24 @@ void PlayersWindow::on_btn_ChangePlayers_clicked()
 	rearrangePlayers->show();
 #else
 	rearrangePlayers->showFullScreen();
+#endif
+}
+
+void PlayersWindow::on_btn_StartGame_clicked()
+{
+	if(gameInfo.getTotalNumberOfPlayersInGame() == 0)
+	{
+		ui->btn_StartGame->setEnabled(false);
+		QMessageBox::warning(this,"Error", "There are no players in the game");
+		return;
+	}
+
+	if (!hostGameWindow)	hostGameWindow = new HostGameWindow(this);
+	if(hostGameWindow->resetPlayersForNewGame() == false) return;
+
+#ifdef QT_DEBUG
+	hostGameWindow->show();
+#else
+	hostGameWindow->showFullScreen();
 #endif
 }

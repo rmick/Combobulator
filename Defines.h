@@ -7,7 +7,7 @@ macdeployqt terminal command (copy into terminal window to build a .dmg)
       Navigate to the QT Build directory for the App. (e.g. build-Combobulator-Desktop..........)
       Right click on the folder and go to 'services', then 'New Terminal At Folder'.
       Copy/paste the following line into the terminal window and wait.....
-              /Users/Richie/Qt/5.9.1/clang_64/bin/macdeployqt LTTO_Host.app -dmg
+			  /Users/Richie/Qt/5.9.1/clang_64/bin/macdeployqt Combobulator.app -dmg
 
       Here is the current build directory
               build-Combobulator_Mac-Release
@@ -27,6 +27,10 @@ windeployqt
 
 
 androiddeployqt
+	  Run qMake
+	  Build Project
+	  $BUILD_TARGET =
+	  % make install INSTALL_ROOT=/Users/Richie/Documents/Dropbox/Qt_projects/build-Combobulator_Android-Release
 	  Copy............
 
 
@@ -39,7 +43,7 @@ androiddeployqt
 
 
 //  Build Number
-const QString BUILD_NUMBER  = "Build : 18.4.30";
+const QString BUILD_NUMBER  = "Build : 18.5.8";
 
 // Recoil Game Hub_28f537d14fca
 
@@ -58,7 +62,7 @@ const char  PACKET      = 'P';
 const char  DATA        = 'D';
 const char  CHECKSUM    = 'C';
 const char  TAG         = 'T';
-const char  BEACON      = 'B';
+const char  BEACON      = 'Z';
 
 //Internal timers (in mSec)
 const int   INTERPACKET_DELAY_MSEC  = 50;
@@ -73,7 +77,7 @@ const int   ASSIGNED_PLAYER_FAIL_TIMER = 500;
 const int   ANNOUNCE    = 0x00;
 
 const int   COUNTDOWN               = 0x00;
-const int   ASSIGN_PLAYER           = 0X01;
+const int   ASSIGN_PLAYER           = 0x01;
 const int   ANNOUNCE_CUSTOM_LTAG    = 0x02;
 const int   ANNOUCE_SPECIAL_GAME    = 0x0C;
 
@@ -106,7 +110,7 @@ const bool  BCD                     = true;
 
 //Default Game Tagger settings
 const int   DEFAULT_GAME_TYPE       = 0x02;
-const int   DEFAULT_GAME_ID         = 0x64;
+const int   DEFAULT_GAME_ID         = 0x42;
 const int   DEFAULT_GAME_LENGTH     = 10;
 const int   DEFAULT_COUNTDOWN_TIME  = 5;
 const int   DEFAULT_RELOADS         = 100;        // 100 = Unlimited
@@ -192,5 +196,14 @@ const int	LOAD_MODE						= 2;
 //Classes for calledByWho
 const int   LTTO_MAIN_WINDOW                = 2;
 const int   PLAYERS_WINDOW                  = 3;
+
+//RGB LED Colours
+const QString		RED						= "1,0,0";
+const QString		GREEN					= "0,1,0";
+const QString		BLUE					= "0,0,1";
+const QString		CYAN					= "0,1,1";
+const QString		MAGENTA					= "1,0,1";
+const QString		YELLOW					= "1,1,0";
+const QString		WHITE					= "1,1,1";
 
 #endif // DEFINES_H

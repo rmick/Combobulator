@@ -2,7 +2,7 @@
 #include <QDebug>
 #include <QList>
 
-LazerSwarm lazerswarm;
+//LazerSwarm lazerswarm;
 
 LazerSwarm::LazerSwarm()
 {

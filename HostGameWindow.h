@@ -9,6 +9,7 @@
 #include "ReHostTagger.h"
 #include "DeBrief.h"
 #include "ScoresWindow.h"
+#include "LttoComms.h"
 
 namespace Ui {
 class HostGameWindow;
@@ -44,8 +45,6 @@ public slots:
 
     void AddPlayerToGame(int Game, int Tagger, bool isLtar);           //Connects to AcknowledgePlayerAssignment signal
 
-    void AddSerialPortToListWidget(QString value);
-
     void InsertToListWidget(QString lineText);
 
 private slots:
@@ -78,13 +77,25 @@ private slots:
 
     void on_btn_DeBugSendTag_clicked();
 
-    void on_btn_DeBug_clicked();
-
     void on_btn_StopHosting_clicked();
 
     void on_btn_AnnounceOnce_clicked();
 
     void on_btn_ForceAdd_clicked();
+
+	void on_btn_Red_clicked();
+
+	void on_btn_Green_clicked();
+
+	void on_btn_Blue_clicked();
+
+	void on_btn_Cyan_clicked();
+
+	void on_btn_Magenta_clicked();
+
+	void on_btn_Yellow_clicked();
+
+	void on_btn_White_clicked();
 
 private:
     //pointers
@@ -98,14 +109,14 @@ private:
     QTimer                  *timerBeacon;
     QPointer<ReHostTagger>  reHostTagger;
     QPointer<ScoresWindow>  scoresWindow;
+	QPointer<DeBrief>       deBrief;
     QSoundEffect            *sound_Hosting;
     QSoundEffect            *sound_Countdown;
     QSoundEffect            *sound_HostingMissedReply;
     QSoundEffect            *sound_GoodLuck;
     QSoundEffect            *sound_PlayerAdded;
-    QPointer<DeBrief>       deBrief;
-
-
+	LttoComms				*lttoComms;
+	Hosting					*host;
 
     //variables
     //bool    useLazerSwarm;                      // determines whether to use Lazerswarm comms or my own comms method.

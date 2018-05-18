@@ -15,5 +15,7 @@
         <file>images/Combobulator Logo.jpg</file>
         <file>images/UpArrow.png</file>
         <file>images/DownArrow.png</file>
+        <file>images/Combobulator.ico</file>
+        <file>images/Combobulator.icns</file>
     </qresource>
 </RCC>

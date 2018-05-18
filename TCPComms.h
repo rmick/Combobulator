@@ -36,6 +36,6 @@ private:
     bool            isTCPinitialised;                   // used to trigger a single instance of TCPsocket connectSignals.
 };
 
-extern TCPComms tcpComms;
+//extern TCPComms tcpComms;
 
 #endif // TCPCOMMS_H

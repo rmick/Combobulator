@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QTimer>
+#include "LttoComms.h"
 
 class DeBrief : public QObject
 {
@@ -36,6 +37,7 @@ public slots:
 
 private:
 
+	LttoComms *lttoComms;
     int     maxTeamNum;                 // the highest team number in the game.
     int     deBriefTeam;                // current Team (incremented when all players in team are debriefed).
     int     deBriefPlayer;              // the player we are debriefing, 0-8 and related to deBriefTeam.

@@ -13,12 +13,22 @@ class LttoComms : public QObject
 {
     Q_OBJECT
 
+private:
+	explicit    LttoComms(QObject *parent = 0);
+	static		LttoComms *instance;
+
 public:
-    explicit    LttoComms(QObject *parent = 0);
+	static		LttoComms *getInstance();
+
+	void		initialise();
+
+	bool		getConnectionStatus();
 
     bool        sendPacket(char type, int data = 0, bool dataFormat = false);
     void        sendLCDtext(QString textToSend, int lineNumber);
     void        sendLCDtext(int xCursor, int yCursor, QString text, int fontSize, int colour, bool clearDisp);
+	void		sendLEDcolour(int Red = 0, int Green = 0, int Blue = 0);
+	void		sendLEDcolour(QString colour);
 
     bool        getUseLazerSwarm() const;
     void        setUseLazerSwarm(bool value);
@@ -32,7 +42,7 @@ public:
     void        androidRxPacket(QByteArray data);
 
     bool        getTcpCommsConnected() const;
-    void        setTcpCommsConnected(bool value);
+//    void        setTcpCommsConnected(bool value);
 
     bool        getDontAnnounceFailedSignal() const;
     void        setDontAnnounceFailedSignal(bool value);
@@ -51,9 +61,10 @@ public:
     bool        getUseLongDataPacketsOverTCP() const;
     void        setUseLongDataPacketsOverTCP(bool value);
 
+	void		closePorts();
+
 public slots:
-    void        TCPconnected();
-    void        TCPdisconnected();
+	void        setTcpCommsConnected(bool value);
 
 signals:
     void        RequestJoinGame(int Game, int Tagger, int Flags, bool isLtar);
@@ -65,6 +76,7 @@ signals:
     void        Team1TagReportReceived(int game, int teamAndPlayer, int tagsP1, int tagsP2, int tagsP3, int tagsP4, int tagsP5, int tagsP6, int tagsP7, int tagsP8);
     void        Team2TagReportReceived(int game, int teamAndPlayer, int tagsP1, int tagsP2, int tagsP3, int tagsP4, int tagsP5, int tagsP6, int tagsP7, int tagsP8);
     void        Team3TagReportReceived(int game, int teamAndPlayer, int tagsP1, int tagsP2, int tagsP3, int tagsP4, int tagsP5, int tagsP6, int tagsP7, int tagsP8);
+	void		BeaconReceived(int beaconData);
 
 private slots:
     void        receivePacket(QByteArray RxData);
@@ -85,6 +97,9 @@ private:
     bool            useLongDataPacketsOverTCP;
 //    int             tagsReceivedfromPlayer[8];
 
+	TCPComms		*tcpComms;
+	SerialUSBcomms	*serialUSBcomms;
+	LazerSwarm		*lazerSwarm;
 
     void            processPacket(QList<QByteArray> data);
     int             extract(QList<QByteArray> &data);
@@ -94,7 +109,5 @@ private:
     bool            isCheckSumCorrect(int _command, int _game, int _teamAndPlayer, int _playersInReportByte, int _tagsP1, int _tagsP2, int _tagsP3, int _tagsP4, int _tagsP5, int _tagsP6, int _tagsP7, int _tagsP8, int _checksum);
     QString         createIRstring(int data);
 };
-
-extern LttoComms lttoComms;
 
 #endif // LTTOCOMMS_H

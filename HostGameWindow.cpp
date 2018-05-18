@@ -3,14 +3,13 @@
 #include <QMessageBox>
 #include <QDebug>
 #include <QApplication>
+#include <QInputDialog>
 #include "Defines.h"
 #include "Game.h"
 #include "Players.h"
 #include "LttoComms.h"
 #include "StyleSheet.h"
 #include "FileLoadSave.h"
-
-#include <QInputDialog>
 
 int playerDebugNum = 0;
 
@@ -41,6 +40,9 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
     timerReHost             = new QTimer(this);
     timerBeacon             = new QTimer(this);
 
+	lttoComms = LttoComms::getInstance();
+	host		= new Hosting(this);
+
     connect(timerAnnounce,          SIGNAL(timeout() ),                     this, SLOT(announceGame())            );
     connect(timerCountDown,         SIGNAL(timeout() ),                     this, SLOT(sendCountDown())           );
     connect(timerDeBrief,           SIGNAL(timeout() ),                     this, SLOT(deBriefTaggers())          );
@@ -48,10 +50,9 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
     connect(timerGameTimeRemaining, SIGNAL(timeout() ),                     this, SLOT(updateGameTimeRemaining()) );
     connect(timerReHost,            SIGNAL(timeout() ),                     this, SLOT(TaggerReHost()) );
     connect(timerBeacon,            SIGNAL(timeout() ),                     this, SLOT(BeaconSignal()) );
-    connect(&lttoComms,             SIGNAL(RequestJoinGame(int,int,int, bool) ),  this, SLOT(AssignPlayer(int,int,int, bool)) );
-    connect(&lttoComms,             SIGNAL(AckPlayerAssignment(int,int, bool) ),  this, SLOT(AddPlayerToGame(int,int, bool))  );
-    connect(&serialUSBcomms,        SIGNAL(SerialPortFound(QString)),             this, SLOT(AddSerialPortToListWidget(QString)) );
-    connect(&host,                  SIGNAL(AddToHostWindowListWidget(QString)),   this, SLOT(InsertToListWidget(QString)) );
+	connect(lttoComms,             SIGNAL(RequestJoinGame(int,int,int, bool) ),  this, SLOT(AssignPlayer(int,int,int, bool)) );
+	connect(lttoComms,             SIGNAL(AckPlayerAssignment(int,int, bool) ),  this, SLOT(AddPlayerToGame(int,int, bool))  );
+	connect(host,                  SIGNAL(AddToHostWindowListWidget(QString)),   this, SLOT(InsertToListWidget(QString)) );
 
     timerAnnounce->start(HOST_TIMER_MSEC);
 
@@ -72,20 +73,9 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
     sound_PlayerAdded       ->setSource(QUrl::fromLocalFile(":/resources/audio/hosting-join-complete.wav"));
     sound_Countdown         ->setLoopCount(5);
 
-    if(serialUSBcomms.getIsUSBinitialised() == false)
-    {
-        serialUSBcomms.initialiseUSBsignalsAndSlots();
-    }
+	lttoComms->initialise();
 
-    if(tcpComms.getIsTCPinitialised() == false)
-    {
-        tcpComms.initialiseTCPsignalsAndSlots();
-    }
-
-    if(serialUSBcomms.getSerialCommsConnected() == false)
-    {
-        serialUSBcomms.setUpSerialPort();
-    }
+	gameInfo.setGameID(host->getRandomNumber(1,255));
 }
 
 HostGameWindow::~HostGameWindow()
@@ -126,7 +116,7 @@ void HostGameWindow::announceGame()
     sendingCommsActive = true;                                                              // Used to stop the class being destructed, if the Timer triggered.
 
     //Set Base Station LED status
-    if (lttoComms.getTcpCommsConnected() == false)
+	if (lttoComms->getTcpCommsConnected() == false)
     {
         ui->led_Status->setStyleSheet(myStyleSheet.getYellowButtonCss());
     }
@@ -140,14 +130,14 @@ void HostGameWindow::announceGame()
     {
         while (gameInfo.getIsThisPlayerInTheGame(currentPlayer) == false)   currentPlayer++;  // Find next player
 
-        if (lttoComms.getDontAnnounceGame() == false)
+		if (lttoComms->getDontAnnounceGame() == false)
         {
             if (currentPlayer < 25)
             {
                 ui->label->setText("Prepare to Host : " + playerInfo[currentPlayer].getPlayerName());
-                lttoComms.sendLCDtext("Hosting"                                 , 1);
-                lttoComms.sendLCDtext(playerInfo[currentPlayer].getPlayerName() , 2);
-                lttoComms.nonBlockingDelay(TEXT_SENT_DELAY);
+				lttoComms->sendLCDtext("Hosting"                                 , 1);
+				lttoComms->sendLCDtext(playerInfo[currentPlayer].getPlayerName() , 2);
+				lttoComms->nonBlockingDelay(TEXT_SENT_DELAY);
             }
         }
     }
@@ -159,16 +149,16 @@ void HostGameWindow::announceGame()
         //TODO: Check if I need a 1.5 sec delay OR an additional AnnounceGame packet???
         // Wait 2.0 seconds, so that the last hosted players gets at least one more AnnounceGame Packet,
         // otherwise they will not respond to the countdown time (can fail to start game if countdown < 8 sec)
-        //lttoComms.nonBlockingDelay(2000);
+		//lttoComms->nonBlockingDelay(2000);
 
         currentPlayer = 0;                                                                  //Transmits global game data to keep guns sync'd
         // The last tagger that was hosted must see at least one more announce game packet to sync, otherwise they can miss a short countdown.
         hostCurrentPlayer();
 
         ui->label->setText("All players are hosted, press START ");
-        lttoComms.sendLCDtext("All"            , 1);
-        lttoComms.sendLCDtext("hosted"         , 2);
-        lttoComms.sendLCDtext("STANDBY"        , 4);
+		lttoComms->sendLCDtext("All"            , 1);
+		lttoComms->sendLCDtext("hosted"         , 2);
+		lttoComms->sendLCDtext("STANDBY"        , 4);
         ui->btn_SkipPlayer->setVisible(false);
         ui->btn_StartGame->setEnabled(true);
 
@@ -182,22 +172,24 @@ void HostGameWindow::announceGame()
 
 void HostGameWindow::hostCurrentPlayer()
 {
-    if(lttoComms.getDontAnnounceGame() == true)                                             // We are receiving data, so dont announce.
+	if(lttoComms->getDontAnnounceGame() == true)                                             // We are receiving data, so dont announce.
     {
         //TODO: Test if this fixes the lockup when clicking Cancel when in this loop.
         if (closingWindow)
         {
-            assignPlayerFailCount = 5;
-            lttoComms.setDontAnnounceGame(false);
+			qDebug() << endl << "HostGameWindow::hostCurrentPlayer() - closingWindow == TRUE";
+			qDebug() << "but we are still locking up........" << endl;
+			assignPlayerFailCount = 5;
+			lttoComms->setDontAnnounceGame(false);
             return;
         }
 
-        lttoComms.setMissedAnnounceCount(lttoComms.getMissedAnnounceCount()+1);             // Increment counter
+		lttoComms->setMissedAnnounceCount(lttoComms->getMissedAnnounceCount()+1);             // Increment counter
 
 
-        qDebug() << "HostGameWindow::hostCurrentPlayer() - DontAnnouceGame is active. Count = " << lttoComms.getMissedAnnounceCount();
+		qDebug() << "HostGameWindow::hostCurrentPlayer() - DontAnnouceGame is active. Count = " << lttoComms->getMissedAnnounceCount();
 
-        if (lttoComms.getMissedAnnounceCount() < 3) return;
+		if (lttoComms->getMissedAnnounceCount() < 3) return;
 
         if (expectingAckPlayerAssignment == true)                                           // We appear to have missed the AckPlayerAssignment message.
         {
@@ -206,7 +198,7 @@ void HostGameWindow::hostCurrentPlayer()
         }
         else
         {
-            lttoComms.setDontAnnounceGame(false);                                           // Start Announcing, as something went wrong
+			lttoComms->setDontAnnounceGame(false);                                           // Start Announcing, as something went wrong
             qDebug() << "HostGameWindow::hostCurrentPlayer() - Reset/Clearing DontAnnounceGameFlag due to inactivity !!!!!!!";
         }
     }
@@ -224,7 +216,7 @@ void HostGameWindow::hostCurrentPlayer()
     }
 
     //Let the user know what is happenning.
-    if (lttoComms.getTcpCommsConnected() == true || serialUSBcomms.getSerialCommsConnected() == true)
+	if(lttoComms->getConnectionStatus())
     {
         if (gameInfo.getIsLTARGame())   InsertToListWidget("Announce LTAR Game : Player " + QString::number(currentPlayer));
         else                            InsertToListWidget("Announce Game : Player " + QString::number(currentPlayer));
@@ -265,43 +257,43 @@ void HostGameWindow::hostCurrentPlayer()
     if (gameInfo.getIsLTARGame())       GamePacket = gameInfo.LtarGame;
 
     // Send the message.
-    lttoComms.sendPacket(PACKET,   GamePacket                );
-    lttoComms.sendPacket(DATA,     gameInfo.getGameID()      );
-    lttoComms.sendPacket(DATA,     gameTime,              BCD);
-    lttoComms.sendPacket(DATA,     playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getHealthTags()), BCD);
+	lttoComms->sendPacket(PACKET,   GamePacket                );
+	lttoComms->sendPacket(DATA,     gameInfo.getGameID()      );
+	lttoComms->sendPacket(DATA,     gameTime,              BCD);
+	lttoComms->sendPacket(DATA,     playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getHealthTags()), BCD);
 
     if(gameInfo.getIsLTARGame() == false)
     {
-        lttoComms.sendPacket(DATA, playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getReloads()),   BCD);
+		lttoComms->sendPacket(DATA, playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getReloads()),   BCD);
     }
     else
     {
-        lttoComms.sendPacket(DATA, playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getReloads(gameInfo.getIsLTARGame()), 255),    BCD);
-        lttoComms.sendPacket(DATA, playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getReloads2(),255),   BCD);
+		lttoComms->sendPacket(DATA, playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getReloads(gameInfo.getIsLTARGame()), 255),    BCD);
+		lttoComms->sendPacket(DATA, playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getReloads2(),255),   BCD);
     }
-    lttoComms.sendPacket(DATA,     playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getShieldTime()), BCD);
-    lttoComms.sendPacket(DATA,     playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getMegaTags()),   BCD);
-    lttoComms.sendPacket(DATA,     playerInfo[currentPlayer].getPackedFlags1()   );
-    lttoComms.sendPacket(DATA,     playerInfo[currentPlayer].getPackedFlags2()   );
+	lttoComms->sendPacket(DATA,     playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getShieldTime()), BCD);
+	lttoComms->sendPacket(DATA,     playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getMegaTags()),   BCD);
+	lttoComms->sendPacket(DATA,     playerInfo[currentPlayer].getPackedFlags1()   );
+	lttoComms->sendPacket(DATA,     playerInfo[currentPlayer].getPackedFlags2()   );
     if(gameInfo.getIsLTARGame() )
-        lttoComms.sendPacket(DATA, playerInfo[currentPlayer].getPackedFlags3()   );
+		lttoComms->sendPacket(DATA, playerInfo[currentPlayer].getPackedFlags3()   );
 
     //  Add a name for Custom Game Types, otherwise skip.
     if (gameInfo.getGameType() == 0x0C || gameInfo.getIsReSpawnGame())
     {
-        lttoComms.sendPacket(DATA, gameInfo.getNameChar1() );
-        lttoComms.sendPacket(DATA, gameInfo.getNameChar2() );
-        lttoComms.sendPacket(DATA, gameInfo.getNameChar3() );
-        lttoComms.sendPacket(DATA, gameInfo.getNameChar4() );
+		lttoComms->sendPacket(DATA, gameInfo.getNameChar1() );
+		lttoComms->sendPacket(DATA, gameInfo.getNameChar2() );
+		lttoComms->sendPacket(DATA, gameInfo.getNameChar3() );
+		lttoComms->sendPacket(DATA, gameInfo.getNameChar4() );
     }
     if (gameInfo.getIsLTARGame() )
     {
-        //TODO: Check that Starting Ammo works correctly - Br
-        lttoComms.sendPacket(DATA,   playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getStartingAmmo())   );     //Dont need BCD as LTARs talk Dec.
-        lttoComms.sendPacket(DATA,   playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getSleepTimeOut())   );     //Dont need BCD as LTARs talk Dec.
+		//TODO: Check that Starting Ammo works correctly - Bryan says NO!
+		lttoComms->sendPacket(DATA,   playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getStartingAmmo())   );     //Dont need BCD as LTARs talk Dec.
+		lttoComms->sendPacket(DATA,   playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getSleepTimeOut())   );     //Dont need BCD as LTARs talk Dec.
     }
     //send the Checksum
-    lttoComms.sendPacket(CHECKSUM);
+	lttoComms->sendPacket(CHECKSUM);
 
     //If the current Player did not have TeamTags active, turn them off again. (altered if they are a Spy)
     if(wereCurrentPlayerTeamTagsActive == false) playerInfo[currentPlayer].setTeamTags(false);
@@ -348,17 +340,17 @@ void HostGameWindow::AssignPlayer(int Game, int Tagger, int Flags, bool isLtar)
 {
     if(currentPlayer > 24 || currentPlayer == 0)  //All taggers have been hosted, so ignore any new requests.
     {
-        lttoComms.setDontAnnounceGame(false);
+		lttoComms->setDontAnnounceGame(false);
         return;
     }
 
-    lttoComms.setDontAnnounceGame(true);
+	lttoComms->setDontAnnounceGame(true);
 
     //Check if the gameID from the tagger is correct.
     if(gameInfo.getGameID() != Game)
     {
         qDebug() << "HostGameWindow::AssignPlayer - GameID mismatch !!!!!!      ERROR";
-        lttoComms.setDontAnnounceGame(false);
+		lttoComms->setDontAnnounceGame(false);
         return;
     }
 
@@ -377,15 +369,15 @@ void HostGameWindow::AssignPlayer(int Game, int Tagger, int Flags, bool isLtar)
         qDebug() << "\t\tHostGameWindow::AssignPlayer() " << currentPlayer << Game << Tagger << calculatePlayerTeam5bits(Flags) << isLtar << endl;
         if (closingWindow) deleteLater();   // Delete the window, as the cancel button has been pressed.
 
-        lttoComms.sendLCDtext("Adding"                                  , 1);
-        lttoComms.sendLCDtext(playerInfo[currentPlayer].getPlayerName() , 2);
-        lttoComms.nonBlockingDelay(TEXT_SENT_DELAY);
+		lttoComms->sendLCDtext("Adding"                                  , 1);
+		lttoComms->sendLCDtext(playerInfo[currentPlayer].getPlayerName() , 2);
+		lttoComms->nonBlockingDelay(TEXT_SENT_DELAY);
 
-        lttoComms.sendPacket(PACKET,  AssignPlayerPacket);
-        lttoComms.sendPacket(DATA,    Game);
-        lttoComms.sendPacket(DATA,    Tagger);
-        lttoComms.sendPacket(DATA,    calculatePlayerTeam5bits(preferedTeam) );
-        lttoComms.sendPacket(CHECKSUM);
+		lttoComms->sendPacket(PACKET,  AssignPlayerPacket);
+		lttoComms->sendPacket(DATA,    Game);
+		lttoComms->sendPacket(DATA,    Tagger);
+		lttoComms->sendPacket(DATA,    calculatePlayerTeam5bits(preferedTeam) );
+		lttoComms->sendPacket(CHECKSUM);
     }
 }
 
@@ -393,17 +385,17 @@ void HostGameWindow::AddPlayerToGame(int Game, int Tagger, bool isLtar)
 {
     sound_PlayerAdded->play();
 
-    lttoComms.sendLCDtext(playerInfo[currentPlayer].getPlayerName() , 1);
-    lttoComms.sendLCDtext("Joined"                                  , 2);
-    lttoComms.nonBlockingDelay(TEXT_SENT_DELAY);
+	lttoComms->sendLCDtext(playerInfo[currentPlayer].getPlayerName() , 1);
+	lttoComms->sendLCDtext("Joined"                                  , 2);
+	lttoComms->nonBlockingDelay(TEXT_SENT_DELAY);
 
     if(isLtar)
     {
         qDebug() << "\t\tHostGameWindow::AddPlayerToGame() - LTAR MODE " << endl;
-        lttoComms.sendPacket(PACKET, ASSIGN_LTAR_PLAYER_OK);
-        lttoComms.sendPacket(DATA,   gameInfo.getGameID());
-        lttoComms.sendPacket(DATA,    calculatePlayerTeam5bits(0) );
-        lttoComms.sendPacket(CHECKSUM);
+		lttoComms->sendPacket(PACKET, ASSIGN_LTAR_PLAYER_OK);
+		lttoComms->sendPacket(DATA,   gameInfo.getGameID());
+		lttoComms->sendPacket(DATA,    calculatePlayerTeam5bits(0) );
+		lttoComms->sendPacket(CHECKSUM);
     }
     else
     {
@@ -426,15 +418,15 @@ void HostGameWindow::AddPlayerToGame(int Game, int Tagger, bool isLtar)
         //gameInfo.setPlayerToReHost(0);
         ui->label->setText(playerInfo[currentPlayer].getPlayerName() + " has joined.");
 
-        lttoComms.sendLCDtext("Re-hosting"                                  , 1);
-        lttoComms.sendLCDtext(playerInfo[currentPlayer].getPlayerName()     , 2);
-        lttoComms.nonBlockingDelay(TEXT_SENT_DELAY);
+		lttoComms->sendLCDtext("Re-hosting"                                  , 1);
+		lttoComms->sendLCDtext(playerInfo[currentPlayer].getPlayerName()     , 2);
+		lttoComms->nonBlockingDelay(TEXT_SENT_DELAY);
 
         countDownTimeRemaining = (DEFAULT_COUNTDOWN_TIME + 5);
         ui->btn_StartGame->setEnabled(true);
         //ui->btn_StartGame->setText("End\nGame");
         ui->btn_Rehost->setText("Rehost Tagger");
-        lttoComms.nonBlockingDelay(1000);
+		lttoComms->nonBlockingDelay(1000);
         timerCountDown->start(1000);    // Auto start the countdown to get the player into the game ASAP.
     }
     else
@@ -442,16 +434,16 @@ void HostGameWindow::AddPlayerToGame(int Game, int Tagger, bool isLtar)
         if (currentPlayer != 0) currentPlayer++;
     }
 
-    lttoComms.setDontAnnounceGame(false);
-    lttoComms.setDontAnnounceFailedSignal(false);
+	lttoComms->setDontAnnounceGame(false);
+	lttoComms->setDontAnnounceFailedSignal(false);
     qDebug() << "\t\tHostGameWindow::AddPlayerToGame() - setDontAnnounce x2 = false";
     if (closingWindow) deleteLater();   // Delete the window, as the cancel button has been pressed.
 }
 
 void HostGameWindow::assignPlayerFailed()       //TODO: This is not working.
 {
-    lttoComms.setDontAnnounceGame(true);
-    lttoComms.setDontAnnounceFailedSignal(false);
+	lttoComms->setDontAnnounceGame(true);
+	lttoComms->setDontAnnounceFailedSignal(false);
     sound_HostingMissedReply->play();
     qDebug() << "HostGameWindow::assignPlayerFailed() - starting Timer";
     timerAssignFailed->start(ASSIGNED_PLAYER_FAIL_TIMER);
@@ -463,23 +455,23 @@ void HostGameWindow::sendAssignFailedMessage()
 {
     assignPlayerFailCount++;
 
-    if(lttoComms.getDontAnnounceFailedSignal() == false)
+	if(lttoComms->getDontAnnounceFailedSignal() == false)
     {  
         sound_HostingMissedReply->play();
 
         qDebug() << "HostGameWindow::sendAssignFailedMessage()  - Sending # " << assignPlayerFailCount;
 
-        lttoComms.sendLCDtext("Attn"                                      , 1);
-        lttoComms.sendLCDtext(playerInfo[currentPlayer].getPlayerName()   , 2);
-        lttoComms.nonBlockingDelay(TEXT_SENT_DELAY*2);
+		lttoComms->sendLCDtext("Attn"                                      , 1);
+		lttoComms->sendLCDtext(playerInfo[currentPlayer].getPlayerName()   , 2);
+		lttoComms->nonBlockingDelay(TEXT_SENT_DELAY*2);
 
         int                             AssignPlayerFailPacket = ASSIGN_PLAYER_FAIL;
         if (gameInfo.getIsLTARGame())   AssignPlayerFailPacket = ASSIGN_LTAR_PLAYER_FAIL;
 
-        lttoComms.sendPacket(PACKET, AssignPlayerFailPacket                  );
-        lttoComms.sendPacket(DATA,   gameInfo.getGameID()                    );
-        lttoComms.sendPacket(DATA,   playerInfo[currentPlayer].getTaggerID() );
-        lttoComms.sendPacket(CHECKSUM                                        );
+		lttoComms->sendPacket(PACKET, AssignPlayerFailPacket                  );
+		lttoComms->sendPacket(DATA,   gameInfo.getGameID()                    );
+		lttoComms->sendPacket(DATA,   playerInfo[currentPlayer].getTaggerID() );
+		lttoComms->sendPacket(CHECKSUM                                        );
 
     }
 
@@ -490,8 +482,8 @@ void HostGameWindow::sendAssignFailedMessage()
         isThisPlayerHosted[currentPlayer] = false;
         playerInfo[currentPlayer].setTaggerID(0);
         timerAssignFailed->stop();
-        lttoComms.setDontAnnounceGame(false);
-        lttoComms.setDontAnnounceFailedSignal(false);
+		lttoComms->setDontAnnounceGame(false);
+		lttoComms->setDontAnnounceFailedSignal(false);
         expectingAckPlayerAssignment = false;
         assignPlayerFailCount = 0;
         qDebug() <<"HostGameWindow::sendAssignFailedMessage() - Counted to 5, I am now going away";
@@ -529,7 +521,7 @@ int HostGameWindow::calculatePlayerTeam5bits(int requestedTeam)
     else    //there are teams
     {
        //assign Teams (and swap if a spy)
-       assignedTeamNumber = host.assignTeamsAndSwapIfSpy(currentPlayer);
+	   assignedTeamNumber = host->assignTeamsAndSwapIfSpy(currentPlayer);
     }
     playerTeam5bits = (assignedTeamNumber) << 3;
 
@@ -543,12 +535,12 @@ int HostGameWindow::calculatePlayerTeam5bits(int requestedTeam)
     }
     else
     {
-        assignedPlayerNumber = host.swapSpyPlayers(currentPlayer);
+		assignedPlayerNumber = host->swapSpyPlayers(currentPlayer);
     }
 
     //Check if this game is Kings and swap King with Player 1;
-    if(gameInfo.getGameType() == Game::Kings2) assignedPlayerNumber = host.swapKingPlayers(currentPlayer);
-    if(gameInfo.getGameType() == Game::Kings3) assignedPlayerNumber = host.swapKingPlayers(currentPlayer);
+	if(gameInfo.getGameType() == Game::Kings2) assignedPlayerNumber = host->swapKingPlayers(currentPlayer);
+	if(gameInfo.getGameType() == Game::Kings3) assignedPlayerNumber = host->swapKingPlayers(currentPlayer);
 
     playerTeam5bits += assignedPlayerNumber;
 
@@ -578,21 +570,13 @@ void HostGameWindow::closeHostGameWindow()
     timerAssignFailed->stop();
     timerGameTimeRemaining->stop();
     timerReHost->stop();
-    lttoComms.sendLCDtext(""          , 1);
-    lttoComms.sendLCDtext("Wait for"  , 2);
-    lttoComms.sendLCDtext("new Game"  , 3);
-    lttoComms.nonBlockingDelay(TEXT_SENT_DELAY);
-    if(lttoComms.getTcpCommsConnected())
+	lttoComms->sendLCDtext(""          , 1);
+	lttoComms->sendLCDtext("Wait for"  , 2);
+	lttoComms->sendLCDtext("new Game"  , 3);
+	lttoComms->nonBlockingDelay(TEXT_SENT_DELAY);
+	if(lttoComms->getTcpCommsConnected())
     //if (sendingCommsActive == false) deleteLater();     //If this is true then the deleteLater is triggered at the end of hostCurrentPlayer(), to stop the app crashing.
     deleteLater();
-}
-
-
-void HostGameWindow::AddSerialPortToListWidget(QString value)
-{
-    QString portFound = QObject::tr("") + value;
-    qDebug() << portFound;
-    InsertToListWidget(portFound);
 }
 
 int HostGameWindow::getCurrentPlayer() const
@@ -604,7 +588,6 @@ void HostGameWindow::setCurrentPlayer(int value)
 {
     currentPlayer = value;
 }
-
 
 
 bool HostGameWindow::getIsThisPlayerHosted(int playerNumber) const
@@ -651,7 +634,7 @@ void HostGameWindow::sendCountDown()
         if (rehostingActive == false)               //Ignore the next section if the game is running.
         {
             timerGameTimeRemaining->start(1000);
-            remainingGameTime = (lttoComms.ConvertBCDtoDec(gameInfo.getGameLength()) * 60) + 2;  // Add a couple of seconds to match the taggers, who start the clock AFTER the Good Luck message.
+			remainingGameTime = (lttoComms->ConvertBCDtoDec(gameInfo.getGameLength()) * 60) + 2;  // Add a couple of seconds to match the taggers, who start the clock AFTER the Good Luck message.
             InsertToListWidget("Game has started !!!");
             ui->label->setText("Game Underway !!!");
             timerBeacon->start(BEACON_TIMER_MSEC);
@@ -659,10 +642,10 @@ void HostGameWindow::sendCountDown()
         else
         {
              ui->label->setText("Player" + QString::number(currentPlayer) + " is back in the game");
-             lttoComms.sendLCDtext(playerInfo[currentPlayer].getPlayerName()     , 1);
-             lttoComms.sendLCDtext("is back"                                     , 2);
-             lttoComms.sendLCDtext("& hosted !"                                  , 3);
-             lttoComms.nonBlockingDelay(TEXT_SENT_DELAY);
+			 lttoComms->sendLCDtext(playerInfo[currentPlayer].getPlayerName()     , 1);
+			 lttoComms->sendLCDtext("is back"                                     , 2);
+			 lttoComms->sendLCDtext("& hosted !"                                  , 3);
+			 lttoComms->nonBlockingDelay(TEXT_SENT_DELAY);
              rehostingActive = false;
         }
         ui->btn_Cancel->setText("Close");
@@ -683,20 +666,20 @@ void HostGameWindow::sendCountDown()
         //TODO: Calculate and use 8bits for LTAR game players,
         //  and 4bits for LTTO games
 
-        lttoComms.sendLCDtext("CountDown"                                , 1);
-        lttoComms.sendLCDtext(QString::number(countDownTimeRemaining)    , 3);
-        lttoComms.nonBlockingDelay(TEXT_SENT_DELAY);
+		lttoComms->sendLCDtext("CountDown"                                , 1);
+		lttoComms->sendLCDtext(QString::number(countDownTimeRemaining)    , 3);
+		lttoComms->nonBlockingDelay(TEXT_SENT_DELAY);
 
-        lttoComms.sendPacket(PACKET ,   CountDownPacket);
-        lttoComms.sendPacket(DATA,      gameInfo.getGameID() );
-        lttoComms.sendPacket(DATA,      lttoComms.ConvertDecToBCD(countDownTimeRemaining));
+		lttoComms->sendPacket(PACKET ,   CountDownPacket);
+		lttoComms->sendPacket(DATA,      gameInfo.getGameID() );
+		lttoComms->sendPacket(DATA,      lttoComms->ConvertDecToBCD(countDownTimeRemaining));
 
         //getPlayersInTeam returns different data for LTAR and LTTTO games!
-        lttoComms.sendPacket(DATA, gameInfo.getPlayersInTeam(1));
-        lttoComms.sendPacket(DATA, gameInfo.getPlayersInTeam(2));
-        lttoComms.sendPacket(DATA, gameInfo.getPlayersInTeam(3));
+		lttoComms->sendPacket(DATA, gameInfo.getPlayersInTeam(1));
+		lttoComms->sendPacket(DATA, gameInfo.getPlayersInTeam(2));
+		lttoComms->sendPacket(DATA, gameInfo.getPlayersInTeam(3));
         //
-        lttoComms.sendPacket(CHECKSUM);
+		lttoComms->sendPacket(CHECKSUM);
 
         InsertToListWidget("CountDownTime = " + QString::number(countDownTimeRemaining));
         ui->label->setText("CountDownTime\n\n" + QString::number(countDownTimeRemaining));
@@ -709,7 +692,7 @@ void HostGameWindow::updateGameTimeRemaining()
 {
     if (!reHostTagger) ui->btn_Rehost->setEnabled(true);
     remainingGameTime--;
-    if (remainingGameTime > (lttoComms.ConvertBCDtoDec(gameInfo.getGameLength()) * 60)) return;   // Ignore the extra 2 seconds we added to the clock.
+	if (remainingGameTime > (lttoComms->ConvertBCDtoDec(gameInfo.getGameLength()) * 60)) return;   // Ignore the extra 2 seconds we added to the clock.
     QString remainingMinutes = QString::number(remainingGameTime / 60);
     QString remainingSeconds = QString::number(remainingGameTime % 60);
     if (remainingMinutes.length() == 1) remainingMinutes.prepend("0");
@@ -717,9 +700,9 @@ void HostGameWindow::updateGameTimeRemaining()
     if (rehostingActive == false)
     {
         ui->label->setText("Game Time Remaining\n\n" + remainingMinutes + ":" + remainingSeconds);
-        lttoComms.sendLCDtext("Game Time"                                , 1);
-        lttoComms.sendLCDtext(remainingMinutes + ":" + remainingSeconds  , 3);
-        lttoComms.nonBlockingDelay(TEXT_SENT_DELAY);
+		lttoComms->sendLCDtext("Game Time"                                , 1);
+		lttoComms->sendLCDtext(remainingMinutes + ":" + remainingSeconds  , 3);
+		lttoComms->nonBlockingDelay(TEXT_SENT_DELAY);
     }
     if (remainingGameTime == 0)
     {
@@ -734,7 +717,7 @@ void HostGameWindow::on_btn_SkipPlayer_clicked()
 
     if(deBrief) deBrief->setIsPlayerDeBriefed(true);
     gameInfo.setIsThisPlayerInTheGame(currentPlayer, false);
-    lttoComms.setDontAnnounceGame(false);
+	lttoComms->setDontAnnounceGame(false);
     currentPlayer++;
 }
 
@@ -759,9 +742,9 @@ bool HostGameWindow::resetPlayersForNewGame()
     playerDebugNum = 0;
 
     //Pick Spies and the King
-    host.pickTheSpies();
-    if (gameInfo.getGameType() == Game::Kings2)  host.pickTheKing();
-    if (gameInfo.getGameType() == Game::Kings3)  host.pickTheKing();
+	host->pickTheSpies();
+	if (gameInfo.getGameType() == Game::Kings2)  host->pickTheKing();
+	if (gameInfo.getGameType() == Game::Kings3)  host->pickTheKing();
 
     //Reset a few game variables
     countDownTimeRemaining = DEFAULT_COUNTDOWN_TIME;
@@ -769,6 +752,8 @@ bool HostGameWindow::resetPlayersForNewGame()
     sendingCommsActive = false;
     rehostingActive = false;
     closingWindow = false;
+
+	gameInfo.setGameID(host->getRandomNumber(1,255));
 
     return true;
 }
@@ -855,7 +840,7 @@ void HostGameWindow::TaggerReHost()
         isThisPlayerHosted[currentPlayer] = false;
         rehostingActive = true;
         ui->label->setText("ReHosting " + playerInfo[currentPlayer].getPlayerName());
-        lttoComms.setDontAnnounceGame(false);
+		lttoComms->setDontAnnounceGame(false);
         firstPass = false;
         ui->btn_Rehost->setText("Cancel\nReHost");
         ui->btn_Rehost->setEnabled(true);
@@ -867,7 +852,7 @@ void HostGameWindow::TaggerReHost()
 int beaconType = 0;
 void HostGameWindow::BeaconSignal()
 {
-    if (lttoComms.getDontAnnounceGame()) return;
+	if (lttoComms->getDontAnnounceGame()) return;
     if (rehostingActive) return;
     //Check Game Type.
 
@@ -876,7 +861,7 @@ void HostGameWindow::BeaconSignal()
     else beaconType = 2;         // Contested Zone, No Team
 
     //Send Beacon;
-    lttoComms.sendPacket(BEACON, beaconType);
+	lttoComms->sendPacket(BEACON, beaconType);
 }
 
 
@@ -884,7 +869,7 @@ void HostGameWindow::BeaconSignal()
 
 void HostGameWindow::on_btn_FailSend_clicked()
 {
-    lttoComms.setDontAnnounceGame(true);
+	lttoComms->setDontAnnounceGame(true);
     expectingAckPlayerAssignment = true;
     sendAssignFailedMessage();
 }
@@ -909,10 +894,10 @@ void HostGameWindow::endGame()
     ui->btn_SkipPlayer->setVisible(true);
     ui->btn_SkipPlayer->setEnabled(true);
     ui->label->setText("DeBriefing " + playerInfo[currentPlayer].getPlayerName());
-    lttoComms.sendLCDtext(""                 , 1);
-    lttoComms.sendLCDtext("DeBriefing"       , 2);
-    lttoComms.sendLCDtext(playerInfo[currentPlayer].getPlayerName(), 3);
-    lttoComms.nonBlockingDelay(TEXT_SENT_DELAY);
+	lttoComms->sendLCDtext(""                 , 1);
+	lttoComms->sendLCDtext("DeBriefing"       , 2);
+	lttoComms->sendLCDtext(playerInfo[currentPlayer].getPlayerName(), 3);
+	lttoComms->nonBlockingDelay(TEXT_SENT_DELAY);
     deBrief->prepareNewPlayerToDebrief(currentPlayer);
 }
 
@@ -929,10 +914,10 @@ void HostGameWindow::deBriefTaggers()
         {
             deBrief->prepareNewPlayerToDebrief(currentPlayer);
             ui->label->setText("Debriefing " + playerInfo[currentPlayer].getPlayerName());
-            lttoComms.sendLCDtext(""                 , 1);
-            lttoComms.sendLCDtext("DeBriefing"       , 2);
-            lttoComms.sendLCDtext(playerInfo[currentPlayer].getPlayerName(), 3);
-            lttoComms.nonBlockingDelay(TEXT_SENT_DELAY);
+			lttoComms->sendLCDtext(""                 , 1);
+			lttoComms->sendLCDtext("DeBriefing"       , 2);
+			lttoComms->sendLCDtext(playerInfo[currentPlayer].getPlayerName(), 3);
+			lttoComms->nonBlockingDelay(TEXT_SENT_DELAY);
         }
     }
 
@@ -949,7 +934,7 @@ void HostGameWindow::deBriefTaggers()
         ui->label->setText("Finalising scores");
 
         //Sit and wait to allow time for slow messages to appear
-        lttoComms.nonBlockingDelay(1500);
+		lttoComms->nonBlockingDelay(1500);
         ui->label->setText("Game Over");
 
         // Show Scores Window
@@ -983,15 +968,10 @@ void HostGameWindow::on_btn_ShowListWidget_clicked()
 
 void HostGameWindow::on_btn_DeBugSendTag_clicked()
 {
-    lttoComms.sendPacket(TAG, 0);
+	lttoComms->sendPacket(TAG, 0);
 
-    lttoComms.nonBlockingDelay(30);
-    lttoComms.sendPacket(TAG, 48);
-}
-
-void HostGameWindow::on_btn_DeBug_clicked()
-{
-    tcpComms.DisconnectTCP();
+	lttoComms->nonBlockingDelay(30);
+	lttoComms->sendPacket(TAG, 48);
 }
 
 void HostGameWindow::on_btn_StopHosting_clicked()
@@ -1018,4 +998,39 @@ void HostGameWindow::on_btn_ForceAdd_clicked()
 {
     if (currentPlayer > MAX_PLAYERS) return;
     currentPlayer++;
+}
+
+void HostGameWindow::on_btn_Red_clicked()
+{
+	lttoComms->sendLEDcolour(RED);
+}
+
+void HostGameWindow::on_btn_Green_clicked()
+{
+	lttoComms->sendLEDcolour(GREEN);
+}
+
+void HostGameWindow::on_btn_Blue_clicked()
+{
+	lttoComms->sendLEDcolour(BLUE);
+}
+
+void HostGameWindow::on_btn_Cyan_clicked()
+{
+	lttoComms->sendLEDcolour(CYAN);
+}
+
+void HostGameWindow::on_btn_Magenta_clicked()
+{
+	lttoComms->sendLEDcolour(MAGENTA);
+}
+
+void HostGameWindow::on_btn_Yellow_clicked()
+{
+	lttoComms->sendLEDcolour(YELLOW);
+}
+
+void HostGameWindow::on_btn_White_clicked()
+{
+	lttoComms->sendLEDcolour(WHITE);
 }

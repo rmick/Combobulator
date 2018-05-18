@@ -47,7 +47,7 @@ public:
     QString getButtonPressedLastCss() const;
     QString getCurrentCSSstring() const;
     int     getCurrentCSS() const;
-    void setCurrentCSS(int value);
+	void	setCurrentCSS(int value);
     QString getYellowButtonCss() const;
     QString getGreenButtonCss() const;
 };
