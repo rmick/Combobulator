@@ -37,7 +37,8 @@ SOURCES +=  \
     StyleSheet.cpp \
     ScoresWindow.cpp \
     SetScoreParameters.cpp \
-    FileLoadSave.cpp
+    FileLoadSave.cpp \
+    OtaWindow.cpp
 
 
 HEADERS  += \
@@ -61,7 +62,8 @@ HEADERS  += \
     RearrangePlayers.h \
     ScoresWindow.h \
     SetScoreParameters.h \
-    FileLoadSave.h
+    FileLoadSave.h \
+    OtaWindow.h
 
 
 FORMS    += \
@@ -76,7 +78,8 @@ FORMS    += \
     RearrangePlayers.ui \
     ScoresWindow.ui \
     SetScoreParameters.ui \
-    FileLoadSave.ui
+    FileLoadSave.ui \
+    OtaWindow.ui
 
 
 RESOURCES += \

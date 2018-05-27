@@ -13,6 +13,7 @@
 #include "ScoresWindow.h"
 #include "SetScoreParameters.h"
 #include "FileLoadSave.h"
+#include "OtaWindow.h"
 
 namespace Ui {
 class LttoMainWindow;
@@ -115,6 +116,8 @@ private slots:
 
 	void on_actionEdit_Scoring_triggered();
 
+	void on_actionUpdate_Firmware_triggered();
+
 private:
     Ui::LttoMainWindow      *ui;
 	QPointer<PlayersWindow>			playersWindow;
@@ -123,6 +126,7 @@ private:
 	QPointer<ScoresWindow>			scoresWindow;
 	QPointer<FileLoadSave>			fileLoadSave;
 	QPointer<SetScoreParameters>	setScoreParameters;
+	QPointer<OtaWindow>				otaWindow;
 	QPointer<AboutForm>             aboutForm;
 	QSoundEffect					*sound_PowerUp;
 	QSoundEffect					*sound_Powerdown;

@@ -920,13 +920,21 @@ void LttoMainWindow::on_actionOutdoorMode_triggered()
 void LttoMainWindow::on_btn_Debug_clicked()
 {
 	scoresWindow = new ScoresWindow(this);
-    scoresWindow->showFullScreen();
+#ifdef QT_DEBUG
+	scoresWindow->showFullScreen();
+#else
+	scoresWindow->showFullScreen();
+#endif
 }
 
 void LttoMainWindow::on_btn_SetScorePoints_clicked()
 {
     setScoreParameters = new SetScoreParameters(this);
+#ifdef QT_DEBUG
+	setScoreParameters->show();
+#else
 	setScoreParameters->showFullScreen();
+#endif
 }
 
 void LttoMainWindow::updateFileName(QString newFileName)
@@ -937,5 +945,19 @@ void LttoMainWindow::updateFileName(QString newFileName)
 void LttoMainWindow::on_actionEdit_Scoring_triggered()
 {
 	setScoreParameters = new SetScoreParameters(this);
+#ifdef QT_DEBUG
+	setScoreParameters->show();
+#else
 	setScoreParameters->showFullScreen();
+#endif
+}
+
+void LttoMainWindow::on_actionUpdate_Firmware_triggered()
+{
+	otaWindow = new OtaWindow(this);
+#ifdef QT_DEBUG
+	otaWindow->show();
+#else
+	otaWindow->showFullScreen();
+#endif
 }

@@ -231,6 +231,18 @@ void LttoComms::sendLEDcolour(QString colour)
 	tcpComms->sendPacket(textBA);
 }
 
+void LttoComms::sendOTAtext(QString ssidText, QString pswdText)
+{
+
+	//if(!tcpCommsConnected) return;      // USB means it is a Lazerswarm, which does not perform OTA upgrades.
+	QByteArray textBA;
+	QString textToSend = "";
+	textToSend.prepend("OTA," + ssidText + "," + pswdText);
+	textBA.append(textToSend + "\r\n");
+	qDebug() << "LttoComms::sendOTAtext() -" << textBA;
+	tcpComms->sendPacket(textBA);
+}
+
 QString LttoComms::createIRstring(int data)
 {
     QString createdPacket;

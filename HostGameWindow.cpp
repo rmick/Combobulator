@@ -116,6 +116,8 @@ void HostGameWindow::announceGame()
     sendingCommsActive = true;                                                              // Used to stop the class being destructed, if the Timer triggered.
 
     //Set Base Station LED status
+
+	//TODO set LED to RED if not connected to Combob network.
 	if (lttoComms->getTcpCommsConnected() == false)
     {
         ui->led_Status->setStyleSheet(myStyleSheet.getYellowButtonCss());
@@ -574,9 +576,8 @@ void HostGameWindow::closeHostGameWindow()
 	lttoComms->sendLCDtext("Wait for"  , 2);
 	lttoComms->sendLCDtext("new Game"  , 3);
 	lttoComms->nonBlockingDelay(TEXT_SENT_DELAY);
-	if(lttoComms->getTcpCommsConnected())
-    //if (sendingCommsActive == false) deleteLater();     //If this is true then the deleteLater is triggered at the end of hostCurrentPlayer(), to stop the app crashing.
-    deleteLater();
+	if (sendingCommsActive == false) deleteLater();     //If this is true then the deleteLater is triggered at the end of hostCurrentPlayer(), to stop the app crashing.
+	emit closingHostGameWindow();
 }
 
 int HostGameWindow::getCurrentPlayer() const
@@ -625,10 +626,13 @@ void HostGameWindow::sendCountDown()
 {
     if(countDownTimeRemaining == 0)     // Start the game
     {
-        sound_Countdown->stop();
+		lttoComms->sendLCDtext(""				, 1);
+		lttoComms->sendLCDtext("Good"           , 2);
+		lttoComms->sendLCDtext("Luck"           , 3);
+		sound_Countdown->stop();
         sound_GoodLuck->play();
         timerCountDown->stop();
-        sendingCommsActive = false;         // Otherwise it is
+		sendingCommsActive = false;					// Otherwise it is
 
 
         if (rehostingActive == false)               //Ignore the next section if the game is running.
@@ -894,9 +898,9 @@ void HostGameWindow::endGame()
     ui->btn_SkipPlayer->setVisible(true);
     ui->btn_SkipPlayer->setEnabled(true);
     ui->label->setText("DeBriefing " + playerInfo[currentPlayer].getPlayerName());
-	lttoComms->sendLCDtext(""                 , 1);
-	lttoComms->sendLCDtext("DeBriefing"       , 2);
-	lttoComms->sendLCDtext(playerInfo[currentPlayer].getPlayerName(), 3);
+	lttoComms->sendLCDtext("De"										, 1);
+	lttoComms->sendLCDtext("Briefing"								, 2);
+	lttoComms->sendLCDtext(playerInfo[currentPlayer].getPlayerName(), 4);
 	lttoComms->nonBlockingDelay(TEXT_SENT_DELAY);
     deBrief->prepareNewPlayerToDebrief(currentPlayer);
 }
@@ -914,9 +918,9 @@ void HostGameWindow::deBriefTaggers()
         {
             deBrief->prepareNewPlayerToDebrief(currentPlayer);
             ui->label->setText("Debriefing " + playerInfo[currentPlayer].getPlayerName());
-			lttoComms->sendLCDtext(""                 , 1);
-			lttoComms->sendLCDtext("DeBriefing"       , 2);
-			lttoComms->sendLCDtext(playerInfo[currentPlayer].getPlayerName(), 3);
+			lttoComms->sendLCDtext("De"										, 1);
+			lttoComms->sendLCDtext("Briefing"								, 2);
+			lttoComms->sendLCDtext(playerInfo[currentPlayer].getPlayerName(), 4);
 			lttoComms->nonBlockingDelay(TEXT_SENT_DELAY);
         }
     }
@@ -932,10 +936,15 @@ void HostGameWindow::deBriefTaggers()
         timerDeBrief->stop();
         currentPlayer = 0;
         ui->label->setText("Finalising scores");
-
+		lttoComms->sendLCDtext("All"                , 1);
+		lttoComms->sendLCDtext("Players"            , 2);
+		lttoComms->sendLCDtext("Reported"           , 3);
         //Sit and wait to allow time for slow messages to appear
 		lttoComms->nonBlockingDelay(1500);
         ui->label->setText("Game Over");
+		lttoComms->sendLCDtext(""					, 1);
+		lttoComms->sendLCDtext("Game"               , 2);
+		lttoComms->sendLCDtext("Over"				, 3);
 
         // Show Scores Window
         deBrief->calculateScores();
@@ -943,10 +952,13 @@ void HostGameWindow::deBriefTaggers()
         deBrief->sendRankReport();
 
         if(!scoresWindow) scoresWindow = new ScoresWindow(this);
+
+		connect(scoresWindow,	SIGNAL(closingScoresWindow()),	this,	SLOT(closeHostGameWindow()) );
+
         scoresWindow->showFullScreen();
 
-        //Send RankReport
-        //deBrief->sendRankReport();
+		//Send RankReport
+		deBrief->sendRankReport();
 
 
 

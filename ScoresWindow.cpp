@@ -28,7 +28,8 @@ ScoresWindow::~ScoresWindow()
 
 void ScoresWindow::on_btn_Close_clicked()
 {
-    deleteLater();
+	emit closingScoresWindow();
+	deleteLater();
 }
 
 

@@ -22,6 +22,9 @@ public:
     explicit ScoresWindow(QWidget *parent = 0);
     ~ScoresWindow();
 
+signals:
+	void closingScoresWindow();
+
 private slots:
     void on_btn_Close_clicked();
 

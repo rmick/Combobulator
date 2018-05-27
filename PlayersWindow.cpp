@@ -588,6 +588,8 @@ void PlayersWindow::on_btn_StartGame_clicked()
 	if (!hostGameWindow)	hostGameWindow = new HostGameWindow(this);
 	if(hostGameWindow->resetPlayersForNewGame() == false) return;
 
+	connect(hostGameWindow,	SIGNAL(closingHostGameWindow()),	this,	SLOT(close()) );
+
 #ifdef QT_DEBUG
 	hostGameWindow->show();
 #else

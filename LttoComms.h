@@ -29,6 +29,7 @@ public:
     void        sendLCDtext(int xCursor, int yCursor, QString text, int fontSize, int colour, bool clearDisp);
 	void		sendLEDcolour(int Red = 0, int Green = 0, int Blue = 0);
 	void		sendLEDcolour(QString colour);
+	void		sendOTAtext(QString ssidText, QString pswdText);
 
     bool        getUseLazerSwarm() const;
     void        setUseLazerSwarm(bool value);

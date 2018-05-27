@@ -2,6 +2,7 @@
 #define ABOUTFORM_H
 
 #include <QDialog>
+#include "OtaWindow.h"
 
 namespace Ui {
 class AboutForm;
@@ -18,8 +19,11 @@ public:
 private slots:
     void on_btn_Ok_clicked();
 
+	void on_btn_UpdateFirmware_clicked();
+
 private:
-    Ui::AboutForm *ui;
+	Ui::AboutForm		*ui;
+	QPointer<OtaWindow>	otaWindow;
 };
 
 #endif // ABOUTFORM_H

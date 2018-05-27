@@ -2396,6 +2396,8 @@ Points</string>
     <addaction name="actionEdit_Scoring"/>
     <addaction name="actionOutdoorMode"/>
     <addaction name="separator"/>
+    <addaction name="actionUpdate_Firmware"/>
+    <addaction name="separator"/>
     <addaction name="actionAbout"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
@@ -2457,6 +2459,9 @@ Points</string>
    <property name="text">
     <string>use LazerSwarm</string>
    </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
   </action>
   <action name="actionAbout">
    <property name="text">
@@ -2478,10 +2483,27 @@ Points</string>
    <property name="text">
     <string>OutdoorMode</string>
    </property>
+   <property name="toolTip">
+    <string>Use the High Contrast colour scheme</string>
+   </property>
   </action>
   <action name="actionEdit_Scoring">
    <property name="text">
     <string>Edit Scoring</string>
+   </property>
+  </action>
+  <action name="actionUpdate_Firmware">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Update Firmware</string>
+   </property>
+   <property name="toolTip">
+    <string>Update the software in the Combobulator Hardware</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
    </property>
   </action>
  </widget>

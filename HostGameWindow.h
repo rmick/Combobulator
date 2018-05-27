@@ -47,6 +47,10 @@ public slots:
 
     void InsertToListWidget(QString lineText);
 
+signals:
+
+	void closingHostGameWindow();
+
 private slots:
 
     void announceGame();
@@ -82,6 +86,9 @@ private slots:
     void on_btn_AnnounceOnce_clicked();
 
     void on_btn_ForceAdd_clicked();
+
+	void closeHostGameWindow();
+
 
 	void on_btn_Red_clicked();
 
@@ -137,7 +144,6 @@ private:
     void    hostCurrentPlayer();
     void    assignPlayerFailed();
     int     calculatePlayerTeam5bits(int requestedTeam);
-    void    closeHostGameWindow();
     void    endGame();
 };
 

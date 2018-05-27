@@ -56,6 +56,7 @@ void TCPComms::receivePacket()
 
 void TCPComms::sendPacket(QByteArray data)
 {
+	qDebug() << "TCPComms::sendPacket()";
 
 	if (tcpSocket->state() == QAbstractSocket::ConnectedState)
     {
