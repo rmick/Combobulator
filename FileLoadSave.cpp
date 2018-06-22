@@ -111,7 +111,7 @@ void FileLoadSave::saveFile()
 	}
 	//Save show.
 	emit fileNameUpdated(fileName);
-	close();
+	delete(this);
 }
 
 void FileLoadSave::loadFile()
@@ -125,7 +125,7 @@ void FileLoadSave::loadFile()
 void FileLoadSave::on_btn_Cancel_clicked()
 {
 	emit fileNameUpdated("");	//sets fileName to empty, so that no action takes place.
-	close();
+	delete(this);
 }
 
 void FileLoadSave::on_btn_LoadSave_clicked()

@@ -31,7 +31,15 @@ private:
     QString     CssInsideButtonUnChecked;
     QString     CssInsideButtonPressedLast;
 
+	int			fontSizeForLabels;
+	int			fontSizeforButtons;
+	QString		qLabelFont;
+	QString		qToolButtonFont;
+	QString		qPushButtonFont;
+
+
     void        setSpecials(int value);
+	void		setFontSizes();
 
 public:
     StyleSheet();

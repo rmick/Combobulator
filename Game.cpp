@@ -6,6 +6,8 @@
 
 Game    gameInfo;
 
+Game	gameInfoTemp;
+
 Game::Game()
 {
     qDebug() << "Game::Game() - Constructing.......";
@@ -559,6 +561,16 @@ int Game::getTeam3rank() const
 void Game::setTeam3rank(int value)
 {
     team3rank = value;
+}
+
+bool Game::getIsIndoorViewMode() const
+{
+    return isIndoorViewMode;
+}
+
+void Game::setIsIndoorViewMode(bool value)
+{
+    isIndoorViewMode = value;
 }
 
 int Game::extractInteger(QString &dG)

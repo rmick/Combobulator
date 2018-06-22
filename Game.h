@@ -117,11 +117,14 @@ public:
     int getTeam3rank() const;
     void setTeam3rank(int value);
 
+	bool getIsIndoorViewMode() const;
+	void setIsIndoorViewMode(bool value);
+
 signals:
-    void    NumberOfTeamsHasChanged(int NumTeams);
+	void    NumberOfTeamsHasChanged(int NumTeams);
 
 private:
-    int     GameType;
+	int     GameType;
     int     GameID;
     int     GameLength;
     int     NumberOfPlayers;
@@ -140,6 +143,7 @@ private:
     int     PlayerToReHost;
     bool    isLTARGame;
     bool    isReSpawnGame;
+	bool	isIndoorViewMode; //not saved with game. It is here so that it is public to other classes.
 
     int     pointsPerTagLanded;
     int     pointsPerTagLandedNegative;
@@ -156,6 +160,8 @@ private:
     int     extractInteger(QString &dG);
 };
 
-extern Game gameInfo;
+extern	Game	gameInfo;
+
+extern	Game	gameInfoTemp;
 
 #endif // GAME_H

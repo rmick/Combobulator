@@ -207,8 +207,8 @@ void PlayersWindow::SetPlayerControls(int state, int mode)
         ui->btn_SelectedPlayerSlowTags->setEnabled(state);
         ui->btn_SelectedPlayerTeamTags->setEnabled(state);
         ui->btn_Flags->setEnabled(state);
+		ui->btn_Rename->setEnabled(state);
         ui->slider_StartAmmo->setEnabled(state);
-
     }
 
     //Now setVisible for those we want to see
@@ -353,7 +353,7 @@ void PlayersWindow::on_btn_SelectedPlayerTeamTags_clicked()
 
 void PlayersWindow::playerButtonPressed(int value)
 {
-    value++;        //to silence compiler warning
+	value++;        //to silence compiler warning
     elapsedTime.start();
 }
 
@@ -475,7 +475,8 @@ void PlayersWindow::AdjustSettingsForHandicap(int currentPlayer)
 
 void PlayersWindow::on_btn_EditMode_clicked()
 {
-    if (ui->btn_EditMode->text() == "Edit Settings")
+	//TODO: Changing to Edit Handicap mode leaves all controls active when no player is selected.
+	if (ui->btn_EditMode->text() == "Edit Settings")
     {
         SetPlayerControls(true, EDIT_SETTINGS_MODE);
         ui->btn_EditMode->setText("Edit Handicap");
@@ -487,18 +488,18 @@ void PlayersWindow::on_btn_EditMode_clicked()
     }
 
 
-//    if (ui->btn_EditMode->isChecked() == true)
-//    {
-//       SetPlayerControls(true, EDIT_SETTINGS_MODE);
-//        ui->btn_EditMode->setText("Edit Handicap");
-//        ui->btn_EditMode->setStyleSheet(BUTTON_UNSELECTED); // Hide the fact that it is selected.
+//	if (ui->btn_EditMode->isChecked() == true)
+//	{
+//	   SetPlayerControls(true, EDIT_SETTINGS_MODE);
+//		ui->btn_EditMode->setText("Edit Handicap");
+//		ui->btn_EditMode->setStyleSheet(BUTTON_UNSELECTED); // Hide the fact that it is selected.
 
-//    }
-//    else if (ui->btn_EditMode->isChecked() == false)
-//    {
-//        SetPlayerControls(true, HANDICAP_MODE);
-//        ui->btn_EditMode->setText("Edit Settings");
-//    }
+//	}
+//	else if (ui->btn_EditMode->isChecked() == false)
+//	{
+//		SetPlayerControls(true, HANDICAP_MODE);
+//		ui->btn_EditMode->setText("Edit Settings");
+//	}
 }
 
 void PlayersWindow::on_slider_Handicap_valueChanged(int value)
@@ -595,4 +596,9 @@ void PlayersWindow::on_btn_StartGame_clicked()
 #else
 	hostGameWindow->showFullScreen();
 #endif
+}
+
+void PlayersWindow::on_btn_Rename_clicked()
+{
+	RenamePlayer(getSelectedPlayer());
 }

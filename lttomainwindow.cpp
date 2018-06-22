@@ -49,7 +49,6 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
     gameInfo.setNumberOfTeams(0);
     ui->btn_Spies->setEnabled(false);
     ui->btn_StartGame->setEnabled(false);
-	ui->btn_SetScorePoints->setVisible(false);
 	ui->btn_Debug->setVisible(false);
     setLtarControls(false);
 	ui->btn_StartGame->setVisible(false);
@@ -71,7 +70,9 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
 
 LttoMainWindow::~LttoMainWindow()
 {
-    delete ui;
+	lttoComms->closePorts();
+	lttoComms->nonBlockingDelay(500);
+	delete ui;
 }	
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -225,7 +226,7 @@ void LttoMainWindow::on_btn_ReSpawn_clicked()
 {
     if      (gameInfo.getIsReSpawnGame() == false)
     {
-        ui->btn_ReSpawn->setText("ReSpawn ON");
+		ui->btn_ReSpawn->setText("Respawn ON");
         gameInfo.setIsReSpawnGame(true);
         for(int index = 0; index < 25; index++)
         {
@@ -236,7 +237,7 @@ void LttoMainWindow::on_btn_ReSpawn_clicked()
     }
     else if (gameInfo.getIsReSpawnGame() == true)
     {
-        ui->btn_ReSpawn->setText("ReSpawn OFF");
+		ui->btn_ReSpawn->setText("Respawn OFF");
         gameInfo.setIsReSpawnGame(false);
         for(int index = 0; index < 25; index++)
         {
@@ -336,7 +337,12 @@ void LttoMainWindow::on_btn_OwnTheZone_clicked()
 
 void LttoMainWindow::on_btn_CustomGame_clicked()
 {
-    gameInfo.setGameName("CUST");
+	QMessageBox::warning(this, "Warning", "Custom Games are not fully supported by the Lasertaggers.\n\nUse this option at your own risk."
+										  "\n\nIf no taggers join the game then your settings are invalid and you will need to try again."
+										  "\n\nIf you find specific settings that do/don't work please send the details to: combobulator@bushandbeyond.com.au"
+										  "\nwith the details so that the software can be improved.");
+
+	gameInfo.setGameName("CUST");
     ui->btn_NoTeams->setEnabled(true);
     ui->btn_Flags->setEnabled(true);
 
@@ -727,8 +733,21 @@ void LttoMainWindow::loadFile()
 {
 	if (!fileLoadSave) fileLoadSave = new FileLoadSave(LOAD_MODE, this);
 	connect(fileLoadSave, SIGNAL(fileNameUpdated(QString)),	this, SLOT(updateFileName(QString)));
+	//fileLoadSave->setModal(true);
+	//fileLoadSave->showFullScreen();
 	fileLoadSave->exec();
-	delete(fileLoadSave);
+
+//	QEventLoop      doSomething;
+//	while (fileLoadSave)
+//	{
+//		doSomething.exec();
+//		int counter = 1;
+//		qDebug() << "LttoMainWindow::loadFile() looping" << counter++;
+//	}
+
+//	qDebug() << "LttoMainWindow::loadFile() exited";
+//	delete(fileLoadSave);
+
 
 	if (fileLoadSaveName.isEmpty())		// this means the [cancel] button was pressed.
 	{
@@ -807,8 +826,38 @@ void LttoMainWindow::saveSettings()
 
 void LttoMainWindow::on_actionExit_triggered()
 {
+	ui->btn_CustomGame	->setEnabled(false);
+	ui->btn_Debug		->setEnabled(false);
+	ui->btn_Flags		->setEnabled(false);
+	ui->btn_HideAndSeek	->setEnabled(false);
+	ui->btn_Kings		->setEnabled(false);
+	ui->btn_Ltag		->setEnabled(false);
+	ui->btn_MedicMode	->setEnabled(false);
+	ui->btn_NoTeams		->setEnabled(false);
+	ui->btn_OwnTheZone	->setEnabled(false);
+	ui->btn_ReSpawn		->setEnabled(false);
+	ui->btn_SelectPlayers->setEnabled(false);
+	ui->btn_Settings	->setEnabled(false);
+	ui->btn_SlowTags	->setEnabled(false);
+	ui->btn_Spies		->setEnabled(false);
+	ui->btn_SpyTeamTags	->setEnabled(false);
+	ui->btn_StartGame	->setEnabled(false);
+	ui->btn_TeamTags	->setEnabled(false);
+	ui->btn_ThreeTeams	->setEnabled(false);
+	ui->btn_TwoTeams	->setEnabled(false);
+	ui->slider_GameTime	->setEnabled(false);
+	ui->slider_Health	->setEnabled(false);
+	ui->slider_MegaTags	->setEnabled(false);
+	ui->slider_Reloads	->setEnabled(false);
+	ui->slider_Shields	->setEnabled(false);
+	ui->slider_SleepTime->setEnabled(false);
+	ui->slider_StartAmmo->setEnabled(false);
+
+
+
 	lttoComms->closePorts();
 	saveSettings();
+
 #ifndef QT_DEBUG
     sound_Powerdown->setLoopCount(1);
     sound_Powerdown->play();
@@ -816,20 +865,36 @@ void LttoMainWindow::on_actionExit_triggered()
 	   QTimer::singleShot(850, &loop, SLOT(quit()));
 	   loop.exec();
 #endif
-    QApplication::quit();
+	QApplication::closeAllWindows();
+	QApplication::quitOnLastWindowClosed();
+	lttoComms->nonBlockingDelay(100);
+	QApplication::quit();
 }
 
 void LttoMainWindow::on_actionSet_CountDown_Time_triggered()
 {
-	QInputDialog countDownTimeDialog;
-	countDownTimeDialog.setGeometry(100, 100, 400, 400);
-	countDownTimeDialog.exec();
-
-	return;
+//	QInputDialog countDownTimeDialog;
+//	countDownTimeDialog.setGeometry(100, 100, 400, 400);
+//	countDownTimeDialog.setIntValue(gameInfo.getCountDownTime());
+//	countDownTimeDialog.setInputMode(QInputDialog::IntInput);
+//	countDownTimeDialog.setIntMinimum(5);
+//	countDownTimeDialog.setIntMaximum(30);
+//	countDownTimeDialog.setWindowTitle("Countdown Time");
+//	//countDownTimeDialog.setWindowIcon(QIcon::Question);
+//	countDownTimeDialog.setLabelText("Enter Countdown Time (5-30 sec)");
 
 	bool ok = false;
-    int time = QInputDialog::getInt(this, "CountDown Time", "Enter Countdown Time (5-30 sec)", gameInfo.getCountDownTime(), 5, 30, 1, &ok);
-    if(ok) gameInfo.setCountDownTime(time);
+
+	int time = gameInfo.getCountDownTime();
+
+//	ok = countDownTimeDialog.exec();
+
+//	qDebug() << " LttoMainWindow::on_actionSet_CountDown_Time_triggered()" << time;
+
+
+	time = QInputDialog::getInt(this, "CountDown Time", "Enter Countdown Time (5-30 sec)", gameInfo.getCountDownTime(), 5, 30, 1, &ok);
+	if(ok) gameInfo.setCountDownTime(time);
+	qDebug() << " LttoMainWindow::on_actionSet_CountDown_Time_triggered()" << time;
 }
 
 void LttoMainWindow::on_actionuse_LazerSwarm_triggered()
@@ -894,16 +959,17 @@ void LttoMainWindow::on_actionLTAR_Mode_triggered()
 
 void LttoMainWindow::on_actionOutdoorMode_triggered()
 {
-    if(ui->actionOutdoorMode->isChecked())
+	if(ui->actionOutdoorMode->isChecked())
     {
         myStyleSheet.setCurrentCSS(myStyleSheet.CssLight);
         setStyleSheet(myStyleSheet.getCurrentCSSstring());
+		gameInfo.setIsIndoorViewMode(false);
     }
     else
     {
         myStyleSheet.setCurrentCSS(myStyleSheet.CssDark);
         setStyleSheet(myStyleSheet.getCurrentCSSstring());
-
+		gameInfo.setIsIndoorViewMode(true);
     }
     //Update the Spy button CSS (as it may have been customised if pressed)
     if ( gameInfo.getNumberOfSpies() > 0)   ui->btn_Spies->setStyleSheet(myStyleSheet.getButtonCheckedCss());
@@ -927,18 +993,9 @@ void LttoMainWindow::on_btn_Debug_clicked()
 #endif
 }
 
-void LttoMainWindow::on_btn_SetScorePoints_clicked()
-{
-    setScoreParameters = new SetScoreParameters(this);
-#ifdef QT_DEBUG
-	setScoreParameters->show();
-#else
-	setScoreParameters->showFullScreen();
-#endif
-}
-
 void LttoMainWindow::updateFileName(QString newFileName)
 {
+	qDebug() << "LttoMainWindow::updateFileName()";
 	fileLoadSaveName = newFileName;
 }
 
@@ -960,4 +1017,51 @@ void LttoMainWindow::on_actionUpdate_Firmware_triggered()
 #else
 	otaWindow->showFullScreen();
 #endif
+}
+
+void LttoMainWindow::on_btn_Settings_clicked()
+{
+	settingsWindow = new SettingsWindow(this);
+
+	connect(settingsWindow, SIGNAL(adjustScoring()),		this, SLOT(on_actionEdit_Scoring_triggered())			);
+	connect(settingsWindow, SIGNAL(saveFile()),				this, SLOT(on_actionSave_triggered())					);
+	connect(settingsWindow, SIGNAL(loadFile()),				this, SLOT(on_actionLoad_triggered())					);
+	connect(settingsWindow, SIGNAL(showAboutBox()),			this, SLOT(on_actionAbout_triggered())					);
+	connect(settingsWindow,	SIGNAL(exitApp()),				this, SLOT(on_actionExit_triggered())					);
+	connect(settingsWindow, SIGNAL(setLtarMode(bool)),		this, SLOT(setLTARmode(bool))							);
+	connect(settingsWindow, SIGNAL(setOutdoorMode(bool)),	this, SLOT(setOutdoorViewMode(bool))					);
+
+#ifdef QT_DEBUG
+	settingsWindow->show();
+#else
+	settingsWindow->showFullScreen();
+#endif
+}
+
+void LttoMainWindow::setOutdoorViewMode(bool state)
+{
+	if(state == false)
+	{
+		ui->actionOutdoorMode->setChecked(false);
+	}
+	else
+	{
+		ui->actionOutdoorMode->setChecked(true);
+	}
+
+	emit on_actionOutdoorMode_triggered();
+}
+
+void LttoMainWindow::setLTARmode(bool state)
+{
+	if(state == false)
+	{
+		ui->actionLTAR_Mode->setChecked(false);
+	}
+	else
+	{
+		ui->actionLTAR_Mode->setChecked(true);
+	}
+
+	emit on_actionLTAR_Mode_triggered();
 }

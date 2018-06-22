@@ -1,4 +1,5 @@
 #include "StyleSheet.h"
+#include <QDebug>
 
 StyleSheet myStyleSheet;
 
@@ -48,8 +49,10 @@ void StyleSheet::setCurrentCSS(int value)
 }
 
 StyleSheet::StyleSheet()
-{
-    //Combobulator Status Indicator LED (QPushbutton) in HostGame window.
+{	
+	setFontSizes();
+
+	//Combobulator Status Indicator LED (QPushbutton) in HostGame window.
     YellowButtonCss =  "background-color: yellow; border-style: outset; border-width: 2px; border-radius: 10px; border-color: grey; min-width: 0; min-height: 0";
     GreenButtonCss  =  "background-color: rgb(0,255,50); border-style: outset; border-width: 2px; border-radius: 10px; border-color: grey; min-width: 0; min-height: 0";
 
@@ -58,7 +61,8 @@ StyleSheet::StyleSheet()
     CssInside +=    "QSpinBox               {color: white;} ";
     CssInside +=    "QMessageBox            {font: white;}";   // border: solid white; border-width: 2px; border-radius: 2px;} ";
     CssInside +=    "QMenu                  {font:white; color:white;}";
-    CssInside +=    "QLabel                 {color: white;}";
+	CssInside +=							qLabelFont;
+	CssInside +=    "QLabel                 {color: white;}";
 
     CssInside +=    "QListWidget            {color: white; border: solid grey; border-width: 2px; border-radius: 10px;}";
     CssInside +=    "QListWidget::item	    {border-top: 2px solid lightgrey;}";
@@ -68,12 +72,13 @@ StyleSheet::StyleSheet()
     CssInside +=    "QListWidget::item	    {color: white}";
 
     CssInside +=    "QToolBar               {border: grey; border-width: 2px; background-color: rgb(50,50,50); spacing: 20px; padding: 10px;}";
-    CssInside +=    "QToolButton            {border-width: 2px; border-radius: 10px; border-color: cyan; background-color: grey; padding: 5px; spacing: 20px;}";
+	CssInside +=							qToolButtonFont;
+	CssInside +=    "QToolButton            {border-width: 2px; border-radius: 10px; border-color: cyan; background-color: grey; padding: 5px; spacing: 20px;}";
     CssInside +=    "QToolButton:checked    {color: cyan; border-color: cyan;}";
-    CssInside +=    "QPushButton            {background-color: grey; border-style: outset; border-width: 2px; border-radius: 10px; border-color: grey; min-width: 50; min-height: 30;}";
+	CssInside +=							qPushButtonFont;
+	CssInside +=    "QPushButton            {background-color: grey; border-style: outset; border-width: 2px; border-radius: 10px; border-color: grey; min-width: 50; min-height: 30;}";
     CssInside +=    "QPushButton:disabled   {background-color: rgb(50, 50, 50); color: black;}";
     CssInside +=    "QPushButton:checked    {border-color: cyan; color: cyan;}";
-
     CssInside +=    "QSlider                {min-height: 35px; background: grey; border-style: outset; border-width: 1px; border-radius: 10px; border-color: black;}";
     CssInside +=    "QSlider::groove:horizontal {border-style: outset; border-width: 2px; border-radius: 10px; border-color: black;}";
     CssInside +=    "QSlider::handle:horizontal {background: grey; border: 1px solid #5c5c5c; width: 18px; margin: -2px 0;";
@@ -94,15 +99,15 @@ StyleSheet::StyleSheet()
 
     CssInside +=    "QLineEdit			{color: white; background-color: black; border: solid white; border-width: 2px; border-radius: 5px;}";
 
-//    CssInside +=    "QTreeView			{color: white; border: solid white; border-width: 2px; border-radius: 1px; padding: 5px;}";
-//    CssInside +=    "QTreeView::item		{height: 30px;}";
-//    CssInside +=    "QTreeView::item		{border-style: solid; border-color: black; border-width: 5px; border-radius: 10px;}";
-//    CssInside +=    "QTreeView::item		{background-color: gray;}";
-//    CssInside +=    "QTreeView::item:selected	{color: cyan; background-color: grey;}";
-//    CssInside +=    "QTreeView::item:selected	{border-top: 2px solid cyan; border-bottom: 2px solid cyan; border-left: 2px solid cyan; border-right: 2px solid cyan;}";
+	CssInside +=    "QTreeView			{color: white; border: solid white; border-width: 2px; border-radius: 1px; padding: 5px;}";
+	CssInside +=    "QTreeView::item		{height: 30px;}";
+	CssInside +=    "QTreeView::item		{border-style: solid; border-color: black; border-width: 5px; border-radius: 10px;}";
+	CssInside +=    "QTreeView::item		{background-color: gray;}";
+	CssInside +=    "QTreeView::item:selected	{color: cyan; background-color: grey;}";
+	CssInside +=    "QTreeView::item:selected	{border-top: 2px solid cyan; border-bottom: 2px solid cyan; border-left: 2px solid cyan; border-right: 2px solid cyan;}";
 
     //Overides for player buttons in  PlayersWindow
-    CssInsideButtonSelected      = "border-color: cyan; color: cyan;";
+	CssInsideButtonSelected      = "border-color: cyan; color: cyan ;";
     CssInsideButtonUnSelected    = "color: white;";
     CssInsideButtonChecked       = "border-color: cyan; color: cyan;";
     CssInsideButtonUnChecked     = "border-color: grey; color: black;";
@@ -115,9 +120,9 @@ StyleSheet::StyleSheet()
     CssOutside +=    "QSpinBox              {color: fuchsia;} ";
     CssOutside +=    "QMessageBox           {font: fuchsia;} ";
     CssOutside +=    "QMenu                 {font:fuchsia; color:fuchsia;}";
-    CssOutside +=    "QLabel                {color: fuchsia;}";
-
-    //CssOutside +=    "QListWidget           {color: fuchsia;}";
+	CssOutside +=							qLabelFont;
+	CssOutside +=    "QLabel                {color: fuchsia;}";
+	//CssOutside +=    "QListWidget           {color: fuchsia;}";
     CssOutside +=    "QListWidget           {color: fuchsia; border: solid lightyellow; border-width: 2px; border-radius: 10px;}";
     CssOutside +=    "QListWidget::item	    {border-top: 2px solid lightyellow;}";
     CssOutside +=    "QListWidget::item	    {border-left: 2px solid lightyellow;}";
@@ -126,9 +131,11 @@ StyleSheet::StyleSheet()
     CssOutside +=    "QListWidget::item	    {color: fuchsia}";
 
     CssOutside +=    "QToolBar              {border: lightyellow; border-width: 2px; background-color: grey; spacing: 17px; padding: 10px;}";
-    CssOutside +=    "QToolButton           {border-width: 2px; border-radius: 10px; border-color: cyan; background-color: lightyellow; padding: 5px; spacing: 10px;}";
+	CssOutside +=							qToolButtonFont;
+	CssOutside +=    "QToolButton           {border-width: 2px; border-radius: 10px; border-color: cyan; background-color: lightyellow; padding: 5px; spacing: 10px;}";
     CssOutside +=    "QToolButton:checked   {background-color: yellow; border-color: fuchsia; border-color: fuchsia;}";
-    CssOutside +=    "QPushButton           {background-color: lightyellow; border-style: outset; border-width: 2px; border-radius: 10px; border-color: lightyellow; min-width: 50; min-height: 30;}";
+	CssOutside +=							qPushButtonFont;
+	CssOutside +=    "QPushButton           {background-color: lightyellow; border-style: outset; border-width: 2px; border-radius: 10px; border-color: lightyellow; min-width: 50; min-height: 30;}";
     CssOutside +=    "QPushButton:disabled  {background-color: grey; border: grey; font: normal; color: black;}";
     CssOutside +=    "QPushButton:checked   {border-color: fuchsia; color: fuchsia; background-color: yellow}";
     CssOutside +=    "QSlider               {min-height: 35px; background: lightyellow; border-style: outset; border-width: 1px; border-radius: 10px; border-color: black;}";
@@ -173,7 +180,7 @@ void StyleSheet::setSpecials(int value)
 {
     if(value == CssDark)
     {
-        ButtonSelectedCss      = CssInsideButtonSelected;
+		ButtonSelectedCss      = CssInsideButtonSelected;
         ButtonUnSelectedCss    = CssInsideButtonSelected;
         ButtonCheckedCss       = CssInsideButtonChecked;
         ButtonUnCheckedCss     = CssInsideButtonUnChecked;
@@ -186,7 +193,26 @@ void StyleSheet::setSpecials(int value)
         ButtonCheckedCss       = CssOutsideButtonChecked;
         ButtonUnCheckedCss     = CssOutsideButtonUnChecked;
         ButtonPressedLastCss   = CssOutsideButtonPressedLast;
-    }
+	}
+}
+
+void StyleSheet::setFontSizes()
+{
+	//TODO: Calculate screen DPI and use to set Pixels.
+	fontSizeforButtons	= 24;
+	fontSizeForLabels	= fontSizeforButtons * .85;
+
+	qToolButtonFont = QString::number(fontSizeforButtons);
+	qToolButtonFont.prepend("QToolButton {font-size: ");
+	qToolButtonFont.append("px;}");
+
+	qPushButtonFont = QString::number(fontSizeforButtons);
+	qPushButtonFont.prepend("QPushButton {font-size: ");
+	qPushButtonFont.append("px;}");
+
+	qLabelFont = QString::number(fontSizeForLabels);
+	qLabelFont.prepend("QLabel {font-size: ");
+	qLabelFont.append("px;}");
 }
 
 

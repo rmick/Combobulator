@@ -1,6 +1,7 @@
 #include "Players.h"
 #include <QDebug>
 #include "Defines.h"
+#include "Game.h"
 
 Players playerInfo[MAX_PLAYERS+1];
 
@@ -9,9 +10,9 @@ Players playerInfoTemp[MAX_PLAYERS+1];
 Players::Players()
 {
     static int instanceCount = 0;
-    instanceCount++;
+	//instanceCount++;
 
-    if(instanceCount == 1)  qDebug() << "Players::Players() - Constructing.......";
+	if(instanceCount == 0)	qDebug() << "Players::Players() - Constructing.......";
 
     Handicap        = 0;
     PlayerName       = "_";
@@ -35,10 +36,16 @@ Players::Players()
     rankingInGame       = 0;
     totalTagsTaken      = 0;
 
-    for (int index = 0; index < 25; index++)
-    {
-        setTagsTaken(index, 0);
-    }
+	for (int index = 1; index < MAX_PLAYERS+1; index++)
+	{
+		setTagsTaken(index, 0);
+	}
+
+	if(instanceCount < MAX_PLAYERS+1)
+	{
+		PlayerIndex			= instanceCount++;
+		qDebug() << "Players::Players() - PlayerIndex =" << getPlayerIndex();
+	}
 }
 
 int Players::getHandicap() const
@@ -317,7 +324,8 @@ void Players::streamToFile(QTextStream &out)
         out << "Flags2:"        << playerInfo[index].PackedFlags2 << endl;
         out << "Flags3:"        << playerInfo[index].PackedFlags3 << endl;
         out << "StartingAmmo: " << playerInfo[index].StartingAmmo << endl;
-        out << "SleepTimeOut"   << playerInfo[index].SleepTimeOut << endl;
+		out << "SleepTimeOut:"	<< playerInfo[index].SleepTimeOut << endl;
+		out << "PlayerIndex:"	<< playerInfo[index].PlayerIndex << endl;
         out << "------------------------" << endl;
     }
     out << "END_OF_PLAYER_SETTINGS" << endl;
@@ -348,37 +356,17 @@ void Players::streamFromFile(QTextStream &in)
             else if (descriptorP.contains("Flags3:") )          playerInfo[playerID].PackedFlags3 = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
             else if (descriptorP.contains("StartingAmmo:") )    playerInfo[playerID].StartingAmmo = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
             else if (descriptorP.contains("SleepTimeOut:") )    playerInfo[playerID].SleepTimeOut = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
+			else if (descriptorP.contains("PlayerIndex:") )		playerInfo[playerID].PlayerIndex  = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
     }   while (descriptorP != "END_OF_PLAYER_SETTINGS");
-
-//    for (int index=0; index< 25; index++)
-//    {
-//        qDebug() << "PlayerID:"     << index;
-//        qDebug() << "Handicap:"     << playerInfo[index].Handicap;
-//        qDebug() << "HealthTags:"   << playerInfo[index].HealthTags;
-//        qDebug() << "MedicMode:"    << playerInfo[index].MedicMode;
-//        qDebug() << "MegaTags:"     << playerInfo[index].MegaTags;
-//        qDebug() << "PlayerName:"   << playerInfo[index].PlayerName;
-//        qDebug() << "Reloads:"      << playerInfo[index].Reloads;
-//        qDebug() << "Reloads2:"     << playerInfo[index].Reloads2;
-//        qDebug() << "ShieldTime:"   << playerInfo[index].ShieldTime;
-//        qDebug() << "SlowTags:"     << playerInfo[index].SlowTags;
-//        qDebug() << "TeamTags:"     << playerInfo[index].TeamTags;
-//        qDebug() << "PackedFlags1:" << playerInfo[index].PackedFlags1;
-//        qDebug() << "PackedFlags2:" << playerInfo[index].PackedFlags2;
-//        qDebug() << "PackedFlags3:" << playerInfo[index].PackedFlags3;
-//        qDebug() << "StartingAmmo"  << playerInfo[index].StartingAmmo;
-//        qDebug() << "SleepTimeOut"  << playerInfo[index].SleepTimeOut   << endl;
-//    }
-//    qDebug() << "Players::StreamFromFile has left the building" << endl << endl;
 }
 
 void Players::copyPlayerSettings(int copyFrom, int copyTo)
 {
-    playerInfoTemp[copyTo].Handicap     = playerInfo[copyFrom].Handicap;
+	playerInfoTemp[copyTo].Handicap     = playerInfo[copyFrom].Handicap;
     playerInfoTemp[copyTo].HealthTags   = playerInfo[copyFrom].HealthTags;
     playerInfoTemp[copyTo].MedicMode    = playerInfo[copyFrom].MedicMode;
     playerInfoTemp[copyTo].MegaTags     = playerInfo[copyFrom].MegaTags;
-    playerInfoTemp[copyTo].PlayerName   = playerInfo[copyFrom].PlayerName;
+	playerInfoTemp[copyTo].PlayerName   = playerInfo[copyFrom].PlayerName;
     playerInfoTemp[copyTo].Reloads      = playerInfo[copyFrom].Reloads;
     playerInfoTemp[copyTo].Reloads2     = playerInfo[copyFrom].Reloads2;
     playerInfoTemp[copyTo].ShieldTime   = playerInfo[copyFrom].ShieldTime;
@@ -388,37 +376,51 @@ void Players::copyPlayerSettings(int copyFrom, int copyTo)
     playerInfoTemp[copyTo].PackedFlags3 = playerInfo[copyFrom].PackedFlags3;
     playerInfoTemp[copyTo].StartingAmmo = playerInfo[copyFrom].StartingAmmo;
     playerInfoTemp[copyTo].SleepTimeOut = playerInfo[copyFrom].SleepTimeOut;
+	playerInfoTemp[copyTo].PlayerIndex	= playerInfo[copyFrom].PlayerIndex;
+	gameInfoTemp.setIsThisPlayerInTheGame(copyTo, gameInfo.getIsThisPlayerInTheGame(copyFrom));
 }
 
 void Players::moveAllPlayersFromTempToMain()
 {
     for(int index = 0;index <= MAX_PLAYERS; index++)
     {
-        playerInfo[index].Handicap     = playerInfoTemp[index].Handicap;
-        playerInfo[index].HealthTags   = playerInfoTemp[index].HealthTags;
-        playerInfo[index].MedicMode    = playerInfoTemp[index].MedicMode;
-        playerInfo[index].MegaTags     = playerInfoTemp[index].MegaTags;
-        playerInfo[index].PlayerName   = playerInfoTemp[index].PlayerName;
-        playerInfo[index].Reloads      = playerInfoTemp[index].Reloads;
-        playerInfo[index].Reloads2     = playerInfoTemp[index].Reloads2;
-        playerInfo[index].ShieldTime   = playerInfoTemp[index].ShieldTime;
-        playerInfo[index].SlowTags     = playerInfoTemp[index].SlowTags;
-        playerInfo[index].PackedFlags1 = playerInfoTemp[index].PackedFlags1;
-        playerInfo[index].PackedFlags2 = playerInfoTemp[index].PackedFlags2;
-        playerInfo[index].PackedFlags3 = playerInfoTemp[index].PackedFlags3;
-        playerInfo[index].StartingAmmo = playerInfoTemp[index].StartingAmmo;
-        playerInfo[index].SleepTimeOut = playerInfoTemp[index].SleepTimeOut;
+		playerInfo[index].Handicap		= playerInfoTemp[index].Handicap;
+		playerInfo[index].HealthTags	= playerInfoTemp[index].HealthTags;
+		playerInfo[index].MedicMode		= playerInfoTemp[index].MedicMode;
+		playerInfo[index].MegaTags		= playerInfoTemp[index].MegaTags;
+		playerInfo[index].PlayerName	= playerInfoTemp[index].PlayerName;
+		playerInfo[index].Reloads		= playerInfoTemp[index].Reloads;
+		playerInfo[index].Reloads2		= playerInfoTemp[index].Reloads2;
+		playerInfo[index].ShieldTime	= playerInfoTemp[index].ShieldTime;
+		playerInfo[index].SlowTags		= playerInfoTemp[index].SlowTags;
+		playerInfo[index].PackedFlags1	= playerInfoTemp[index].PackedFlags1;
+		playerInfo[index].PackedFlags2	= playerInfoTemp[index].PackedFlags2;
+		playerInfo[index].PackedFlags3	= playerInfoTemp[index].PackedFlags3;
+		playerInfo[index].StartingAmmo	= playerInfoTemp[index].StartingAmmo;
+		playerInfo[index].SleepTimeOut	= playerInfoTemp[index].SleepTimeOut;
+		playerInfo[index].PlayerIndex	= playerInfoTemp[index].PlayerIndex;
+		gameInfo.setIsThisPlayerInTheGame(index, gameInfoTemp.getIsThisPlayerInTheGame(index));
     }
+}
+
+int Players::getPlayerIndex() const
+{
+	return PlayerIndex;
+}
+
+void Players::setPlayerIndex(int value)
+{
+	PlayerIndex = value;
 }
 
 int Players::getPackedFlags1() const
 {
-    return PackedFlags1;
+	return PackedFlags1;
 }
 
 void Players::setBitFlags1(int bitNumber, bool state)
 {
-    PackedFlags1 ^= (-state ^ PackedFlags1) & (1 << bitNumber);
+	PackedFlags1 ^= (-state ^ PackedFlags1) & (1 << bitNumber);
     //qDebug() << "\tFlags1: " << "\tBinary = " << displayBinary(PackedFlags1, 8);
 }
 

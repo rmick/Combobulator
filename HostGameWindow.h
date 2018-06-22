@@ -71,21 +71,9 @@ private slots:
 
     void on_btn_Rehost_clicked();
 
-    void on_btn_FailSend_clicked();
-
     void TaggerReHost();
 
     void BeaconSignal();
-
-    void on_btn_ShowListWidget_clicked();
-
-    void on_btn_DeBugSendTag_clicked();
-
-    void on_btn_StopHosting_clicked();
-
-    void on_btn_AnnounceOnce_clicked();
-
-    void on_btn_ForceAdd_clicked();
 
 	void closeHostGameWindow();
 
@@ -141,6 +129,7 @@ private:
     //bool    firstPassThisPlayer;
 
     //methods
+	void	setPromptText(QString text);
     void    hostCurrentPlayer();
     void    assignPlayerFailed();
     int     calculatePlayerTeam5bits(int requestedTeam);

@@ -14,6 +14,7 @@
 #include "SetScoreParameters.h"
 #include "FileLoadSave.h"
 #include "OtaWindow.h"
+#include "SettingsWindow.h"
 
 namespace Ui {
 class LttoMainWindow;
@@ -110,13 +111,17 @@ private slots:
 
     void on_btn_ReSpawn_clicked();
 
-    void on_btn_SetScorePoints_clicked();
-
 	void updateFileName(QString newFileName);
 
 	void on_actionEdit_Scoring_triggered();
 
 	void on_actionUpdate_Firmware_triggered();
+
+	void on_btn_Settings_clicked();
+
+	void setOutdoorViewMode (bool state);
+
+	void setLTARmode (bool state);
 
 private:
     Ui::LttoMainWindow      *ui;
@@ -128,6 +133,7 @@ private:
 	QPointer<SetScoreParameters>	setScoreParameters;
 	QPointer<OtaWindow>				otaWindow;
 	QPointer<AboutForm>             aboutForm;
+	QPointer<SettingsWindow>		settingsWindow;
 	QSoundEffect					*sound_PowerUp;
 	QSoundEffect					*sound_Powerdown;
 	LttoComms						*lttoComms;

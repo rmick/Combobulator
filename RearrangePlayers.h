@@ -26,9 +26,18 @@ public:
 
 private slots:
     void    on_btn_Close_clicked();
+	void	clearPlayerLists();
     void    populateListWithPlayers();
     void    reAssignPlayerData();
     void    reSizeListWidgetButtonWidth();
+	void	assignPlayersToTeams(bool isRandom);
+
+	void on_btn_Randomise_clicked();
+	void on_btn_SetDefaultTeams_clicked();
+
+signals:
+	void    dataUpdated();
+
 
 private:
     Ui::RearrangePlayers    *ui;
@@ -36,8 +45,6 @@ private:
 
     int     numberOfPlayersInEachTeam;
 
-signals:
-    void    dataUpdated();
 
 protected:
 

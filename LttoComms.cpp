@@ -243,6 +243,21 @@ void LttoComms::sendOTAtext(QString ssidText, QString pswdText)
 	tcpComms->sendPacket(textBA);
 }
 
+void LttoComms::sendPing(QString pingText)
+{
+	QByteArray textBA;
+	QString textToSend = "";
+	textToSend.prepend("PING," + pingText);
+	textBA.append(textToSend + "\r\n");
+	qDebug() << "LttoComms::sendPing() -" << textBA;
+	tcpComms->sendPacket(textBA);
+}
+
+void LttoComms::sendEspRestart()
+{
+	tcpComms->sendPacket("ESP_RESTART");
+}
+
 QString LttoComms::createIRstring(int data)
 {
     QString createdPacket;
@@ -275,7 +290,7 @@ void LttoComms::receivePacket(QByteArray RxData)
         else if (irDataIn.startsWith("STOP"))
         {
             setDontAnnounceGame(true);
-            qDebug() << "STOP - LttoComms::receivePacket - ESP is receiving, so lets be quiet please.";
+			qDebug() << "\tSTOP STOP STOP STOP - LttoComms::receivePacket - ESP is receiving, so lets be quiet please.";
             irDataIn.clear();
             return;
         }
@@ -288,6 +303,14 @@ void LttoComms::receivePacket(QByteArray RxData)
             irDataIn.clear();
             return;
         }
+
+		else if (irDataIn.startsWith("PONG"))
+		{
+			emit PongReceived(irDataIn.remove(0,5));
+			qDebug() << "LttoComms::receivePacket - PONG: " << irDataIn;
+			irDataIn.clear();
+			return;
+		}
 
         //Check if this is a CombobulatorHost or LazerSwarm packet.
         else if (irDataIn.endsWith("@"))

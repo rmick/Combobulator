@@ -93,6 +93,9 @@
      <property name="text">
       <string>OK</string>
      </property>
+     <property name="default">
+      <bool>true</bool>
+     </property>
     </widget>
    </item>
    <item row="0" column="1">
@@ -128,10 +131,13 @@
        <pointsize>24</pointsize>
       </font>
      </property>
+     <property name="echoMode">
+      <enum>QLineEdit::Password</enum>
+     </property>
     </widget>
    </item>
    <item row="0" column="2">
-    <widget class="QPushButton" name="pushButton">
+    <widget class="QPushButton" name="btn_Ping">
      <property name="text">
       <string>Ping</string>
      </property>

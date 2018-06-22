@@ -38,7 +38,8 @@ SOURCES +=  \
     ScoresWindow.cpp \
     SetScoreParameters.cpp \
     FileLoadSave.cpp \
-    OtaWindow.cpp
+    OtaWindow.cpp \
+    SettingsWindow.cpp
 
 
 HEADERS  += \
@@ -63,7 +64,8 @@ HEADERS  += \
     ScoresWindow.h \
     SetScoreParameters.h \
     FileLoadSave.h \
-    OtaWindow.h
+    OtaWindow.h \
+    SettingsWindow.h
 
 
 FORMS    += \
@@ -79,7 +81,8 @@ FORMS    += \
     ScoresWindow.ui \
     SetScoreParameters.ui \
     FileLoadSave.ui \
-    OtaWindow.ui
+    OtaWindow.ui \
+    SettingsWindow.ui
 
 
 RESOURCES += \
@@ -99,5 +102,21 @@ DISTFILES += \
     resources/audio/menu-blip.wav \
     resources/audio/power-up.wav \
     resources/audio/shut-down.wav \
-    resources/audio/stinger-power-on.wav
+    resources/audio/stinger-power-on.wav \
+    android/AndroidManifest.xml \
+    android/gradle/wrapper/gradle-wrapper.jar \
+    android/gradlew \
+    android/res/values/libs.xml \
+    android/build.gradle \
+    android/gradle/wrapper/gradle-wrapper.properties \
+    android/gradlew.bat \
+    android/AndroidManifest.xml \
+    android/gradle/wrapper/gradle-wrapper.jar \
+    android/gradlew \
+    android/res/values/libs.xml \
+    android/build.gradle \
+    android/gradle/wrapper/gradle-wrapper.properties \
+    android/gradlew.bat
+
+ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 

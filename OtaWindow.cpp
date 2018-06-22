@@ -11,9 +11,17 @@ OtaWindow::OtaWindow(QWidget *parent) :
 	ssidText = "";
 	pswdText = "";
 
+	connect(lttoComms, SIGNAL(PongReceived(QString)), this, SLOT(pongReceived(QString)));
+	//Force the TCP to close (disconnect any sessions from a game been hosted).
+	lttoComms->closePorts();
+	lttoComms->nonBlockingDelay(500);
+
 	//Force the TCP connection to open.
 	lttoComms->sendPacket(BEACON, 0);
 	qDebug() << "Tickling";
+	lttoComms->nonBlockingDelay(500);
+	lttoComms->sendPing("Set WiFi");
+
 }
 
 OtaWindow::~OtaWindow()
@@ -42,12 +50,26 @@ void OtaWindow::on_btn_Ok_clicked()
 	}
 
 	lttoComms->sendOTAtext(ssidText, pswdText);
-	lttoComms->nonBlockingDelay(2000);
-	QMessageBox::warning(this,"Ready", "Please reset the Combobulator to start the update.");
+	ui->lineEdit_ssidName->setText("");
+	ui->lineEdit_password->setText("");
+	ui->btn_Ok->setEnabled(false);
+	ui->btn_cancel->setEnabled(false);
+	//lttoComms->nonBlockingDelay(2000);
+	QMessageBox::warning(this,"Ready", "Please standby. The device will now restart.");
 	deleteLater();
 }
 
 void OtaWindow::on_btn_cancel_clicked()
 {
 	deleteLater();
+}
+
+void OtaWindow::on_btn_Ping_clicked()
+{
+	lttoComms->sendPing("Test Ping");
+}
+
+void OtaWindow::pongReceived(QString pongText)
+{
+	qDebug() << "\tOtaWindow::pongReceived()" << pongText;
 }

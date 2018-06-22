@@ -3,6 +3,7 @@
 
 #include <QDebug>
 #include <QMessageBox>
+#include <QRandomGenerator>
 
 RearrangePlayers::RearrangePlayers(QWidget *parent) :
     QDialog(parent),
@@ -12,8 +13,8 @@ RearrangePlayers::RearrangePlayers(QWidget *parent) :
 
 	numberOfPlayersInEachTeam = MAX_PLAYERS/3;
     populateListWithPlayers();
-	reSizeListWidgetButtonWidth();
 
+	//ui->btn_SetDefaultTeams->setVisible(false);
 //    ui->label_TheBench->setVisible(false);
 //    ui->list_Bench->setVisible(false);
 }
@@ -49,6 +50,13 @@ void RearrangePlayers::on_btn_Close_clicked()
 
 }
 
+void RearrangePlayers::clearPlayerLists()
+{
+		ui->list_Team1->clear();
+		ui->list_Team2->clear();
+		ui->list_Team3->clear();
+}
+
 void RearrangePlayers::populateListWithPlayers()
 {
 	for(int index = 1;index < (numberOfPlayersInEachTeam+1); index++)
@@ -69,6 +77,7 @@ void RearrangePlayers::populateListWithPlayers()
 //            ui->list_Bench->item(index-1)->setData(Qt::UserRole, index+24);
 //        }
 	}
+	reSizeListWidgetButtonWidth();
 }
 
 void RearrangePlayers::reSizeListWidgetButtonWidth()
@@ -95,6 +104,30 @@ void RearrangePlayers::reSizeListWidgetButtonWidth()
 	}
 }
 
+void RearrangePlayers::assignPlayersToTeams(bool isRandom)
+{
+	//	Create an array and initialise all as Zer0.
+	int newPlayerNumber[MAX_PLAYERS+1];
+	for(int index = 1; index <= MAX_PLAYERS; index++)
+	{
+		newPlayerNumber[index] = index;
+	}
+
+	//Shuffle the array
+	if(isRandom) std::random_shuffle(std::begin(newPlayerNumber)+1, std::end(newPlayerNumber));
+
+
+	// Update the player numbers and refresh the grid.
+	for(int index = 1; index <= MAX_PLAYERS; index++)
+	{
+		if (isRandom)	playerInfo[0].copyPlayerSettings(index, newPlayerNumber[index] );
+		else			playerInfo[0].copyPlayerSettings(index, playerInfo[index].getPlayerIndex() );
+	}
+	playerInfo[0].moveAllPlayersFromTempToMain();
+	clearPlayerLists();
+	populateListWithPlayers();
+}
+
 void RearrangePlayers::reAssignPlayerData()
 {
 	int playerToCopy    = 0;
@@ -111,7 +144,16 @@ void RearrangePlayers::reAssignPlayerData()
 
 	emit dataUpdated(); //This updates the buttons in PlayerWindow.cpp
 
-
 	// TODO: Clean out the PlayerInfoTemp database
 	// TODO: Also reset/disable missing players with default data and set as not in the game !
+}
+
+void RearrangePlayers::on_btn_Randomise_clicked()
+{
+	assignPlayersToTeams(true);
+}
+
+void RearrangePlayers::on_btn_SetDefaultTeams_clicked()
+{
+	assignPlayersToTeams(false);
 }

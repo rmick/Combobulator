@@ -125,8 +125,12 @@ public:
 
     void moveAllPlayersFromTempToMain();
 
+	int getPlayerIndex() const;
+	void setPlayerIndex(int value);
+
 private:
-    // Player settings - stored in saved games
+	// Player settings - stored in saved games
+	int		PlayerIndex;
     int     Handicap;
     QString PlayerName;
     int     Reloads;

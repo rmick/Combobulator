@@ -30,6 +30,8 @@ public:
 	void		sendLEDcolour(int Red = 0, int Green = 0, int Blue = 0);
 	void		sendLEDcolour(QString colour);
 	void		sendOTAtext(QString ssidText, QString pswdText);
+	void		sendPing(QString pingText);
+	void		sendEspRestart();
 
     bool        getUseLazerSwarm() const;
     void        setUseLazerSwarm(bool value);
@@ -78,6 +80,7 @@ signals:
     void        Team2TagReportReceived(int game, int teamAndPlayer, int tagsP1, int tagsP2, int tagsP3, int tagsP4, int tagsP5, int tagsP6, int tagsP7, int tagsP8);
     void        Team3TagReportReceived(int game, int teamAndPlayer, int tagsP1, int tagsP2, int tagsP3, int tagsP4, int tagsP5, int tagsP6, int tagsP7, int tagsP8);
 	void		BeaconReceived(int beaconData);
+	void		PongReceived(QString pongText);
 
 private slots:
     void        receivePacket(QByteArray RxData);

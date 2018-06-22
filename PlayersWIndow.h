@@ -69,6 +69,8 @@ private slots:
 
 	void on_btn_StartGame_clicked();
 
+	void on_btn_Rename_clicked();
+
 private:
     Ui::PlayersWindow           *ui;
     QSignalMapper               *signalMapperClicked;

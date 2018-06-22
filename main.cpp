@@ -7,7 +7,8 @@
 int main(int argc, char *argv[])
 {
 	QCoreApplication::setApplicationName( QString("The Combobulator") );
-	QApplication::setDesktopSettingsAware(false);
+	QApplication::setDesktopSettingsAware(true);
+	//QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 	QApplication    theApp(argc, argv);
     LttoMainWindow  lttoMainWindow;
 	lttoMainWindow.setWindowIcon(QIcon(":/resources/images/Combobulator.ico"));
@@ -19,6 +20,7 @@ int main(int argc, char *argv[])
     QSplashScreen   splashScreen(pixmap);
 
 #ifndef QT_DEBUG
+	sound_PowerUp.setVolume(100);
 	sound_PowerUp.setSource(QUrl::fromLocalFile(":/resources/audio/stinger-power-on.wav"));
 	sound_PowerUp.play();
 	splashScreen.show();
