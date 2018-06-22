@@ -69,15 +69,15 @@ void ScoresWindow::calibrateScreen(int modus)
 
 
     //TODO: Set font size more accurately
-    if(columnWidth < 25)                        tableFont.setPointSize(8);
-    if(columnWidth > 24 && columnWidth < 50)    tableFont.setPointSize(12);
-    if(columnWidth > 49 && columnWidth < 75)    tableFont.setPointSize(16);
-    if(columnWidth > 74 && columnWidth < 100)   tableFont.setPointSize(20);
-    if(columnWidth > 100)                       tableFont.setPointSize(32);
+//    if(columnWidth < 25)                        tableFont.setPointSize(8);
+//    if(columnWidth > 24 && columnWidth < 50)    tableFont.setPointSize(12);
+//    if(columnWidth > 49 && columnWidth < 75)    tableFont.setPointSize(16);
+//    if(columnWidth > 74 && columnWidth < 100)   tableFont.setPointSize(20);
+//    if(columnWidth > 100)                       tableFont.setPointSize(32);
 
     ui->scoreTable->setRowCount(gameInfo.getNumberOfPlayersInGame());
-    tableFont.setFamily("Verdana");
-    headerFont.setPointSize(12);
+	//tableFont.setFamily("Verdana");
+	//headerFont.setPointSize(12);
 }
 
 void ScoresWindow::addColumnLabels(int modus)
@@ -87,16 +87,16 @@ void ScoresWindow::addColumnLabels(int modus)
     int columnIndex = 0;
 
     QTableWidgetItem *playerID = new QTableWidgetItem("ID");
-    playerID->setFont(headerFont);
+	//playerID->setFont(headerFont);
     ui->scoreTable->setHorizontalHeaderItem(columnIndex++, playerID);
     if (modus != SUMMARY_VIEW)  ui->scoreTable->setColumnWidth(columnIndex-1, columnWidth / 1.5);
     else                        ui->scoreTable->setColumnWidth(columnIndex-1, columnWidth / 3.0);
 
 
     QTableWidgetItem *PlayersName = new QTableWidgetItem("Players\nName");
-    PlayersName->setFont(headerFont);
+	//PlayersName->setFont(headerFont);
     ui->scoreTable->setHorizontalHeaderItem(columnIndex++, PlayersName);
-    int sizeAdjust = screenWidth - ((gameInfo.getNumberOfPlayersInGame()+2)*columnWidth);  // adds any spare pixels into the PlayerNamme column
+	int sizeAdjust = screenWidth - ((gameInfo.getNumberOfPlayersInGame()+2)*columnWidth);  // adds any spare pixels into the PlayerName column
     if (modus != SUMMARY_VIEW)  ui->scoreTable->setColumnWidth(columnIndex-1, (columnWidth * 1.3) + sizeAdjust);
     else                        ui->scoreTable->setColumnWidth(columnIndex-1,  columnWidth * 1.5);
 
@@ -106,32 +106,32 @@ void ScoresWindow::addColumnLabels(int modus)
         else if (modus == ALL_IN_ONE_VIEW) ui->scoreTable->setColumnCount(COLUMNS_IN_SUMMARY + gameInfo.getNumberOfPlayersInGame());
 
         QTableWidgetItem *Rank = new QTableWidgetItem("Rank");
-        Rank->setFont(headerFont);
+		//Rank->setFont(headerFont);
         ui->scoreTable->setHorizontalHeaderItem(columnIndex++, Rank);
         ui->scoreTable->setColumnWidth(columnIndex-1, columnWidth);
 
         QTableWidgetItem *Score = new QTableWidgetItem("Score");
-        Score->setFont(headerFont);
+		//Score->setFont(headerFont);
         ui->scoreTable->setHorizontalHeaderItem(columnIndex++, Score);
         ui->scoreTable->setColumnWidth(columnIndex-1, columnWidth);
 
         QTableWidgetItem *HitsTaken = new QTableWidgetItem("Hits\nTaken");
-        HitsTaken->setFont(headerFont);
+		//HitsTaken->setFont(headerFont);
         ui->scoreTable->setHorizontalHeaderItem(columnIndex++, HitsTaken);
         ui->scoreTable->setColumnWidth(columnIndex-1, columnWidth);
 
         QTableWidgetItem *HitsLanded = new QTableWidgetItem("Hits\nLanded");
-        HitsLanded->setFont(headerFont);
+		//HitsLanded->setFont(headerFont);
         ui->scoreTable->setHorizontalHeaderItem(columnIndex++, HitsLanded);
         ui->scoreTable->setColumnWidth(columnIndex-1, columnWidth);
 
         QTableWidgetItem *SurvivalTime = new QTableWidgetItem("Survival\nTime");
-        SurvivalTime->setFont(headerFont);
+		//SurvivalTime->setFont(headerFont);
         ui->scoreTable->setHorizontalHeaderItem(columnIndex++, SurvivalTime);
         ui->scoreTable->setColumnWidth(columnIndex-1, columnWidth);
 
         QTableWidgetItem *ZoneTime = new QTableWidgetItem("Zone\nTime");
-        ZoneTime->setFont(headerFont);
+		//ZoneTime->setFont(headerFont);
         ui->scoreTable->setHorizontalHeaderItem(columnIndex++, ZoneTime);
         ui->scoreTable->setColumnWidth(columnIndex-1, columnWidth);
     }
@@ -145,7 +145,8 @@ void ScoresWindow::addColumnLabels(int modus)
         {
             if(gameInfo.getIsThisPlayerInTheGame(index) == true)
             {
-                ui->scoreTable->setHorizontalHeaderItem(columnIndex++, new QTableWidgetItem(playerInfo[index].getPlayerName()));
+				//ui->scoreTable->setHorizontalHeaderItem(columnIndex++, new QTableWidgetItem(playerInfo[index].getPlayerName()));
+				ui->scoreTable->setHorizontalHeaderItem(columnIndex++, new QTableWidgetItem(QString::number(index)));
                 ui->scoreTable->setColumnWidth(columnIndex-1, columnWidth);
             }
             else offsetForNonPlayers++;

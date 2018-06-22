@@ -358,6 +358,7 @@ void Players::streamFromFile(QTextStream &in)
             else if (descriptorP.contains("SleepTimeOut:") )    playerInfo[playerID].SleepTimeOut = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
 			else if (descriptorP.contains("PlayerIndex:") )		playerInfo[playerID].PlayerIndex  = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
     }   while (descriptorP != "END_OF_PLAYER_SETTINGS");
+	qDebug() << "Players::StreamFromFile has left the building" << endl << endl;
 }
 
 void Players::copyPlayerSettings(int copyFrom, int copyTo)

@@ -114,9 +114,10 @@ private:
 	Hosting					*host;
 
     //variables
-    //bool    useLazerSwarm;                      // determines whether to use Lazerswarm comms or my own comms method.
+	//bool    useLazerSwarm;                    // determines whether to use Lazerswarm comms or my own comms method.
     bool    isThisPlayerHosted[25];             // an array that defines which players have joined the game.
     int     currentPlayer;                      // the current player to host.
+	int		nextPlayer;							// the next player to host
     bool    noMorePlayers;
     int     countDownTimeRemaining;
     bool    expectingAckPlayerAssignment;
@@ -130,6 +131,7 @@ private:
 
     //methods
 	void	setPromptText(QString text);
+	void	setNextPlayerText(QString text);
     void    hostCurrentPlayer();
     void    assignPlayerFailed();
     int     calculatePlayerTeam5bits(int requestedTeam);

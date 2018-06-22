@@ -9,16 +9,16 @@ SettingsWindow::SettingsWindow(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	if(gameInfo.getIsLTARGame())		ui->radioButton_LtarMode->setChecked(true);
-	else								ui->radioButton_NormalMode->setChecked(true);
+	if(gameInfo.getIsLTARGame())		ui->radioButton_LtarMode	->setChecked(true);
+	else								ui->radioButton_NormalMode	->setChecked(true);
 
-	if(gameInfo.getIsIndoorViewMode())	ui->radioButton_IndoorMode->setChecked(true);
-	else								ui->radioButton_OutdoorMode->setChecked(true);
+	if(gameInfo.getIsIndoorViewMode())	ui->radioButton_IndoorMode	->setChecked(true);
+	else								ui->radioButton_OutdoorMode	->setChecked(true);
+	qDebug() << "SettingsWindow::SettingsWindow() - isIndoorViewMode =" << gameInfo.getIsIndoorViewMode();
 
 	int timeOutValue = gameInfo.getCountDownTime();
 	ui->sldr_CountDownTime->setValue(timeOutValue);
-	//ui->sldr_CountDownTime->setSliderPosition(timeOutValue);
-	ui->label_CountDownTime->setText(QString::number(timeOutValue));
+	//ui->label_CountDownTime->setText(QString::number(timeOutValue));
 	qDebug() << timeOutValue << gameInfo.getCountDownTime();
 }
 
@@ -78,4 +78,22 @@ void SettingsWindow::on_sldr_CountDownTime_valueChanged(int value)
 	qDebug() << "SettingsWindow::on_sldr_CountDownTime_valueChanged(int value)" << value;
 	ui->label_CountDownTime->setText(QString::number(value));
 	gameInfo.setCountDownTime(value);
+}
+
+void SettingsWindow::on_btn_ShutDown_clicked()
+{
+	ui->btn_About				->setEnabled(false);
+	ui->btn_AdjustScoring		->setEnabled(false);
+	ui->btn_Close				->setEnabled(false);
+	ui->btn_LoadFile			->setEnabled(false);
+	ui->btn_SaveFile			->setEnabled(false);
+	ui->btn_ShutDown			->setEnabled(false);
+	ui->sldr_CountDownTime		->setEnabled(false);
+	ui->frame					->setEnabled(false);
+	ui->frame_2					->setEnabled(false);
+	ui->radioButton_IndoorMode	->setEnabled(false);
+	ui->radioButton_OutdoorMode	->setEnabled(false);
+	ui->radioButton_LtarMode	->setEnabled(false);
+	ui->radioButton_NormalMode	->setEnabled(false);
+	emit exitApp();
 }

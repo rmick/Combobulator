@@ -33,13 +33,18 @@ private:
 
 	int			fontSizeForLabels;
 	int			fontSizeforButtons;
+	int			fontSizeForTableHeaders;
+	int			fontSizeForTableWidget;
+
 	QString		qLabelFont;
 	QString		qToolButtonFont;
 	QString		qPushButtonFont;
-
+	QString		qTableWidgetFont;
+	QString		qTableHeaderFont;
 
     void        setSpecials(int value);
 	void		setFontSizes();
+	void		calculateFontSizes();
 
 public:
     StyleSheet();

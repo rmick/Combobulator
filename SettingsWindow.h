@@ -36,6 +36,8 @@ private slots:
 
 	void on_radioButton_OutdoorMode_clicked();
 
+	void on_btn_ShutDown_clicked();
+
 signals:
 	void	adjustScoring();
 	void	saveFile();

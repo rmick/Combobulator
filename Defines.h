@@ -6,13 +6,11 @@ macdeployqt terminal command (copy into terminal window to build a .dmg)
           Source - https://dragly.org/2012/01/13/deploy-qt-applications-for-mac-os-x/
 
 	  1)	Navigate to the QT Build directory for the App.
-			   (e.g. Qt_projects\build-Combobulator-Desktop..........)
+			   (e.g. Qt_projects\build-Combobulator_Mac-Release..........)
 
 	  2)	Right click on the folder and go to 'services', then 'New Terminal At Folder'.
 
-	  3)	Copy/paste the following line into the terminal window and wait.....
-			  /Users/Richie/Qt/5.9.1/clang_64/bin/macdeployqt Combobulator.app -dmg
-					  !!!!!!! or if running a newer build of QT !!!!!!!!
+	  3)	Copy/paste the following line into the terminal window and wait....
 			  /Users/Richie/Qt511/5.11.0/clang_64/bin/macdeployqt Combobulator.app -dmg
 				 IF YOU GET AN ERROR - check that you have not upgraded to a newer version of Qt (e.g. 5.12)
 
@@ -46,7 +44,7 @@ androiddeployqt
 
 
 //  Build Number
-const QString BUILD_NUMBER  = "Build : 18.6.20";
+const QString BUILD_NUMBER  = "Build : 18.6.22";
 
 // Recoil Game Hub_28f537d14fca
 

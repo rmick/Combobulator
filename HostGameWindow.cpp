@@ -147,6 +147,12 @@ void HostGameWindow::announceGame()
     if (currentPlayer != 0)                                                                 // Player 0 is the dummy player
     {
         while (gameInfo.getIsThisPlayerInTheGame(currentPlayer) == false)   currentPlayer++;  // Find next player
+		while(nextPlayer <= currentPlayer)
+		{
+			nextPlayer++;
+			while (gameInfo.getIsThisPlayerInTheGame(nextPlayer) == false) nextPlayer++;
+			//while (gameInfo.getIsThisPlayerInTheGame(nextPlayer) == false) nextPlayer++;
+		}
 
 		if (lttoComms->getDontAnnounceGame() == false)
         {
@@ -156,11 +162,17 @@ void HostGameWindow::announceGame()
 				lttoComms->sendLCDtext("Hosting"                                 , 1);
 				lttoComms->sendLCDtext(playerInfo[currentPlayer].getPlayerName() , 2);
 				lttoComms->nonBlockingDelay(TEXT_SENT_DELAY);
+				if(nextPlayer < 25) setNextPlayerText("Next up : " + playerInfo[nextPlayer].getPlayerName() );
+				else				setNextPlayerText("");
             }
         }
     }
 
-    if (currentPlayer > 16 && gameInfo.getNumberOfTeams() == 2) currentPlayer = 25;         // Ignore players in Team 3
+	if (currentPlayer > 16 && gameInfo.getNumberOfTeams() == 2)          // Ignore players in Team 3
+	{
+		currentPlayer = 25;
+		nextPlayer	  = 25;
+	}
 
     if (currentPlayer >24)                                                                  // No more players to add
     {
@@ -179,6 +191,7 @@ void HostGameWindow::announceGame()
 		lttoComms->sendLCDtext("STANDBY"        , 4);
         ui->btn_SkipPlayer->setVisible(false);
         ui->btn_StartGame->setEnabled(true);
+		setNextPlayerText("");
 
     }
 
@@ -1017,4 +1030,12 @@ void HostGameWindow::setPromptText(QString text)
 	_textToSet.prepend("<html><head/><body><p><span style= font-size:64pt; font-weight:600;><b>");
 	_textToSet.append("</span></p></body></b></html>");
 	ui->label_Prompt->setText(_textToSet);
+}
+
+void HostGameWindow::setNextPlayerText(QString text)
+{
+	QString _textToSet = text;
+	_textToSet.prepend("<html><head/><body><p><span style= font-size:32pt; font-weight:600;><b>");
+	_textToSet.append("</span></p></body></b></html>");
+	ui->label_NextPlayer->setText(_textToSet);
 }

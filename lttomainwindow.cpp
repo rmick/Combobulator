@@ -40,22 +40,26 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
 
     this->setWindowTitle("Lasertag Combobulator");
     this->setWindowFlags(windowFlags() & ~Qt::FramelessWindowHint);
-    ui->label_BuildNumber->setText(BUILD_NUMBER);
+	ui->label_BuildNumber	->setText(BUILD_NUMBER);
     gameInfo.setGameType(gameInfo.Ltag0);
-    ui->btn_SpyTeamTags->setChecked(true);
-    ui->btn_SpyTeamTags->setVisible(false);
-    gameInfo.setIsSpiesTeamTagActive(true);
-    ui->btn_NoTeams->setChecked(true);
-    gameInfo.setNumberOfTeams(0);
-    ui->btn_Spies->setEnabled(false);
-    ui->btn_StartGame->setEnabled(false);
-	ui->btn_Debug->setVisible(false);
-    setLtarControls(false);
-	ui->btn_StartGame->setVisible(false);
+	gameInfo.setIsSpiesTeamTagActive(true);
+	gameInfo.setNumberOfTeams(0);
+	gameInfo.setIsIndoorViewMode(true);
+
+	ui->btn_SpyTeamTags	->setChecked(true);
+	ui->btn_SpyTeamTags	->setVisible(false);
+	ui->btn_NoTeams		->setChecked(true);
+	ui->btn_Spies		->setEnabled(false);
+	ui->btn_StartGame	->setEnabled(false);
+	//ui->btn_Debug		->setVisible(false);
+	ui->btn_StartGame	->setVisible(false);
+	setLtarControls(false);
+
 	//serialUSBcomms.setIsUSBinitialised(false);
+	//tcpComms.initialiseTCPsignalsAndSlots();
+
     qsrand(static_cast<uint>(QTime::currentTime().msec()));
     for (int index = 1; index < 25; index++)    playerInfo[index].setPlayerName("Player " + QString::number(index));
-	//tcpComms.initialiseTCPsignalsAndSlots();
 
     sound_Powerdown = new QSoundEffect(this);
     sound_Powerdown->setSource(QUrl::fromLocalFile(":/resources/audio/shut-down.wav"));
@@ -744,9 +748,9 @@ void LttoMainWindow::loadFile()
 //		int counter = 1;
 //		qDebug() << "LttoMainWindow::loadFile() looping" << counter++;
 //	}
+	qDebug() << "LttoMainWindow::loadFile()";
 
-//	qDebug() << "LttoMainWindow::loadFile() exited";
-//	delete(fileLoadSave);
+	delete(fileLoadSave);
 
 
 	if (fileLoadSaveName.isEmpty())		// this means the [cancel] button was pressed.

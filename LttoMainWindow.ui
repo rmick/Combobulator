@@ -410,21 +410,6 @@
       </property>
      </widget>
     </item>
-    <item row="7" column="5">
-     <widget class="QPushButton" name="btn_Debug">
-      <property name="enabled">
-       <bool>true</bool>
-      </property>
-      <property name="font">
-       <font>
-        <family>Verdana</family>
-       </font>
-      </property>
-      <property name="text">
-       <string>DeBug Scores</string>
-      </property>
-     </widget>
-    </item>
     <item row="4" column="3" rowspan="2">
      <widget class="QPushButton" name="btn_TeamTags">
       <property name="sizePolicy">
@@ -2443,6 +2428,21 @@
       </property>
       <property name="text">
        <string>Flags</string>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="5">
+     <widget class="QPushButton" name="btn_Debug">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="font">
+       <font>
+        <family>Verdana</family>
+       </font>
+      </property>
+      <property name="text">
+       <string>Test ScoresWindow</string>
       </property>
      </widget>
     </item>
