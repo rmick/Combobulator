@@ -11,7 +11,7 @@ TARGET = Combobulator
 DEPLOYMENT.display_name = Combobulator
 TEMPLATE = app
 
-RC_FILE = Combobulator.rc
+#RC_FILE = Combobulator.rc
 ICON	= Combobulator.icns
 
 QMAKE_MAC_SDK = macosx10.13
@@ -120,3 +120,4 @@ DISTFILES += \
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 
+DESTDIR = ./

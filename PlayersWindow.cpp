@@ -397,9 +397,15 @@ void PlayersWindow::playerButtonReleased(int value)
 
 void PlayersWindow::updatePlayerButtons()
 {
-    LoadPlayerSettings(0);      // 0 = Global Player
-    SetActivePlayers();
-    RenamePlayerTeamButtons(gameInfo.getNumberOfTeams());
+	LoadPlayerSettings(0);      // 0 = Global Player
+	RenamePlayerTeamButtons(gameInfo.getNumberOfTeams());
+	SetActivePlayers();
+	//Redraw all buttons
+	for (int x = 1; x < 25; x++)
+	{
+		if (PlayerButtons[x]->isChecked() ) PlayerButtons[x]->setStyleSheet(myStyleSheet.getButtonCheckedCss());
+		else                                PlayerButtons[x]->setStyleSheet(myStyleSheet.getButtonUnCheckedCss());
+	}
 }
 
 void PlayersWindow::RenamePlayer(int player)
@@ -569,7 +575,7 @@ void PlayersWindow::on_btn_ChangePlayers_clicked()
     //TODO: This will allow the user to drag players to new locations (eg T1-P4 to T3-P7), as well as off into an area of 'spare' players.
     if (!rearrangePlayers) rearrangePlayers = new RearrangePlayers(this);
     rearrangePlayers->setAttribute( Qt::WA_DeleteOnClose );
-    connect (rearrangePlayers,  SIGNAL(dataUpdated()),   this, SLOT(updatePlayerButtons() ));
+	connect (rearrangePlayers,  SIGNAL(dataUpdated()),   this, SLOT(updatePlayerButtons() )); //hre
 #ifdef QT_DEBUG
 	rearrangePlayers->show();
 #else

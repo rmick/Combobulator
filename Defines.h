@@ -11,8 +11,10 @@ macdeployqt terminal command (copy into terminal window to build a .dmg)
 	  2)	Right click on the folder and go to 'services', then 'New Terminal At Folder'.
 
 	  3)	Copy/paste the following line into the terminal window and wait....
+
 			  /Users/Richie/Qt511/5.11.0/clang_64/bin/macdeployqt Combobulator.app -dmg
-				 IF YOU GET AN ERROR - check that you have not upgraded to a newer version of Qt (e.g. 5.12)
+
+			  IF YOU GET AN ERROR - check that you have not upgraded to a newer version of Qt (e.g. 5.12)
 
 	  Here is the current build directory	Qt_projects\build-Combobulator_Mac-Release
 
@@ -20,7 +22,7 @@ macdeployqt terminal command (copy into terminal window to build a .dmg)
 windeployqt
 	  1)	Copy the Combobulator.exe
 			   from the        Qt_projects\build-Combobulator_Windows32-Release\release
-			   to the          Qt_projects\build-Combobulator_Windows32-Release\Comobulator
+               to the          Qt_projects\build-Combobulator_Windows32-Release\Combobulator
 
 	  2)	Open CMD.exe prompt
 			   cd\
@@ -28,7 +30,7 @@ windeployqt
 
 	  3)	STOP !!!!! (Did you do step 1 above - copy the file to a new location first !!!!
 
-	  4)	cd Qt_projects\build-Combobulator_Windows32-Release\Combobulator
+      4)	cd Qt_projects\build-Combobulator_Windows32-Release\Combobulator
 			C:\Qt\5.11.0\mingw53_32\bin\windeployqt Combobulator.exe
 
 	  5)	Zip up the folder and publish to Dropbox
@@ -44,7 +46,7 @@ androiddeployqt
 
 
 //  Build Number
-const QString BUILD_NUMBER  = "Build : 18.6.22";
+const QString BUILD_NUMBER  = "Build : 18.7.11";
 
 // Recoil Game Hub_28f537d14fca
 

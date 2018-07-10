@@ -10,9 +10,8 @@ Players playerInfoTemp[MAX_PLAYERS+1];
 Players::Players()
 {
     static int instanceCount = 0;
-	//instanceCount++;
 
-	if(instanceCount == 0)	qDebug() << "Players::Players() - Constructing.......";
+	if(instanceCount == 0)				qDebug() << "Players::Players() - Constructing.......";
 
     Handicap        = 0;
     PlayerName       = "_";
@@ -35,16 +34,11 @@ Players::Players()
     zoneTimeSeconds     = 0;
     rankingInGame       = 0;
     totalTagsTaken      = 0;
+	PlayerIndex			= instanceCount++;
 
 	for (int index = 1; index < MAX_PLAYERS+1; index++)
 	{
 		setTagsTaken(index, 0);
-	}
-
-	if(instanceCount < MAX_PLAYERS+1)
-	{
-		PlayerIndex			= instanceCount++;
-		qDebug() << "Players::Players() - PlayerIndex =" << getPlayerIndex();
 	}
 }
 

@@ -134,9 +134,9 @@ void RearrangePlayers::reAssignPlayerData()
 
 	for(int index = 1; index <= MAX_PLAYERS; index++)
 	{
-		if      (index <= numberOfPlayersInEachTeam)        playerToCopy = ui->list_Team1->item(index-1)->data(Qt::UserRole).toInt();
-		else if (index <= numberOfPlayersInEachTeam * 2 )   playerToCopy = ui->list_Team2->item(index-9)->data(Qt::UserRole).toInt();
-		else if (index <= numberOfPlayersInEachTeam * 3)    playerToCopy = ui->list_Team3->item(index-17)->data(Qt::UserRole).toInt();
+		if      (index <= numberOfPlayersInEachTeam    )	playerToCopy = ui->list_Team1->item(index -1)->data(Qt::UserRole).toInt();
+		else if (index <= numberOfPlayersInEachTeam * 2)	playerToCopy = ui->list_Team2->item(index -9)->data(Qt::UserRole).toInt();
+		else if (index <= numberOfPlayersInEachTeam * 3)	playerToCopy = ui->list_Team3->item(index-17)->data(Qt::UserRole).toInt();
 
 		playerInfo[0].copyPlayerSettings(playerToCopy, index);
 	}
