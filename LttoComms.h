@@ -25,8 +25,8 @@ public:
 	bool		getConnectionStatus();
 
     bool        sendPacket(char type, int data = 0, bool dataFormat = false);
-    void        sendLCDtext(QString textToSend, int lineNumber);
-    void        sendLCDtext(int xCursor, int yCursor, QString text, int fontSize, int colour, bool clearDisp);
+	void        sendLCDtext(QString textToSend, int lineNumber, bool drawScreen);
+	void        sendLCDtext(int xCursor, int yCursor, QString text, int fontSize, int colour, bool clearDisp, bool drawDisplay);
 	void		sendLEDcolour(int Red = 0, int Green = 0, int Blue = 0);
 	void		sendLEDcolour(QString colour);
 	void		sendOTAtext(QString ssidText, QString pswdText);
