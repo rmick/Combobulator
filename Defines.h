@@ -69,7 +69,7 @@ const char  BEACON      = 'Z';
 
 //Internal timers (in mSec)
 const int   INTERPACKET_DELAY_MSEC		= 50;
-const int   HOST_TIMER_MSEC				= 950;  //1750
+const int   HOST_TIMER_MSEC				= 1200;
 const int   DEBRIEF_TIMER_MSEC			= 1200;
 const int   TEXT_SENT_DELAY				= 15;
 const int   PRESS_AND_HOLD_TIME			= 500;

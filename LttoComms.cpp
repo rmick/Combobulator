@@ -4,7 +4,7 @@
 #include "Game.h"
 
 //#define LOCAL_DEBUG_RX
-#define LOCAL_DEBUG_TX
+//#define LOCAL_DEBUG_TX
 //#define LCD_DISABLED
 
 LttoComms::LttoComms(QObject *parent) : QObject(parent)
@@ -180,22 +180,21 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
     return result;
 }
 
-void LttoComms::sendLCDtext(QString textToSend, int lineNumber, bool drawScreen)
+void LttoComms::sendLCDtext(QString textToSend, int lineNumber)
 {
 #ifdef LCD_DISABLED
     return;
 #endif
 
 	if(!tcpCommsConnected) return;      // USB means it is a Lazerswarm, which does not accept TXT.
-	QByteArray textBA;
+    QByteArray textBA;
     textToSend.prepend("TXT" + QString::number(lineNumber)+ ":");
-	textBA.append(textToSend + ":" + QString::number(drawScreen) + "\r\n");
+    textBA.append(textToSend + "\r\n");
 	tcpComms->sendPacket(textBA);
-	//qDebug() << "LttoComms::sendLCDtext() - " << textBA;
     //lttoComms.nonBlockingDelay(TEXT_SENT_DELAY);
 }
 
-void LttoComms::sendLCDtext(int xCursor, int yCursor, QString text, int fontSize, int colour, bool clearDisp, bool drawDisplay)
+void LttoComms::sendLCDtext(int xCursor, int yCursor, QString text, int fontSize, int colour, bool clearDisp)
 {
 #ifdef LCD_DISABLED
     return;
@@ -204,7 +203,7 @@ void LttoComms::sendLCDtext(int xCursor, int yCursor, QString text, int fontSize
 	if(!tcpCommsConnected) return;      // USB means it is a Lazerswarm, which does not accept TXT.
     QByteArray textBA;
     QString textToSend = "";
-	textToSend.prepend("DSP," + QString::number(xCursor) + "," + QString::number(yCursor) + "," + text + "," +  QString::number(fontSize) + "," + QString::number(colour) + "," + QString::number(clearDisp) + "," + QString::number(drawDisplay));
+    textToSend.prepend("DSP," + QString::number(xCursor) + "," + QString::number(yCursor) + "," + text + "," +  QString::number(fontSize) + "," + QString::number(colour) + "," + QString::number(clearDisp));
     textBA.append(textToSend + "\r\n");
 	tcpComms->sendPacket(textBA);
 	//lttoComms.nonBlockingDelay(TEXT_SENT_DELAY);
@@ -217,7 +216,7 @@ void LttoComms::sendLEDcolour(int Red, int Green, int Blue)
 	QString textToSend = "";
 	textToSend.prepend("LED," + QString::number(Red) + "," + QString::number(Green) + "," +  QString::number(Blue));
 	textBA.append(textToSend + "\r\n");
-	//qDebug() << "LttoComms::sendLEDcolour() -" << textBA;
+	qDebug() << "LttoComms::sendLEDcolour() -" << textBA;
 	tcpComms->sendPacket(textBA);
 }
 
@@ -228,7 +227,7 @@ void LttoComms::sendLEDcolour(QString colour)
 	QString textToSend = "";
 	textToSend.prepend("LED," + colour);
 	textBA.append(textToSend + "\r\n");
-	//qDebug() << "LttoComms::sendLEDcolour() -" << textBA;
+	qDebug() << "LttoComms::sendLEDcolour() -" << textBA;
 	tcpComms->sendPacket(textBA);
 }
 
