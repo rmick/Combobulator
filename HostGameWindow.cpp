@@ -23,7 +23,7 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
     timerGameTimeRemaining(NULL),
     timerReHost(NULL),
     timerBeacon(NULL),
-    sound_Hosting(NULL),
+	sound_Hosting(NULL),
     sound_Countdown(NULL),
     sound_HostingMissedReply(NULL),
     sound_GoodLuck(NULL),
@@ -233,7 +233,7 @@ void HostGameWindow::hostCurrentPlayer()
 		lttoComms->setMissedAnnounceCount(lttoComms->getMissedAnnounceCount()+1);             // Increment counter
 
 
-		//qDebug() << "HostGameWindow::hostCurrentPlayer() - DontAnnouceGame is active. Count = " << lttoComms->getMissedAnnounceCount();
+		qDebug() << "HostGameWindow::hostCurrentPlayer() - DontAnnouceGame is active. Count = " << lttoComms->getMissedAnnounceCount();
 
 		if (lttoComms->getMissedAnnounceCount() < 3) return;
 
@@ -249,8 +249,8 @@ void HostGameWindow::hostCurrentPlayer()
         }
     }
 
-    if (gameInfo.getIsLTARGame())   qDebug() << "HostGameWindow::hostCurrentPlayer() - LTAR mode = " << currentPlayer;
-    else                            qDebug() << "HostGameWindow::hostCurrentPlayer() - Std mode = "  << currentPlayer;
+//    if (gameInfo.getIsLTARGame())   qDebug() << "HostGameWindow::hostCurrentPlayer() - LTAR mode = " << currentPlayer;
+//    else                            qDebug() << "HostGameWindow::hostCurrentPlayer() - Std mode = "  << currentPlayer;
 
     sound_Hosting->play();
 
@@ -401,6 +401,8 @@ void HostGameWindow::AssignPlayer(int Game, int Tagger, int Flags, bool isLtar)
 		lttoComms->setDontAnnounceGame(false);
         return;
     }
+	//Set currentTagger so that LttoComms::processPacket() can ignore other taggers that respond.
+	lttoComms->setCurrentTaggerBeingHosted(Tagger);
 
     int preferedTeam = Flags & 3;  //b00000011;       //This is the 2 LSB of the flags byte.
 
@@ -431,7 +433,14 @@ void HostGameWindow::AssignPlayer(int Game, int Tagger, int Flags, bool isLtar)
 
 void HostGameWindow::AddPlayerToGame(int Game, int Tagger, bool isLtar)
 {
-    sound_PlayerAdded->play();
+	if(gameInfo.getGameID() != Game || playerInfo[currentPlayer].getTaggerID() != Tagger)
+	{
+		qDebug() << "\t\tHostGameWindow::AddPlayerToGame() - GameID or TaggerID mismatched !!!!!!   ERROR";
+		return;
+	}
+
+	lttoComms->setCurrentTaggerBeingHosted(0);
+	sound_PlayerAdded->play();
 
 	lttoComms->sendLCDtext(playerInfo[currentPlayer].getPlayerName() , 1, false);
 	lttoComms->sendLCDtext("Joined"                                  , 2,  true);
@@ -450,11 +459,7 @@ void HostGameWindow::AddPlayerToGame(int Game, int Tagger, bool isLtar)
         qDebug() << "\t\tHostGameWindow::AddPlayerToGame()" << currentPlayer << endl;
     }
 
-    if(gameInfo.getGameID() != Game || playerInfo[currentPlayer].getTaggerID() != Tagger)
-    {
-        qDebug() << "\t\tHostGameWindow::AddPlayerToGame() - GameID or TaggerID mismatched !!!!!!   ERROR";
-        return;
-    }
+
     InsertToListWidget("   AddPlayerToGame()" + QString::number(currentPlayer));
     isThisPlayerHosted[currentPlayer] = true;
     expectingAckPlayerAssignment = false;
@@ -496,6 +501,7 @@ void HostGameWindow::assignPlayerFailed()       //TODO: This is not working.
     qDebug() << "HostGameWindow::assignPlayerFailed() - starting Timer";
     timerAssignFailed->start(ASSIGNED_PLAYER_FAIL_TIMER);
     assignPlayerFailCount = 0;
+	lttoComms->setCurrentTaggerBeingHosted(0);
     // The timerAssignedFailed is stopped when a message is sent to HostGameWindow::AddPlayerToGame()
 }
 
@@ -609,25 +615,31 @@ int HostGameWindow::calculatePlayerTeam5bits(int requestedTeam)
 
 void HostGameWindow::closeHostGameWindow()
 {
-	qDebug() << "HostGameWindow::closeHostGameWindow() says Good-bye";
-//lttoComms->sendEspRestart();
-//qDebug() << " _____ HostGameWindow::closeHostGameWindow() - Restarting ESP";
-	lttoComms->nonBlockingDelay(500);
-	lttoComms->closePorts();
-	closingWindow = true;
-    ui->btn_Cancel->setEnabled(false);
-	setPromptText("Cancelling......");
-    timerAnnounce->stop();
-    timerCountDown->stop();
-    timerDeBrief->stop();
-    timerAssignFailed->stop();
-    timerGameTimeRemaining->stop();
-    timerReHost->stop();
+	qDebug() << "HostGameWindow::closeHostGameWindow() - says Good-bye";
+	timerAnnounce->stop();
+	timerCountDown->stop();
+	timerDeBrief->stop();
+	timerAssignFailed->stop();
+	timerGameTimeRemaining->stop();
+	timerReHost->stop();
 	timerBeacon->stop();
+
 	lttoComms->sendLCDtext(""          , 1, false);
 	lttoComms->sendLCDtext("Wait for"  , 2, false);
 	lttoComms->sendLCDtext("new Game"  , 3,  true);
 	lttoComms->nonBlockingDelay(TEXT_SENT_DELAY);
+	lttoComms->nonBlockingDelay(500);
+	qDebug() << " _____ HostGameWindow::closeHostGameWindow() - Restarting ESP";
+	//lttoComms->sendPing("ESP-Please Restart");
+	lttoComms->sendEspRestart();
+	lttoComms->sendPing("ESP-Please Restart"); //required to get the reset to work.
+	lttoComms->nonBlockingDelay(500);
+	lttoComms->closePorts();
+
+	closingWindow = true;
+    ui->btn_Cancel->setEnabled(false);
+	setPromptText("Cancelling......");
+
 	if (sendingCommsActive == false) deleteLater();     //If this is true then the deleteLater is triggered at the end of hostCurrentPlayer(), to stop the app crashing.
 	emit closingHostGameWindow();
 }
@@ -984,24 +996,28 @@ void HostGameWindow::deBriefTaggers()
 		lttoComms->sendLCDtext("Reported"           , 3,  true);
         //Sit and wait to allow time for slow messages to appear
 		lttoComms->nonBlockingDelay(1500);
+
+		// Calculate scores and sendRankReport
+		deBrief->calculateScores();
+		deBrief->calculateRankings();
+		setPromptText("Sending Rank Reports");
+		lttoComms->sendLCDtext("Sending"            , 1, false);
+		lttoComms->sendLCDtext("Rank"				, 2, false);
+		lttoComms->sendLCDtext("Reports"			, 3,  true);
+		deBrief->sendRankReport();
+
+
 		setPromptText("Game Over");
 		lttoComms->sendLCDtext(""					, 1, false);
 		lttoComms->sendLCDtext("Game"               , 2, false);
 		lttoComms->sendLCDtext("Over"				, 3,  true);
 
-        // Show Scores Window
-        deBrief->calculateScores();
-        deBrief->calculateRankings();
-        deBrief->sendRankReport();
-
+		//Show Scores window
         if(!scoresWindow) scoresWindow = new ScoresWindow(this);
 
 		connect(scoresWindow,	SIGNAL(closingScoresWindow()),	this,	SLOT(closeHostGameWindow()) );
 
         scoresWindow->showFullScreen();
-
-		//Send RankReport
-		deBrief->sendRankReport();
     }
 }
 

@@ -46,6 +46,10 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
 	gameInfo.setNumberOfTeams(0);
 	gameInfo.setIsIndoorViewMode(true);
 
+	timerHeartBeat = new QTimer(this);
+	//timerHeartBeat->start(HEART_BEAT_MSEC);
+	connect(timerHeartBeat,	SIGNAL(timeout() ),	this,	SLOT(heartBeat())	);
+
 	ui->btn_SpyTeamTags	->setChecked(true);
 	ui->btn_SpyTeamTags	->setVisible(false);
 	ui->btn_NoTeams		->setChecked(true);
@@ -74,6 +78,7 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
 
 LttoMainWindow::~LttoMainWindow()
 {
+	timerHeartBeat->stop();
 	lttoComms->closePorts();
 	lttoComms->nonBlockingDelay(500);
 	delete ui;
@@ -1068,4 +1073,15 @@ void LttoMainWindow::setLTARmode(bool state)
 	}
 
 	emit on_actionLTAR_Mode_triggered();
+}
+
+void LttoMainWindow::heartBeat()
+{
+	qDebug() << "LttoMainWindow::HeartBeatSignal()";
+	if(hostGameWindow.isNull()) qDebug() << "isNull";
+	//if(hostGameWindow) qDebug() << "HostGame Window is valid";
+	//if(hostGameWindow->isActiveWindow()) qDebug() << "HostGame Window has the focus";
+	//if(hostGameWindow->isVisible() ) return;
+	lttoComms->sendHeartBeat();
+	qDebug() << "LttoMainWindow::HeartBeatSignal() - SENT *********************";
 }

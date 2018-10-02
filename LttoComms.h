@@ -31,6 +31,7 @@ public:
 	void		sendLEDcolour(QString colour);
 	void		sendOTAtext(QString ssidText, QString pswdText);
 	void		sendPing(QString pingText);
+	void		sendHeartBeat();
 	void		sendEspRestart();
 
     bool        getUseLazerSwarm() const;
@@ -66,11 +67,14 @@ public:
 
 	void		closePorts();
 
+	int getCurrentTaggerBeingHosted() const;
+	void setCurrentTaggerBeingHosted(int value);
+
 public slots:
 	void        setTcpCommsConnected(bool value);
 
 signals:
-    void        RequestJoinGame(int Game, int Tagger, int Flags, bool isLtar);
+	void        RequestJoinGame(int Game, int Tagger, int Flags, bool isLtar);
     void        AckPlayerAssignment(int Game, int Tagger, bool isLtar);
     void        TimerBlock(bool StartStop);
     void        sendSerialData(QByteArray dataToSend);
@@ -89,6 +93,7 @@ private:
 
     int             calculatedCheckSumTx;
     int             calculatedCheckSumRx;
+	int				currentTaggerBeingHosted;
     QByteArray      irDataIn;
     QByteArrayList  rxPacketList;
     QString         packetString;

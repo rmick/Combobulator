@@ -263,7 +263,7 @@ void DeBrief::sendRankReport()
     qDebug() <<   "DeBrief::sendRankReport()  - Team 3 Rank =" << gameInfo.getTeam3rank();
 
     //There are 3 rankReport messages, for players 1-8, 9-1, 17-24
-    for (int index = 1; index <4; index++)
+	for (int index = 1; index <= 3; index++)
     {
          qDebug() << "DeBrief::sendRankReport() - Loop" << loopCount << "\tTeam:" << index;
 
@@ -286,28 +286,27 @@ void DeBrief::sendRankReport()
                  teamPlayerByte += gameInfo.getTeam3rank();
              }
          }
-         qDebug() << teamPlayerByte;
 
 //         //Send the message
 		 lttoComms->sendPacket(PACKET, SEND_RANK_REPORT);
 		 lttoComms->sendPacket(DATA, gameInfo.getGameID());
 		 lttoComms->sendPacket(DATA, teamPlayerByte);
-		 lttoComms->sendPacket(DATA, playerInfo[1 + ((loopCount-1)*8)].getRankingInGame());
-		 lttoComms->sendPacket(DATA, playerInfo[2 + ((loopCount-1)*8)].getRankingInGame());
-		 lttoComms->sendPacket(DATA, playerInfo[3 + ((loopCount-1)*8)].getRankingInGame());
-		 lttoComms->sendPacket(DATA, playerInfo[4 + ((loopCount-1)*8)].getRankingInGame());
-		 lttoComms->sendPacket(DATA, playerInfo[5 + ((loopCount-1)*8)].getRankingInGame());
-		 lttoComms->sendPacket(DATA, playerInfo[6 + ((loopCount-1)*8)].getRankingInGame());
-		 lttoComms->sendPacket(DATA, playerInfo[7 + ((loopCount-1)*8)].getRankingInGame());
-		 lttoComms->sendPacket(DATA, playerInfo[8 + ((loopCount-1)*8)].getRankingInGame());
+		 lttoComms->sendPacket(DATA, playerInfo[1 + ((index-1)*8)].getRankingInGame());
+		 lttoComms->sendPacket(DATA, playerInfo[2 + ((index-1)*8)].getRankingInGame());
+		 lttoComms->sendPacket(DATA, playerInfo[3 + ((index-1)*8)].getRankingInGame());
+		 lttoComms->sendPacket(DATA, playerInfo[4 + ((index-1)*8)].getRankingInGame());
+		 lttoComms->sendPacket(DATA, playerInfo[5 + ((index-1)*8)].getRankingInGame());
+		 lttoComms->sendPacket(DATA, playerInfo[6 + ((index-1)*8)].getRankingInGame());
+		 lttoComms->sendPacket(DATA, playerInfo[7 + ((index-1)*8)].getRankingInGame());
+		 lttoComms->sendPacket(DATA, playerInfo[8 + ((index-1)*8)].getRankingInGame());
 		 lttoComms->sendPacket(CHECKSUM);
-		 lttoComms->nonBlockingDelay(100);
+		 lttoComms->nonBlockingDelay(1250);
 
         //reset index to 1 and exit if done 3x5 times
-        if (index == 3 && loopCount < 5)
+		if (index == 3 && loopCount < 2)
         {
             loopCount++;
-            index = 1;
+			index = 0;
         }
     }
 }

@@ -13,6 +13,7 @@ LttoComms::LttoComms(QObject *parent) : QObject(parent)
     dontAnnounceGame = false;
     useLongDataPacketsOverTCP = false;
 	setTcpCommsConnected(false);
+	currentTaggerBeingHosted = 0;
 
 	//TODO: These are only needed due to 2nd instance
 	//setUseLazerSwarm(false);
@@ -240,7 +241,7 @@ void LttoComms::sendOTAtext(QString ssidText, QString pswdText)
 	QString textToSend = "";
 	textToSend.prepend("OTA," + ssidText + "," + pswdText);
 	textBA.append(textToSend + "\r\n");
-	qDebug() << "LttoComms::sendOTAtext() -" << textBA;
+	//qDebug() << "LttoComms::sendOTAtext() -" << textBA;
 	tcpComms->sendPacket(textBA);
 }
 
@@ -254,8 +255,15 @@ void LttoComms::sendPing(QString pingText)
 	tcpComms->sendPacket(textBA);
 }
 
+void LttoComms::sendHeartBeat()
+{
+	//qDebug() << "LttoComms::sendHeartBeat()";
+	tcpComms->sendPacket("HEARTBEAT");
+}
+
 void LttoComms::sendEspRestart()
 {
+	qDebug() << "LttoComms::sendEspRestart()";
 	tcpComms->sendPacket("ESP_RESTART");
 }
 
@@ -272,14 +280,20 @@ QString LttoComms::createIRstring(int data)
 
 void LttoComms::receivePacket(QByteArray RxData)
 {
-	//qDebug() << "\tLttoComms::receivePacket() -"<< RxData;
 	bool isPacketComplete = false;
     irDataIn.append(RxData);
 
+	if (irDataIn.startsWith("\r"))
+	{
+		qDebug() << "\t\t----------------------------------\n\t\tLttoComms::receivePacket() - irData starts with \r\n !!!!!!!!!!!!!!!!!!";
+		irDataIn = irDataIn.remove(0,2);
+		qDebug() << irDataIn;
+	}
     if (irDataIn.endsWith("\r\n"))
     {
         //Remove the \r\n
         irDataIn = irDataIn.trimmed();
+		qDebug() << "\tLttoComms::receivePacket() - Trimmed"<< RxData;
 
         if      (irDataIn.startsWith("ERROR"))
         {
@@ -365,6 +379,8 @@ void LttoComms::receivePacket(QByteArray RxData)
 			setDontAnnounceGame(false);
             irDataIn="";
         }
+
+		qDebug() << "LttoComms::receivePacket() - Done";
     }
 
     if (isPacketComplete)
@@ -385,9 +401,19 @@ void LttoComms::receivePacket(QByteArray RxData)
     }
 }
 
+int LttoComms::getCurrentTaggerBeingHosted() const
+{
+	return currentTaggerBeingHosted;
+}
+
+void LttoComms::setCurrentTaggerBeingHosted(int value)
+{
+	currentTaggerBeingHosted = value;
+}
+
 bool LttoComms::getUseLongDataPacketsOverTCP() const
 {
-    return useLongDataPacketsOverTCP;
+	return useLongDataPacketsOverTCP;
 }
 
 void LttoComms::setUseLongDataPacketsOverTCP(bool value)
@@ -397,6 +423,7 @@ void LttoComms::setUseLongDataPacketsOverTCP(bool value)
 
 void LttoComms::closePorts()
 {
+	qDebug() << "LttoComms::closePorts()";
 	tcpComms->DisconnectTCP();
 	serialUSBcomms->closeSerialPort();
 	setTcpCommsConnected(false);
@@ -568,6 +595,11 @@ void LttoComms::processPacket(QList<QByteArray> data)
         tagger   = extract(data);
         flags    = extract(data);
         checksum = extract(data);
+		if(currentTaggerBeingHosted != tagger && currentTaggerBeingHosted != 0)
+		{
+			qDebug() << "LttoComms::processPacket - **** Tagger ID mis-match  **** Dumping packet";
+			break;  // to stop contention when two taggers respond.
+		}
         if(isCheckSumCorrect(command, game, tagger, flags, checksum))   emit RequestJoinGame(game, tagger, flags, false);
         //else                                                            setDontAnnounceGame(false);
         break;
@@ -676,6 +708,10 @@ void LttoComms::processPacket(QList<QByteArray> data)
 		qDebug() << "LttoComms::processPacket() - TAG !";
 		//setDontAnnounceGame(false);
         break;
+
+	case 50:	//TODO remove this kludge (due to ESP sending echoes of P50 Host messages).
+		qDebug() << "LttoComms::processPacket() - Dumping P50 !";
+		break;
 
     default:
         //We end up here if the ESP32 misses the Packet Header

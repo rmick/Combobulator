@@ -123,6 +123,8 @@ private slots:
 
 	void setLTARmode (bool state);
 
+	void heartBeat();
+
 private:
     Ui::LttoMainWindow      *ui;
 	QPointer<PlayersWindow>			playersWindow;
@@ -136,6 +138,7 @@ private:
 	QPointer<SettingsWindow>		settingsWindow;
 	QSoundEffect					*sound_PowerUp;
 	QSoundEffect					*sound_Powerdown;
+	QTimer							*timerHeartBeat;
 	LttoComms						*lttoComms;
 
     bool    SlowTags;

@@ -33,6 +33,8 @@ windeployqt
       4)	cd Qt_projects\build-Combobulator_Windows32-Release\Combobulator
 			C:\Qt\5.11.0\mingw53_32\bin\windeployqt Combobulator.exe
 
+            Copy the missing DLL files from C:\Qt\5.11.0\mingw53_32\bin to Combob folder
+
 	  5)	Zip up the folder and publish to Dropbox
 
 
@@ -46,7 +48,7 @@ androiddeployqt
 
 
 //  Build Number
-const QString BUILD_NUMBER  = "Build : 18.7.11";
+const QString BUILD_NUMBER  = "Build : 18.10.02";
 
 // Recoil Game Hub_28f537d14fca
 
@@ -69,12 +71,13 @@ const char  BEACON      = 'Z';
 
 //Internal timers (in mSec)
 const int   INTERPACKET_DELAY_MSEC		= 50;
-const int   HOST_TIMER_MSEC				= 950;  //1750
+const int   HOST_TIMER_MSEC				= 1200;
 const int   DEBRIEF_TIMER_MSEC			= 1200;
 const int   TEXT_SENT_DELAY				= 15;
 const int   PRESS_AND_HOLD_TIME			= 500;
 const int   BEACON_TIMER_MSEC			= 500;
 const int   ASSIGNED_PLAYER_FAIL_TIMER	= 500;
+const int	HEART_BEAT_MSEC				= 2500;
 
 //Packet Header Type Codes
 const int   ANNOUNCE    = 0x00;
