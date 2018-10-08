@@ -14,7 +14,7 @@ class LttoComms : public QObject
     Q_OBJECT
 
 private:
-	explicit    LttoComms(QObject *parent = 0);
+	explicit    LttoComms(QObject *parent = nullptr);
 	static		LttoComms *instance;
 
 public:
@@ -70,6 +70,9 @@ public:
 	int getCurrentTaggerBeingHosted() const;
 	void setCurrentTaggerBeingHosted(int value);
 
+	bool getHostingCommsActive() const;
+	void setHostingCommsActive(bool value);
+
 public slots:
 	void        setTcpCommsConnected(bool value);
 
@@ -104,6 +107,7 @@ private:
     bool            serialUSBcommsConnected;
     int             missedAnnounceCount;
     bool            useLongDataPacketsOverTCP;
+	bool			hostingCommsActive;		//the HostGameWindow is open and sending regular messages (used to disable heartbeat).
 //    int             tagsReceivedfromPlayer[8];
 
 	TCPComms		*tcpComms;

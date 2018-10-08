@@ -15,10 +15,10 @@
 PlayersWindow::PlayersWindow(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::PlayersWindow),
-    signalMapperClicked(NULL),
-    signalMapperPressed(NULL),
-    signalMapperReleased(NULL),
-    flagsWindow(NULL)
+	signalMapperClicked(nullptr),
+	signalMapperPressed(nullptr),
+	signalMapperReleased(nullptr),
+	flagsWindow(nullptr)
 {
     SelectedPlayer = 0;
     ui->setupUi(this);
@@ -32,17 +32,12 @@ PlayersWindow::PlayersWindow(QWidget *parent) :
 	LoadPlayerSettings(0);      // 0 = Global Player
 	SetActivePlayers();
 	RenamePlayerTeamButtons(gameInfo.getNumberOfTeams());
-
-//#ifdef QT_DEBUG
-//    ui->btn_ChangePlayers->setVisible(true);
-//#else
-//    ui->btn_ChangePlayers->setVisible(false);
-//#endif
 }
 
 PlayersWindow::~PlayersWindow()
 {
-    delete ui;
+	qDebug() << "Destroying PlayersWindows()";
+	delete ui;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -482,30 +477,16 @@ void PlayersWindow::AdjustSettingsForHandicap(int currentPlayer)
 void PlayersWindow::on_btn_EditMode_clicked()
 {
 	//TODO: Changing to Edit Handicap mode leaves all controls active when no player is selected.
-	if (ui->btn_EditMode->text() == "Edit Settings")
+	if (ui->btn_EditMode->text() == "Edit\nSettings")
     {
         SetPlayerControls(true, EDIT_SETTINGS_MODE);
-        ui->btn_EditMode->setText("Edit Handicap");
+		ui->btn_EditMode->setText("Edit\nHandicap");
     }
             else
     {
         SetPlayerControls(true, HANDICAP_MODE);
-        ui->btn_EditMode->setText("Edit Settings");
+		ui->btn_EditMode->setText("Edit\nSettings");
     }
-
-
-//	if (ui->btn_EditMode->isChecked() == true)
-//	{
-//	   SetPlayerControls(true, EDIT_SETTINGS_MODE);
-//		ui->btn_EditMode->setText("Edit Handicap");
-//		ui->btn_EditMode->setStyleSheet(BUTTON_UNSELECTED); // Hide the fact that it is selected.
-
-//	}
-//	else if (ui->btn_EditMode->isChecked() == false)
-//	{
-//		SetPlayerControls(true, HANDICAP_MODE);
-//		ui->btn_EditMode->setText("Edit Settings");
-//	}
 }
 
 void PlayersWindow::on_slider_Handicap_valueChanged(int value)
@@ -559,7 +540,7 @@ void PlayersWindow::on_slider_StartAmmo_valueChanged(int value)
 
 void PlayersWindow::on_btn_Flags_clicked()
 {
-    if(flagsWindow==NULL) flagsWindow = new FlagsWindow(SelectedPlayer, this);
+	if(flagsWindow==nullptr) flagsWindow = new FlagsWindow(SelectedPlayer, this);
     flagsWindow->setButtonStates(SelectedPlayer);
     qDebug() << "PlayersWindow::on_btn_Flags_clicked - Selected Player =" << SelectedPlayer;
 #ifdef QT_DEBUG
@@ -589,6 +570,20 @@ void PlayersWindow::on_btn_StartGame_clicked()
 	{
 		ui->btn_StartGame->setEnabled(false);
 		QMessageBox::warning(this,"Error", "There are no players in the game");
+
+		//TODO : This is a hack to get around the problem
+		//		1) Host a game with a few players
+		//		2) Dump all the players
+		//		3) Cancel the hosting
+		//		4) got to players window and try to host the game
+		//		There are player buttons showing, but they are inverted.
+		//	The correct solution is to do this in the redraw of the window.
+		//Reset all buttons to default stylesheet settings.
+		for (int x = 1; x < 25; x++)
+		{
+			PlayerButtons[x]->setChecked(false);
+			PlayerButtons[x]->setStyleSheet(myStyleSheet.getButtonUnCheckedCss());
+		}
 		return;
 	}
 

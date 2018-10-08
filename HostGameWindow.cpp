@@ -16,18 +16,18 @@ int playerDebugNum = 0;
 HostGameWindow::HostGameWindow(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::HostGameWindow),
-    timerAnnounce(NULL),
-    timerCountDown(NULL),
-    timerDeBrief(NULL),
-    timerAssignFailed(NULL),
-    timerGameTimeRemaining(NULL),
-    timerReHost(NULL),
-    timerBeacon(NULL),
-	sound_Hosting(NULL),
-    sound_Countdown(NULL),
-    sound_HostingMissedReply(NULL),
-    sound_GoodLuck(NULL),
-    sound_PlayerAdded(NULL)
+	timerAnnounce(nullptr),
+	timerCountDown(nullptr),
+	timerDeBrief(nullptr),
+	timerAssignFailed(nullptr),
+	timerGameTimeRemaining(nullptr),
+	timerReHost(nullptr),
+	timerBeacon(nullptr),
+	sound_Hosting(nullptr),
+	sound_Countdown(nullptr),
+	sound_HostingMissedReply(nullptr),
+	sound_GoodLuck(nullptr),
+	sound_PlayerAdded(nullptr)
 {
     ui->setupUi(this);
     changeMode(HOST_MODE);
@@ -55,18 +55,11 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
 	connect(host,                   SIGNAL(AddToHostWindowListWidget(QString)),   this, SLOT(InsertToListWidget(QString))		);
 
     timerAnnounce->start(HOST_TIMER_MSEC);
+	lttoComms->setHostingCommsActive(true);
 
     ui->btn_Cancel->setText("Cancel");
     ui->btn_Rehost->setEnabled(false);
 	ui->listWidget_Status->setVisible(false);
-	ui->btn_Blue->setVisible(false);
-	ui->btn_Cyan->setVisible(false);
-	ui->btn_Green->setVisible(false);
-	ui->btn_Magenta->setVisible(false);
-	ui->btn_Red->setVisible(false);
-	ui->btn_White->setVisible(false);
-	ui->btn_Yellow->setVisible(false);
-	ui->btn_StopHosting->setVisible(false);
 
     //Init all the sound effects.
     sound_Hosting            = new QSoundEffect(this);
@@ -85,18 +78,6 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
 
 	gameInfo.setGameID(host->getRandomNumber(1,255));
 
-#ifndef  QT_DEBUG
-	ui->btn_Blue			->setVisible(false);
-	ui->btn_Cyan			->setVisible(false);
-	ui->btn_Green			->setVisible(false);
-	ui->btn_Magenta			->setVisible(false);
-	ui->btn_Red				->setVisible(false);
-	ui->btn_Yellow			->setVisible(false);
-	ui->btn_White			->setVisible(false);
-	ui->btn_StopHosting		->setVisible(false);
-	ui->listWidget_Status	->setVisible(true);
-#endif
-
 	ui->listWidget_Status->setVisible(false);
 }
 
@@ -109,6 +90,7 @@ HostGameWindow::~HostGameWindow()
     timerGameTimeRemaining->stop();
     timerReHost->stop();
 	timerBeacon->stop();
+	lttoComms->setHostingCommsActive(false);
     delete ui;
 }
 
@@ -122,6 +104,7 @@ void HostGameWindow::hideEvent(QHideEvent *)
     timerGameTimeRemaining->stop();
     timerReHost->stop();
 	timerBeacon->stop();
+	lttoComms->setHostingCommsActive(false);
 }
 
 void HostGameWindow::on_btn_Cancel_clicked()
@@ -269,7 +252,7 @@ void HostGameWindow::hostCurrentPlayer()
 	}
     else
     {
-        InsertToListWidget("Trying to connect to Base Station");
+		InsertToListWidget("Trying to connect to Base Station");
 		setPromptText("Connecting to Base Station......");
 		ui->label_NextPlayer->setText("");
 		//<html><head/><body><p><span style=" font-size:64pt; font-weight:600;">Initialising Data. Standby.......</span></p></body></html>
@@ -629,11 +612,11 @@ void HostGameWindow::closeHostGameWindow()
 	lttoComms->sendLCDtext("new Game"  , 3,  true);
 	lttoComms->nonBlockingDelay(TEXT_SENT_DELAY);
 	lttoComms->nonBlockingDelay(500);
-	qDebug() << " _____ HostGameWindow::closeHostGameWindow() - Restarting ESP";
+	//qDebug() << " _____ HostGameWindow::closeHostGameWindow() - Restarting ESP";
 	//lttoComms->sendPing("ESP-Please Restart");
-	lttoComms->sendEspRestart();
-	lttoComms->sendPing("ESP-Please Restart"); //required to get the reset to work.
-	lttoComms->nonBlockingDelay(500);
+	//lttoComms->sendEspRestart();
+	//lttoComms->sendPing("ESP-Please Restart"); //required to get the reset to work.
+	//lttoComms->nonBlockingDelay(500);
 	lttoComms->closePorts();
 
 	closingWindow = true;
@@ -771,6 +754,7 @@ void HostGameWindow::updateGameTimeRemaining()
 		lttoComms->sendLCDtext("Game Time"                                , 1, false);
 		lttoComms->sendLCDtext(remainingMinutes + ":" + remainingSeconds  , 3,  true);
 		lttoComms->nonBlockingDelay(TEXT_SENT_DELAY);
+		qDebug() << "HostGameWindow::updateGameTimeRemaining()" << remainingMinutes << ":" << remainingSeconds;
     }
     if (remainingGameTime == 0)
     {
@@ -785,6 +769,7 @@ void HostGameWindow::on_btn_SkipPlayer_clicked()
 
     if(deBrief) deBrief->setIsPlayerDeBriefed(true);
     gameInfo.setIsThisPlayerInTheGame(currentPlayer, false);
+	//TODO1: Redraw PlayerScreen, otherwise highlights are wrong.
 	lttoComms->setDontAnnounceGame(false);
     currentPlayer++;
 }
@@ -1021,41 +1006,6 @@ void HostGameWindow::deBriefTaggers()
     }
 }
 
-void HostGameWindow::on_btn_Red_clicked()
-{
-	lttoComms->sendLEDcolour(RED);
-}
-
-void HostGameWindow::on_btn_Green_clicked()
-{
-	lttoComms->sendLEDcolour(GREEN);
-}
-
-void HostGameWindow::on_btn_Blue_clicked()
-{
-	lttoComms->sendLEDcolour(BLUE);
-}
-
-void HostGameWindow::on_btn_Cyan_clicked()
-{
-	lttoComms->sendLEDcolour(CYAN);
-}
-
-void HostGameWindow::on_btn_Magenta_clicked()
-{
-	lttoComms->sendLEDcolour(MAGENTA);
-}
-
-void HostGameWindow::on_btn_Yellow_clicked()
-{
-	lttoComms->sendLEDcolour(YELLOW);
-}
-
-void HostGameWindow::on_btn_White_clicked()
-{
-	lttoComms->sendLEDcolour(WHITE);
-}
-
 void HostGameWindow::setPromptText(QString text)
 {
 	QString _textToSet = text;
@@ -1070,4 +1020,9 @@ void HostGameWindow::setNextPlayerText(QString text)
 	_textToSet.prepend("<html><head/><body><p><span style= font-size:32pt; font-weight:600;><b>");
 	_textToSet.append("</span></p></body></b></html>");
 	ui->label_NextPlayer->setText(_textToSet);
+}
+
+void HostGameWindow::on_showLog_clicked()
+{
+	ui->listWidget_Status->setVisible(true);
 }

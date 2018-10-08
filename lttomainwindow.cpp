@@ -9,6 +9,8 @@
 #include <QSettings>
 #include <QScreen>
 #include <QTime>
+#include <QDesktopServices>
+#include <QFileInfo>
 #include "Game.h"
 #include "Players.h"
 #include "Defines.h"
@@ -17,20 +19,22 @@
 #include "StyleSheet.h"
 #include "FileLoadSave.h"
 
+QTextEdit * LttoMainWindow::textEditLogFile = nullptr;
 
 LttoMainWindow::LttoMainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::LttoMainWindow),
-    playersWindow(NULL),
-    hostGameWindow(NULL),
-    flagsWindow(NULL),
-    aboutForm(NULL),
-    sound_PowerUp(NULL),
-    sound_Powerdown(NULL)
+	playersWindow(nullptr),
+	hostGameWindow(nullptr),
+	flagsWindow(nullptr),
+	aboutForm(nullptr),
+	sound_PowerUp(nullptr),
+	sound_Powerdown(nullptr)
 {
     ui->setupUi(this);
 
 	lttoComms = LttoComms::getInstance();
+	textEditLogFile = new QTextEdit;
 
     QCoreApplication::setOrganizationName("Bush And Beyond");
     QCoreApplication::setOrganizationDomain("www.bushandbeyond.com.au");
@@ -47,17 +51,20 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
 	gameInfo.setIsIndoorViewMode(true);
 
 	timerHeartBeat = new QTimer(this);
-	//timerHeartBeat->start(HEART_BEAT_MSEC);
 	connect(timerHeartBeat,	SIGNAL(timeout() ),	this,	SLOT(heartBeat())	);
 
+	ui->mainToolBar->setVisible(false);
 	ui->btn_SpyTeamTags	->setChecked(true);
 	ui->btn_SpyTeamTags	->setVisible(false);
 	ui->btn_NoTeams		->setChecked(true);
 	ui->btn_Spies		->setEnabled(false);
 	ui->btn_StartGame	->setEnabled(false);
-	//ui->btn_Debug		->setVisible(false);
+	ui->btn_Debug		->setVisible(false);
 	ui->btn_StartGame	->setVisible(false);
+	ui->label_BuildNumber->setVisible(false);
 	setLtarControls(false);
+
+	this->setWindowTitle("The Combobulator " + VERSION_NUMBER);
 
 	//serialUSBcomms.setIsUSBinitialised(false);
 	//tcpComms.initialiseTCPsignalsAndSlots();
@@ -82,6 +89,7 @@ LttoMainWindow::~LttoMainWindow()
 	lttoComms->closePorts();
 	lttoComms->nonBlockingDelay(500);
 	delete ui;
+
 }	
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -735,6 +743,7 @@ void LttoMainWindow::saveFile()
 		playerInfo[0].streamToFile(gameDataOut);            //index 0 is a dummy, the class saves the entire array.
 		gameDataOut << "<><><><><><><><><>" << endl;
 		gameDataOut << "EOF" << endl;
+		fileToSave.close();
 	}
 }
 
@@ -742,17 +751,7 @@ void LttoMainWindow::loadFile()
 {
 	if (!fileLoadSave) fileLoadSave = new FileLoadSave(LOAD_MODE, this);
 	connect(fileLoadSave, SIGNAL(fileNameUpdated(QString)),	this, SLOT(updateFileName(QString)));
-	//fileLoadSave->setModal(true);
-	//fileLoadSave->showFullScreen();
 	fileLoadSave->exec();
-
-//	QEventLoop      doSomething;
-//	while (fileLoadSave)
-//	{
-//		doSomething.exec();
-//		int counter = 1;
-//		qDebug() << "LttoMainWindow::loadFile() looping" << counter++;
-//	}
 	qDebug() << "LttoMainWindow::loadFile()";
 
 	delete(fileLoadSave);
@@ -781,6 +780,7 @@ void LttoMainWindow::loadFile()
 
 		//Check for Players, if there are at least two players, enable the Start button.
 		if (gameInfo.getTotalNumberOfPlayersInGame() > 1) ui->btn_StartGame->setEnabled(true);
+		fileToLoad.close();
 	}
 }
 
@@ -831,6 +831,31 @@ void LttoMainWindow::saveSettings()
     settings.setValue("pos", pos());
     settings.endGroup();
 #endif
+}
+
+void LttoMainWindow::sendLogFile()
+{
+	QString filePath = QStandardPaths::standardLocations( QStandardPaths::AppDataLocation ).value(0);
+	QDir thisDir;
+	thisDir.setPath(filePath);
+	if (!thisDir.exists()) thisDir.mkpath(filePath);
+	QDir::setCurrent(filePath);
+
+	QString filePathAndFileName;
+	filePathAndFileName = filePath + "/Combobulator_Log.txt";
+
+	filePathAndFileName = "/Users/Richie/Desktop/Makefile";
+
+	qDebug() << "LttoMainWindow::sendLogFile()" << filePathAndFileName;
+
+QFileInfo check_file(filePathAndFileName);
+// check if file exists and if yes: Is it really a file and no directory?
+if (check_file.exists() && check_file.isFile()) qDebug() <<"LttoMainWindow::sendLogFile() - TRUE !!!!! ";
+else											qDebug() <<"LttoMainWindow::sendLogFile() - FALSE ???? ";
+
+	QUrl mailString = "mailto:richie@bushandbeyond.com.au?subject=Combobulator%20Log%20File &attachment="+ filePathAndFileName;
+	QDesktopServices::openUrl(mailString);
+	qDebug() << "LttoMainWindow::sendLogFile()" << mailString;
 }
 
 void LttoMainWindow::on_actionExit_triggered()
@@ -925,7 +950,7 @@ void LttoMainWindow::on_actionLoad_triggered()
 
 void LttoMainWindow::on_btn_Flags_clicked()
 {
-    if(flagsWindow==NULL) flagsWindow = new FlagsWindow(0, this);
+	if(flagsWindow==nullptr) flagsWindow = new FlagsWindow(0, this);
     flagsWindow->setButtonStates();
 #ifdef QT_DEBUG
 	flagsWindow->show();
@@ -994,12 +1019,14 @@ void LttoMainWindow::on_actionOutdoorMode_triggered()
 
 void LttoMainWindow::on_btn_Debug_clicked()
 {
-	scoresWindow = new ScoresWindow(this);
-#ifdef QT_DEBUG
-	scoresWindow->showFullScreen();
-#else
-	scoresWindow->showFullScreen();
-#endif
+	sendLogFile();
+
+//	scoresWindow = new ScoresWindow(this);
+//#ifdef QT_DEBUG
+//	scoresWindow->showFullScreen();
+//#else
+//	scoresWindow->showFullScreen();
+//#endif
 }
 
 void LttoMainWindow::updateFileName(QString newFileName)
@@ -1078,7 +1105,8 @@ void LttoMainWindow::setLTARmode(bool state)
 void LttoMainWindow::heartBeat()
 {
 	qDebug() << "LttoMainWindow::HeartBeatSignal()";
-	if(hostGameWindow.isNull()) qDebug() << "isNull";
+	if(lttoComms->getHostingCommsActive() == true)	return;
+	//if(hostGameWindow.isNull()) qDebug() << "isNull";
 	//if(hostGameWindow) qDebug() << "HostGame Window is valid";
 	//if(hostGameWindow->isActiveWindow()) qDebug() << "HostGame Window has the focus";
 	//if(hostGameWindow->isVisible() ) return;

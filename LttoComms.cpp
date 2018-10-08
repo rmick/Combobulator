@@ -187,7 +187,7 @@ void LttoComms::sendLCDtext(QString textToSend, int lineNumber, bool drawScreen)
     return;
 #endif
 
-	if(!tcpCommsConnected) return;      // USB means it is a Lazerswarm, which does not accept TXT.
+	//if(!tcpCommsConnected) return;      // USB means it is a Lazerswarm, which does not accept TXT.
 	QByteArray textBA;
     textToSend.prepend("TXT" + QString::number(lineNumber)+ ":");
 	textBA.append(textToSend + ":" + QString::number(drawScreen) + "\r\n");
@@ -202,7 +202,8 @@ void LttoComms::sendLCDtext(int xCursor, int yCursor, QString text, int fontSize
     return;
 #endif
 
-	if(!tcpCommsConnected) return;      // USB means it is a Lazerswarm, which does not accept TXT.
+	//if(!tcpCommsConnected) return;      // DANGER : This blocks autoreconnect !!!
+	//									USB means it is a Lazerswarm, which does not accept TXT.
     QByteArray textBA;
     QString textToSend = "";
 	textToSend.prepend("DSP," + QString::number(xCursor) + "," + QString::number(yCursor) + "," + text + "," +  QString::number(fontSize) + "," + QString::number(colour) + "," + QString::number(clearDisp) + "," + QString::number(drawDisplay));
@@ -213,7 +214,7 @@ void LttoComms::sendLCDtext(int xCursor, int yCursor, QString text, int fontSize
 
 void LttoComms::sendLEDcolour(int Red, int Green, int Blue)
 {
-	if(!tcpCommsConnected) return;      // USB means it is a Lazerswarm, which does not accept TXT.
+	//if(!tcpCommsConnected) return;      // USB means it is a Lazerswarm, which does not accept TXT.
 	QByteArray textBA;
 	QString textToSend = "";
 	textToSend.prepend("LED," + QString::number(Red) + "," + QString::number(Green) + "," +  QString::number(Blue));
@@ -224,7 +225,7 @@ void LttoComms::sendLEDcolour(int Red, int Green, int Blue)
 
 void LttoComms::sendLEDcolour(QString colour)
 {
-	if(!tcpCommsConnected) return;      // USB means it is a Lazerswarm, which does not accept TXT.
+	//if(!tcpCommsConnected) return;      // USB means it is a Lazerswarm, which does not accept TXT.
 	QByteArray textBA;
 	QString textToSend = "";
 	textToSend.prepend("LED," + colour);
@@ -293,11 +294,11 @@ void LttoComms::receivePacket(QByteArray RxData)
     {
         //Remove the \r\n
         irDataIn = irDataIn.trimmed();
-		qDebug() << "\tLttoComms::receivePacket() - Trimmed"<< RxData;
+		qDebug() << "\tLttoComms::receivePacket() - Trimmed:"<< RxData;
 
         if      (irDataIn.startsWith("ERROR"))
         {
-            qDebug() <<"LttoComms::receivePacket() Error:" << irDataIn;
+			qDebug() <<"LttoComms::receivePacket() - ERROR:" << irDataIn;
             irDataIn.clear();
             return;
         }
@@ -305,7 +306,7 @@ void LttoComms::receivePacket(QByteArray RxData)
         else if (irDataIn.startsWith("STOP"))
         {
             setDontAnnounceGame(true);
-			qDebug() << "\tSTOP STOP STOP STOP - LttoComms::receivePacket - ESP is receiving, so lets be quiet please.";
+			qDebug() << "\tLttoComms::receivePacket() - STOP";
             irDataIn.clear();
             return;
         }
@@ -314,7 +315,7 @@ void LttoComms::receivePacket(QByteArray RxData)
         {
             setDontAnnounceGame(false);
             setDontAnnounceFailedSignal(false);
-            qDebug() << "LttoComms::receivePacket - Resuming transmission.";
+			qDebug() << "LttoComms::receivePacket() - START";
             irDataIn.clear();
             return;
         }
@@ -399,6 +400,16 @@ void LttoComms::receivePacket(QByteArray RxData)
 //            }
         }
     }
+}
+
+bool LttoComms::getHostingCommsActive() const
+{
+	return hostingCommsActive;
+}
+
+void LttoComms::setHostingCommsActive(bool value)
+{
+	hostingCommsActive = value;
 }
 
 int LttoComms::getCurrentTaggerBeingHosted() const
@@ -598,6 +609,8 @@ void LttoComms::processPacket(QList<QByteArray> data)
 		if(currentTaggerBeingHosted != tagger && currentTaggerBeingHosted != 0)
 		{
 			qDebug() << "LttoComms::processPacket - **** Tagger ID mis-match  **** Dumping packet";
+			static int failCount = 0;
+			if (failCount++ > 5) currentTaggerBeingHosted = 0; //reset in case a tagger died mid-hosting.
 			break;  // to stop contention when two taggers respond.
 		}
         if(isCheckSumCorrect(command, game, tagger, flags, checksum))   emit RequestJoinGame(game, tagger, flags, false);

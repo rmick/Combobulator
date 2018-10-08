@@ -33,7 +33,6 @@ bool TCPComms::DisconnectTCP()
 void TCPComms::connected()
 {
     qDebug() << "\n\tTCPComms::connected !!!!        :-)\n";
-	//lttoComms.setTcpCommsConnected(true);
 	emit TcpCommsConnectionStatus(true);
 	qDebug() << "TCPComms::connected() - \tCONNECTION ESTABLISHED";
     isConnected = true;
@@ -66,6 +65,7 @@ void TCPComms::sendPacket(QByteArray data)
 	else
 	{
 		//TODO1:  FIX THIS ASAP		if(lttoComms.getSerialUSBcommsConnected() == false)
+		qDebug() << "TCPComms::sendPacket() - Triggered ConnectTCP()";
 		ConnectTCP();
 	}
 }

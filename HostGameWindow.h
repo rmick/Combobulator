@@ -77,20 +77,7 @@ private slots:
 
 	void closeHostGameWindow();
 
-
-	void on_btn_Red_clicked();
-
-	void on_btn_Green_clicked();
-
-	void on_btn_Blue_clicked();
-
-	void on_btn_Cyan_clicked();
-
-	void on_btn_Magenta_clicked();
-
-	void on_btn_Yellow_clicked();
-
-	void on_btn_White_clicked();
+	void on_showLog_clicked();
 
 private:
     //pointers
@@ -101,7 +88,7 @@ private:
     QTimer                  *timerAssignFailed;
     QTimer                  *timerGameTimeRemaining;
     QTimer                  *timerReHost;
-    QTimer                  *timerBeacon;
+	QTimer                  *timerBeacon;
     QPointer<ReHostTagger>  reHostTagger;
     QPointer<ScoresWindow>  scoresWindow;
 	QPointer<DeBrief>       deBrief;

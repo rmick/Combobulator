@@ -74,7 +74,7 @@ StyleSheet::StyleSheet()
 	CssInside +=    "QToolButton				{border-width: 2px; border-radius: 10px; border-color: cyan; background-color: grey; padding: 5px; spacing: 20px;}";
 	CssInside +=    "QToolButton:checked		{color: cyan; border-color: cyan;}";
 	CssInside +=								qPushButtonFont;
-	CssInside +=    "QPushButton				{background-color: grey; border-style: outset; border-width: 2px; border-radius: 10px; border-color: grey; min-width: 50; min-height: 30;}";
+	CssInside +=    "QPushButton				{background-color: grey; border-style: outset; border-width: 2px; border-radius: 10px; border-color: grey; min-width: 50; min-height: 30; color: white;}";
 	CssInside +=    "QPushButton:disabled		{background-color: rgb(50, 50, 50); color: black;}";
 	CssInside +=    "QPushButton:checked		{border-color: cyan; color: cyan;}";
 	CssInside +=    "QSlider					{min-height: 35px; background: grey; border-style: outset; border-width: 1px; border-radius: 10px; border-color: black;}";
@@ -105,7 +105,7 @@ StyleSheet::StyleSheet()
 	CssInsideButtonSelected      = "border-color: cyan; color: cyan ;";
     CssInsideButtonUnSelected    = "color: white;";
     CssInsideButtonChecked       = "border-color: cyan; color: cyan;";
-    CssInsideButtonUnChecked     = "border-color: grey; color: black;";
+	CssInsideButtonUnChecked     = "border-color: grey; color: white;";
     CssInsideButtonPressedLast   = "color:fuchsia;";
 
 //------------------------------------------------------------------------------------------------------------

@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QPointer>
 #include <QSoundEffect>
+#include <QTextEdit>
 #include "Defines.h"
 #include "PlayersWindow.h"
 #include "HostGameWindow.h"
@@ -25,7 +26,7 @@ class LttoMainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit LttoMainWindow(QWidget *parent = 0);
+	explicit LttoMainWindow(QWidget *parent = nullptr);
     ~LttoMainWindow();
 
     bool getSlowTags() const;
@@ -39,6 +40,8 @@ public:
 
     int  getNumberOfTeams() const;
     void setNumberOfTeams(int value);
+
+	static QTextEdit * textEditLogFile;		//for qDebug logging
 
 public slots:
     void SetSpiesButtonState(int NumTeams);
@@ -153,15 +156,10 @@ private:
     void    loadFile();
     void    loadSettings();
     void    saveSettings();
+	void	sendLogFile();
 
-    QString   QSS_Inside =  "QWidget{background-color:black; font:white;} QSpinBox{color:white;}";
-    //QSS_Inside +=           "QMessageBox{font:white;} QMenu{font:white; color:white;}";
-    //QSS_INSIDE +=           "QLabel{color:white;} QListWidget{color:white;}";
-    //QSS_INSIDE +=           "QToolButton{border-width:2px; border-radius:10px; border-color:cyan; background-color:grey; padding:5px; spacing:20px; font:bold;}";
-
-    QString QSS_Outside =   "QWidget{background-color:yellow; font:purple;} QPushbutton{background-color:white;}";
-
-    //QSS_Inside = "";
+	QString QSS_Inside =	"QWidget{background-color:black; font:white;} QSpinBox{color:white;}";
+	QString	QSS_Outside =   "QWidget{background-color:yellow; font:purple;} QPushbutton{background-color:white;}";
 };
 
 #endif // LTTOMAINWINDOW_H

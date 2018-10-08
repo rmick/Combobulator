@@ -39,7 +39,8 @@ SOURCES +=  \
     SetScoreParameters.cpp \
     FileLoadSave.cpp \
     OtaWindow.cpp \
-    SettingsWindow.cpp
+    SettingsWindow.cpp \
+    Logger.cpp
 
 
 HEADERS  += \
@@ -65,7 +66,8 @@ HEADERS  += \
     SetScoreParameters.h \
     FileLoadSave.h \
     OtaWindow.h \
-    SettingsWindow.h
+    SettingsWindow.h \
+    Logger.h
 
 
 FORMS    += \
@@ -82,7 +84,8 @@ FORMS    += \
     SetScoreParameters.ui \
     FileLoadSave.ui \
     OtaWindow.ui \
-    SettingsWindow.ui
+    SettingsWindow.ui \
+    Logger.ui
 
 
 RESOURCES += \

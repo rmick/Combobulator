@@ -1,6 +1,7 @@
 #include "SettingsWindow.h"
 #include "ui_SettingsWindow.h"
 #include "Game.h"
+#include "Defines.h"
 #include <QDebug>
 
 SettingsWindow::SettingsWindow(QWidget *parent) :
@@ -20,6 +21,8 @@ SettingsWindow::SettingsWindow(QWidget *parent) :
 	ui->sldr_CountDownTime->setValue(timeOutValue);
 	//ui->label_CountDownTime->setText(QString::number(timeOutValue));
 	qDebug() << timeOutValue << gameInfo.getCountDownTime();
+
+	ui->btn_About->setText("About\n(" + VERSION_NUMBER + "-" + BUILD_NUMBER + ")");
 }
 
 SettingsWindow::~SettingsWindow()
