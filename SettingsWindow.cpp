@@ -3,6 +3,10 @@
 #include "Game.h"
 #include "Defines.h"
 #include <QDebug>
+#include <QTimer>
+
+//timerRefresh = new QTimer(nullptr);
+
 
 SettingsWindow::SettingsWindow(QWidget *parent) :
 	QDialog(parent),
@@ -19,10 +23,8 @@ SettingsWindow::SettingsWindow(QWidget *parent) :
 
 	int timeOutValue = gameInfo.getCountDownTime();
 	ui->sldr_CountDownTime->setValue(timeOutValue);
-	//ui->label_CountDownTime->setText(QString::number(timeOutValue));
-	qDebug() << timeOutValue << gameInfo.getCountDownTime();
 
-	ui->btn_About->setText("About\n(" + VERSION_NUMBER + "-" + BUILD_NUMBER + ")");
+	ui->btn_About->setText("About\n" + VERSION_NUMBER + " - " + BUILD_NUMBER);
 }
 
 SettingsWindow::~SettingsWindow()
@@ -68,11 +70,16 @@ void SettingsWindow::on_radioButton_LtarMode_clicked()
 void SettingsWindow::on_radioButton_IndoorMode_clicked()
 {
 	emit setOutdoorMode(false);
+	qDebug() << "TimerStart";
+	QTimer::singleShot(100, this, SLOT(refreshDisplay( )));
 }
+
 
 void SettingsWindow::on_radioButton_OutdoorMode_clicked()
 {
 	emit setOutdoorMode(true);
+	qDebug() << "TimerStart";
+	QTimer::singleShot(100, this, SLOT(refreshDisplay( )));
 }
 
 void SettingsWindow::on_sldr_CountDownTime_valueChanged(int value)
@@ -99,4 +106,10 @@ void SettingsWindow::on_btn_ShutDown_clicked()
 	ui->radioButton_LtarMode	->setEnabled(false);
 	ui->radioButton_NormalMode	->setEnabled(false);
 	emit exitApp();
+}
+
+void SettingsWindow::refreshDisplay()
+{
+	qDebug() << "Updated";
+	QWidget::update();
 }

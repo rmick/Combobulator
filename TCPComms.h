@@ -15,6 +15,7 @@ public:
 
     bool ConnectTCP();
     bool DisconnectTCP();
+	bool connectToCombobulatorWiFi();
 
     bool getIsTCPinitialised() const;
     void setIsTCPinitialised(bool value);

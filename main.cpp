@@ -11,34 +11,48 @@ void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QS
 	switch (type)
 	{
 		case QtDebugMsg:
-			fprintf(stderr, "Debug:\t%s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
+			//fprintf(stderr, "Debug:\t%s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
+			fprintf(stderr, "Debug:\t%s\n", localMsg.constData());
 			break;
 		case QtWarningMsg:
-			fprintf(stderr, "Warning:\t%s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
+		if(context.file == nullptr && context.function == nullptr) // hides the annoying QAbstractSocket 'alreadyconnecting' message
 			break;
+			//fprintf(stderr, "Warning:\t%s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
+			fprintf(stderr, "Warning:\t%s\n", localMsg.constData());
+		break;
 		case QtCriticalMsg:
-			fprintf(stderr, "Critical:\t%s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
-			break;
+			//fprintf(stderr, "Critical:\t%s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
+			fprintf(stderr, "Critical:\t%s\n", localMsg.constData());
+		break;
 		case QtInfoMsg:
-			fprintf(stderr, "Info:\t%s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
-			break;
+			//fprintf(stderr, "Info:\t%s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
+			fprintf(stderr, "Info:\t%s\n", localMsg.constData());
+		break;
 		case QtFatalMsg:
-			fprintf(stderr, "Fatal:\t%s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
-			abort();
+			//fprintf(stderr, "Fatal:\t%s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
+			fprintf(stderr, "Fatal:\t%s\n", localMsg.constData());
+		abort();
 	}
 
 	QString logMessage = (QString)localMsg;
 
 	//Send to Log file
 	QString filePath = QStandardPaths::standardLocations( QStandardPaths::AppDataLocation ).value(0);
+	qDebug() << "FilePath =" << filePath;
 	QDir thisDir;
-	thisDir.setPath(filePath);
-	if (!thisDir.exists()) thisDir.mkpath(filePath);
-	QDir::setCurrent(filePath);
+	//thisDir.setPath(filePath);
+thisDir.setPath("user/Richie/Desktop");
+	//if (!thisDir.exists()) thisDir.mkpath(filePath);
+	QDir::setCurrent("users/Richie/Desktop");
 	QFile outFile("Combobulator_Log.txt");
 	bool good = outFile.open(QIODevice::WriteOnly | QIODevice::Append);
-	QTextStream ts(&outFile); ts << logMessage << endl;
-	outFile.close();
+	if(good)
+	{
+		QTextStream ts(&outFile);
+		ts << logMessage << endl;
+		outFile.close();
+	}
+
 
 
 	if(LttoMainWindow::textEditLogFile != nullptr)
@@ -53,7 +67,7 @@ void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QS
 
 int main(int argc, char *argv[])
 {
-	QCoreApplication::setApplicationName( QString("The Combobulator v1.0") );
+	QCoreApplication::setApplicationName( QString("Combobulator") );
 	QApplication::setDesktopSettingsAware(true);
 	qInstallMessageHandler(myMessageOutput);
 	QApplication    theApp(argc, argv);

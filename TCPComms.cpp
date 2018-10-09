@@ -1,5 +1,8 @@
 #include "TCPComms.h"
 #include "LttoComms.h"
+#include <QNetworkConfiguration>
+#include <QNetworkConfigurationManager>
+#include <QNetworkSession>
 
 //TCPComms tcpComms;
 
@@ -16,6 +19,10 @@ TCPComms::TCPComms(QObject *parent) :
 
 bool TCPComms::ConnectTCP()
 {
+	qDebug() << "TCPComms::ConnectTCP() - Finding Combobulator";
+	connectToCombobulatorWiFi();
+
+
 	qDebug() << "TCPComms::ConnectTCP() - Connecting";
 	tcpSocket->connectToHost(HOST_IP_ADDRESS,TCP_IP_PORT);
 	return true;
@@ -27,7 +34,30 @@ bool TCPComms::DisconnectTCP()
     qDebug() << "TCPComms::DisconnectTCP() - Disconnected !!!";
 	//lttoComms.setTcpCommsConnected(false);
 	emit TcpCommsConnectionStatus(false);
-    return false;
+	return false;
+}
+
+bool TCPComms::connectToCombobulatorWiFi()
+{
+	bool result = false;
+	QNetworkConfiguration networkConfig;
+	QNetworkConfigurationManager networkManager;
+	auto networkConnection = networkManager.allConfigurations();
+
+	for (auto &networkFound : networkConnection)
+	{
+		if (networkFound.bearerType() == QNetworkConfiguration::BearerWLAN)
+		{
+			qDebug() << "TCPComms::connectToCombobulatorWiFi() - Network found: " << networkFound.name();
+			if (networkFound.name() == "Combobulator")
+			networkConfig = networkFound;
+			result = true;
+		}
+	}
+	auto session = new QNetworkSession(networkConfig, this);
+	session->open();
+	qDebug() << "TCPComms::connectToCombobulatorWiFi() - " << result;
+	return result;
 }
 
 void TCPComms::connected()

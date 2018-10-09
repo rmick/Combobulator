@@ -1,6 +1,8 @@
 #ifndef DEFINES_H
 #define DEFINES_H
 
+#include <QString>
+
 /*
 macdeployqt terminal command (copy into terminal window to build a .dmg)
           Source - https://dragly.org/2012/01/13/deploy-qt-applications-for-mac-os-x/
@@ -50,8 +52,6 @@ androiddeployqt
 //  Build Number
 const QString	BUILD_NUMBER	= "r18.10.08";
 const QString	VERSION_NUMBER	= "v1.00";
-
-// Recoil Game Hub_28f537d14fca
 
 //Maximum number of players
 //--------------------------

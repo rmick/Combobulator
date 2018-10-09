@@ -1224,7 +1224,7 @@
        </sizepolicy>
       </property>
       <property name="text">
-       <string>SETTINGS</string>
+       <string>. . .</string>
       </property>
      </widget>
     </item>

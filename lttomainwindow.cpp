@@ -1017,9 +1017,87 @@ void LttoMainWindow::on_actionOutdoorMode_triggered()
 #endif
 }
 
+#include <QNetworkConfiguration>
+#include <QNetworkConfigurationManager>
+#include <QNetworkSession>
+
 void LttoMainWindow::on_btn_Debug_clicked()
 {
-	sendLogFile();
+	qDebug() << "LttoMainWindow::on_btn_Debug_clicked()";
+	int foundCount;
+	QNetworkConfiguration netcfg;
+	QStringList WiFisList;
+	QList<QNetworkConfiguration> netcfgList;
+
+	QNetworkConfigurationManager ncm;
+	netcfgList = ncm.allConfigurations();
+	WiFisList.clear();
+	for (auto &x : netcfgList)
+	{
+		qDebug() << "Bearer Type" << x.bearerTypeName();
+		if (x.bearerType() == QNetworkConfiguration::BearerWLAN)
+		{
+			if(x.name() == "")
+				WiFisList << "Unknown(Other Network)";
+			else
+				WiFisList << x.name();
+
+			qDebug() << x.type();
+		}
+	}
+	for(int i=0; i<WiFisList.size(); i++)
+	{
+//		bool exist = false;
+//        QTreeWidgetItem * item = new QTreeWidgetItem();
+//        for(int j=0; j<ui->treeWidgetWiFis->topLevelItemCount(); j++)
+//        {
+//            QTreeWidgetItem *index = ui->treeWidgetWiFis->topLevelItem(j);
+//            QString str = index->text(1);
+//            if(str == WiFisList[i])
+//            {
+//                exist = true;
+//                break;
+//            }
+//        }
+//        if(!exist)
+//        {
+//            item->setTextAlignment(0,Qt::AlignVCenter);
+//            item->setTextAlignment(1,Qt::AlignHCenter);
+//            item->setText(0,QString::number(++foundCount));
+//            item->setText(1,WiFisList[i]);
+//            ui->treeWidgetWiFis->addTopLevelItem(item);
+//        }
+	}
+
+
+
+	return;
+
+
+
+
+	bool result = false;
+	QNetworkConfiguration networkConfig;
+	QNetworkConfigurationManager networkManager;
+	auto networkConnection = networkManager.allConfigurations();
+
+	for (auto &networkFound : networkConnection)
+	{
+		if (networkFound.bearerType() == QNetworkConfiguration::BearerWLAN)
+		{
+			qDebug() << "TCPComms::connectToCombobulatorWiFi() - Network found: " << networkFound.name();
+			if (networkFound.name() == "Combobulator")
+			networkConfig = networkFound;
+			result = true;
+		}
+	}
+	auto session = new QNetworkSession(networkConfig, this);
+	session->open();
+	qDebug() << "TCPComms::connectToCombobulatorWiFi() - " << result;
+
+
+
+	//sendLogFile();
 
 //	scoresWindow = new ScoresWindow(this);
 //#ifdef QT_DEBUG

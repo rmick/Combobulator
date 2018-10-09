@@ -2,6 +2,7 @@
 #define SETTINGSWINDOW_H
 
 #include <QDialog>
+//#include <QTimer>
 
 namespace Ui {
 class SettingsWindow;
@@ -38,6 +39,8 @@ private slots:
 
 	void on_btn_ShutDown_clicked();
 
+	void refreshDisplay();
+
 signals:
 	void	adjustScoring();
 	void	saveFile();
@@ -49,6 +52,7 @@ signals:
 
 private:
 	Ui::SettingsWindow *ui;
+	//QTimer	timerRefresh;
 };
 
 #endif // SETTINGSWINDOW_H
