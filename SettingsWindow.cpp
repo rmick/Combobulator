@@ -5,9 +5,6 @@
 #include <QDebug>
 #include <QTimer>
 
-//timerRefresh = new QTimer(nullptr);
-
-
 SettingsWindow::SettingsWindow(QWidget *parent) :
 	QDialog(parent),
 	ui(new Ui::SettingsWindow)

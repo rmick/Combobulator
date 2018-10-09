@@ -656,6 +656,10 @@ void HostGameWindow::on_btn_StartGame_clicked()
         timerCountDown->start(1000);
         countDownTimeRemaining = gameInfo.getCountDownTime();
         ui->btn_StartGame->setEnabled(false);
+		if(gameInfo.getNumberOfPlayersInGame() == 0)
+		{
+			QMessageBox::critical(0,"Error","There are no players in the game.\n\nThis is illogical.\n\nContinuing for Demo purposes only");
+		}
     }
     else if(ui->btn_StartGame->text() == "End\nGame")
     {
@@ -922,13 +926,35 @@ void HostGameWindow::BeaconSignal()
 
 void HostGameWindow::endGame()
 {
+	timerGameTimeRemaining->stop();
+	timerReHost->stop();
+	timerBeacon->stop();
+
+	if(gameInfo.getNumberOfPlayersInGame() == 0)	//There are no players in the game (they were all dumped)
+	{
+		setPromptText("Game Over");
+		lttoComms->sendLCDtext(""					, 1, false);
+		lttoComms->sendLCDtext("Game"               , 2, false);
+		lttoComms->sendLCDtext("Over"				, 3,  true);
+
+		ui->btn_Cancel->setEnabled(true);
+		ui->btn_StartGame->setEnabled(false);
+
+		//Show Scores window
+		if(!scoresWindow) scoresWindow = new ScoresWindow(this);
+
+		connect(scoresWindow,	SIGNAL(closingScoresWindow()),	this,	SLOT(closeHostGameWindow()) );
+
+		scoresWindow->showFullScreen();
+
+		return;
+	}
+
 	deBrief = new DeBrief(this);
     connect(deBrief, SIGNAL(SendToHGWlistWidget(QString)), this, SLOT(InsertToListWidget(QString)) );
-    timerGameTimeRemaining->stop();
-    timerReHost->stop();
-    timerBeacon->stop();
     timerDeBrief->start(DEBRIEF_TIMER_MSEC);
-    currentPlayer = 1;                          // Set ready for DeBriefing to search for next player
+
+	currentPlayer = 1;                          // Set ready for DeBriefing to search for next player
     while (isThisPlayerHosted[currentPlayer] == false) currentPlayer++;
     ui->btn_StartGame->setEnabled(false);
     ui->btn_Rehost->setEnabled(false);
