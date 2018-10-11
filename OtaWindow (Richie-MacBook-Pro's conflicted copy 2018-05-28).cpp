@@ -8,20 +8,20 @@ OtaWindow::OtaWindow(QWidget *parent) :
 {
 	ui->setupUi(this);
 	lttoComms = LttoComms::getInstance();
-	lttoComms->initialise();
 	ssidText = "";
 	pswdText = "";
 
-	ui->btn_Ok->setEnabled(false);
-
-	timerHeartBeat = new QTimer(this);
-	connect(timerHeartBeat,	SIGNAL(timeout() ),	this,	SLOT(heartBeat()) );
-
+	connect(lttoComms, SIGNAL(PongReceived(QString)), this, SLOT(pongReceived(QString)));
 	//Force the TCP to close (disconnect any sessions from a game been hosted).
 	lttoComms->closePorts();
+	lttoComms->nonBlockingDelay(1000);
 
 	//Force the TCP connection to open.
-	timerHeartBeat->start(750);
+	lttoComms->sendPacket(BEACON, 0);
+	qDebug() << "Tickling";
+	lttoComms->nonBlockingDelay(1000);
+	lttoComms->sendPing("Hello");
+
 }
 
 OtaWindow::~OtaWindow()
@@ -33,6 +33,9 @@ void OtaWindow::on_btn_Ok_clicked()
 {
 	ssidText = ui->lineEdit_ssidName->text();
 	pswdText = ui->lineEdit_password->text();
+
+	qDebug() << "OtaWindow::on_btn_Ok_clicked()" << ssidText << pswdText;
+
 
 	if (ssidText == "")
 	{
@@ -51,43 +54,23 @@ void OtaWindow::on_btn_Ok_clicked()
 	ui->lineEdit_password->setText("");
 	ui->btn_Ok->setEnabled(false);
 	ui->btn_cancel->setEnabled(false);
-	lttoComms->nonBlockingDelay(500);
+	//lttoComms->nonBlockingDelay(2000);
 	QMessageBox::warning(this,"Ready", "Please standby. The device will now restart.");
 	deleteLater();
 }
 
 void OtaWindow::on_btn_cancel_clicked()
 {
-	timerHeartBeat->stop();
-	close();
-	lttoComms->nonBlockingDelay(1000);
 	deleteLater();
 }
 
-void OtaWindow::heartBeat()
+void OtaWindow::on_btn_Ping_clicked()
 {
-	static bool toggle = true;
+	static int pingCount = 1;
+	lttoComms->sendPing("Test Ping: " + QString::number(pingCount++));
+}
 
-	lttoComms->sendHeartBeat();
-	if(lttoComms->getTcpCommsConnected())
-	{
-		ui->btn_Ok->setEnabled(true);
-		ui->label_Connecting->setText("");
-
-	}
-	else
-	{
-		ui->btn_Ok->setEnabled(false);
-
-		if (toggle)
-		{
-			toggle = !toggle;
-			ui->label_Connecting->setText("");
-		}
-		else
-		{
-			toggle = !toggle;
-			ui->label_Connecting->setText("<html><head/><body><p><span style= font-size:48pt; font-weight:600;>Connecting to Base Station</span></p></body></html>");
-		}
-	}
+void OtaWindow::pongReceived(QString pongText)
+{
+	qDebug() << "\tOtaWindow::pongReceived()" << pongText;
 }

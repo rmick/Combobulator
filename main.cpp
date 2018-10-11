@@ -38,7 +38,7 @@ void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QS
 
 	//Send to Log file
 	QString filePath = QStandardPaths::standardLocations( QStandardPaths::AppDataLocation ).value(0);
-	qDebug() << "FilePath =" << filePath;
+	//qDebug() << "FilePath =" << filePath;
 	QDir thisDir;
 	//thisDir.setPath(filePath);
 thisDir.setPath("user/Richie/Desktop");
@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
 {
 	QCoreApplication::setApplicationName( QString("Combobulator") );
 	QApplication::setDesktopSettingsAware(true);
-	qInstallMessageHandler(myMessageOutput);
+	//qInstallMessageHandler(myMessageOutput);
 	QApplication    theApp(argc, argv);
     LttoMainWindow  lttoMainWindow;
 	lttoMainWindow.setWindowIcon(QIcon(":/resources/images/Combobulator.ico"));

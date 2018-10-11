@@ -19,7 +19,6 @@ TCPComms::TCPComms(QObject *parent) :
 
 bool TCPComms::ConnectTCP()
 {
-	qDebug() << "TCPComms::ConnectTCP() - Finding Combobulator";
 	connectToCombobulatorWiFi();
 
 
@@ -39,6 +38,9 @@ bool TCPComms::DisconnectTCP()
 
 bool TCPComms::connectToCombobulatorWiFi()
 {
+	return false;
+
+	qDebug() << "TCPComms::connectToCombobulatorWiFi()";
 	bool result = false;
 	QNetworkConfiguration networkConfig;
 	QNetworkConfigurationManager networkManager;
@@ -85,8 +87,6 @@ void TCPComms::receivePacket()
 
 void TCPComms::sendPacket(QByteArray data)
 {
-	//qDebug() << "TCPComms::sendPacket()" << data;
-
 	if (tcpSocket->state() == QAbstractSocket::ConnectedState)
     {
 		//qDebug() << "TCPComms::sendPacket(QByteArray data)" << data;
@@ -94,8 +94,8 @@ void TCPComms::sendPacket(QByteArray data)
     }
 	else
 	{
-		//TODO1:  FIX THIS ASAP		if(lttoComms.getSerialUSBcommsConnected() == false)
-		qDebug() << "TCPComms::sendPacket() - Triggered ConnectTCP()";
+	//TODO1:  FIX THIS ASAP		if(lttoComms.getSerialUSBcommsConnected() == false)
+		//qDebug() << "TCPComms::sendPacket() - Triggered ConnectTCP()";
 		ConnectTCP();
 	}
 }

@@ -23,13 +23,12 @@ private slots:
 
 	void on_btn_cancel_clicked();
 
-	void on_btn_Ping_clicked();
-
-	void pongReceived(QString pongText);
+	void heartBeat();
 
 private:
 	Ui::OtaWindow	*ui;
 	LttoComms		*lttoComms;
+	QTimer			*timerHeartBeat;
 
 	QString			ssidText;
 	QString			pswdText;

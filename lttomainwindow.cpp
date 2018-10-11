@@ -51,6 +51,7 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
 	gameInfo.setIsIndoorViewMode(true);
 
 	timerHeartBeat = new QTimer(this);
+	//timerHeartBeat->start(1000);
 	connect(timerHeartBeat,	SIGNAL(timeout() ),	this,	SLOT(heartBeat())	);
 
 	ui->mainToolBar->setVisible(false);
@@ -1125,7 +1126,7 @@ void LttoMainWindow::on_actionEdit_Scoring_triggered()
 
 void LttoMainWindow::on_actionUpdate_Firmware_triggered()
 {
-	otaWindow = new OtaWindow(this);
+	if(!otaWindow) otaWindow = new OtaWindow(this);
 #ifdef QT_DEBUG
 	otaWindow->show();
 #else
@@ -1135,7 +1136,7 @@ void LttoMainWindow::on_actionUpdate_Firmware_triggered()
 
 void LttoMainWindow::on_btn_Settings_clicked()
 {
-	settingsWindow = new SettingsWindow(this);
+	if(!settingsWindow) settingsWindow = new SettingsWindow(this);
 
 	connect(settingsWindow, SIGNAL(adjustScoring()),		this, SLOT(on_actionEdit_Scoring_triggered())			);
 	connect(settingsWindow, SIGNAL(saveFile()),				this, SLOT(on_actionSave_triggered())					);
@@ -1184,10 +1185,6 @@ void LttoMainWindow::heartBeat()
 {
 	qDebug() << "LttoMainWindow::HeartBeatSignal()";
 	if(lttoComms->getHostingCommsActive() == true)	return;
-	//if(hostGameWindow.isNull()) qDebug() << "isNull";
-	//if(hostGameWindow) qDebug() << "HostGame Window is valid";
-	//if(hostGameWindow->isActiveWindow()) qDebug() << "HostGame Window has the focus";
-	//if(hostGameWindow->isVisible() ) return;
 	lttoComms->sendHeartBeat();
 	qDebug() << "LttoMainWindow::HeartBeatSignal() - SENT *********************";
 }

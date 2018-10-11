@@ -88,6 +88,8 @@ signals:
     void        Team3TagReportReceived(int game, int teamAndPlayer, int tagsP1, int tagsP2, int tagsP3, int tagsP4, int tagsP5, int tagsP6, int tagsP7, int tagsP8);
 	void		BeaconReceived(int beaconData);
 	void		PongReceived(QString pongText);
+	void		OtaReceived(QString response);
+	void		HbAckReceived(QString response);
 
 private slots:
     void        receivePacket(QByteArray RxData);
