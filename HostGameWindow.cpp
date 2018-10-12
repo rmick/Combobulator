@@ -42,7 +42,8 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
 
 	lttoComms	= LttoComms::getInstance();
 	lttoComms->initialise();
-	host		= new Hosting(this);
+
+	host = new Hosting(this);
 
 	connect(timerAnnounce,          SIGNAL(timeout() ),							  this, SLOT(announceGame())					);
 	connect(timerCountDown,         SIGNAL(timeout() ),							  this, SLOT(sendCountDown())					);
@@ -53,7 +54,7 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
 	connect(timerBeacon,            SIGNAL(timeout() ),							  this, SLOT(BeaconSignal())					);
 	connect(lttoComms,              SIGNAL(RequestJoinGame(int,int,int, bool) ),  this, SLOT(AssignPlayer(int,int,int, bool))	);
 	connect(lttoComms,              SIGNAL(AckPlayerAssignment(int,int, bool) ),  this, SLOT(AddPlayerToGame(int,int, bool))	);
-	connect(host,                   SIGNAL(AddToHostWindowListWidget(QString)),   this, SLOT(InsertToListWidget(QString))		);
+	connect(host,                   SIGNAL(AddToHostWindowListWidget(QString) ),  this, SLOT(InsertToListWidget(QString))		);
 
     timerAnnounce->start(HOST_TIMER_MSEC);
 	lttoComms->setHostingCommsActive(true);
@@ -949,8 +950,10 @@ void HostGameWindow::endGame()
 		return;
 	}
 
-	deBrief = new DeBrief(this);
-    connect(deBrief, SIGNAL(SendToHGWlistWidget(QString)), this, SLOT(InsertToListWidget(QString)) );
+	//deBrief = new DeBrief(this);
+	deBrief	= DeBrief::getInstance();
+
+	connect(deBrief, SIGNAL(SendToHGWlistWidget(QString)), this, SLOT(InsertToListWidget(QString)) );
     timerDeBrief->start(DEBRIEF_TIMER_MSEC);
 
 	currentPlayer = 1;                          // Set ready for DeBriefing to search for next player
@@ -1010,24 +1013,13 @@ void HostGameWindow::deBriefTaggers()
 		// Calculate scores and sendRankReport
 		deBrief->calculateScores();
 		deBrief->calculateRankings();
-		setPromptText("Sending Rank Reports");
-		lttoComms->sendLCDtext("Sending"            , 1, false);
-		lttoComms->sendLCDtext("Rank"				, 2, false);
-		lttoComms->sendLCDtext("Reports"			, 3,  true);
-		deBrief->sendRankReport();
 
-
-		setPromptText("Game Over");
-		lttoComms->sendLCDtext(""					, 1, false);
-		lttoComms->sendLCDtext("Game"               , 2, false);
-		lttoComms->sendLCDtext("Over"				, 3,  true);
-
-		//Show Scores window
-        if(!scoresWindow) scoresWindow = new ScoresWindow(this);
+		//Show Scores window (which then sends the Rank Reports)
+		if(!scoresWindow) scoresWindow = new ScoresWindow(this);
 
 		connect(scoresWindow,	SIGNAL(closingScoresWindow()),	this,	SLOT(closeHostGameWindow()) );
 
-        scoresWindow->showFullScreen();
+		scoresWindow->showFullScreen();
     }
 }
 

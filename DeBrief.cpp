@@ -59,6 +59,12 @@ DeBrief::DeBrief(QObject *parent) : QObject(parent)
 
 }
 
+DeBrief *DeBrief::getInstance()
+{
+	static DeBrief *instance = new DeBrief();
+	return instance;
+}
+
 
 
 void DeBrief::RequestTagReports()
@@ -252,8 +258,6 @@ void DeBrief::Team3TagReportReceived(int game, int teamAndPlayer, int tagsP1, in
 
 void DeBrief::sendRankReport()
 {
-    //calculateRankings();
-
     qDebug() << "DeBrief::sendRankReport()";
     int teamPlayerByte  = 0;
     int loopCount       = 1;
@@ -286,9 +290,10 @@ void DeBrief::sendRankReport()
                  teamPlayerByte += gameInfo.getTeam3rank();
              }
          }
-
-//         //Send the message
+qDebug() << "Step 1";
+		 //Send the message
 		 lttoComms->sendPacket(PACKET, SEND_RANK_REPORT);
+qDebug() << "Step 2";
 		 lttoComms->sendPacket(DATA, gameInfo.getGameID());
 		 lttoComms->sendPacket(DATA, teamPlayerByte);
 		 lttoComms->sendPacket(DATA, playerInfo[1 + ((index-1)*8)].getRankingInGame());
@@ -301,9 +306,9 @@ void DeBrief::sendRankReport()
 		 lttoComms->sendPacket(DATA, playerInfo[8 + ((index-1)*8)].getRankingInGame());
 		 lttoComms->sendPacket(CHECKSUM);
 		 lttoComms->nonBlockingDelay(1250);
-
+qDebug() << "Step 3";
         //reset index to 1 and exit if done 3x5 times
-		if (index == 3 && loopCount < 2)
+		if (index == 3 && loopCount < 5)
         {
             loopCount++;
 			index = 0;

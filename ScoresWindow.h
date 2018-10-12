@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <QTableWidget>
 #include <QTableWidgetItem>
+#include <QTimer>
 
 #include "Game.h"
 #include "Players.h"
@@ -19,16 +20,20 @@ class ScoresWindow : public QDialog
     Q_OBJECT
 
 public:
-    explicit ScoresWindow(QWidget *parent = 0);
+	explicit ScoresWindow(QWidget *parent = nullptr);
     ~ScoresWindow();
 
 signals:
 	void closingScoresWindow();
 
+//void sendSignal();
+
 private slots:
     void on_btn_Close_clicked();
 
     void on_btn_ViewMode_clicked();
+
+	void sendRankReports();
 
 private:
     Ui::ScoresWindow *ui;
@@ -39,6 +44,8 @@ private:
     void populateScores(int modus);
     void setOrder(int modus);
 
+
+	QTimer			 *timerSendRankReports;
     QTableWidgetItem *playerNumber[25];
     QTableWidgetItem *playerTaggerName[25];
     QTableWidgetItem *playerRanking[25];
@@ -50,6 +57,8 @@ private:
     QTableWidgetItem *tagsByPlayer[25] [25];
     QFont             tableFont;
     QFont             headerFont;
+	QPointer<DeBrief> deBrief;
+	LttoComms		  *lttoComms;
     int               screenWidth;
     int               screenHeight;
     int               rowHeight;
@@ -57,7 +66,6 @@ private:
     int               displayMode;
 
     const int         COLUMNS_IN_SUMMARY = 8;
-
 };
 
 #endif // SCORESWINDOW_H

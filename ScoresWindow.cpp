@@ -4,6 +4,7 @@
 #include <QLayout>
 #include <QDebug>
 #include <QScreen>
+#include "LttoComms.h"
 
 ScoresWindow::ScoresWindow(QWidget *parent) :
     QDialog(parent),
@@ -19,6 +20,29 @@ ScoresWindow::ScoresWindow(QWidget *parent) :
     addPlayerRows();
     populateScores(SUMMARY_VIEW);
     setOrder(SUMMARY_VIEW);
+
+	deBrief	= DeBrief::getInstance();
+	lttoComms = LttoComms::getInstance();
+
+	timerSendRankReports = new QTimer(this);
+	timerSendRankReports->start(1500);
+	connect(timerSendRankReports,          SIGNAL(timeout() ),	this, SLOT(sendRankReports() )	);
+}
+
+void ScoresWindow::sendRankReports()
+{
+	timerSendRankReports->stop();
+
+	lttoComms->sendLCDtext("Sending"            , 1, false);
+	lttoComms->sendLCDtext("Rank"				, 2, false);
+	lttoComms->sendLCDtext("Reports"			, 3,  true);
+
+	deBrief->sendRankReport();
+
+	lttoComms->sendLCDtext(""					, 1, false);
+	lttoComms->sendLCDtext("Game"               , 2, false);
+	lttoComms->sendLCDtext("Over"				, 3,  true);
+
 }
 
 ScoresWindow::~ScoresWindow()

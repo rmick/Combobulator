@@ -8,8 +8,14 @@
 class DeBrief : public QObject
 {
     Q_OBJECT
+
+private:
+	explicit    explicit DeBrief(QObject *parent = nullptr);
+	static		DeBrief *instance;
+
 public:
-    explicit DeBrief(QObject *parent = nullptr);
+	//explicit DeBrief(QObject *parent = nullptr);
+	static		DeBrief *getInstance();
 
     bool    getIsPlayerDeBriefed() const;
     void    setIsPlayerDeBriefed(bool value);
