@@ -50,8 +50,8 @@ androiddeployqt
 
 
 //  Build Number
-const QString	BUILD_NUMBER	= "r18.10.12";
-const QString	VERSION_NUMBER	= "v1.00";
+const QString	BUILD_NUMBER	= "r18.10.15";
+const QString	VERSION_NUMBER	= "v1.01";
 
 //Maximum number of players
 //--------------------------
@@ -59,7 +59,7 @@ const int   MAX_PLAYERS = 24;
 //--------------------------
 
 //  WiFi stuff
-const QString   HOST_IP_ADDRESS     = "192.168.4.1";
+const QString   HOST_IP_ADDRESS     = "192.168.42.42";
 const QString   WIFI_PASSWORD       = "Lasertag42";
 const int       TCP_IP_PORT         = 8000;
 

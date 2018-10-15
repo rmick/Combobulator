@@ -13,6 +13,7 @@ private:
     QString     CssOutside;
     QString     YellowButtonCss;
     QString     GreenButtonCss;
+	QString		RedButtonCss;
     QString     ButtonSelectedCss;
     QString     ButtonUnSelectedCss;
     QString     ButtonCheckedCss;
@@ -63,6 +64,7 @@ public:
 	void	setCurrentCSS(int value);
     QString getYellowButtonCss() const;
     QString getGreenButtonCss() const;
+	QString getRedButtonCss() const;
 };
 
 extern StyleSheet myStyleSheet;

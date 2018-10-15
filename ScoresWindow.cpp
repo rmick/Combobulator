@@ -27,6 +27,7 @@ ScoresWindow::ScoresWindow(QWidget *parent) :
 	timerSendRankReports = new QTimer(this);
 	timerSendRankReports->start(1500);
 	connect(timerSendRankReports,          SIGNAL(timeout() ),	this, SLOT(sendRankReports() )	);
+	ui->btn_Close->setEnabled(false);
 }
 
 void ScoresWindow::sendRankReports()
@@ -42,6 +43,8 @@ void ScoresWindow::sendRankReports()
 	lttoComms->sendLCDtext(""					, 1, false);
 	lttoComms->sendLCDtext("Game"               , 2, false);
 	lttoComms->sendLCDtext("Over"				, 3,  true);
+
+	ui->btn_Close->setEnabled(true);
 
 }
 

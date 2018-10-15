@@ -133,6 +133,18 @@ void HostGameWindow::announceGame()
         ui->led_Status->setStyleSheet(myStyleSheet.getGreenButtonCss());
     }
 
+	if (lttoComms->checkIPaddress() != true)
+	{
+		ui->led_Status->setStyleSheet(myStyleSheet.getRedButtonCss());
+		qDebug() << "HostGameWindow::announceGame() - checkIPaddress failed.";
+		setPromptText("Connect WiFi to Combobulator");
+		return;
+	}
+	else
+	{
+		qDebug() << "HostGameWindow::announceGame() - WTF";
+	}
+
 	hostCurrentPlayer();
 	//  Note about Spies/Kings.
 	//  We advertise the correct player settings here, then assign them to a different team/player in calculatePlayerTeam5bits().
@@ -369,7 +381,7 @@ void HostGameWindow::hostCurrentPlayer()
 void HostGameWindow::AssignPlayer(int Game, int Tagger, int Flags, bool isLtar)
 
 {
-    if(currentPlayer > 24 || currentPlayer == 0)  //All taggers have been hosted, so ignore any new requests.
+	if(currentPlayer > 24 || currentPlayer == 0)  //All taggers have been hosted, so ignore any new requests.
     {
 		lttoComms->setDontAnnounceGame(false);
         return;
@@ -398,8 +410,8 @@ void HostGameWindow::AssignPlayer(int Game, int Tagger, int Flags, bool isLtar)
 
         expectingAckPlayerAssignment = true;
 
-        InsertToListWidget ("   AssignPlayer()" + QString::number(currentPlayer) + ", Tagger ID:" + QString::number(Tagger) );
-        qDebug() << "\t\tHostGameWindow::AssignPlayer() " << currentPlayer << Game << Tagger << calculatePlayerTeam5bits(Flags) << isLtar << endl;
+		InsertToListWidget ("   AssignPlayer()" + QString::number(currentPlayer) + ", Tagger ID:" + QString::number(Tagger) );
+		qDebug() << "\t\tHostGameWindow::AssignPlayer() " << currentPlayer << Game << Tagger << calculatePlayerTeam5bits(Flags) << isLtar << endl;
         if (closingWindow) deleteLater();   // Delete the window, as the cancel button has been pressed.
 
 		lttoComms->sendLCDtext("Adding"                                  , 1, false);
@@ -494,7 +506,8 @@ void HostGameWindow::sendAssignFailedMessage()
 
 	if(lttoComms->getDontAnnounceFailedSignal() == false)
     {  
-        sound_HostingMissedReply->play();
+		lttoComms->setDontAnnounceGame(true);
+		sound_HostingMissedReply->play();
 
         qDebug() << "HostGameWindow::sendAssignFailedMessage()  - Sending # " << assignPlayerFailCount;
 
@@ -509,7 +522,6 @@ void HostGameWindow::sendAssignFailedMessage()
 		lttoComms->sendPacket(DATA,   gameInfo.getGameID()                    );
 		lttoComms->sendPacket(DATA,   playerInfo[currentPlayer].getTaggerID() );
 		lttoComms->sendPacket(CHECKSUM                                        );
-
     }
 
     qDebug() << "HostGameWindow::sendAssignFailedMessage() - looping";
@@ -524,6 +536,15 @@ void HostGameWindow::sendAssignFailedMessage()
         expectingAckPlayerAssignment = false;
         assignPlayerFailCount = 0;
         qDebug() <<"HostGameWindow::sendAssignFailedMessage() - Counted to 5, I am now going away";
+
+		//Manually add the player to the game (a kludge, but do it for now)
+		//TODO: Hmmmm. Fix this kludge
+		AddPlayerToGame(gameInfo.getGameID(), lttoComms->getCurrentTaggerBeingHosted(), gameInfo.getIsLTARGame() );
+		qDebug() << "----------------------------------------------";
+		qDebug() << "DANGER WILL ROBINSON - PLAYER FORCED INTO GAME";
+		qDebug() << "----------------------------------------------";
+		InsertToListWidget ("No Tagger Ack recvd - PLAYER FORCED INTO GAME!" );
+
         if (closingWindow) deleteLater();   // Delete the window, as the cancel button has been pressed.
     }
 }

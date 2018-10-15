@@ -62,10 +62,15 @@ void LttoComms::initialise()
 bool LttoComms::getConnectionStatus()
 {
 	bool status = false;
-	if (getTcpCommsConnected() == true || serialUSBcomms->getSerialCommsConnected() == true) status = true;
+	if (getTcpCommsConnected() == true	|| serialUSBcomms->getSerialCommsConnected() == true) status = true;
+	if (tcpComms->checkIPaddress()		&& serialUSBcomms->getSerialCommsConnected() != true) status = false;
 	return status;
 }
 
+bool LttoComms::checkIPaddress()		//checks to see if the current network is 192.168.42.???
+{
+	return tcpComms->checkIPaddress();
+}
 
 bool LttoComms::sendPacket(char type, int data, bool dataFormat)
 {

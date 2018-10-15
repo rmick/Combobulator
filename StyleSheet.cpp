@@ -53,8 +53,9 @@ StyleSheet::StyleSheet()
 	setFontSizes();
 
 	//Combobulator Status Indicator LED (QPushbutton) in HostGame window.
-    YellowButtonCss =  "background-color: yellow; border-style: outset; border-width: 2px; border-radius: 10px; border-color: grey; min-width: 0; min-height: 0";
+	YellowButtonCss =  "background-color: yellow;		 border-style: outset; border-width: 2px; border-radius: 10px; border-color: grey; min-width: 0; min-height: 0";
     GreenButtonCss  =  "background-color: rgb(0,255,50); border-style: outset; border-width: 2px; border-radius: 10px; border-color: grey; min-width: 0; min-height: 0";
+	RedButtonCss	=  "background-color: red;			 border-style: outset; border-width: 2px; border-radius: 10px; border-color: grey; min-width: 0; min-height: 0";
 
     //CSS stylesheet for DARK interface
 	CssInside  =    "QWidget					{background-color: black; color: white; font: normal;}";
@@ -171,12 +172,17 @@ QString StyleSheet::getGreenButtonCss() const
     return GreenButtonCss;
 }
 
+QString StyleSheet::getRedButtonCss() const
+{
+	return RedButtonCss;
+}
+
 void StyleSheet::setSpecials(int value)
 {
-    if(value == CssDark)
-    {
+	if(value == CssDark)
+	{
 		ButtonSelectedCss      = CssInsideButtonSelected;
-        ButtonUnSelectedCss    = CssInsideButtonSelected;
+		ButtonUnSelectedCss    = CssInsideButtonSelected;
         ButtonCheckedCss       = CssInsideButtonChecked;
         ButtonUnCheckedCss     = CssInsideButtonUnChecked;
         ButtonPressedLastCss   = CssInsideButtonPressedLast;

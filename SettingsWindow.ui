@@ -230,7 +230,7 @@
       </size>
      </property>
      <property name="text">
-      <string>Close</string>
+      <string>Close Window</string>
      </property>
     </widget>
    </item>

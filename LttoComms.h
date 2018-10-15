@@ -23,6 +23,7 @@ public:
 	void		initialise();
 
 	bool		getConnectionStatus();
+	bool		checkIPaddress();
 
     bool        sendPacket(char type, int data = 0, bool dataFormat = false);
 	void        sendLCDtext(QString textToSend, int lineNumber, bool drawScreen);

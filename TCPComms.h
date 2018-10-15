@@ -11,32 +11,31 @@ class TCPComms : public QObject
     Q_OBJECT
 
 public:
-    explicit TCPComms(QObject *parent = 0);
+	explicit	TCPComms(QObject *parent = 0);
 
-    bool ConnectTCP();
-    bool DisconnectTCP();
-	bool connectToCombobulatorWiFi();
+	bool		ConnectTCP();
+	bool		DisconnectTCP();
+	bool		connectToCombobulatorWiFi();
+	bool		checkIPaddress();
 
-    bool getIsTCPinitialised() const;
-    void setIsTCPinitialised(bool value);
+	bool		getIsTCPinitialised() const;
+	void		setIsTCPinitialised(bool value);
 
 public slots:
-    void connected();
-    void disconnected();
-    void receivePacket();
-    void sendPacket(QByteArray data);
-    void initialiseTCPsignalsAndSlots();
+	void		connected();
+	void		disconnected();
+	void		receivePacket();
+	void		sendPacket(QByteArray data);
+	void		initialiseTCPsignalsAndSlots();
 
 signals:
-    void newTCPdata(QByteArray dataReceived);
-	void TcpCommsConnectionStatus(bool status);
+	void		newTCPdata(QByteArray dataReceived);
+	void		TcpCommsConnectionStatus(bool status);
 
 private:
-    QTcpSocket      *tcpSocket;
-    bool            isConnected;
-    bool            isTCPinitialised;                   // used to trigger a single instance of TCPsocket connectSignals.
+	QTcpSocket	*tcpSocket;
+	bool        isConnected;
+	bool        isTCPinitialised;                   // used to trigger a single instance of TCPsocket connectSignals.
 };
-
-//extern TCPComms tcpComms;
 
 #endif // TCPCOMMS_H

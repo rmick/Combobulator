@@ -308,7 +308,7 @@ qDebug() << "Step 2";
 		 lttoComms->nonBlockingDelay(1250);
 qDebug() << "Step 3";
         //reset index to 1 and exit if done 3x5 times
-		if (index == 3 && loopCount < 5)
+		if (index == 3 && loopCount < 3)
         {
             loopCount++;
 			index = 0;

@@ -1960,7 +1960,7 @@
        </font>
       </property>
       <property name="text">
-       <string>Send Log File</string>
+       <string>DeBug</string>
       </property>
      </widget>
     </item>

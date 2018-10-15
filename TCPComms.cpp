@@ -19,12 +19,21 @@ TCPComms::TCPComms(QObject *parent) :
 
 bool TCPComms::ConnectTCP()
 {
+	bool result = false;
+
 	connectToCombobulatorWiFi();
 
-
-	qDebug() << "TCPComms::ConnectTCP() - Connecting";
-	tcpSocket->connectToHost(HOST_IP_ADDRESS,TCP_IP_PORT);
-	return true;
+	if(checkIPaddress() != true)
+	{
+		//qDebug() << "TCPComms::ConnectTCP() - Not connected to Combobulator Wi-Fi";
+	}
+	else
+	{
+		//qDebug() << "TCPComms::ConnectTCP() - Connecting";
+		tcpSocket->connectToHost(HOST_IP_ADDRESS,TCP_IP_PORT);
+		result = true;
+	}
+	return result;
 }
 
 bool TCPComms::DisconnectTCP()
@@ -60,6 +69,38 @@ bool TCPComms::connectToCombobulatorWiFi()
 	session->open();
 	qDebug() << "TCPComms::connectToCombobulatorWiFi() - " << result;
 	return result;
+}
+
+bool TCPComms::checkIPaddress()
+{
+	bool result = false;
+	QList<QHostAddress> list = QNetworkInterface::allAddresses();
+
+	for(int nIter=0; nIter<list.count(); nIter++)
+	{
+		if(!list[nIter].isLoopback())
+		if (list[nIter].protocol() == QAbstractSocket::IPv4Protocol )
+		{
+			QString thisIP = list[nIter].toString();
+			//qDebug() << "TCPComms::checkIPaddress() - " << thisIP;
+			if(thisIP.startsWith("192.168.42"))
+			{
+				qDebug() << "TCPComms::checkIPaddress() - We have a Combobulator ";
+				result = true;
+			}
+		 }
+	 }
+	 return result;
+
+	 foreach (const QNetworkInterface &netInterface, QNetworkInterface::allInterfaces()) {
+		 QNetworkInterface::InterfaceFlags flags = netInterface.flags();
+		 if( (bool)(flags & QNetworkInterface::IsRunning) && !(bool)(flags & QNetworkInterface::IsLoopBack)){
+			 foreach (const QNetworkAddressEntry &address, netInterface.addressEntries()) {
+				 if(address.ip().protocol() == QAbstractSocket::IPv4Protocol)
+					 qDebug() << address.ip().toString();
+			 }
+		 }
+	 }
 }
 
 void TCPComms::connected()
