@@ -23,7 +23,7 @@ macdeployqt terminal command (copy into terminal window to build a .dmg)
 
 windeployqt
 	  1)	Copy the Combobulator.exe
-			   from the        Qt_projects\build-Combobulator_Windows32-Release\release
+               from the        Qt_projects\build-Combobulator_Windows32-Release\
                to the          Qt_projects\build-Combobulator_Windows32-Release\Combobulator
 
 	  2)	Open CMD.exe prompt
@@ -42,6 +42,8 @@ windeployqt
 
 androiddeployqt
 	  Do nothing, it all automatic :-)
+      To get the APK file - Go to [Projects] tab in Qt Creator, Select Android Build,
+                            Expand the [build apk] section and select [show apk after build] option.
 */
 
 
@@ -50,8 +52,8 @@ androiddeployqt
 
 
 //  Build Number
-const QString	BUILD_NUMBER	= "r18.10.15";
-const QString	VERSION_NUMBER	= "v1.01";
+const QString	BUILD_NUMBER	= "r18.11.07";
+const QString	VERSION_NUMBER	= "v1.021";
 
 //Maximum number of players
 //--------------------------
@@ -62,6 +64,7 @@ const int   MAX_PLAYERS = 24;
 const QString   HOST_IP_ADDRESS     = "192.168.42.42";
 const QString   WIFI_PASSWORD       = "Lasertag42";
 const int       TCP_IP_PORT         = 8000;
+const float		LOW_BATT_LEVEL		= 3.5;
 
 //LTTO library packet type indentifiers
 const char  PACKET      = 'P';
@@ -69,6 +72,7 @@ const char  DATA        = 'D';
 const char  CHECKSUM    = 'C';
 const char  TAG         = 'T';
 const char  BEACON      = 'Z';
+const char	LTAR_BEACON = 'E';
 
 //Internal timers (in mSec)
 const int   INTERPACKET_DELAY_MSEC		= 50;

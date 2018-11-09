@@ -64,6 +64,7 @@ bool LttoComms::getConnectionStatus()
 	bool status = false;
 	if (getTcpCommsConnected() == true	|| serialUSBcomms->getSerialCommsConnected() == true) status = true;
 	if (tcpComms->checkIPaddress()		&& serialUSBcomms->getSerialCommsConnected() != true) status = false;
+	qDebug() << "NB. Having ESP connected via USB breaks this code";
 	return status;
 }
 
@@ -352,6 +353,15 @@ void LttoComms::receivePacket(QByteArray RxData)
 			irDataIn.clear();
 			return;
 		}
+
+		else if (irDataIn.startsWith("BATT"))
+		{
+			emit BattVoltsReceived(irDataIn.remove(0,5));
+			qDebug() << "LttoComms::receivePacket - Battery Volts: " << irDataIn;
+			irDataIn.clear();
+			return;
+		}
+
 
         //Check if this is a CombobulatorHost or LazerSwarm packet.
         else if (irDataIn.endsWith("@"))

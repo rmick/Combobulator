@@ -91,6 +91,7 @@ signals:
 	void		PongReceived(QString pongText);
 	void		OtaReceived(QString response);
 	void		HbAckReceived(QString response);
+	void		BattVoltsReceived(QString battVolts);
 
 private slots:
     void        receivePacket(QByteArray RxData);

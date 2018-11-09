@@ -81,6 +81,8 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
     gameInfo.setIsThisPlayerInTheGame(24, true);
     ui->btn_StartGame->setEnabled(true);
 	ui->btn_Debug->setVisible(true);
+#else
+    QMainWindow::showFullScreen();
 #endif
 }
 
@@ -806,9 +808,6 @@ void LttoMainWindow::loadSettings()
 
 #ifdef QT_DEBUG
 	show();
-#else
-	showFullScreen();
-#endif
     settings.beginGroup("MainWindow");
     resize(settings.value("size", QSize(800, 600)).toSize());
     QScreen *screen = QGuiApplication::primaryScreen();
@@ -817,6 +816,10 @@ void LttoMainWindow::loadSettings()
     int posY = (screenGeometry.height() - this->height()) / 2;
     move  (settings.value("pos",  QPoint(posX, posY)).toPoint());
     settings.endGroup();
+#else
+	showFullScreen();
+#endif
+
 }
 
 void LttoMainWindow::saveSettings()

@@ -55,6 +55,7 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
 	connect(lttoComms,              SIGNAL(RequestJoinGame(int,int,int, bool) ),  this, SLOT(AssignPlayer(int,int,int, bool))	);
 	connect(lttoComms,              SIGNAL(AckPlayerAssignment(int,int, bool) ),  this, SLOT(AddPlayerToGame(int,int, bool))	);
 	connect(host,                   SIGNAL(AddToHostWindowListWidget(QString) ),  this, SLOT(InsertToListWidget(QString))		);
+	connect(lttoComms,				SIGNAL(BattVoltsReceived(QString) ),		  this, SLOT(UpdateBatteryDisplay(QString))		);
 
     timerAnnounce->start(HOST_TIMER_MSEC);
 	lttoComms->setHostingCommsActive(true);
@@ -133,16 +134,13 @@ void HostGameWindow::announceGame()
         ui->led_Status->setStyleSheet(myStyleSheet.getGreenButtonCss());
     }
 
-	if (lttoComms->checkIPaddress() != true)
+	if (lttoComms->checkIPaddress() != true && lttoComms->getSerialUSBcommsConnected() != true)
 	{
 		ui->led_Status->setStyleSheet(myStyleSheet.getRedButtonCss());
 		qDebug() << "HostGameWindow::announceGame() - checkIPaddress failed.";
 		setPromptText("Connect WiFi to Combobulator");
+		setNextPlayerText("Password = Lasertag42");
 		return;
-	}
-	else
-	{
-		qDebug() << "HostGameWindow::announceGame() - WTF";
 	}
 
 	hostCurrentPlayer();
@@ -265,7 +263,7 @@ void HostGameWindow::hostCurrentPlayer()
     else
     {
 		InsertToListWidget("Trying to connect to Base Station");
-		setPromptText("Connecting to Base Station......");
+		setPromptText("...Connecting to Base Station......");
 		ui->label_NextPlayer->setText("");
 		//<html><head/><body><p><span style=" font-size:64pt; font-weight:600;">Initialising Data. Standby.......</span></p></body></html>
     }
@@ -679,7 +677,7 @@ void HostGameWindow::on_btn_StartGame_clicked()
         ui->btn_StartGame->setEnabled(false);
 		if(gameInfo.getNumberOfPlayersInGame() == 0)
 		{
-			QMessageBox::critical(0,"Error","There are no players in the game.\n\nThis is illogical.\n\nContinuing for Demo purposes only");
+			QMessageBox::critical(nullptr,"Error","There are no players in the game.\n\nThis is illogical.\n\nContinuing for Demo purposes only");
 		}
     }
     else if(ui->btn_StartGame->text() == "End\nGame")
@@ -1063,4 +1061,20 @@ void HostGameWindow::setNextPlayerText(QString text)
 void HostGameWindow::on_showLog_clicked()
 {
 	ui->listWidget_Status->setVisible(true);
+}
+
+void HostGameWindow::UpdateBatteryDisplay(QString volts)
+{
+	qDebug() << "HostGameWindow::UpdateBatteryDisplay() - " << volts.toFloat();
+	if(volts.toFloat() < LOW_BATT_LEVEL)
+	{
+		//ui->label_BattVolts->setText("<html><span style = font-size:18pt; color:#FF0000>Low Battery = " + volts + "v </span></html>");
+		ui->label_BattVolts->setText("<html><head/><body><p><span style= color:#fc0107; font-size:18pt;>Low Battery = " + volts + " v</span></p></body></html>");
+
+	}
+	else
+	{
+		ui->label_BattVolts->setText("<html><span style = font-size:18pt;>Battery = " + volts + "v </span></html>");
+	}
+
 }

@@ -68,7 +68,7 @@ thisDir.setPath("user/Richie/Desktop");
 int main(int argc, char *argv[])
 {
 	QCoreApplication::setApplicationName( QString("Combobulator") );
-	QApplication::setDesktopSettingsAware(true);
+    QApplication::setDesktopSettingsAware(true);
 	//qInstallMessageHandler(myMessageOutput);
 	QApplication    theApp(argc, argv);
     LttoMainWindow  lttoMainWindow;
@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
 	loop.exec();
 	lttoMainWindow.showFullScreen();
 #else
-	lttoMainWindow.show();
+    lttoMainWindow.show();
 #endif
 
     splashScreen.finish(&lttoMainWindow);

@@ -79,6 +79,8 @@ private slots:
 
 	void on_showLog_clicked();
 
+	void UpdateBatteryDisplay(QString volts);
+
 private:
     //pointers
     Ui::HostGameWindow      *ui;

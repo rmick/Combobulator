@@ -290,10 +290,8 @@ void DeBrief::sendRankReport()
                  teamPlayerByte += gameInfo.getTeam3rank();
              }
          }
-qDebug() << "Step 1";
 		 //Send the message
 		 lttoComms->sendPacket(PACKET, SEND_RANK_REPORT);
-qDebug() << "Step 2";
 		 lttoComms->sendPacket(DATA, gameInfo.getGameID());
 		 lttoComms->sendPacket(DATA, teamPlayerByte);
 		 lttoComms->sendPacket(DATA, playerInfo[1 + ((index-1)*8)].getRankingInGame());
@@ -306,9 +304,8 @@ qDebug() << "Step 2";
 		 lttoComms->sendPacket(DATA, playerInfo[8 + ((index-1)*8)].getRankingInGame());
 		 lttoComms->sendPacket(CHECKSUM);
 		 lttoComms->nonBlockingDelay(1250);
-qDebug() << "Step 3";
-        //reset index to 1 and exit if done 3x5 times
-		if (index == 3 && loopCount < 3)
+		//reset index to 1 and exit if done 3x3 times
+		if (index == 3 && loopCount < 2)
         {
             loopCount++;
 			index = 0;
