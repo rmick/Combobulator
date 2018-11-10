@@ -20,14 +20,14 @@ void SerialUSBcomms::findSerialPort()
     foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts())
     {
         qDebug() << "SerialUSBcomms::findSerialPort() - Found a port:" << info.portName();
-        if (info.manufacturer().contains("Spark") || info.manufacturer().contains("Arduino") || info.portName().contains("COM") )  //  || info.portName().contains("SLAB") )
+		if (info.manufacturer().contains("Spark") || info.manufacturer().contains("Arduino") || info.portName().contains("usbmodem") )  //  || info.portName().contains("SLAB") )
         {
             serialUSB->setPortName(info.portName() );
             emit SerialPortFound(info.portName() );
-        }
-        QString Rhubarb = "SerialUSBcomms::findSerialPort() - Using serial port " + info.portName();
-        qDebug() << "SerialUSBcomms::findSerialPort() - Using:" << info.portName();
-        emit AddToHostWindowListWidget(Rhubarb);
+			QString Rhubarb = "SerialUSBcomms::findSerialPort() - Using serial port " + info.portName();
+			qDebug() << "SerialUSBcomms::findSerialPort() - Using:" << info.portName();
+			emit AddToHostWindowListWidget(Rhubarb);
+		}
     }
 #endif
 }
