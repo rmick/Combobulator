@@ -362,7 +362,7 @@ bool DeBrief::decodeTeamAndPlayer(int teamAndPlayer)
 
 void DeBrief::calculateScores()
 {
-	for (int index = 1; index <= MAX_PLAYERS+1; index++)
+	for (int index = 1; index <= MAX_PLAYERS; index++)
     {
         int score = 0;
         score += playerInfo[index].getTotalTagsLanded(index)            * gameInfo.getPointsPerTagLanded();
