@@ -61,7 +61,7 @@ public:
     int         ConvertBCDtoDec(int bcd);
 
     bool        getSerialUSBcommsConnected() const;
-    void        setSerialUSBcommsConnected(bool value);
+//    void        setSerialUSBcommsConnected(bool value);
 
     bool        getUseLongDataPacketsOverTCP() const;
     void        setUseLongDataPacketsOverTCP(bool value);

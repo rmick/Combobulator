@@ -23,6 +23,12 @@ DeBrief::DeBrief(QObject *parent) : QObject(parent)
     maxTeamNum  = 0;
     deBriefTeam = 1;
 
+	//BUG	Team Debrief is not correct
+	//		No team info givem
+
+	//BUG	Debrief with 4 players is wrong, some players get ranked at 22
+	//		Have seen the same with just players 1+24
+
     switch (gameInfo.getNumberOfTeams())
     {
     case 0:
@@ -149,7 +155,7 @@ void DeBrief::ReceiveTagSummary(int game, int teamAndPlayer, int tagsTaken, int 
 
 	lttoComms->setDontAnnounceGame(true);
 
-	playerInfo[currentPlayer].setTagsTaken       (0, lttoComms->ConvertBCDtoDec(tagsTaken));  //Player 0 is global
+	playerInfo[currentPlayer].setTagsTaken		 (0, lttoComms->ConvertBCDtoDec(tagsTaken));  //Player 0 is global
 	playerInfo[currentPlayer].setSurvivalTimeMinutes(lttoComms->ConvertBCDtoDec(survivedMinutes));
 	playerInfo[currentPlayer].setSurvivalTimeSeconds(lttoComms->ConvertBCDtoDec(survivedSeconds));
 	playerInfo[currentPlayer].setZoneTimeMinutes    (lttoComms->ConvertBCDtoDec(zoneTimeMinutes));
@@ -356,7 +362,7 @@ bool DeBrief::decodeTeamAndPlayer(int teamAndPlayer)
 
 void DeBrief::calculateScores()
 {
-    for (int index = 1; index <= MAX_PLAYERS; index++)
+	for (int index = 1; index <= MAX_PLAYERS+1; index++)
     {
         int score = 0;
         score += playerInfo[index].getTotalTagsLanded(index)            * gameInfo.getPointsPerTagLanded();
@@ -422,6 +428,7 @@ void DeBrief::calculateRankings()
             if (playerInfo[playerToCompare].getGameScore() == scoreToCheck)
             {
                 playerInfo[playerToCompare].setRankingInGame(rankIndex);
+				qDebug() << "DeBrief::calculateRankings() 1224 -" << playerInfo[playerToCompare].getRankingInGame();
             }
         }
     }

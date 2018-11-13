@@ -211,9 +211,10 @@ void ScoresWindow::addPlayerRows()
 
 void ScoresWindow::populateScores(int modus)
 {
-    int columnIndex;
+	qDebug() << "ScoresWindow::populateScores(1=Summary, 2 = PlayerGrid :" << modus;
+	int columnIndex;
     int offsetForNonPlayers = 0;
-    for(int thisPlayer = 1; thisPlayer < 25; thisPlayer++)
+	for(int thisPlayer = 1; thisPlayer <= MAX_PLAYERS; thisPlayer++)
     {
         if (gameInfo.getIsThisPlayerInTheGame(thisPlayer) == true)
         {
@@ -230,7 +231,7 @@ void ScoresWindow::populateScores(int modus)
                 playerRanking[thisPlayer]->setFont(tableFont);
                 ui->scoreTable->setItem(thisRow, columnIndex++, playerRanking[thisPlayer]);
 
-                //Populate the SCores for each player
+				//Populate the Scores for each player
                 int playerScoring = playerInfo[thisPlayer].getGameScore();
                 playerScore[thisPlayer] = new QTableWidgetItem();
                 playerScore[thisPlayer]->setData(Qt::EditRole, playerScoring);
@@ -270,7 +271,7 @@ void ScoresWindow::populateScores(int modus)
             if (modus != SUMMARY_VIEW)
             {
                 //Populate hits and tags section of grid.
-                for (int index = 1; index < 25; index++)
+				for (int index = 1; index <= MAX_PLAYERS; index++)
                 {
                     if (gameInfo.getIsThisPlayerInTheGame(index) == true)
                     {

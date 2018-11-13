@@ -20,7 +20,9 @@ void SerialUSBcomms::findSerialPort()
     foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts())
     {
         qDebug() << "SerialUSBcomms::findSerialPort() - Found a port:" << info.portName();
-		if (info.manufacturer().contains("Spark") || info.manufacturer().contains("Arduino") || info.portName().contains("usbmodem") )  //  || info.portName().contains("SLAB") )
+		if (info.manufacturer().contains("Spark") || info.manufacturer().contains("Arduino")
+				|| info.portName().contains("usbmodem") || info.portName().contains("COM")
+				|| info.description().contains("freetronics") )
         {
             serialUSB->setPortName(info.portName() );
             emit SerialPortFound(info.portName() );

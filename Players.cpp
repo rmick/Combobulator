@@ -230,7 +230,7 @@ QString Players::getZoneTimeString() const
 int Players::getTotalTagsLanded(int thisPlayer) const
 {
     int totalTagsLanded = 0;
-    for (int index = 1; index < 25; index++)
+	for (int index = 1; index <= MAX_PLAYERS+1; index++)
     {
         if (thisPlayer != index)   //so that we dont count who we hit.
         {
@@ -242,11 +242,12 @@ int Players::getTotalTagsLanded(int thisPlayer) const
 
 QString Players::getHitsAndTags(int thisPlayer, int otherPlayer) const
 {
-    QString hitsAndTags = "-";
+	//qDebug() << "Players::getHitsAndTags() - thisPlayer=" << thisPlayer << "otherPlayer=" << otherPlayer;
+	QString hitsAndTags = "-";
     int tagsLanded = 0;
     int tagsTaken  = 0;
 
-    tagsLanded  = playerInfo[otherPlayer].getTagsTaken(thisPlayer);
+	tagsLanded  = playerInfo[otherPlayer].getTagsTaken(thisPlayer);
     tagsTaken   = playerInfo[thisPlayer].getTagsTaken(otherPlayer);
 
     if(thisPlayer != otherPlayer) hitsAndTags = QString::number(0-tagsTaken) + " / " + QString::number(tagsLanded);

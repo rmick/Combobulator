@@ -642,8 +642,9 @@ void HostGameWindow::closeHostGameWindow()
     ui->btn_Cancel->setEnabled(false);
 	setPromptText("Cancelling......");
 
-	if (sendingCommsActive == false) deleteLater();     //If this is true then the deleteLater is triggered at the end of hostCurrentPlayer(), to stop the app crashing.
+	//if (sendingCommsActive == false) deleteLater();     //If this is true then the deleteLater is triggered at the end of hostCurrentPlayer(), to stop the app crashing.
 	emit closingHostGameWindow();
+	deleteLater();
 }
 
 int HostGameWindow::getCurrentPlayer() const

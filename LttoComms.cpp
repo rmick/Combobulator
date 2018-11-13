@@ -475,7 +475,7 @@ void LttoComms::closePorts()
 	tcpComms->DisconnectTCP();
 	serialUSBcomms->closeSerialPort();
 	setTcpCommsConnected(false);
-	setSerialUSBcommsConnected(false);
+	//setSerialUSBcommsConnected(false);
 }
 
 bool LttoComms::getSerialUSBcommsConnected() const
@@ -484,10 +484,10 @@ bool LttoComms::getSerialUSBcommsConnected() const
 	//return serialUSBcommsConnected;
 }
 
-void LttoComms::setSerialUSBcommsConnected(bool value)
-{
-    serialUSBcommsConnected = value;
-}
+//void LttoComms::setSerialUSBcommsConnected(bool value)
+//{
+//    serialUSBcommsConnected = value;
+//}
 
 bool LttoComms::getDontAnnounceFailedSignal() const
 {

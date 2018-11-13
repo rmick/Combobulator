@@ -23,7 +23,6 @@ SOURCES +=  \
     Players.cpp \
     HostGameWindow.cpp \
     LazerSwarm.cpp \
-    PortConnect.cpp \
     TCPComms.cpp \
     LttoMainWindow.cpp \
     LttoComms.cpp \
@@ -49,7 +48,6 @@ HEADERS  += \
     Players.h \
     HostGameWindow.h \
     LazerSwarm.h \
-    PortConnect.h \
     TCPComms.h \
     Defines.h \
     LttoMainWindow.h \
@@ -67,7 +65,8 @@ HEADERS  += \
     FileLoadSave.h \
     OtaWindow.h \
     SettingsWindow.h \
-    Logger.h
+    Logger.h \
+    Bugs.h
 
 
 FORMS    += \

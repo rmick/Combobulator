@@ -28,7 +28,7 @@ public:
     void        initialiseUSBsignalsAndSlots();
 
     bool        getIsUSBinitialised() const;
-    void        setIsUSBinitialised(bool value);
+	void        setIsUSBinitialised(bool value);
 
 signals:
     void        SerialPortFound(QString portDetails);

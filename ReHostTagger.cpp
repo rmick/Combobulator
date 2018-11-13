@@ -11,8 +11,10 @@ ReHostTagger::ReHostTagger(QWidget *parent) :
 {
     ui->setupUi(this);
     signalMapper = new QSignalMapper(this);
+	lttoComms	 = LttoComms::getInstance();
     MapPlayerButtons();
     SetActivePlayers();
+
 }
 
 ReHostTagger::~ReHostTagger()
@@ -79,7 +81,10 @@ void ReHostTagger::SetActivePlayers()
 void ReHostTagger::playerButtonPressed(int playerNumber)
 {
     qDebug() << "Rehosting Player " << playerNumber;
-    ui->label->setText("Rehosting Player " + QString::number(playerNumber) + " - Please standby.");
+	ui->label->setText("Rehosting Player " + playerInfo[playerNumber].getPlayerName() + " - Please standby.");
+	lttoComms->sendLCDtext("Re-Hosting"                             , 1, false);
+	lttoComms->sendLCDtext(playerInfo[playerNumber].getPlayerName() , 2, false);
+
     gameInfo.setPlayerToReHost(playerNumber);
     deleteLater();
 }

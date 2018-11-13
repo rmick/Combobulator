@@ -30,8 +30,7 @@ private:
     Ui::ReHostTagger        *ui;
     QSignalMapper           *signalMapper;
     QVector <QPushButton*>   playerButtons;
-
-	//LttoComms lttoComms;
+	LttoComms				*lttoComms;
 
     bool    closedWithoutSelectingPlayer;
 
