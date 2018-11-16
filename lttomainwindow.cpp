@@ -1027,6 +1027,13 @@ void LttoMainWindow::on_actionOutdoorMode_triggered()
 
 void LttoMainWindow::on_btn_Debug_clicked()
 {
+	if(!scoresWindow) scoresWindow = new ScoresWindow(this);
+	else qDebug() << "Idiot!";
+	scoresWindow->showFullScreen();
+
+return;
+
+
 	qDebug() << "LttoMainWindow::on_btn_Debug_clicked()";
 	//int foundCount;
 	QNetworkConfiguration netcfg;

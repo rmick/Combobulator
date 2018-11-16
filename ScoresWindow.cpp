@@ -14,7 +14,9 @@ ScoresWindow::ScoresWindow(QWidget *parent) :
 
     ui->scoreTable->setSortingEnabled(false);
     ui->btn_ViewMode->setText("Player Grid View");
-    displayMode = SUMMARY_VIEW;
+	ui->btn_NameNumberMode->setVisible(false);
+	//ui->btn_NameNumberMode->setText("<html><head><body><p><span style=font-size:9pt;>Scott E's secret button Shhh!</span></p></body></html>");
+	displayMode = SUMMARY_VIEW;
     calibrateScreen(SUMMARY_VIEW);
     addColumnLabels(SUMMARY_VIEW);
     addPlayerRows();
@@ -172,8 +174,14 @@ void ScoresWindow::addColumnLabels(int modus)
         {
             if(gameInfo.getIsThisPlayerInTheGame(index) == true)
             {
-				//ui->scoreTable->setHorizontalHeaderItem(columnIndex++, new QTableWidgetItem(playerInfo[index].getPlayerName()));
-				ui->scoreTable->setHorizontalHeaderItem(columnIndex++, new QTableWidgetItem(QString::number(index)));
+				if(playerNameDisplayInsteadOfNumber)
+				{
+					ui->scoreTable->setHorizontalHeaderItem(columnIndex++, new QTableWidgetItem(playerInfo[index].getPlayerName()));
+				}
+				else
+				{
+					ui->scoreTable->setHorizontalHeaderItem(columnIndex++, new QTableWidgetItem(QString::number(index)));
+				}
                 ui->scoreTable->setColumnWidth(columnIndex-1, columnWidth);
             }
             else offsetForNonPlayers++;
@@ -310,6 +318,7 @@ void ScoresWindow::on_btn_ViewMode_clicked()
         setOrder(SUMMARY_VIEW);
         displayMode = SUMMARY_VIEW;
         ui->btn_ViewMode->setText("Player Grid View");
+		ui->btn_NameNumberMode->setVisible(false);
     }
     else
     {
@@ -321,5 +330,18 @@ void ScoresWindow::on_btn_ViewMode_clicked()
         setOrder(PLAYER_GRID_VIEW);
         displayMode = PLAYER_GRID_VIEW;
         ui->btn_ViewMode->setText("Summary View");
+		ui->btn_NameNumberMode->setVisible(true);
     }
+}
+
+void ScoresWindow::on_btn_NameNumberMode_clicked()
+{
+	//playerNameDisplayInsteadOfNumber = !playerNameDisplayInsteadOfNumber;
+	if(ui->btn_NameNumberMode->isChecked()) playerNameDisplayInsteadOfNumber = true;
+	else playerNameDisplayInsteadOfNumber = false;
+	qDebug() << "ScoresWindow::on_btn_NameNumberMode_clicked()" << playerNameDisplayInsteadOfNumber;
+	//redraw the display without changing the mode :-)
+	if		(displayMode == PLAYER_GRID_VIEW) displayMode = SUMMARY_VIEW;
+	else if	(displayMode == SUMMARY_VIEW)	  displayMode = PLAYER_GRID_VIEW;
+	emit on_btn_ViewMode_clicked();
 }

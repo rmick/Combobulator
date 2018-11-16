@@ -230,13 +230,14 @@ QString Players::getZoneTimeString() const
 int Players::getTotalTagsLanded(int thisPlayer) const
 {
     int totalTagsLanded = 0;
-	for (int index = 1; index <= MAX_PLAYERS+1; index++)
+	for (int index = 1; index <= MAX_PLAYERS; index++)
     {
-        if (thisPlayer != index)   //so that we dont count who we hit.
+		if (thisPlayer != index)   //so that we dont count who hit us.
         {
             totalTagsLanded += playerInfo[index].getTagsTaken(thisPlayer);
         }
     }
+	qDebug() << "Players::getTotalTagsLanded() - Total Hits Taken =" << totalTagsLanded;
     return totalTagsLanded;
 }
 

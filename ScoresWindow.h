@@ -35,6 +35,8 @@ private slots:
 
 	void sendRankReports();
 
+	void on_btn_NameNumberMode_clicked();
+
 private:
     Ui::ScoresWindow *ui;
 
@@ -64,6 +66,7 @@ private:
     int               rowHeight;
     int               columnWidth;
     int               displayMode;
+	bool			  playerNameDisplayInsteadOfNumber;
 
     const int         COLUMNS_IN_SUMMARY = 8;
 };

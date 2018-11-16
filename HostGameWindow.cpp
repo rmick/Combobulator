@@ -537,11 +537,16 @@ void HostGameWindow::sendAssignFailedMessage()
 
 		//Manually add the player to the game (a kludge, but do it for now)
 		//TODO: Hmmmm. Fix this kludge
-		AddPlayerToGame(gameInfo.getGameID(), lttoComms->getCurrentTaggerBeingHosted(), gameInfo.getIsLTARGame() );
-		qDebug() << "----------------------------------------------";
-		qDebug() << "DANGER WILL ROBINSON - PLAYER FORCED INTO GAME";
-		qDebug() << "----------------------------------------------";
-		InsertToListWidget ("No Tagger Ack recvd - PLAYER FORCED INTO GAME!" );
+		//Seems to completely break LTAR hosting, so bypass to see if it helps
+		if(gameInfo.getIsLTARGame() != true)
+		{
+			AddPlayerToGame(gameInfo.getGameID(), lttoComms->getCurrentTaggerBeingHosted(), gameInfo.getIsLTARGame() );
+			qDebug() << "----------------------------------------------";
+			qDebug() << "DANGER WILL ROBINSON - PLAYER FORCED INTO GAME";
+			qDebug() << "----------------------------------------------";
+			InsertToListWidget ("No Tagger Ack recvd - PLAYER FORCED INTO GAME!" );
+		}
+
 
         if (closingWindow) deleteLater();   // Delete the window, as the cancel button has been pressed.
     }
