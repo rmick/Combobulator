@@ -137,7 +137,7 @@ void HostGameWindow::announceGame()
 	if (lttoComms->checkIPaddress() != true && lttoComms->getSerialUSBcommsConnected() != true)
 	{
 		ui->led_Status->setStyleSheet(myStyleSheet.getRedButtonCss());
-		qDebug() << "HostGameWindow::announceGame() - checkIPaddress failed.";
+		//qDebug() << "HostGameWindow::announceGame() - checkIPaddress failed.";
 		setPromptText("Connect WiFi to Combobulator");
 		setNextPlayerText("Password = Lasertag42");
 		return;
@@ -182,21 +182,21 @@ void HostGameWindow::announceGame()
 
 	if (currentPlayer > 16 && gameInfo.getNumberOfTeams() == 2)          // Ignore players in Team 3
 	{
-		currentPlayer = 25;
-		nextPlayer	  = 25;
+		currentPlayer = MAX_PLAYERS + 1;
+		nextPlayer	  = MAX_PLAYERS + 1;
 	}
 
-    if (currentPlayer >24)                                                                  // No more players to add
+	if (currentPlayer > MAX_PLAYERS)                                                                  // No more players to add
     {
         //TODO: Check if I need a 1.5 sec delay OR an additional AnnounceGame packet???
         // Wait 2.0 seconds, so that the last hosted players gets at least one more AnnounceGame Packet,
         // otherwise they will not respond to the countdown time (can fail to start game if countdown < 8 sec)
-		//lttoComms->nonBlockingDelay(2000);
+		lttoComms->nonBlockingDelay(1000);
 
-        currentPlayer = 0;                                                                  //Transmits global game data to keep guns sync'd
+		currentPlayer = 0;                                 //Transmits global game data to keep guns sync'd
         // The last tagger that was hosted must see at least one more announce game packet to sync, otherwise they can miss a short countdown.
         hostCurrentPlayer();
-
+		qDebug() << "HostGameWindow::announceGame() - All players Hosted";
 		ui->label_Prompt->setText("<html><head/><body><p><span style= font-size:64pt; font-weight:600;>All players are hosted, press START ");
 		lttoComms->sendLCDtext("All"            , 1, false);
 		lttoComms->sendLCDtext("hosted"         , 2, false);
@@ -442,6 +442,7 @@ void HostGameWindow::AddPlayerToGame(int Game, int Tagger, bool isLtar)
     if(isLtar)
     {
         qDebug() << "\t\tHostGameWindow::AddPlayerToGame() - LTAR MODE " << endl;
+		InsertToListWidget ("HostGameWindow::AddPlayerToGame() - LTAR MODE");
 		lttoComms->sendPacket(PACKET, ASSIGN_LTAR_PLAYER_OK);
 		lttoComms->sendPacket(DATA,   gameInfo.getGameID());
 		lttoComms->sendPacket(DATA,    calculatePlayerTeam5bits(0) );
@@ -482,7 +483,6 @@ void HostGameWindow::AddPlayerToGame(int Game, int Tagger, bool isLtar)
 
 	lttoComms->setDontAnnounceGame(false);
 	lttoComms->setDontAnnounceFailedSignal(false);
-    qDebug() << "\t\tHostGameWindow::AddPlayerToGame() - setDontAnnounce x2 = false";
     if (closingWindow) deleteLater();   // Delete the window, as the cancel button has been pressed.
 }
 
@@ -508,6 +508,7 @@ void HostGameWindow::sendAssignFailedMessage()
 		sound_HostingMissedReply->play();
 
         qDebug() << "HostGameWindow::sendAssignFailedMessage()  - Sending # " << assignPlayerFailCount;
+		InsertToListWidget ("HostGameWindow::sendAssignFailedMessage()  - Sending # " + QString::number(assignPlayerFailCount));
 
 		lttoComms->sendLCDtext("Attn"                                      , 1, false);
 		lttoComms->sendLCDtext(playerInfo[currentPlayer].getPlayerName()   , 2,  true);
@@ -523,6 +524,7 @@ void HostGameWindow::sendAssignFailedMessage()
     }
 
     qDebug() << "HostGameWindow::sendAssignFailedMessage() - looping";
+	InsertToListWidget ("HostGameWindow::sendAssignFailedMessage() - looping");
 
     if (assignPlayerFailCount >= 5)   //give up and start again
     {
@@ -717,7 +719,7 @@ void HostGameWindow::sendCountDown()
 			remainingGameTime = (lttoComms->ConvertBCDtoDec(gameInfo.getGameLength()) * 60) + 2;  // Add a couple of seconds to match the taggers, who start the clock AFTER the Good Luck message.
             InsertToListWidget("Game has started !!!");
 			setPromptText("Game Underway !!!");
-            timerBeacon->start(BEACON_TIMER_MSEC);
+			timerBeacon->start(BEACON_TIMER_MSEC);
         }
         else
         {
@@ -763,7 +765,7 @@ void HostGameWindow::sendCountDown()
 
         InsertToListWidget("CountDownTime = " + QString::number(countDownTimeRemaining));
 		setPromptText("CountDownTime\n\n" + QString::number(countDownTimeRemaining));
-        qDebug() << "CountDownTime = " + QString::number(countDownTimeRemaining);
+		//qDebug() << "CountDownTime = " + QString::number(countDownTimeRemaining);
         countDownTimeRemaining--;
     }
 }
@@ -1071,7 +1073,12 @@ void HostGameWindow::on_showLog_clicked()
 
 void HostGameWindow::UpdateBatteryDisplay(QString volts)
 {
-	qDebug() << "HostGameWindow::UpdateBatteryDisplay() - " << volts.toFloat();
+	//qDebug() << "HostGameWindow::UpdateBatteryDisplay() - " << volts.toFloat();
+	if (volts.length() > 5)
+	{
+		qDebug() << "\t***** HostGameWindow::UpdateBatteryDisplay() FAULT !!!!!!! -" << volts;
+		return;
+	}
 	if(volts.toFloat() < LOW_BATT_LEVEL)
 	{
 		//ui->label_BattVolts->setText("<html><span style = font-size:18pt; color:#FF0000>Low Battery = " + volts + "v </span></html>");

@@ -62,9 +62,8 @@ void LttoComms::initialise()
 bool LttoComms::getConnectionStatus()
 {
 	bool status = false;
-	if (getTcpCommsConnected() == true	|| serialUSBcomms->getSerialCommsConnected() == true) status = true;
-	if (tcpComms->checkIPaddress()		&& serialUSBcomms->getSerialCommsConnected() != true) status = false;
-	qDebug() << "NB. Having ESP connected via USB breaks this code";
+	if (getTcpCommsConnected() == true	   || serialUSBcomms->getSerialCommsConnected() == true) status = true;
+	if (tcpComms->checkIPaddress() != true && serialUSBcomms->getSerialCommsConnected() != true) status = false;
 	return status;
 }
 
@@ -162,7 +161,8 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
             packet.append(" \r\n");
             emit sendSerialData(packet);
             #ifdef LOCAL_DEBUG_TX
-                qDebug() << "lttoComms::sendPacket() - WIFIKIT32 - Full Packet = " << packet;
+				if(packet.contains("P02") || packet.contains("P129")) qDebug() << "lttoComms::sendPacket()";
+					else	qDebug() << "lttoComms::sendPacket() - Full Packet = " << packet;
             #endif
             fullTCPpacketToSend = false;
             packet.clear();
@@ -317,8 +317,8 @@ void LttoComms::receivePacket(QByteArray RxData)
 
         else if (irDataIn.startsWith("STOP"))
         {
-            setDontAnnounceGame(true);
-			qDebug() << "\tLttoComms::receivePacket() - STOP";
+			setDontAnnounceGame(true);
+//qDebug() << "\tLttoComms::receivePacket() - STOP";
             irDataIn.clear();
             return;
         }
@@ -359,7 +359,7 @@ void LttoComms::receivePacket(QByteArray RxData)
 		else if (irDataIn.startsWith("BATT"))
 		{
 			emit BattVoltsReceived(irDataIn.remove(0,5));
-			qDebug() << "LttoComms::receivePacket - Battery Volts: " << irDataIn;
+			//qDebug() << "LttoComms::receivePacket - Battery Volts: " << irDataIn;
 			irDataIn.clear();
 			return;
 		}
@@ -418,7 +418,7 @@ void LttoComms::receivePacket(QByteArray RxData)
             irDataIn="";
         }
 
-		qDebug() << "LttoComms::receivePacket() - Done";
+		//qDebug() << "LttoComms::receivePacket() - Done";
     }
 
     if (isPacketComplete)
@@ -642,7 +642,7 @@ void LttoComms::processPacket(QList<QByteArray> data)
         checksum = extract(data);
 		if(currentTaggerBeingHosted != tagger && currentTaggerBeingHosted != 0)
 		{
-			qDebug() << "LttoComms::processPacket - **** Tagger ID mis-match  **** Dumping packet";
+			qDebug() << "\tLttoComms::processPacket - **** Tagger ID mis-match  **** Dumping packet";
 			static int failCount = 0;
 			if (failCount++ > 5) currentTaggerBeingHosted = 0; //reset in case a tagger died mid-hosting.
 			break;  // to stop contention when two taggers respond.
@@ -651,15 +651,15 @@ void LttoComms::processPacket(QList<QByteArray> data)
         //else                                                            setDontAnnounceGame(false);
         break;
 
-    case REQUEST_JOIN_LTAR_GAME:
+	case REQUEST_JOIN_LTAR_GAME:	//P129
         game            = extract(data);
         tagger          = extract(data);
         taggerInfo      = extract(data);
         smartDeviceInfo = extract(data);
         checksum        = extract(data);
 
-		qDebug() << "\nLttoComms::processPacket() -  case REQUEST_JOIN_LTAR_GAME:";
-		qDebug() << game << tagger << taggerInfo << smartDeviceInfo << checksum << " : " << CHECKSUM << endl;
+		qDebug() << "\tLttoComms::processPacket() -  case REQUEST_JOIN_LTAR_GAME:";
+		qDebug() << "\tData:" << game << tagger << taggerInfo << smartDeviceInfo << checksum << " : " << CHECKSUM << endl;
 
         //TODO: Fix the Checksum that is not working - posibly due to DEC not BCD ??
 		//if(isCheckSumCorrect(command, game, tagger, taggerInfo, smartDeviceInfo, checksum)) emit RequestJoinGame(game, tagger, 0, true);
@@ -675,7 +675,7 @@ void LttoComms::processPacket(QList<QByteArray> data)
         else                                                            setDontAnnounceFailedSignal(true);
         break;
 
-    case ACK_LTAR_PLAYER_ASSIGN:
+	case ACK_LTAR_PLAYER_ASSIGN:	//P132
         game     = extract(data);
         tagger   = extract(data);
         checksum = extract(data);
@@ -751,6 +751,10 @@ void LttoComms::processPacket(QList<QByteArray> data)
 		//setDontAnnounceGame(false);
 		break;
 
+	case LTAR_BEACON:
+		qDebug() << "LttoComms::processPacket() - LTAR BEACON !";
+		break;
+
     case TAG:
 		qDebug() << "LttoComms::processPacket() - TAG !";
 		//setDontAnnounceGame(false);
@@ -760,9 +764,13 @@ void LttoComms::processPacket(QList<QByteArray> data)
 		qDebug() << "LttoComms::processPacket() - Dumping P50 !";
 		break;
 
+	case 02:	//Somehow we are seeing our own hosting messages
+		qDebug() << "LttoComms::processPacket() - P02 packet error - P" << command << data;
+		break;
+
     default:
         //We end up here if the ESP32 misses the Packet Header
-		qDebug() << "LttoComms::processPacket() - ESP32 missed the packet header again:" << command << data;
+		qDebug() << "LttoComms::processPacket() - ESP32 missed the packet header again:" << command; // << data;
         break;
 
     }

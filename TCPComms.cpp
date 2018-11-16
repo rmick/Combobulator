@@ -85,7 +85,7 @@ bool TCPComms::checkIPaddress()
 			//qDebug() << "TCPComms::checkIPaddress() - " << thisIP;
 			if(thisIP.startsWith("192.168.42"))
 			{
-				qDebug() << "TCPComms::checkIPaddress() - We have a Combobulator ";
+				//qDebug() << "TCPComms::checkIPaddress() - We have a Combobulator ";
 				result = true;
 			}
 		 }

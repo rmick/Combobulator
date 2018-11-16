@@ -105,7 +105,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Scott E's secret button</string>
+      <string>Show Names as Headers</string>
      </property>
      <property name="checkable">
       <bool>true</bool>

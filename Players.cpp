@@ -237,7 +237,7 @@ int Players::getTotalTagsLanded(int thisPlayer) const
             totalTagsLanded += playerInfo[index].getTagsTaken(thisPlayer);
         }
     }
-	qDebug() << "Players::getTotalTagsLanded() - Total Hits Taken =" << totalTagsLanded;
+	//qDebug() << "Players::getTotalTagsLanded() - Player" << &index << "\tTotal Hits Taken =" << totalTagsLanded;
     return totalTagsLanded;
 }
 

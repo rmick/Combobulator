@@ -276,10 +276,14 @@ void DeBrief::sendRankReport()
     //There are 3 rankReport messages, for players 1-8, 9-1, 17-24
 	for (int index = 1; index <= 3; index++)
     {
-         qDebug() << "DeBrief::sendRankReport() - Loop" << loopCount << "\tTeam:" << index;
+		 if		(index == 1) qDebug() << "DeBrief::sendRankReport() - Loop" << loopCount << "\tTeam:" << index << "\tRank:" << gameInfo.getTeam1rank();
+		 else if(index == 2) qDebug() << "DeBrief::sendRankReport() - Loop" << loopCount << "\tTeam:" << index << "\tRank:" << gameInfo.getTeam2rank();
+		 else if(index == 3) qDebug() << "DeBrief::sendRankReport() - Loop" << loopCount << "\tTeam:" << index << "\tRank:" << gameInfo.getTeam3rank();
+		 else				 qDebug() << "DeBrief::sendRankReport() - Loop - Sacre Bleu - How did we get here ????";
 
-         //Set the TeamPlayerByte
-         teamPlayerByte = index << 4;
+		 //Set the TeamPlayerByte
+		 if(gameInfo.getIsLTARGame())	teamPlayerByte = index << 3;
+		 else							teamPlayerByte = index << 4;
 
          //Add TeamRanks for non solo games only.
          if(gameInfo.getNumberOfTeams() != 0)
@@ -429,7 +433,6 @@ void DeBrief::calculateRankings()
             if (playerInfo[playerToCompare].getGameScore() == scoreToCheck)
             {
                 playerInfo[playerToCompare].setRankingInGame(rankIndex);
-				qDebug() << "DeBrief::calculateRankings() 1224 -" << playerInfo[playerToCompare].getRankingInGame();
             }
         }
     }
