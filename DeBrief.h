@@ -49,6 +49,7 @@ private:
 	bool		isPlayerDeBriefed;          // set true when player has replied to all mesage requests.
 	bool		awaitingDeBriefPackets;     // Set true when a RequestDebrief message is sent. Cancelled after 3 seconds.
 	int			timeOutCount;               // Used to count 3 seconds for above.....
+	int			currentTeamAndPlayerByte;	// The TeamAndPlayerByte of the current player. Generating in RequesTeamTagSummary and used in isPlayerDebriefed for LTAR mode.
 
 	bool		isTeam1TagReportDue;        // this player has been tagged by someone in Team 1 and needs to tell us about it.
 	bool		isTeam2TagReportDue;        // this player has been tagged by someone in Team 2 and needs to tell us about it.

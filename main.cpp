@@ -38,12 +38,11 @@ void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QS
 
 	//Send to Log file
 	QString filePath = QStandardPaths::standardLocations( QStandardPaths::AppDataLocation ).value(0);
-	//qDebug() << "FilePath =" << filePath;
+	filePath = QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).value(0);
+	qDebug() << "FilePath =" << filePath;
 	QDir thisDir;
-	//thisDir.setPath(filePath);
-thisDir.setPath("user/Richie/Desktop");
-	//if (!thisDir.exists()) thisDir.mkpath(filePath);
-	QDir::setCurrent("users/Richie/Desktop");
+	thisDir.setPath(filePath);
+	//QDir::setCurrent(thisDir);
 	QFile outFile("Combobulator_Log.txt");
 	bool good = outFile.open(QIODevice::WriteOnly | QIODevice::Append);
 	if(good)

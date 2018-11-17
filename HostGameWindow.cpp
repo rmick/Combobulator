@@ -228,7 +228,7 @@ void HostGameWindow::hostCurrentPlayer()
 
 		qDebug() << "HostGameWindow::hostCurrentPlayer() - DontAnnouceGame is active. Count = " << lttoComms->getMissedAnnounceCount();
 
-		if (lttoComms->getMissedAnnounceCount() < 3) return;
+		if (lttoComms->getMissedAnnounceCount() < 5) return;
 
         if (expectingAckPlayerAssignment == true)                                           // We appear to have missed the AckPlayerAssignment message.
         {
@@ -717,8 +717,8 @@ void HostGameWindow::sendCountDown()
         {
             timerGameTimeRemaining->start(1000);
 			remainingGameTime = (lttoComms->ConvertBCDtoDec(gameInfo.getGameLength()) * 60) + 2;  // Add a couple of seconds to match the taggers, who start the clock AFTER the Good Luck message.
-            InsertToListWidget("Game has started !!!");
-			setPromptText("Game Underway !!!");
+			InsertToListWidget("Game commencing !!!");
+			setPromptText("Game Commencing !!!");
 			timerBeacon->start(BEACON_TIMER_MSEC);
         }
         else

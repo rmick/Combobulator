@@ -132,7 +132,7 @@ void DeBrief::RequestTagReports()
 	lttoComms->sendPacket(DATA, deBriefMessageType);
 	lttoComms->sendPacket(CHECKSUM);
 
-
+	currentTeamAndPlayerByte = teamAndPlayerByte;
 }
 
 void DeBrief::ReceiveTagSummary(int game, int teamAndPlayer, int tagsTaken, int survivedMinutes, int survivedSeconds, int zoneTimeMinutes, int zoneTimeSeconds, int flags)
@@ -265,7 +265,7 @@ void DeBrief::Team3TagReportReceived(int game, int teamAndPlayer, int tagsP1, in
 
 void DeBrief::sendRankReport()
 {
-    qDebug() << "DeBrief::sendRankReport()";
+	qDebug() << "DeBrief::sendRankReport()";
     int teamPlayerByte  = 0;
     int loopCount       = 1;
 
@@ -284,6 +284,7 @@ void DeBrief::sendRankReport()
 		 //Set the TeamPlayerByte
 		 if(gameInfo.getIsLTARGame())	teamPlayerByte = index << 3;
 		 else							teamPlayerByte = index << 4;
+		 qDebug() << "DeBrief::sendRankReport() - TeamPlayerByte =" << teamPlayerByte;
 
          //Add TeamRanks for non solo games only.
          if(gameInfo.getNumberOfTeams() != 0)
@@ -500,7 +501,7 @@ void DeBrief::prepareNewPlayerToDebrief(int playerToDebrief)
 
 bool DeBrief::checkIfPlayerIsDebriefed()
 {
-    //qDebug() << "DeBrief::checkIfPlayerIsDebriefed()";
+	qDebug() << "DeBrief::checkIfPlayerIsDebriefed()";
     bool isTeam1ok      = false;
     bool isTeam2ok      = false;
     bool isTeam3ok      = false;
@@ -519,9 +520,17 @@ bool DeBrief::checkIfPlayerIsDebriefed()
         // if all 3 teams are ok then player is debriefed
         if(isTeam1ok && isTeam2ok && isTeam3ok)
         {
-            setIsPlayerDeBriefed(true);
+			if(gameInfo.getIsLTARGame())
+			{
+				qDebug() << "DeBrief::checkIfPlayerIsDebriefed() - LTAR_RELEASE:" << gameInfo.getGameID() << currentTeamAndPlayerByte;
+				lttoComms->sendPacket(PACKET, ASSIGN_LTAR_PLAYER_OK);
+				lttoComms->sendPacket(DATA, gameInfo.getGameID());
+				lttoComms->sendPacket(DATA, currentTeamAndPlayerByte);
+				lttoComms->sendPacket(CHECKSUM, 0);
+			}
+			setIsPlayerDeBriefed(true);
             deBriefMessageType = REQUEST_ALL_DEBRIEF_BITS;
-            qDebug() << "---------------------" << endl;
+			qDebug() << "\t---------------------" << endl;
 			lttoComms->setDontAnnounceGame(false);
             result = true;
         }
