@@ -379,7 +379,7 @@ void HostGameWindow::hostCurrentPlayer()
 void HostGameWindow::AssignPlayer(int Game, int Tagger, int Flags, bool isLtar)
 
 {
-	if(currentPlayer > 24 || currentPlayer == 0)  //All taggers have been hosted, so ignore any new requests.
+	if(currentPlayer > MAX_PLAYERS || currentPlayer == 0)  //All taggers have been hosted, so ignore any new requests.
     {
 		lttoComms->setDontAnnounceGame(false);
         return;
@@ -428,11 +428,11 @@ void HostGameWindow::AddPlayerToGame(int Game, int Tagger, bool isLtar)
 {
 	if(gameInfo.getGameID() != Game || playerInfo[currentPlayer].getTaggerID() != Tagger)
 	{
-		qDebug() << "\t\tHostGameWindow::AddPlayerToGame() - GameID or TaggerID mismatched !!!!!!   ERROR";
+		qDebug() << "\t\tHostGameWindow::AddPlayerToGame() - GameID or TaggerID mismatched !!!!!!   ERROR" << Game << gameInfo.getGameID() << ":" << Tagger << playerInfo[currentPlayer].getTaggerID();
+		lttoComms->setDontAnnounceGame(false);
 		return;
 	}
 
-	lttoComms->setCurrentTaggerBeingHosted(0);
 	sound_PlayerAdded->play();
 
 	lttoComms->sendLCDtext(playerInfo[currentPlayer].getPlayerName() , 1, false);
@@ -441,21 +441,25 @@ void HostGameWindow::AddPlayerToGame(int Game, int Tagger, bool isLtar)
 
     if(isLtar)
     {
-        qDebug() << "\t\tHostGameWindow::AddPlayerToGame() - LTAR MODE " << endl;
+		qDebug() << "\t\tHostGameWindow::AddPlayerToGame() - LTAR MODE " << endl;
 		InsertToListWidget ("HostGameWindow::AddPlayerToGame() - LTAR MODE");
+		//Send LTAR_RELEASE message.
 		lttoComms->sendPacket(PACKET, ASSIGN_LTAR_PLAYER_OK);
 		lttoComms->sendPacket(DATA,   gameInfo.getGameID());
-		lttoComms->sendPacket(DATA,    calculatePlayerTeam5bits(0) );
+		lttoComms->sendPacket(DATA,   calculatePlayerTeam5bits(0) );
 		lttoComms->sendPacket(CHECKSUM);
+		expectingLtarAssignSuccess = true;
     }
     else
     {
-        qDebug() << "\t\tHostGameWindow::AddPlayerToGame()" << currentPlayer << endl;
+		qDebug() << "\t\tHostGameWindow::AddPlayerToGame()" << currentPlayer << endl;
     }
 
 
     InsertToListWidget("   AddPlayerToGame()" + QString::number(currentPlayer));
-    isThisPlayerHosted[currentPlayer] = true;
+	lttoComms->setCurrentTaggerBeingHosted(0);
+	//lttoComms->setDontAnnounceGame(false);
+	isThisPlayerHosted[currentPlayer] = true;
     expectingAckPlayerAssignment = false;
     timerAssignFailed->stop();
 
@@ -507,7 +511,7 @@ void HostGameWindow::sendAssignFailedMessage()
 		lttoComms->setDontAnnounceGame(true);
 		sound_HostingMissedReply->play();
 
-        qDebug() << "HostGameWindow::sendAssignFailedMessage()  - Sending # " << assignPlayerFailCount;
+		//qDebug() << "HostGameWindow::sendAssignFailedMessage()  - Sending # " << assignPlayerFailCount;
 		InsertToListWidget ("HostGameWindow::sendAssignFailedMessage()  - Sending # " + QString::number(assignPlayerFailCount));
 
 		lttoComms->sendLCDtext("Attn"                                      , 1, false);
@@ -523,7 +527,7 @@ void HostGameWindow::sendAssignFailedMessage()
 		lttoComms->sendPacket(CHECKSUM                                        );
     }
 
-    qDebug() << "HostGameWindow::sendAssignFailedMessage() - looping";
+	//qDebug() << "HostGameWindow::sendAssignFailedMessage() - looping";
 	InsertToListWidget ("HostGameWindow::sendAssignFailedMessage() - looping");
 
     if (assignPlayerFailCount >= 5)   //give up and start again
@@ -535,7 +539,7 @@ void HostGameWindow::sendAssignFailedMessage()
 		lttoComms->setDontAnnounceFailedSignal(false);
         expectingAckPlayerAssignment = false;
         assignPlayerFailCount = 0;
-        qDebug() <<"HostGameWindow::sendAssignFailedMessage() - Counted to 5, I am now going away";
+		qDebug() <<"HostGameWindow::sendAssignFailedMessage() - Counted to 5, I am going away now";
 
 		//Manually add the player to the game (a kludge, but do it for now)
 		//TODO: Hmmmm. Fix this kludge
@@ -563,7 +567,7 @@ int HostGameWindow::calculatePlayerTeam5bits(int requestedTeam)
 
     if(requestedTeam != 0)
     {
-        qDebug() << "HostGameWindow::calculatePlayerTeam5bit() - Requested Team = " << requestedTeam;
+		//qDebug() << "HostGameWindow::calculatePlayerTeam5bit() - Requested Team = " << requestedTeam;
         // Do I use this or not?
         // Best not to, otherwise the announcement to Host T1, P1 might actually join T3,P1.
     }
@@ -586,7 +590,10 @@ int HostGameWindow::calculatePlayerTeam5bits(int requestedTeam)
        //assign Teams (and swap if a spy)
 	   assignedTeamNumber = host->assignTeamsAndSwapIfSpy(currentPlayer);
     }
-    playerTeam5bits = (assignedTeamNumber) << 3;
+	//BUG: Is this right or wrong????
+	//if(gameInfo.getIsLTARGame())	playerTeam5bits = (assignedTeamNumber) << 4;
+	//else							playerTeam5bits = (assignedTeamNumber) << 3;
+	playerTeam5bits = (assignedTeamNumber) << 3;
 
     //Check if this player is a spy and deal with it.
     if (playerInfo[currentPlayer].getSpyNumber() == 0)                      // Not a Spy
@@ -608,11 +615,11 @@ int HostGameWindow::calculatePlayerTeam5bits(int requestedTeam)
     playerTeam5bits += assignedPlayerNumber;
 
     //debug only
-    int spyPlayerNumber = (assignedPlayerNumber + (8 * (assignedTeamNumber-1)) + 1);
-    qDebug() << "   HostGameWindow::calculatePlayerTeam5bits() - Current Player = " << currentPlayer;;
-    qDebug() << "   HostGameWindow::calculatePlayerTeam5bits() - Spy Player =     " << spyPlayerNumber << "\t- Team:" << assignedTeamNumber << ", Player:" << assignedPlayerNumber+1 << ", Spy# " << playerInfo[currentPlayer].getSpyNumber();
-    qDebug() << "   HostGameWindow::calculatePlayerTeam5bits() - King Player ? =    " << playerInfo[currentPlayer].getIsKing() << " - Player #" << assignedPlayerNumber+1;
-    qDebug() << "----";
+	//int spyPlayerNumber = (assignedPlayerNumber + (8 * (assignedTeamNumber-1)) + 1);
+	//qDebug() << "   HostGameWindow::calculatePlayerTeam5bits() - Current Player = " << currentPlayer;;
+	//qDebug() << "   HostGameWindow::calculatePlayerTeam5bits() - Spy Player =     " << spyPlayerNumber << "\t- Team:" << assignedTeamNumber << ", Player:" << assignedPlayerNumber+1 << ", Spy# " << playerInfo[currentPlayer].getSpyNumber();
+	//qDebug() << "   HostGameWindow::calculatePlayerTeam5bits() - King Player ? =    " << playerInfo[currentPlayer].getIsKing() << " - Player #" << assignedPlayerNumber+1;
+	//qDebug() << "----";
 
 
     //calculate PlayerNumberInThisGame (for DeBrief)

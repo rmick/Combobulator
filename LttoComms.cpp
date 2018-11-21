@@ -142,7 +142,7 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
             break;
         case BEACON:
             packetString = createIRstring(data);
-            packetString.prepend('B');
+			packetString.prepend('Z');
 			if(getUseLongDataPacketsOverTCP()) packetString.prepend("ltto:");
             packet.append(packetString);
             fullTCPpacketToSend = true;
@@ -161,8 +161,9 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
             packet.append(" \r\n");
             emit sendSerialData(packet);
             #ifdef LOCAL_DEBUG_TX
-				if(packet.contains("P02") || packet.contains("P129")) qDebug() << "lttoComms::sendPacket()";
-					else	qDebug() << "lttoComms::sendPacket() - Full Packet = " << packet;
+				if		(packet.contains("P02"))	qDebug() << "lttoComms::sendPacket() - P02";
+				else if	(packet.contains("P129"))	qDebug() << "lttoComms::sendPacket() - P129";
+				else								qDebug() << "lttoComms::sendPacket() - Full Packet = " << packet;
             #endif
             fullTCPpacketToSend = false;
             packet.clear();
@@ -562,7 +563,22 @@ bool LttoComms::isCheckSumCorrect(int _command, int _game, int _tagger, int _fla
     calculatedCheckSumRx += _flags;
     calculatedCheckSumRx = calculatedCheckSumRx%256;
     if (calculatedCheckSumRx == _checksum%256)  result = true;
+	//qDebug() << "LttoComms::isCheckSumCorrect() -" << calculatedCheckSumRx << ":" << result;
     return result;
+}
+
+bool LttoComms::isCheckSumCorrect(int _command, int _game, int _tagger, int _taggerInfo, int _smartDeviceInfo, int _checksum)       // Ltar Host
+{
+	bool result = false;
+	calculatedCheckSumRx =  _command;
+	calculatedCheckSumRx += _game;
+	calculatedCheckSumRx += _tagger;
+	calculatedCheckSumRx += _taggerInfo;
+	calculatedCheckSumRx += _smartDeviceInfo;
+	calculatedCheckSumRx = calculatedCheckSumRx%256;
+	if (calculatedCheckSumRx == _checksum%256)  result = true;
+	//qDebug() << "LttoComms::isCheckSumCorrect() - LTAR Host=" << calculatedCheckSumRx << ":" << result;
+	return result;
 }
 
 bool LttoComms::isCheckSumCorrect(int _command, int _game, int _teamAndPlayer, int _tagsTaken, int _survivedMinutes, int _survivedSeconds, int _zoneTimeMinutes, int _zoneTimeSeconds, int _flags, int _checksum)       // Debrief mode
@@ -582,6 +598,8 @@ bool LttoComms::isCheckSumCorrect(int _command, int _game, int _teamAndPlayer, i
     return result;
 }
 
+
+
 bool LttoComms::isCheckSumCorrect(int _command, int _game, int _teamAndPlayer, int _playersInReportByte, int _tagsP1, int _tagsP2, int _tagsP3, int _tagsP4, int _tagsP5, int _tagsP6, int _tagsP7, int _tagsP8, int _checksum)
 {
     bool result = false;
@@ -597,7 +615,7 @@ bool LttoComms::isCheckSumCorrect(int _command, int _game, int _teamAndPlayer, i
     calculatedCheckSumRx += _tagsP6;
     calculatedCheckSumRx += _tagsP7;
     calculatedCheckSumRx += _tagsP8;
-	qDebug() << "LttoComms::isCheckSumCorrect() -" << calculatedCheckSumRx << ":" << calculatedCheckSumRx%256;
+	//qDebug() << "LttoComms::isCheckSumCorrect() -" << calculatedCheckSumRx << ":" << calculatedCheckSumRx%256;
     calculatedCheckSumRx = calculatedCheckSumRx%256;
     if (calculatedCheckSumRx == _checksum%256)  result = true;
     return result;
@@ -651,20 +669,15 @@ void LttoComms::processPacket(QList<QByteArray> data)
         //else                                                            setDontAnnounceGame(false);
         break;
 
-	case REQUEST_JOIN_LTAR_GAME:	//P129
+	case REQUEST_JOIN_LTAR_GAME:	//P130
         game            = extract(data);
         tagger          = extract(data);
         taggerInfo      = extract(data);
         smartDeviceInfo = extract(data);
         checksum        = extract(data);
 
-		qDebug() << "\tLttoComms::processPacket() -  case REQUEST_JOIN_LTAR_GAME:";
-		qDebug() << "\tData:" << game << tagger << taggerInfo << smartDeviceInfo << checksum << " : " << CHECKSUM << endl;
-
-        //TODO: Fix the Checksum that is not working - posibly due to DEC not BCD ??
-		//if(isCheckSumCorrect(command, game, tagger, taggerInfo, smartDeviceInfo, checksum)) emit RequestJoinGame(game, tagger, 0, true);
-        //else                                                                                setDontAnnounceGame(false);
-             emit RequestJoinGame(game, tagger, 0, true);
+		if(isCheckSumCorrect(command, game, tagger, taggerInfo, smartDeviceInfo, checksum)) emit RequestJoinGame(game, tagger, 0, true);
+		//else                                                                                setDontAnnounceGame(false);
         break;
 
     case ACK_PLAYER_ASSIGN:         //P17
@@ -672,18 +685,24 @@ void LttoComms::processPacket(QList<QByteArray> data)
         tagger   = extract(data);
         checksum = extract(data);
         if(isCheckSumCorrect(command, game, tagger, flags, checksum))   emit AckPlayerAssignment(game, tagger, false);
-        else                                                            setDontAnnounceFailedSignal(true);
+		else
+		{
+			setDontAnnounceFailedSignal(true);
+			qDebug() << "\tLttoComms::processPacket - **** CheckSum Error";
+		}
         break;
 
 	case ACK_LTAR_PLAYER_ASSIGN:	//P132
-        game     = extract(data);
-        tagger   = extract(data);
-        checksum = extract(data);
-        //TODO: Fix the Checksum that is not working
-        //if(isCheckSumCorrect(command, game, tagger, flags, checksum)) emit AckPlayerAssignment(game, tagger, true);
-        //else                                                          setDontAnnounceGame(false);
-
-        emit AckPlayerAssignment(game, tagger, true);
+		game		  = extract(data);
+		tagger		  = extract(data);
+		teamAndPlayer = extract(data);
+		checksum	  = extract(data);
+		if(isCheckSumCorrect(command, game, tagger, teamAndPlayer, checksum))	emit AckPlayerAssignment(game, tagger, true);
+		else
+		{
+			setDontAnnounceFailedSignal(true);
+			qDebug() << "\tLttoComms::processPacket - **** P132 CheckSum Error";
+		}
         break;
 
     case TAG_SUMMARY:

@@ -122,6 +122,7 @@ private:
     int             extract(QList<QByteArray> &data);
     void            findSerialPort();
     bool            isCheckSumCorrect(int _command, int _game, int _tagger, int _flags, int _checksum);
+	bool			isCheckSumCorrect(int _command, int _game, int _tagger, int _taggerInfo, int _smartDeviceInfo, int _checksum);
     bool            isCheckSumCorrect(int _command, int _game, int _tagsTaken, int _teamAndPlayer, int _survivedMinutes, int _survivedSeconds, int _zoneTimeMinutes, int _zoneTimeSeconds, int _flags, int _checksum);
     bool            isCheckSumCorrect(int _command, int _game, int _teamAndPlayer, int _playersInReportByte, int _tagsP1, int _tagsP2, int _tagsP3, int _tagsP4, int _tagsP5, int _tagsP6, int _tagsP7, int _tagsP8, int _checksum);
     QString         createIRstring(int data);

@@ -750,7 +750,7 @@ void LttoMainWindow::saveFile()
 	}
 }
 
-void LttoMainWindow::loadFile()
+void LttoMainWindow:: loadFile()
 {
 	if (!fileLoadSave) fileLoadSave = new FileLoadSave(LOAD_MODE, this);
 	connect(fileLoadSave, SIGNAL(fileNameUpdated(QString)),	this, SLOT(updateFileName(QString)));
@@ -991,6 +991,7 @@ void LttoMainWindow::on_btn_SpyTeamTags_clicked()
 void LttoMainWindow::on_actionLTAR_Mode_triggered()
 {
     bool state = ui->actionLTAR_Mode->isChecked();
+	qDebug() << "LttoMainWindow::on_actionLTAR_Mode_triggered() -" << state;
     gameInfo.setIsLTARGame(state);
     setLtarControls(state);
 }

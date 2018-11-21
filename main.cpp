@@ -37,21 +37,29 @@ void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QS
 	QString logMessage = (QString)localMsg;
 
 	//Send to Log file
-	QString filePath = QStandardPaths::standardLocations( QStandardPaths::AppDataLocation ).value(0);
-	filePath = QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).value(0);
-	qDebug() << "FilePath =" << filePath;
+	QString filePath = QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).value(0);
+	//qDebug() << "main::myMessageOutput() - FilePath =" << filePath;
 	QDir thisDir;
 	thisDir.setPath(filePath);
+	QDir::setCurrent(filePath);
 	//QDir::setCurrent(thisDir);
 	QFile outFile("Combobulator_Log.txt");
 	bool good = outFile.open(QIODevice::WriteOnly | QIODevice::Append);
+
+	filePath = QStandardPaths::standardLocations( QStandardPaths::AppDataLocation ).value(0);
+	thisDir.setPath(filePath);
+	if (!thisDir.exists()) thisDir.mkpath(filePath);
+	QDir::setCurrent(filePath);
+
+
 	if(good)
 	{
+		//qDebug() << "main::myMessageOutput() - Opened outFile" << thisDir << "\n\t::::" << outFile;
 		QTextStream ts(&outFile);
 		ts << logMessage << endl;
 		outFile.close();
 	}
-
+	else qDebug() << "main::myMessageOutput() - Cannot create file" << thisDir << ":" << outFile;
 
 
 	if(LttoMainWindow::textEditLogFile != nullptr)
@@ -68,7 +76,7 @@ int main(int argc, char *argv[])
 {
 	QCoreApplication::setApplicationName( QString("Combobulator") );
     QApplication::setDesktopSettingsAware(true);
-	//qInstallMessageHandler(myMessageOutput);
+qInstallMessageHandler(myMessageOutput);
 	QApplication    theApp(argc, argv);
     LttoMainWindow  lttoMainWindow;
 	lttoMainWindow.setWindowIcon(QIcon(":/resources/images/Combobulator.ico"));
@@ -88,7 +96,7 @@ int main(int argc, char *argv[])
 	loop.exec();
 	lttoMainWindow.showFullScreen();
 #else
-    lttoMainWindow.show();
+	lttoMainWindow.show();
 #endif
 
     splashScreen.finish(&lttoMainWindow);

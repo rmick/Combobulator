@@ -52,8 +52,8 @@ androiddeployqt
 
 
 //  Build Number
-const QString	BUILD_NUMBER	= "r18.11.17";
-const QString	VERSION_NUMBER	= "v1.04";
+const QString	BUILD_NUMBER	= "r18.11.21";
+const QString	VERSION_NUMBER	= "v1.05";
 
 //Maximum number of players
 //--------------------------
@@ -85,36 +85,36 @@ const int   ASSIGNED_PLAYER_FAIL_TIMER	= 500;
 const int	HEART_BEAT_MSEC				= 2500;
 
 //Packet Header Type Codes
-const int   ANNOUNCE    = 0x00;
+const int   ANNOUNCE				= 0x00;
 
 const int   COUNTDOWN               = 0x00;
 const int   ASSIGN_PLAYER           = 0x01;
 const int   ANNOUNCE_CUSTOM_LTAG    = 0x02;
-const int   ANNOUCE_SPECIAL_GAME    = 0x0C;
+const int   ANNOUCE_SPECIAL_GAME    = 0x0C;		//P12
 
-const int   ASSIGN_PLAYER_FAIL      = 0x0F;
-const int   REQUEST_JOIN_GAME       = 0x10;
-const int   ACK_PLAYER_ASSIGN       = 0x11;
-const int   REQUEST_ASSISTANCE      = 0x20;
-const int   REQUEST_TAG_REPORT      = 0x31;
-const int   SEND_RANK_REPORT        = 0x32;
-const int   TAG_SUMMARY             = 0x40;
-const int   TEAM_1_TAG_REPORT       = 0x41;
-const int   TEAM_2_TAG_REPORT       = 0x42;
-const int   TEAM_3_TAG_REPORT       = 0x43;
+const int   ASSIGN_PLAYER_FAIL      = 0x0F;		//P15
+const int   REQUEST_JOIN_GAME       = 0x10;		//P16
+const int   ACK_PLAYER_ASSIGN       = 0x11;		//P17
+const int   REQUEST_ASSISTANCE      = 0x20;		//P32
+const int   REQUEST_TAG_REPORT      = 0x31;		//P49
+const int   SEND_RANK_REPORT        = 0x32;		//P50
+const int   TAG_SUMMARY             = 0x40;		//P64
+const int   TEAM_1_TAG_REPORT       = 0x41;		//P65
+const int   TEAM_2_TAG_REPORT       = 0x42;		//P66
+const int   TEAM_3_TAG_REPORT       = 0x43;		//P67
 
-const int   ANNOUNCE_LTAR_GAME      = 0x81;
-const int   REQUEST_JOIN_LTAR_GAME  = 0x82;
-const int   ASSIGN_LTAR_PLAYER      = 0x83;
-const int   ACK_LTAR_PLAYER_ASSIGN  = 0x84;
-const int   LTAR_NAME               = 0x85;     //smart device app generated
-const int   LTAR_WHODAT             = 0x86;     //smart device app generated
-const int   ASSIGN_LTAR_PLAYER_OK   = 0x87;
-const int   COUNTDOWN_LTAR          = 0x88;
-const int   ASSIGN_LTAR_PLAYER_FAIL = 0x8F;
+const int   ANNOUNCE_LTAR_GAME      = 0x81;		//P129
+const int   REQUEST_JOIN_LTAR_GAME  = 0x82;		//P130
+const int   ASSIGN_LTAR_PLAYER      = 0x83;		//P131
+const int   ACK_LTAR_PLAYER_ASSIGN  = 0x84;		//P132
+const int   LTAR_NAME               = 0x85;     //P133		//smart device app generated
+const int   LTAR_WHODAT             = 0x86;     //P134		//smart device app generated
+const int   ASSIGN_LTAR_PLAYER_OK   = 0x87;		//P135
+const int   COUNTDOWN_LTAR          = 0x88;		//P136
+const int   ASSIGN_LTAR_PLAYER_FAIL = 0x8F;		//P143
 
-const int   TEXT_MESSAGE            = 0x80;
-const int   SPECIAL_ATTACK          = 0x90;
+const int   TEXT_MESSAGE            = 0x80;		//P128
+const int   SPECIAL_ATTACK          = 0x90;		//P144
 
 const bool  DECIMAL                 = false;
 const bool  BCD                     = true;

@@ -45,7 +45,9 @@ public slots:
 
     void AddPlayerToGame(int Game, int Tagger, bool isLtar);           //Connects to AcknowledgePlayerAssignment signal
 
-    void InsertToListWidget(QString lineText);
+	//void LtarPlayerJoinedGame(int Game, int Tagger, int teamAndPlayer);	//Connects to LtarAckPlayerAssignment signal
+
+	void InsertToListWidget(QString lineText);
 
 signals:
 
@@ -110,6 +112,7 @@ private:
     bool    noMorePlayers;
     int     countDownTimeRemaining;
     bool    expectingAckPlayerAssignment;
+	bool	expectingLtarAssignSuccess;
     int     remainingGameTime;
     bool    closingWindow;
     bool    sendingCommsActive;
