@@ -161,9 +161,10 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
             packet.append(" \r\n");
             emit sendSerialData(packet);
             #ifdef LOCAL_DEBUG_TX
-				if		(packet.contains("P02"))	qDebug() << "lttoComms::sendPacket() - P02";
-				else if	(packet.contains("P129"))	qDebug() << "lttoComms::sendPacket() - P129";
-				else								qDebug() << "lttoComms::sendPacket() - Full Packet = " << packet;
+				//if		(packet.contains("P02"))	qDebug() << "lttoComms::sendPacket() - P02";
+				//else if	(packet.contains("P129"))	qDebug() << "lttoComms::sendPacket() - P129";
+				//else
+														qDebug() << "lttoComms::sendPacket() - Full Packet = " << packet;
             #endif
             fullTCPpacketToSend = false;
             packet.clear();
@@ -688,7 +689,7 @@ void LttoComms::processPacket(QList<QByteArray> data)
 		else
 		{
 			setDontAnnounceFailedSignal(true);
-			qDebug() << "\tLttoComms::processPacket - **** CheckSum Error";
+			qDebug() << "\tLttoComms::processPacket - ACK_ASSIGN_PLAYER **** CheckSum Error";
 		}
         break;
 
@@ -701,7 +702,7 @@ void LttoComms::processPacket(QList<QByteArray> data)
 		else
 		{
 			setDontAnnounceFailedSignal(true);
-			qDebug() << "\tLttoComms::processPacket - **** P132 CheckSum Error";
+			qDebug() << "\tLttoComms::processPacket - - ACK_ASSIGN_PLAYER **** P132 CheckSum Error";
 		}
         break;
 
@@ -783,13 +784,26 @@ void LttoComms::processPacket(QList<QByteArray> data)
 		qDebug() << "LttoComms::processPacket() - Dumping P50 !";
 		break;
 
-	case 02:	//Somehow we are seeing our own hosting messages
-		qDebug() << "LttoComms::processPacket() - P02 packet error - P" << command << data;
+	case 2:	//Somehow we are seeing our own hosting messages
+	case 3:
+	case 4:
+	case 5:
+	case 6:
+	case 7:
+	case 8:
+	case 9:
+	case 10:
+	case 11:
+	case 12:
+	case 129:
+		qDebug() << "LttoComms::processPacket() - Host packet received - P" << command << data;
+		setDontAnnounceGame(false);
 		break;
 
     default:
         //We end up here if the ESP32 misses the Packet Header
 		qDebug() << "LttoComms::processPacket() - ESP32 missed the packet header again:" << command; // << data;
+		setDontAnnounceGame(false);
         break;
 
     }

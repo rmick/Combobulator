@@ -23,6 +23,7 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
 	timerGameTimeRemaining(nullptr),
 	timerReHost(nullptr),
 	timerBeacon(nullptr),
+	timerAckNotReceived(nullptr),
 	sound_Hosting(nullptr),
 	sound_Countdown(nullptr),
 	sound_HostingMissedReply(nullptr),
@@ -39,6 +40,7 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
     timerGameTimeRemaining  = new QTimer(this);
     timerReHost             = new QTimer(this);
     timerBeacon             = new QTimer(this);
+	timerAckNotReceived		= new QTimer(this);
 
 	lttoComms	= LttoComms::getInstance();
 	lttoComms->initialise();
@@ -52,6 +54,7 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
 	connect(timerGameTimeRemaining, SIGNAL(timeout() ),							  this, SLOT(updateGameTimeRemaining())			);
 	connect(timerReHost,            SIGNAL(timeout() ),							  this, SLOT(TaggerReHost())					);
 	connect(timerBeacon,            SIGNAL(timeout() ),							  this, SLOT(BeaconSignal())					);
+	connect(timerAckNotReceived,    SIGNAL(timeout() ),							  this, SLOT(assignPlayerFailed())				);
 	connect(lttoComms,              SIGNAL(RequestJoinGame(int,int,int, bool) ),  this, SLOT(AssignPlayer(int,int,int, bool))	);
 	connect(lttoComms,              SIGNAL(AckPlayerAssignment(int,int, bool) ),  this, SLOT(AddPlayerToGame(int,int, bool))	);
 	connect(host,                   SIGNAL(AddToHostWindowListWidget(QString) ),  this, SLOT(InsertToListWidget(QString))		);
@@ -230,12 +233,12 @@ void HostGameWindow::hostCurrentPlayer()
 
 		if (lttoComms->getMissedAnnounceCount() < 5) return;
 
-        if (expectingAckPlayerAssignment == true)                                           // We appear to have missed the AckPlayerAssignment message.
-        {
-            qDebug() << "HostGameWindow::hostCurrentPlayer() - assignPlayerFailed !!"  ;
-            assignPlayerFailed();                                                           // Call the AssignPlayerFailed routine.
-        }
-        else
+//        if (expectingAckPlayerAssignment == true)                                           // We appear to have missed the AckPlayerAssignment message.
+//        {
+//            qDebug() << "HostGameWindow::hostCurrentPlayer() - assignPlayerFailed !!"  ;
+//            assignPlayerFailed();                                                           // Call the AssignPlayerFailed routine.
+//        }
+//        else
         {
 			lttoComms->setDontAnnounceGame(false);                                           // Start Announcing, as something went wrong
             qDebug() << "HostGameWindow::hostCurrentPlayer() - Reset/Clearing DontAnnounceGameFlag due to inactivity !!!!!!!";
@@ -421,6 +424,8 @@ void HostGameWindow::AssignPlayer(int Game, int Tagger, int Flags, bool isLtar)
 		lttoComms->sendPacket(DATA,    Tagger);
 		lttoComms->sendPacket(DATA,    calculatePlayerTeam5bits(preferedTeam) );
 		lttoComms->sendPacket(CHECKSUM);
+		timerAckNotReceived->start(ACK_NOT_RECEIVED_MSEC);
+		qDebug() << "t\t\tHostGameWindow::AssignPlayer() starting timerAckNotReceived";
     }
 }
 
@@ -432,8 +437,6 @@ void HostGameWindow::AddPlayerToGame(int Game, int Tagger, bool isLtar)
 		lttoComms->setDontAnnounceGame(false);
 		return;
 	}
-
-	sound_PlayerAdded->play();
 
 	lttoComms->sendLCDtext(playerInfo[currentPlayer].getPlayerName() , 1, false);
 	lttoComms->sendLCDtext("Joined"                                  , 2,  true);
@@ -455,13 +458,15 @@ void HostGameWindow::AddPlayerToGame(int Game, int Tagger, bool isLtar)
 		qDebug() << "\t\tHostGameWindow::AddPlayerToGame()" << currentPlayer << endl;
     }
 
-
+	timerAckNotReceived->stop();
+	timerAssignFailed->stop();
+	sound_PlayerAdded->play();
     InsertToListWidget("   AddPlayerToGame()" + QString::number(currentPlayer));
 	lttoComms->setCurrentTaggerBeingHosted(0);
-	//lttoComms->setDontAnnounceGame(false);
+	lttoComms->setDontAnnounceGame(false);
 	isThisPlayerHosted[currentPlayer] = true;
     expectingAckPlayerAssignment = false;
-    timerAssignFailed->stop();
+
 
     if(rehostingActive)
     {
@@ -482,7 +487,7 @@ void HostGameWindow::AddPlayerToGame(int Game, int Tagger, bool isLtar)
     }
     else
     {
-        if (currentPlayer != 0) currentPlayer++;
+	if (currentPlayer != 0) currentPlayer++;
     }
 
 	lttoComms->setDontAnnounceGame(false);
@@ -490,12 +495,13 @@ void HostGameWindow::AddPlayerToGame(int Game, int Tagger, bool isLtar)
     if (closingWindow) deleteLater();   // Delete the window, as the cancel button has been pressed.
 }
 
-void HostGameWindow::assignPlayerFailed()       //TODO: This is not working.
+void HostGameWindow::assignPlayerFailed()       //This must be triggered within 2000mS of the AssignPlayer message being sent,
+												// or the taggers will not respond (they timeout and stop listening).
 {
+	timerAckNotReceived->stop();
 	lttoComms->setDontAnnounceGame(true);
 	lttoComms->setDontAnnounceFailedSignal(false);
-    sound_HostingMissedReply->play();
-    qDebug() << "HostGameWindow::assignPlayerFailed() - starting Timer";
+	qDebug() << "*** HostGameWindow::assignPlayerFailed() - starting Timer ***";
     timerAssignFailed->start(ASSIGNED_PLAYER_FAIL_TIMER);
     assignPlayerFailCount = 0;
 	lttoComms->setCurrentTaggerBeingHosted(0);
@@ -504,14 +510,14 @@ void HostGameWindow::assignPlayerFailed()       //TODO: This is not working.
 
 void HostGameWindow::sendAssignFailedMessage()
 {
-    assignPlayerFailCount++;
+	assignPlayerFailCount++;
 
 	if(lttoComms->getDontAnnounceFailedSignal() == false)
     {  
 		lttoComms->setDontAnnounceGame(true);
 		sound_HostingMissedReply->play();
 
-		//qDebug() << "HostGameWindow::sendAssignFailedMessage()  - Sending # " << assignPlayerFailCount;
+		qDebug() << "HostGameWindow::sendAssignFailedMessage()  - Sending # " << assignPlayerFailCount;
 		InsertToListWidget ("HostGameWindow::sendAssignFailedMessage()  - Sending # " + QString::number(assignPlayerFailCount));
 
 		lttoComms->sendLCDtext("Attn"                                      , 1, false);
@@ -528,7 +534,7 @@ void HostGameWindow::sendAssignFailedMessage()
     }
 
 	//qDebug() << "HostGameWindow::sendAssignFailedMessage() - looping";
-	InsertToListWidget ("HostGameWindow::sendAssignFailedMessage() - looping");
+	//InsertToListWidget ("HostGameWindow::sendAssignFailedMessage() - looping");
 
     if (assignPlayerFailCount >= 5)   //give up and start again
     {
@@ -539,19 +545,19 @@ void HostGameWindow::sendAssignFailedMessage()
 		lttoComms->setDontAnnounceFailedSignal(false);
         expectingAckPlayerAssignment = false;
         assignPlayerFailCount = 0;
-		qDebug() <<"HostGameWindow::sendAssignFailedMessage() - Counted to 5, I am going away now";
+		//qDebug() <<"HostGameWindow::sendAssignFailedMessage() - Counted to 5, I am going away now";
 
 		//Manually add the player to the game (a kludge, but do it for now)
 		//TODO: Hmmmm. Fix this kludge
 		//Seems to completely break LTAR hosting, so bypass to see if it helps
-		if(gameInfo.getIsLTARGame() != true)
-		{
-			AddPlayerToGame(gameInfo.getGameID(), lttoComms->getCurrentTaggerBeingHosted(), gameInfo.getIsLTARGame() );
-			qDebug() << "----------------------------------------------";
-			qDebug() << "DANGER WILL ROBINSON - PLAYER FORCED INTO GAME";
-			qDebug() << "----------------------------------------------";
-			InsertToListWidget ("No Tagger Ack recvd - PLAYER FORCED INTO GAME!" );
-		}
+//		if(gameInfo.getIsLTARGame() != true)
+//		{
+//			AddPlayerToGame(gameInfo.getGameID(), lttoComms->getCurrentTaggerBeingHosted(), gameInfo.getIsLTARGame() );
+//			qDebug() << "----------------------------------------------";
+//			qDebug() << "DANGER WILL ROBINSON - PLAYER FORCED INTO GAME";
+//			qDebug() << "----------------------------------------------";
+//			InsertToListWidget ("No Tagger Ack recvd - PLAYER FORCED INTO GAME!" );
+//		}
 
 
         if (closingWindow) deleteLater();   // Delete the window, as the cancel button has been pressed.
@@ -726,6 +732,7 @@ void HostGameWindow::sendCountDown()
 			remainingGameTime = (lttoComms->ConvertBCDtoDec(gameInfo.getGameLength()) * 60) + 2;  // Add a couple of seconds to match the taggers, who start the clock AFTER the Good Luck message.
 			InsertToListWidget("Game commencing !!!");
 			setPromptText("Game Commencing !!!");
+			qDebug() << "hostGameWindow::sendCountDown() - Game Commencing";
 			timerBeacon->start(BEACON_TIMER_MSEC);
         }
         else
@@ -737,12 +744,16 @@ void HostGameWindow::sendCountDown()
 			 lttoComms->nonBlockingDelay(TEXT_SENT_DELAY);
              rehostingActive = false;
         }
+
+		lttoComms->setDontAnnounceGame(false);
         ui->btn_Cancel->setText("Close");
         ui->btn_Rehost->setVisible(true);
         ui->btn_Rehost->setEnabled(true);
         ui->btn_StartGame->setText("End\nGame");
         ui->btn_StartGame->setEnabled(true);
         ui->btn_Cancel->setEnabled(false);
+		qDebug() << "*** The Game has started ***";
+
         //TODO:Change the form to show the DeBrief stuff - use a State Machine?
     }
     else                                // Send the Countdown Signal
@@ -943,16 +954,17 @@ void HostGameWindow::TaggerReHost()
 int beaconType = 0;
 void HostGameWindow::BeaconSignal()
 {
+	qDebug() << "\tHostGameWindow::BeaconSignal() triggered";
 	if (lttoComms->getDontAnnounceGame()) return;
     if (rehostingActive) return;
     //Check Game Type.
-
     //TODO: Set Beacon to match game type
     if(gameInfo.getIsReSpawnGame()) beaconType = 3;
     else beaconType = 2;         // Contested Zone, No Team
 
     //Send Beacon;
 	lttoComms->sendPacket(BEACON, beaconType);
+	qDebug() << "\t\tHostGameWindow::BeaconSignal() - Type =" << beaconType;
 }
 
 ///////////////////------------------------------

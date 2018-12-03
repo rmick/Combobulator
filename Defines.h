@@ -52,8 +52,8 @@ androiddeployqt
 
 
 //  Build Number
-const QString	BUILD_NUMBER	= "r18.11.21";
-const QString	VERSION_NUMBER	= "v1.05";
+const QString	BUILD_NUMBER	= "r18.12.03";
+const QString	VERSION_NUMBER	= "v1.06";
 
 //Maximum number of players
 //--------------------------
@@ -83,14 +83,15 @@ const int   PRESS_AND_HOLD_TIME			= 500;
 const int   BEACON_TIMER_MSEC			= 500;
 const int   ASSIGNED_PLAYER_FAIL_TIMER	= 500;
 const int	HEART_BEAT_MSEC				= 2500;
+const int	ACK_NOT_RECEIVED_MSEC		= 1800;
 
 //Packet Header Type Codes
 const int   ANNOUNCE				= 0x00;
 
 const int   COUNTDOWN               = 0x00;
 const int   ASSIGN_PLAYER           = 0x01;
-const int   ANNOUNCE_CUSTOM_LTAG    = 0x02;
-const int   ANNOUCE_SPECIAL_GAME    = 0x0C;		//P12
+const int   ANNOUNCE_CUSTOM_LTAG    = 0x02;		//P02
+const int   ANNOUNCE_SPECIAL_GAME   = 0x0C;		//P12
 
 const int   ASSIGN_PLAYER_FAIL      = 0x0F;		//P15
 const int   REQUEST_JOIN_GAME       = 0x10;		//P16

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 4.7.2, 2018-11-19T09:08:00. -->
+<!-- Written by QtCreator 4.7.2, 2018-11-29T09:22:25. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -130,7 +130,7 @@
     <value type="bool" key="Qt4ProjectManager.Qt4BuildConfiguration.UseShadowBuild">true</value>
    </valuemap>
    <valuemap type="QVariantMap" key="ProjectExplorer.Target.BuildConfiguration.1">
-    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/Users/Richie/Dropbox/Qt_projects/build-Combobulator_Mac-Release</value>
+    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/Users/Richie/Documents/Dropbox/Qt_projects/build-Combobulator_Mac-Release</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
       <value type="bool" key="ProjectExplorer.BuildStep.Enabled">true</value>
@@ -411,7 +411,7 @@
     <value type="bool" key="Qt4ProjectManager.Qt4BuildConfiguration.UseShadowBuild">true</value>
    </valuemap>
    <valuemap type="QVariantMap" key="ProjectExplorer.Target.BuildConfiguration.1">
-    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/Users/Richie/Dropbox/Qt_projects/build-Combobulator_Android-Release</value>
+    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/Users/Richie/Documents/Dropbox/Qt_projects/build-Combobulator_Android-Release</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
       <value type="bool" key="ProjectExplorer.BuildStep.Enabled">true</value>
@@ -630,7 +630,7 @@
     <value type="QString" key="Android.AmStartArgsKey"></value>
     <valuelist type="QVariantList" key="Android.PostStartShellCmdListKey"/>
     <valuelist type="QVariantList" key="Android.PreStartShellCmdListKey"/>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName"></value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName">Combobulator</value>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName"></value>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.AndroidRunConfiguration:/Users/Richie/Dropbox/Qt_projects/Combobulator/Combobulator.pro</value>
     <value type="uint" key="RunConfiguration.QmlDebugServerPort">3768</value>

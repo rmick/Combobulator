@@ -63,6 +63,8 @@ private slots:
 
     void deBriefTaggers();
 
+	void assignPlayerFailed();
+
     void sendAssignFailedMessage();
 
     void on_btn_Cancel_clicked();
@@ -93,6 +95,7 @@ private:
     QTimer                  *timerGameTimeRemaining;
     QTimer                  *timerReHost;
 	QTimer                  *timerBeacon;
+	QTimer					*timerAckNotReceived;
     QPointer<ReHostTagger>  reHostTagger;
     QPointer<ScoresWindow>  scoresWindow;
 	QPointer<DeBrief>       deBrief;
@@ -125,7 +128,6 @@ private:
 	void	setPromptText(QString text);
 	void	setNextPlayerText(QString text);
     void    hostCurrentPlayer();
-    void    assignPlayerFailed();
     int     calculatePlayerTeam5bits(int requestedTeam);
     void    endGame();
 };
