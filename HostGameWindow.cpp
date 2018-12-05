@@ -230,6 +230,7 @@ void HostGameWindow::hostCurrentPlayer()
 
 
 		qDebug() << "HostGameWindow::hostCurrentPlayer() - DontAnnouceGame is active. Count = " << lttoComms->getMissedAnnounceCount();
+		lttoComms->sendHeartBeat();
 
 		if (lttoComms->getMissedAnnounceCount() < 5) return;
 

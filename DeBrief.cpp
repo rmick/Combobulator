@@ -156,7 +156,7 @@ void DeBrief::ReceiveTagSummary(int game, int teamAndPlayer, int tagsTaken, int 
 	lttoComms->setDontAnnounceGame(true);
 
 	playerInfo[currentPlayer].setTagsTaken		 (0, lttoComms->ConvertBCDtoDec(tagsTaken));  //Player 0 is global
-	qDebug() << "DeBrief::ReceiveTagSummary() - Setting global player tags =" << tagsTaken;
+	qDebug() << "DeBrief::ReceiveTagSummary() - Setting global player tags - BCD =" << tagsTaken << ", Dec =" << lttoComms->ConvertBCDtoDec(tagsTaken);
 	playerInfo[currentPlayer].setSurvivalTimeMinutes(lttoComms->ConvertBCDtoDec(survivedMinutes));
 	playerInfo[currentPlayer].setSurvivalTimeSeconds(lttoComms->ConvertBCDtoDec(survivedSeconds));
 	playerInfo[currentPlayer].setZoneTimeMinutes    (lttoComms->ConvertBCDtoDec(zoneTimeMinutes));

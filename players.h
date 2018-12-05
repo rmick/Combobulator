@@ -63,7 +63,6 @@ public:
 	int		getTaggerID() const;
 	void	setTaggerID(int value);
 
-
 	int		getSpyNumber() const;
 	void	setSpyNumber(int value);
 

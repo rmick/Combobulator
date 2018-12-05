@@ -61,11 +61,12 @@ void ReHostTagger::MapPlayerButtons()
 
 void ReHostTagger::SetActivePlayers()
 {
-    for (int index = 1; index < 25; index++)
+	for (int index = 1; index <= MAX_PLAYERS; index++)
     {
         if (gameInfo.getIsThisPlayerInTheGame(index) )
         {
-            playerButtons[index]->setEnabled(true);
+			playerButtons[index]->setText(playerInfo[index].getPlayerName());
+			playerButtons[index]->setEnabled(true);
             playerButtons[index]->setChecked(true);
             playerButtons[index]->setStyleSheet(myStyleSheet.getButtonSelectedCss());
         }
@@ -75,7 +76,19 @@ void ReHostTagger::SetActivePlayers()
          playerButtons[index]->setChecked(false);
          playerButtons[index]->setStyleSheet(myStyleSheet.getButtonUnSelectedCss());
         }
+
+		if(gameInfo.getNumberOfTeams() == 2)
+		{
+			qDebug() <<"ReHostTagger::SetActivePlayers() - 2 teams selected - Divisor" << MAX_PLAYERS*(2/3);
+			if(index > 16)
+			{
+					qDebug() << "ReHostTagger::SetActivePlayers() - index =" << index;
+					playerButtons[index]->setVisible(false);
+			}
+		}
     }
+
+
 }
 
 void ReHostTagger::playerButtonPressed(int playerNumber)

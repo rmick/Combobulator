@@ -150,9 +150,9 @@ bool LttoMainWindow::getSlowTags() const
 
 void LttoMainWindow::setSlowTags(bool value)
 {
-    for (int x=0; x<25;x++)
+	for (int index = 0; index <= MAX_PLAYERS; index++)
     {
-         playerInfo[x].setSlowTags(value);
+		 playerInfo[index].setSlowTags(value);
     }
 }
 
@@ -182,6 +182,17 @@ void LttoMainWindow::on_btn_StartGame_clicked()
 void LttoMainWindow::on_btn_SelectPlayers_clicked()
 {	
 	ui->btn_StartGame->setEnabled(true);
+
+	//remove phantom Team 3 players from 2 team games
+	if(gameInfo.getNumberOfTeams() == 2)
+	{
+		for(int index = 17; index <= 24; index++)
+		{
+			gameInfo.setIsThisPlayerInTheGame(index, false);
+			//qDebug() << "LttoMainWindow::on_btn_StartGame_clicked() - Removing player" << index;
+		}
+	}
+
 	if(!playersWindow)  playersWindow = new PlayersWindow(this);
 #ifdef QT_DEBUG
 	playersWindow->show();
