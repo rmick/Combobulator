@@ -1,6 +1,7 @@
 #include "LttoMainWindow.h"
 #include <QApplication>
 #include <QSplashScreen>
+#include <QPixmap>
 #include <QSoundEffect>
 #include "Defines.h"
 
@@ -83,6 +84,7 @@ qInstallMessageHandler(myMessageOutput);
     qDebug() << "----------------------------------------------------------------------------" << endl;
     qDebug() << "----------------------------------------------------------------------------" << endl;
 	qDebug() << "                        Starting the main application.";
+	qDebug() << "                           " << BUILD_NUMBER << "-" << VERSION_NUMBER;
     qDebug() << "----------------------------------------------------------------------------" << endl;
     qDebug() << "----------------------------------------------------------------------------" << endl;
     qDebug() << "----------------------------------------------------------------------------" << endl;

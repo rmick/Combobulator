@@ -31,9 +31,8 @@ private slots:
     void    reAssignPlayerData();
     void    reSizeListWidgetButtonWidth();
 	void	assignPlayersToTeams(bool isRandom);
-
-	void on_btn_Randomise_clicked();
-	void on_btn_SetDefaultTeams_clicked();
+	void	on_btn_Randomise_clicked();
+	void	on_btn_SetDefaultTeams_clicked();
 
 signals:
 	void    dataUpdated();
@@ -42,9 +41,7 @@ signals:
 private:
     Ui::RearrangePlayers    *ui;
     void    resizeEvent(QResizeEvent *);
-
     int     numberOfPlayersInEachTeam;
-
 
 protected:
 

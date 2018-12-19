@@ -84,6 +84,9 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
 #else
     QMainWindow::showFullScreen();
 #endif
+
+	QMessageBox::critical(this,"WARNING","Have you disabled ALL power saving on this device?\n\nThe host device must stay awake at all times during the game, otherwise the Combobulator will not function !");
+
 }
 
 LttoMainWindow::~LttoMainWindow()
@@ -255,8 +258,10 @@ void LttoMainWindow::on_btn_TeamTags_clicked()
 
 void LttoMainWindow::on_btn_ReSpawn_clicked()
 {
-    if      (gameInfo.getIsReSpawnGame() == false)
+	if      (gameInfo.getIsReSpawnGame() == false)
     {
+		QMessageBox::critical(this,"Info","In a Respawn game, the taggers are Neutralised after every 10 hits\n\nOnce Neutralised the tagger must return to the Combobulator to be respawned\n\nIt is recommended that the Health slider be set to 99.\n\n\nN.B. Respawn may not work with all games in LTAR mode, due to limitations in the LTAR taggers.");
+
 		ui->btn_ReSpawn->setText("Respawn ON");
         gameInfo.setIsReSpawnGame(true);
         for(int index = 0; index < 25; index++)
@@ -702,20 +707,20 @@ void LttoMainWindow::UpdateGlobalPlayerControlSettings()
     ui->slider_Reloads      ->setValue(playerInfo[0].getReloads()     );
 
     ui->btn_SlowTags  ->setChecked(playerInfo[0].getSlowTags() );
-    if (playerInfo[0].getSlowTags() == false)    ui->btn_SlowTags  ->setText("Slow Tags OFF");
-    else                                         ui->btn_SlowTags  ->setText("Slow Tags ON");
+	if (playerInfo[0].getSlowTags() == false)    ui->btn_SlowTags	->setText("Slow Tags OFF");
+	else                                         ui->btn_SlowTags	->setText("Slow Tags ON");
 
     ui->btn_TeamTags  ->setChecked(playerInfo[0].getTeamTags() );
-    if (playerInfo[0].getTeamTags() == false)    ui->btn_TeamTags  ->setText("Team Tags OFF");
-    else                                         ui->btn_TeamTags  ->setText("Team Tags ON");
+	if (playerInfo[0].getTeamTags() == false)    ui->btn_TeamTags	->setText("Team Tags OFF");
+	else                                         ui->btn_TeamTags	->setText("Team Tags ON");
 
     ui->btn_MedicMode ->setChecked(playerInfo[0].getMedicMode() );
-    if (playerInfo[0].getMedicMode() == false)   ui->btn_MedicMode ->setText("Medic Mode OFF");
-    else                                         ui->btn_MedicMode ->setText("Medic Mode ON");
+	if (playerInfo[0].getMedicMode() == false)   ui->btn_MedicMode	->setText("Medic Mode OFF");
+	else                                         ui->btn_MedicMode	->setText("Medic Mode ON");
 
-//	ui->btn_ReSpawn	  ->setChecked(gameInfo.getIsReSpawnGame() );
-//	if (gameInfo.getIsReSpawnGame()  == false)	 ui->btn_ReSpawn ->setText("ReSpawn OFF");
-//	else                                         ui->btn_MedicMode ->setText("ReSpawn ON");
+	ui->btn_ReSpawn	  ->setChecked(gameInfo.getIsReSpawnGame() );
+	if (gameInfo.getIsReSpawnGame()  == false)	 ui->btn_ReSpawn	->setText("ReSpawn OFF");
+	else                                         ui->btn_ReSpawn	->setText("ReSpawn ON");
 }
 
 //////////////////////////////////////////////////////////////////
@@ -801,9 +806,8 @@ void LttoMainWindow:: loadFile()
 void LttoMainWindow::loadSettings()
 {
     QSettings settings;
-	//ui->actionuse_LazerSwarm->setChecked(settings.value("LazerswarmMode", true).toBool());
-	//lttoComms.setUseLazerSwarm(settings.value("LazerswarmMode", true).toBool());
-    ui->btn_SpyTeamTags->setChecked(settings.value("SpiesTeamTagMode", true).toBool());
+	//TODO: Move this to gameInfo::StreamfromFile
+	ui->btn_SpyTeamTags->setChecked(settings.value("SpiesTeamTagMode", true).toBool());
 
     myStyleSheet.setCurrentCSS(settings.value("ColourScheme", myStyleSheet.CssDark).toInt());
     if(myStyleSheet.getCurrentCSS() == myStyleSheet.CssLight)
@@ -837,7 +841,6 @@ void LttoMainWindow::saveSettings()
 {
     //QSettings settings(settingsFile, QSettings::NativeFormat);
     QSettings settings;
-	//settings.setValue("LazerswarmMode",   lttoComms.getUseLazerSwarm());
     settings.setValue("SpiesTeamTagMode", gameInfo.getIsSpiesTeamTagActive());
     settings.setValue("ColourScheme", myStyleSheet.getCurrentCSS());
 #ifdef QT_DEBUG

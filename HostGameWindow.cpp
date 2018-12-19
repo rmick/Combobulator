@@ -113,7 +113,8 @@ void HostGameWindow::hideEvent(QHideEvent *)
 
 void HostGameWindow::on_btn_Cancel_clicked()
 {
-    closeHostGameWindow();
+	lttoComms->sendDisconnectClient();
+	closeHostGameWindow();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -283,8 +284,8 @@ void HostGameWindow::hostCurrentPlayer()
     else                gameTime = gameInfo.getGameLength();
 
     //  Set the Reloads flag to match handicapped values
-    if (playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getReloads())  <  100)
-         playerInfo[currentPlayer].setBitFlags1(LIMITED_RELOADS_FLAG, true );
+	if(playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getReloads())  <  100)
+		 playerInfo[currentPlayer].setBitFlags1(LIMITED_RELOADS_FLAG, true );
     else playerInfo[currentPlayer].setBitFlags1(LIMITED_RELOADS_FLAG, false);
 
     //  Set the MegaTags flag to match handicapped values
@@ -943,12 +944,16 @@ void HostGameWindow::TaggerReHost()
         isThisPlayerHosted[currentPlayer] = false;
         rehostingActive = true;
 		setPromptText("ReHosting " + playerInfo[currentPlayer].getPlayerName());
+		lttoComms->sendLCDtext("ReHosting"                               , 1, false);
+		lttoComms->sendLCDtext(playerInfo[currentPlayer].getPlayerName() , 2,  true);
+		lttoComms->nonBlockingDelay(TEXT_SENT_DELAY);
 		lttoComms->setDontAnnounceGame(false);
         firstPass = false;
         ui->btn_Rehost->setText("Cancel\nReHost");
         ui->btn_Rehost->setEnabled(true);
     }
-    sendingCommsActive = true;
+
+	sendingCommsActive = true;
     hostCurrentPlayer();                                //HostGameWindow::AddPlayer starts the CountDownTimer if(rehostingActive == true).
 }
 
@@ -1094,6 +1099,8 @@ void HostGameWindow::on_showLog_clicked()
 void HostGameWindow::UpdateBatteryDisplay(QString volts)
 {
 	//qDebug() << "HostGameWindow::UpdateBatteryDisplay() - " << volts.toFloat();
+	if(volts.endsWith("@")) volts.remove(4, 2);
+
 	if (volts.length() > 5)
 	{
 		qDebug() << "\t***** HostGameWindow::UpdateBatteryDisplay() FAULT !!!!!!! -" << volts;

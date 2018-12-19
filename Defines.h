@@ -47,13 +47,29 @@ androiddeployqt
 */
 
 
+/*
+  Arduino Updates
+  Go to Sketch menu and 'Export Binary File'.
+  Open Finder and navigate to Dropbox/Arduino/CombobHost
+  Look for the file named    ESP-CombobHost.ino.heltec_wifi_kit_32.bin
+  Rename it to				 ESP-CombobHost.ino.bin
+  Open Amazon S3	https://s3.console.aws.amazon.com/s3/buckets/combobulator/?region=us-east-2&tab=overview#
+  Upload the file, replacing the existing file.
+  Click on the [Options] button and 'Make Public'
+  Done !
+*/
+
+
+
+
+
 // If enabling this #define, also remove the # from the command 'serialport' in line 9 of the LTTO_host.pro file
 #define INCLUDE_SERIAL_USB
 
 
 //  Build Number
-const QString	BUILD_NUMBER	= "r18.12.04";
-const QString	VERSION_NUMBER	= "v1.06";
+const QString	BUILD_NUMBER	= "r18.12.19";
+const QString	VERSION_NUMBER	= "v1.07";
 
 //Maximum number of players
 //--------------------------

@@ -57,6 +57,8 @@ private slots:
 
     void updatePlayerButtons();
 
+	void closeTheWindow();
+
 //    void on_btn_Test_clicked();
 
     void on_btn_Flags_clicked();

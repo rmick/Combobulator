@@ -281,6 +281,12 @@ void LttoComms::sendEspRestart()
 	tcpComms->sendPacket("ESP_RESTART\r\n");
 }
 
+void LttoComms::sendDisconnectClient()
+{
+	qDebug() << "LttoComms::sendDisconnectClient()";
+	tcpComms->sendPacket("DISCONNECT\r\n");
+}
+
 QString LttoComms::createIRstring(int data)
 {
     QString createdPacket;
@@ -298,17 +304,27 @@ void LttoComms::receivePacket(QByteArray RxData)
 	bool isPacketComplete = false;
     irDataIn.append(RxData);
 
-	if (irDataIn.startsWith("\r"))
+	if (irDataIn.startsWith("\r\n"))
 	{
-		qDebug() << "\t\t----------------------------------\n\t\tLttoComms::receivePacket() - irData starts with \\r\\n !!!!!!!!!!!!!!!!!!";
+		if(irDataIn.length() == 2)
+		{
+			irDataIn = "";
+			return;
+		}
+
+		qDebug() << "\t\t------------------------------------------------------------\n\t\t\tLttoComms::receivePacket() - irData starts with \\r\\n !!!!!!!!!!!!!!!!!!";
 		irDataIn = irDataIn.remove(0,2);
-		qDebug() << irDataIn;
+		qDebug() << "\t\tModified irDataIn =" << irDataIn;
 	}
-    if (irDataIn.endsWith("\r\n"))
+
+
+
+	if (irDataIn.endsWith("\r\n") || irDataIn.endsWith("@"))
     {
-        //Remove the \r\n
+		qDebug() << "\tLttoComms::receivePacket() ="<< irDataIn;
+		//Remove the \r\n
         irDataIn = irDataIn.trimmed();
-		//qDebug() << "\tLttoComms::receivePacket() - Trimmed:"<< RxData;
+		qDebug() << "\tLttoComms::receivePacket() - Trimmed:"<< irDataIn;
 
         if      (irDataIn.startsWith("ERROR"))
         {
@@ -320,7 +336,7 @@ void LttoComms::receivePacket(QByteArray RxData)
         else if (irDataIn.startsWith("STOP"))
         {
 			setDontAnnounceGame(true);
-//qDebug() << "\tLttoComms::receivePacket() - STOP";
+			qDebug() << "\tLttoComms::receivePacket() - STOP";
             irDataIn.clear();
             return;
         }

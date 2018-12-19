@@ -180,7 +180,26 @@ void ScoresWindow::addColumnLabels(int modus)
 				}
 				else
 				{
-					ui->scoreTable->setHorizontalHeaderItem(columnIndex++, new QTableWidgetItem(QString::number(index)));
+					if(gameInfo.getNumberOfTeams() == 0)
+						ui->scoreTable->setHorizontalHeaderItem(columnIndex++, new QTableWidgetItem(QString::number(index)));
+					else
+					{
+						if		(index <= 8)
+						{
+							QString	playerText = "1." +  QString::number(index);
+							ui->scoreTable->setHorizontalHeaderItem(columnIndex++, new QTableWidgetItem(playerText));
+						}
+						else if (index <=16)
+						{
+							QString	playerText = "2." +  QString::number(index-8);
+							ui->scoreTable->setHorizontalHeaderItem(columnIndex++, new QTableWidgetItem(playerText));
+						}
+						else
+						{
+							QString	playerText = "3." +  QString::number(index-16);
+							ui->scoreTable->setHorizontalHeaderItem(columnIndex++, new QTableWidgetItem(playerText));
+						}
+					}
 				}
                 ui->scoreTable->setColumnWidth(columnIndex-1, columnWidth);
             }
@@ -202,10 +221,21 @@ void ScoresWindow::addPlayerRows()
 
             //add playerID number
             playerNumber[index] = new QTableWidgetItem();
-            playerNumber[index]->setData(Qt::EditRole, index);
+			//playerNumber[index]->setData(Qt::EditRole, index);
             playerNumber[index]->setTextAlignment(Qt::AlignCenter);
             playerNumber[index]->setFont(tableFont);
-            ui->scoreTable->setItem(thisRow, 0, playerNumber[index]);
+
+			if(gameInfo.getNumberOfTeams() == 0)
+				playerNumber[index]->setData(Qt::EditRole, index);
+			else
+			{
+				if		(index <= 8) playerNumber[index]->setData(Qt::EditRole, 1 + (index/10.0));
+
+				else if (index <=16) playerNumber[index]->setData(Qt::EditRole, 2 + (index-8)/10.0);
+
+				else				 playerNumber[index]->setData(Qt::EditRole, 3 + (index-16)/10.0);
+			}
+			ui->scoreTable->setItem(thisRow, 0, playerNumber[index]);
 
             //add player name
             playerTaggerName[index] = new QTableWidgetItem(playerInfo[index].getPlayerName());

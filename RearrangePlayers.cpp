@@ -106,9 +106,20 @@ void RearrangePlayers::reSizeListWidgetButtonWidth()
 
 void RearrangePlayers::assignPlayersToTeams(bool isRandom)
 {
+	//TODO: Need to modify to only randomise selected players
+	//		Also need to respect Team balances (eg. 5 in Team1 and 3 in Team2).
+	//Pseudo code
+	// Check how many players on Team1/2/3
+	// Randomise only selected players
+	// Check Team1/2/3 numbers are correct, if not force some to move.
+
+	uint8_t	numberOfPlayersToShuffle = MAX_PLAYERS;
+	if(gameInfo.getNumberOfTeams() == 2) numberOfPlayersToShuffle = 16;
+
+
 	//	Create an array and initialise all as Zer0.
 	int newPlayerNumber[MAX_PLAYERS+1];
-	for(int index = 1; index <= MAX_PLAYERS; index++)
+	for(int index = 1; index <= numberOfPlayersToShuffle; index++)
 	{
 		newPlayerNumber[index] = index;
 	}
@@ -118,7 +129,7 @@ void RearrangePlayers::assignPlayersToTeams(bool isRandom)
 
 
 	// Update the player numbers and refresh the grid.
-	for(int index = 1; index <= MAX_PLAYERS; index++)
+	for(int index = 1; index <= numberOfPlayersToShuffle; index++)
 	{
 		if (isRandom)	playerInfo[0].copyPlayerSettings(index, newPlayerNumber[index] );
 		else			playerInfo[0].copyPlayerSettings(index, playerInfo[index].getPlayerIndex() );

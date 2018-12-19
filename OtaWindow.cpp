@@ -69,6 +69,7 @@ void OtaWindow::heartBeat()
 	static bool toggle = true;
 
 	lttoComms->sendHeartBeat();
+	qDebug() << "OtaWindow::heartBeat()";
 	if(lttoComms->getTcpCommsConnected())
 	{
 		ui->btn_Ok->setEnabled(true);

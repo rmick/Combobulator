@@ -34,6 +34,7 @@ public:
 	void		sendPing(QString pingText);
 	void		sendHeartBeat();
 	void		sendEspRestart();
+	void		sendDisconnectClient();
 
     bool        getUseLazerSwarm() const;
     void        setUseLazerSwarm(bool value);

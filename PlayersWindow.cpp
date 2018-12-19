@@ -403,6 +403,12 @@ void PlayersWindow::updatePlayerButtons()
 	}
 }
 
+void PlayersWindow::closeTheWindow()
+{
+	qDebug() << "PlayersWindow::closeTheWindow()";
+	deleteLater();
+}
+
 void PlayersWindow::RenamePlayer(int player)
 {
     QString text = QInputDialog::getText(this, tr("Rename Player"), tr("Enter Player name:"), QLineEdit::Normal, playerInfo[player].getPlayerName());
@@ -570,27 +576,13 @@ void PlayersWindow::on_btn_StartGame_clicked()
 	{
 		ui->btn_StartGame->setEnabled(false);
 		QMessageBox::warning(this,"Error", "There are no players in the game");
-
-		//TODO : This is a hack to get around the problem
-		//		1) Host a game with a few players
-		//		2) Dump all the players
-		//		3) Cancel the hosting
-		//		4) got to players window and try to host the game
-		//		There are player buttons showing, but they are inverted.
-		//	The correct solution is to do this in the redraw of the window.
-		//Reset all buttons to default stylesheet settings.
-		for (int x = 1; x < 25; x++)
-		{
-			PlayerButtons[x]->setChecked(false);
-			PlayerButtons[x]->setStyleSheet(myStyleSheet.getButtonUnCheckedCss());
-		}
 		return;
 	}
 
 	if (!hostGameWindow)	hostGameWindow = new HostGameWindow(this);
 	if(hostGameWindow->resetPlayersForNewGame() == false) return;
 
-	connect(hostGameWindow,	SIGNAL(closingHostGameWindow()),	this,	SLOT(close()) );
+	connect(hostGameWindow,	SIGNAL(closingHostGameWindow()),	this,	SLOT(closeTheWindow()) );
 
 #ifdef QT_DEBUG
 	hostGameWindow->show();
