@@ -51,7 +51,7 @@ public:
 	int		getBitFlags1(int bitNumber) const;
 
 	int		getPackedFlags2() const;
-	void	setPackedFlags2(int value);;
+	void	setPackedFlags2(int value);
 	void	setBitFlags2(int bitNumber, bool state);
 	int		getBitFlags2(int bitNumber) const;
 
@@ -115,8 +115,8 @@ public:
 	int		getPlayerNumberInThisGame() const;
 	void	setPlayerNumberInThisGame(int value);
 
-	int		getTotalTagsTaken() const;
-	void	setTotalTagsTaken(int value);
+//	int		getTotalTagsTaken() const;
+//	void	setTotalTagsTaken(int value);
 
 	void	copyPlayerSettings(int copyFrom, int copyTo);
 

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>734</width>
-    <height>481</height>
+    <width>717</width>
+    <height>515</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,50 +22,58 @@
     	border-color: cyan;
 }</string>
   </property>
-  <widget class="QPushButton" name="btn_Ok">
-   <property name="geometry">
-    <rect>
-     <x>610</x>
-     <y>410</y>
-     <width>113</width>
-     <height>61</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>OK</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label">
-   <property name="geometry">
-    <rect>
-     <x>30</x>
-     <y>20</y>
-     <width>571</width>
-     <height>441</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Copyright 2017-2018          S Richie Mickan&lt;/p&gt;&lt;p&gt;&lt;br/&gt;Created in Qt 5.10&lt;/p&gt;&lt;p&gt;&lt;br/&gt;Visit &lt;a href=&quot;http://www.bushandbeyond.com.au/combobulator.html&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;www.bushandbeyond.com.au/Combobulator&lt;/span&gt;&lt;/a&gt; to purchase the WiFi hardware interface.&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://www.gnu.org/licenses/lgpl.txt&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;-------------------------------------------------------------------------------&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Thanks to A. Faucher and R. McArdyle for their work in reverse engineering the LTTO IR codes.&lt;br/&gt;Visit wiki.lazerswarm.com for all the info.&lt;/p&gt;&lt;p&gt;Special thanks to Bryan Steele for extensive beta testing and bug finding,&lt;br/&gt;Andrew Dene for the Logo, and Ben Rutherford for the hardware PCB layout.&lt;/p&gt;&lt;p&gt;This software is licensed under &lt;a href=&quot;https://www.gnu.org/licenses/lgpl.txt&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;LGPL v3.0&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://www.gnu.org/licenses/lgpl.txt&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;-------------------------------------------------------------------------------&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;richie@bushandbeyond.com.au&lt;/p&gt;&lt;p&gt;www.github.com/rmick&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-   </property>
-   <property name="openExternalLinks">
-    <bool>true</bool>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="btn_UpdateFirmware">
-   <property name="geometry">
-    <rect>
-     <x>580</x>
-     <y>10</y>
-     <width>141</width>
-     <height>71</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Update
+  <layout class="QFormLayout" name="formLayout">
+   <item row="1" column="0">
+    <widget class="QLabel" name="label">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Copyright 2017-2018          S Richie Mickan&lt;/p&gt;&lt;p&gt;&lt;br/&gt;Created in Qt 5.10&lt;/p&gt;&lt;p&gt;&lt;br/&gt;Visit &lt;a href=&quot;http://www.bushandbeyond.com.au/combobulator.html&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;www.bushandbeyond.com.au/Combobulator&lt;/span&gt;&lt;/a&gt; to purchase the WiFi hardware interface.&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://www.gnu.org/licenses/lgpl.txt&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;-------------------------------------------------------------------------------&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Thanks to A. Faucher and R. McArdyle for their work in reverse engineering the LTTO IR codes.&lt;br/&gt;Visit wiki.lazerswarm.com for all the info.&lt;/p&gt;&lt;p&gt;Special thanks to Bryan Steele for extensive beta testing and bug finding,&lt;br/&gt;Andrew Dene for the Logo, and Ben Rutherford for the hardware PCB layout.&lt;/p&gt;&lt;p&gt;This software is licensed under &lt;a href=&quot;https://www.gnu.org/licenses/lgpl.txt&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;LGPL v3.0&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://www.gnu.org/licenses/lgpl.txt&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;-------------------------------------------------------------------------------&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;richie@bushandbeyond.com.au&lt;/p&gt;&lt;p&gt;www.github.com/rmick&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="openExternalLinks">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="2">
+    <widget class="QPushButton" name="btn_Ok">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Maximum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>75</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>OK</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0" colspan="2">
+    <widget class="QPushButton" name="btn_UpdateFirmware">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="text">
+      <string>Update
 Base Station
 software</string>
-   </property>
-  </widget>
+     </property>
+    </widget>
+   </item>
+  </layout>
  </widget>
  <resources/>
  <connections/>

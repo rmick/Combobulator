@@ -286,15 +286,15 @@ void Players::setPlayerNumberInThisGame(int value)
     playerNumberInThisGame = value;
 }
 
-int Players::getTotalTagsTaken() const
-{
-    return totalTagsTaken;
-}
+//int Players::getTotalTagsTaken() const
+//{
+//    return totalTagsTaken;
+//}
 
-void Players::setTotalTagsTaken(int value)
-{
-    totalTagsTaken = value;
-}
+//void Players::setTotalTagsTaken(int value)
+//{
+//    totalTagsTaken = value;
+//}
 
 /////////////////////////////////////////////////////////////////////////////
 /// \brief Players::streamToFile

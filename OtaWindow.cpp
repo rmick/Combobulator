@@ -53,6 +53,7 @@ void OtaWindow::on_btn_Ok_clicked()
 	ui->btn_cancel->setEnabled(false);
 	lttoComms->nonBlockingDelay(500);
 	QMessageBox::warning(this,"Ready", "Please standby. The device will now restart.");
+	timerHeartBeat->stop();
 	deleteLater();
 }
 

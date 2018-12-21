@@ -370,22 +370,28 @@ void DeBrief::calculateScores()
 {
 	for (int index = 1; index <= MAX_PLAYERS; index++)
     {
-        int score = 0;
-        score += playerInfo[index].getTotalTagsLanded(index)            * gameInfo.getPointsPerTagLanded();
-        score += playerInfo[index].getTotalTagsTaken()                  * gameInfo.getPointsPerTagTaken();
-        score += playerInfo[index].getZoneTimeMinutes()                 * gameInfo.getPointsPerZoneMinute();
-        score += playerInfo[index].getZoneTimeSeconds()                 *(gameInfo.getPointsPerZoneMinute() / 60.0);
-        score += playerInfo[index].getSurvivalTimeMinutes()             * gameInfo.getPointsPerSurvivalMinute();
-        score += playerInfo[index].getSurvivalTimeSeconds()             *(gameInfo.getPointsPerSurvivalMinute() / 60.0);
-         //TODO: playerInfo[index].setKingsTagsLanded()
-        //       playerInfo[index].setOwnKingTagsLanded()
-        //       playerInfo[index].setOwnTeamTagsLanded()
-        //       do not exist yet.
-//        score += playerInfo[index].getKingTagsLanded()                 * gameInfo.getPointsPerKingHit();
-//        score += playerInfo[index].getOwnKingTagsLanded()              * gameInfo.getPointsPerZoneMinute();
-//        score += playerInfo[index].getOwnTeamTagsLanded()              * gameInfo.getPointsPerTagLandedNegative();
+		if(gameInfo.getIsThisPlayerInTheGame(index))
+		{
+			int score = 0;
+			score += playerInfo[index].getTotalTagsLanded(index)            * gameInfo.getPointsPerTagLanded();
+			qDebug() << "DeBrief::calculateScores() - Player" << index << "\tTagsLandedScore =" << playerInfo[index].getTotalTagsLanded(index);
+			score += playerInfo[index].getTagsTaken(0)                  * gameInfo.getPointsPerTagTaken();
+			qDebug() << "DeBrief::calculateScores() - Player" << index << "\tTagsTakenScore =" << playerInfo[index].getTagsTaken(0) ;
+			score += playerInfo[index].getZoneTimeMinutes()                 * gameInfo.getPointsPerZoneMinute();
+			score += playerInfo[index].getZoneTimeSeconds()                 *(gameInfo.getPointsPerZoneMinute() / 60.0);
+			score += playerInfo[index].getSurvivalTimeMinutes()             * gameInfo.getPointsPerSurvivalMinute();
+			score += playerInfo[index].getSurvivalTimeSeconds()             *(gameInfo.getPointsPerSurvivalMinute() / 60.0);
+			 //TODO: playerInfo[index].setKingsTagsLanded()
+			//       playerInfo[index].setOwnKingTagsLanded()
+			//       playerInfo[index].setOwnTeamTagsLanded()
+			//       do not exist yet.
+	//        score += playerInfo[index].getKingTagsLanded()                 * gameInfo.getPointsPerKingHit();
+	//        score += playerInfo[index].getOwnKingTagsLanded()              * gameInfo.getPointsPerZoneMinute();
+	//        score += playerInfo[index].getOwnTeamTagsLanded()              * gameInfo.getPointsPerTagLandedNegative();
 
-        playerInfo[index].setGameScore(score);
+			playerInfo[index].setGameScore(score);
+		}
+
     }
 }
 
@@ -400,40 +406,57 @@ void DeBrief::calculateRankings()
     QMultiMap<int, int> scoresTable;
     for (int index = 1; index <= MAX_PLAYERS; index++)
     {
-        scoresTable.insert(playerInfo[index].getGameScore(), index);
+		if(gameInfo.getIsThisPlayerInTheGame(index) == false)	scoresTable.insert(-32768, index);		//force non-players to a superlow score.
+		else													scoresTable.insert(playerInfo[index].getGameScore(), index);
     }
 
+	qInfo() << "-----------------------------------";
     //extract the ranking order and save to playerInfo.
     QMapIterator<int, int> scoresIterator(scoresTable);
     while (scoresIterator.hasNext())
     {
         scoresIterator.next();
         playerInfo[scoresIterator.value()].setRankingInGame(counter);
+		qInfo() << "DeBrief::calculateRankings() - Player" << scoresIterator.value() << "\tScore =" << playerInfo[scoresIterator.value()].getGameScore() << "\tRawRank =" << counter;
         counter--;
     }
 
     //Adjust ranks to 1224 system
+
+	qDebug() << "DeBrief::calculateRankings() - Calculate 1224 rankings";
     int currentRankedPlayer = 0;
 
-    for (int rankIndex = MAX_PLAYERS; rankIndex >= 1; rankIndex--)
+	for (int rankIndex = 1; rankIndex >= MAX_PLAYERS; rankIndex++)
     {
-        //find the player whose rank == rankIndex
+		//find the player whose rank == rankIndex
         for (int thisPlayer = 1; thisPlayer <= MAX_PLAYERS; thisPlayer++)
         {
             if(playerInfo[thisPlayer].getRankingInGame() == rankIndex)
             {
-                currentRankedPlayer = thisPlayer;
+				//Check to see if they are in the game
+				if(gameInfo.getIsThisPlayerInTheGame(thisPlayer))   currentRankedPlayer = thisPlayer;
+				else												currentRankedPlayer = 0;
+				qInfo() << "DeBrief::calculateRankings() - Player" << thisPlayer << "ranking =" << rankIndex;
             }
         }
         //get their score
         int scoreToCheck = playerInfo[currentRankedPlayer].getGameScore();
+		qInfo() << "DeBrief::calculateRankings() - Player" << currentRankedPlayer << "gameScore =" << scoreToCheck;
 
-        //does anyone else have the same score? if so match the rank
+		//does anyone else have the same score? if so match the rank of the higher ranked player.
+		// e.g. ranks 5 + 6 both become 5
         for (int playerToCompare = 1; playerToCompare <= MAX_PLAYERS; playerToCompare++)
         {
             if (playerInfo[playerToCompare].getGameScore() == scoreToCheck)
             {
-                playerInfo[playerToCompare].setRankingInGame(rankIndex);
+				if(currentRankedPlayer != 0)
+				{
+					qInfo() << "DeBrief::calculateRankings() Player" << playerToCompare << "Score:" << scoreToCheck << "Rank:" << rankIndex;
+					//Check which player has higher ranking
+					//use higher ranking for both
+					//check for any other players with same score.
+					playerInfo[playerToCompare].setRankingInGame(rankIndex);
+				}
             }
         }
     }

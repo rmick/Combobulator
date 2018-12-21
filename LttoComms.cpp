@@ -312,19 +312,19 @@ void LttoComms::receivePacket(QByteArray RxData)
 			return;
 		}
 
-		qDebug() << "\t\t------------------------------------------------------------\n\t\t\tLttoComms::receivePacket() - irData starts with \\r\\n !!!!!!!!!!!!!!!!!!";
+		//qDebug() << "\t\t------------------------------------------------------------\n\t\t\tLttoComms::receivePacket() - irData starts with \\r\\n !!!!!!!!!!!!!!!!!!";
 		irDataIn = irDataIn.remove(0,2);
-		qDebug() << "\t\tModified irDataIn =" << irDataIn;
+		//qDebug() << "\t\tModified irDataIn =" << irDataIn;
 	}
 
 
 
 	if (irDataIn.endsWith("\r\n") || irDataIn.endsWith("@"))
     {
-		qDebug() << "\tLttoComms::receivePacket() ="<< irDataIn;
+		//qDebug() << "\tLttoComms::receivePacket() ="<< irDataIn;
 		//Remove the \r\n
         irDataIn = irDataIn.trimmed();
-		qDebug() << "\tLttoComms::receivePacket() - Trimmed:"<< irDataIn;
+		//qDebug() << "\tLttoComms::receivePacket() - Trimmed:"<< irDataIn;
 
         if      (irDataIn.startsWith("ERROR"))
         {
@@ -361,7 +361,7 @@ void LttoComms::receivePacket(QByteArray RxData)
 		else if (irDataIn.startsWith("OTA"))
 		{
 			emit OtaReceived(irDataIn.remove(0,4));
-			//qDebug() << "LttoComms::receivePacket - OTA Ack: " << irDataIn;
+			qDebug() << "LttoComms::receivePacket - OTA Ack: " << irDataIn;
 			irDataIn.clear();
 			return;
 		}
@@ -369,7 +369,7 @@ void LttoComms::receivePacket(QByteArray RxData)
 		else if (irDataIn.startsWith("H-B-Ack"))
 		{
 			emit HbAckReceived(irDataIn);
-			//qDebug() << "LttoComms::receivePacket - H-B-Ack:" << irDataIn;
+			qDebug() << "LttoComms::receivePacket - H-B-Ack:" << irDataIn;
 			irDataIn.clear();
 			return;
 		}
@@ -377,7 +377,7 @@ void LttoComms::receivePacket(QByteArray RxData)
 		else if (irDataIn.startsWith("BATT"))
 		{
 			emit BattVoltsReceived(irDataIn.remove(0,5));
-			//qDebug() << "LttoComms::receivePacket - Battery Volts: " << irDataIn;
+			qDebug() << "LttoComms::receivePacket - Battery Volts: " << irDataIn;
 			irDataIn.clear();
 			return;
 		}
