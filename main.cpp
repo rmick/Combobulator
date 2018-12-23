@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
 {
 	QCoreApplication::setApplicationName( QString("Combobulator") );
     QApplication::setDesktopSettingsAware(true);
-qInstallMessageHandler(myMessageOutput);
+	qInstallMessageHandler(myMessageOutput);
 	QApplication    theApp(argc, argv);
     LttoMainWindow  lttoMainWindow;
 	lttoMainWindow.setWindowIcon(QIcon(":/resources/images/Combobulator.ico"));

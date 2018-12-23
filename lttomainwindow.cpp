@@ -86,6 +86,9 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
     QMainWindow::showFullScreen();
 #endif
 
+	QEventLoop loop;
+	QTimer::singleShot(500, &loop, SLOT(quit()));
+	loop.exec();
 	QMessageBox::critical(this,"WARNING","Have you disabled ALL power saving on this device?\n\nThe host device must stay awake at all times during the game, otherwise the Combobulator will not function !");
 
 }
