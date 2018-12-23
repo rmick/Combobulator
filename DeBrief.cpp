@@ -123,8 +123,9 @@ void DeBrief::RequestTagReports()
     {
         teamAndPlayerByte = (deBriefTeam << 4) + deBriefPlayer;
     }
-    qDebug() << "\nDeBrief::RequestTagReports() -" << currentPlayer << playerToDeBrief << ":" << deBriefTeam << deBriefPlayer << "MessageType" << deBriefMessageType;
+	//qDebug() << "\nDeBrief::RequestTagReports() -" << currentPlayer << playerToDeBrief << ":" << deBriefTeam << deBriefPlayer << "MessageType" << deBriefMessageType;
     emit SendToHGWlistWidget("Debriefing Player =" + QString::number(currentPlayer) + ", MessageType:" + QString::number(deBriefMessageType));
+	qInfo() << "Debriefing Player =" + QString::number(currentPlayer) + ", MessageType:" + QString::number(deBriefMessageType);
 
 	lttoComms->sendPacket(PACKET, REQUEST_TAG_REPORT);
 	lttoComms->sendPacket(DATA, gameInfo.getGameID());
@@ -156,7 +157,7 @@ void DeBrief::ReceiveTagSummary(int game, int teamAndPlayer, int tagsTaken, int 
 	lttoComms->setDontAnnounceGame(true);
 
 	playerInfo[currentPlayer].setTagsTaken		 (0, lttoComms->ConvertBCDtoDec(tagsTaken));  //Player 0 is global
-	qDebug() << "DeBrief::ReceiveTagSummary() - Setting global player tags - BCD =" << tagsTaken << ", Dec =" << lttoComms->ConvertBCDtoDec(tagsTaken);
+	//qDebug() << "DeBrief::ReceiveTagSummary() - Setting global player taken tags - BCD =" << tagsTaken << ", Dec =" << lttoComms->ConvertBCDtoDec(tagsTaken);
 	playerInfo[currentPlayer].setSurvivalTimeMinutes(lttoComms->ConvertBCDtoDec(survivedMinutes));
 	playerInfo[currentPlayer].setSurvivalTimeSeconds(lttoComms->ConvertBCDtoDec(survivedSeconds));
 	playerInfo[currentPlayer].setZoneTimeMinutes    (lttoComms->ConvertBCDtoDec(zoneTimeMinutes));
@@ -176,11 +177,11 @@ void DeBrief::ReceiveTagSummary(int game, int teamAndPlayer, int tagsTaken, int 
 
     isSummaryTagReportReceived = true;
 
-    qDebug() << "DeBrief::ReceiveTagSummary() - Game" << game  << currentPlayer;
-    qDebug() << "\tTags taken =" << playerInfo[currentPlayer].getTagsTaken(0);
-    qDebug() << "\tSurvivalTime =" << playerInfo[currentPlayer].getSurvivalTimeMinutes() << ":" << playerInfo[currentPlayer].getSurvivalTimeSeconds();
-    qDebug() << "\tZoneTime =" << playerInfo[currentPlayer].getZoneTimeMinutes() << ":" << playerInfo[currentPlayer].getZoneTimeSeconds();
-    qDebug() << "\tFlags" << playerInfo[currentPlayer].copyTo() << "\tTeam1:" << isTeam1TagReportDue << "\tTeam2:" << isTeam2TagReportDue << "\tTeam3:" << isTeam3TagReportDue;
+	qDebug() << "Player" << currentPlayer;
+	qDebug() << "\tTotal Tags taken =\t" << playerInfo[currentPlayer].getTagsTaken(0);
+	qDebug() << "\tSurvivalTime =\t" << playerInfo[currentPlayer].getSurvivalTimeMinutes() << ":" << playerInfo[currentPlayer].getSurvivalTimeSeconds();
+	qDebug() << "\tZoneTime =\t" << playerInfo[currentPlayer].getZoneTimeMinutes() << ":" << playerInfo[currentPlayer].getZoneTimeSeconds();
+	qDebug() << "\tFlags\t" << playerInfo[currentPlayer].getReportFlags() << "\tTeam1:" << isTeam1TagReportDue << "\tTeam2:" << isTeam2TagReportDue << "\tTeam3:" << isTeam3TagReportDue;
     SendToHGWlistWidget("DeBrief::ReceiveTagSummary() - Game" +QString::number(game) + ", Player" +QString::number(currentPlayer));
     SendToHGWlistWidget("\tTags taken =" +QString::number(playerInfo[currentPlayer].getTagsTaken(0)));
 }
@@ -423,10 +424,10 @@ void DeBrief::calculateRankings()
 
     //Adjust ranks to 1224 system
 
-	qDebug() << "DeBrief::calculateRankings() - Calculate 1224 rankings";
+	qDebug() << "\nDeBrief::calculateRankings() - Calculate 1224 rankings";
     int currentRankedPlayer = 0;
 
-	for (int rankIndex = 1; rankIndex >= MAX_PLAYERS; rankIndex++)
+	for (int rankIndex = MAX_PLAYERS; rankIndex >= 1; rankIndex--)
     {
 		//find the player whose rank == rankIndex
         for (int thisPlayer = 1; thisPlayer <= MAX_PLAYERS; thisPlayer++)
@@ -452,14 +453,12 @@ void DeBrief::calculateRankings()
 				if(currentRankedPlayer != 0)
 				{
 					qInfo() << "DeBrief::calculateRankings() Player" << playerToCompare << "Score:" << scoreToCheck << "Rank:" << rankIndex;
-					//Check which player has higher ranking
-					//use higher ranking for both
-					//check for any other players with same score.
 					playerInfo[playerToCompare].setRankingInGame(rankIndex);
 				}
             }
         }
     }
+
     //Assign TeamRanking
 
     //Total all the rankings for each team.
@@ -524,7 +523,7 @@ void DeBrief::prepareNewPlayerToDebrief(int playerToDebrief)
 
 bool DeBrief::checkIfPlayerIsDebriefed()
 {
-	qDebug() << "DeBrief::checkIfPlayerIsDebriefed()";
+	//qDebug() << "DeBrief::checkIfPlayerIsDebriefed()";
     bool isTeam1ok      = false;
     bool isTeam2ok      = false;
     bool isTeam3ok      = false;

@@ -49,6 +49,7 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
 	gameInfo.setIsSpiesTeamTagActive(true);
 	gameInfo.setNumberOfTeams(0);
 	gameInfo.setIsIndoorViewMode(true);
+	gameInfo.setCumulativeScoreMode(false);
 
 	timerHeartBeat = new QTimer(this);
 	//timerHeartBeat->start(1000);

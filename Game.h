@@ -120,6 +120,9 @@ public:
 	bool getIsIndoorViewMode() const;
 	void setIsIndoorViewMode(bool value);
 
+	bool getCumulativeScoreMode() const;
+	void setCumulativeScoreMode(bool value);
+
 signals:
 	void    NumberOfTeamsHasChanged(int NumTeams);
 
@@ -143,6 +146,7 @@ private:
     int     PlayerToReHost;
     bool    isLTARGame;
     bool    isReSpawnGame;
+	bool	cumulativeScoreMode = false;
 	bool	isIndoorViewMode; //not saved with game. It is here so that it is public to other classes.
 
     int     pointsPerTagLanded;

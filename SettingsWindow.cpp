@@ -11,17 +11,22 @@ SettingsWindow::SettingsWindow(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	if(gameInfo.getIsLTARGame())		ui->radioButton_LtarMode	->setChecked(true);
-	else								ui->radioButton_NormalMode	->setChecked(true);
+	if(gameInfo.getIsLTARGame())			ui->radioButton_LtarMode	->setChecked(true);
+	else									ui->radioButton_NormalMode	->setChecked(true);
 
-	if(gameInfo.getIsIndoorViewMode())	ui->radioButton_IndoorMode	->setChecked(true);
-	else								ui->radioButton_OutdoorMode	->setChecked(true);
+	if(gameInfo.getIsIndoorViewMode())		ui->radioButton_IndoorMode	->setChecked(true);
+	else									ui->radioButton_OutdoorMode	->setChecked(true);
 	qDebug() << "SettingsWindow::SettingsWindow() - isIndoorViewMode =" << gameInfo.getIsIndoorViewMode();
+
+	if(gameInfo.getCumulativeScoreMode())	ui->btn_CumulativeScores	->setChecked(true);
+	else									ui->btn_CumulativeScores	->setChecked(false);
 
 	int timeOutValue = gameInfo.getCountDownTime();
 	ui->sldr_CountDownTime->setValue(timeOutValue);
 
 	ui->btn_About->setText("About\n" + VERSION_NUMBER + " - " + BUILD_NUMBER);
+
+	ui->btn_CumulativeScores->setVisible(false);
 }
 
 SettingsWindow::~SettingsWindow()
@@ -109,4 +114,10 @@ void SettingsWindow::refreshDisplay()
 {
 	qDebug() << "Updated";
 	QWidget::update();
+}
+
+void SettingsWindow::on_btn_CumulativeScores_clicked()
+{
+	if(ui->btn_CumulativeScores->isChecked())	gameInfo.setCumulativeScoreMode(true);
+	else										gameInfo.setCumulativeScoreMode(false);
 }

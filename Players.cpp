@@ -540,8 +540,7 @@ int Players::getTagsTaken(int playerNumber) const
 
 void Players::setTagsTaken(int playerNumber, int value)
 {
-    tagsTaken[playerNumber] = value;
-    totalTagsTaken += value;
+	tagsTaken[playerNumber] = value;
 }
 
 int Players::getSurvivalTimeMinutes() const
@@ -551,7 +550,7 @@ int Players::getSurvivalTimeMinutes() const
 
 void Players::setSurvivalTimeMinutes(int value)
 {
-    survivalTimeMinutes = value;
+	survivalTimeMinutes = value;
 }
 
 int Players::getSurvivalTimeSeconds() const
@@ -561,7 +560,7 @@ int Players::getSurvivalTimeSeconds() const
 
 void Players::setSurvivalTimeSeconds(int value)
 {
-    survivalTimeSeconds = value;
+	survivalTimeSeconds = value;
 }
 
 int Players::getZoneTimeMinutes() const
@@ -571,7 +570,7 @@ int Players::getZoneTimeMinutes() const
 
 void Players::setZoneTimeMinutes(int value)
 {
-    zoneTimeMinutes = value;
+	zoneTimeMinutes = value;
 }
 
 int Players::getZoneTimeSeconds() const
@@ -581,10 +580,10 @@ int Players::getZoneTimeSeconds() const
 
 void Players::setZoneTimeSeconds(int value)
 {
-    zoneTimeSeconds = value;
+	zoneTimeSeconds = value;
 }
 
-int Players::copyTo() const
+int Players::getReportFlags() const
 {
     return reportFlags;
 }

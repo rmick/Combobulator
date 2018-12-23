@@ -86,7 +86,7 @@ public:
 	int		getZoneTimeSeconds() const;
 	void	setZoneTimeSeconds(int value);
 
-	int		copyTo() const;
+	int		getReportFlags() const;
 	void	setReportFlags(int value);
 
 	int		getStartingAmmo() const;

@@ -140,7 +140,8 @@ const bool  BCD                     = true;
 const int   DEFAULT_GAME_TYPE       = 0x02;
 const int   DEFAULT_GAME_ID         = 0x42;
 const int   DEFAULT_GAME_LENGTH     = 10;
-const int   DEFAULT_COUNTDOWN_TIME  = 5;
+const int	DEBUG_COUNTDOWN_TIME	= 5;
+const int   DEFAULT_COUNTDOWN_TIME  = 30;
 const int   DEFAULT_RELOADS         = 100;        // 100 = Unlimited
 const int   DEFAULT_RELOADS2        = 0;          // 0xFFFF = LTAR unlimited
 const int   DEFAULT_HEALTH          = 25;

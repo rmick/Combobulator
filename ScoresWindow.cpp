@@ -77,7 +77,7 @@ void ScoresWindow::calibrateScreen(int modus)
     QRect screenGeometry = screen->availableGeometry();
     screenWidth   = screenGeometry.width()  - 40;   // allows for the border
     screenHeight  = screenGeometry.height() - 84;   // allows for the border
-    qDebug() << "ScoresWindow::calibrateScreen W x H:" << screenWidth << screenHeight;
+	qDebug() << "\nScoresWindow::calibrateScreen W x H:" << screenWidth << screenHeight;
     switch (modus)
     {
 

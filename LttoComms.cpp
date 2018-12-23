@@ -722,7 +722,7 @@ void LttoComms::processPacket(QList<QByteArray> data)
 		}
         break;
 
-    case TAG_SUMMARY:
+	case TAG_SUMMARY:				//P64
         game                = extract(data);
         teamAndPlayer       = extract(data);
         tagsTaken           = extract(data);
@@ -738,9 +738,9 @@ void LttoComms::processPacket(QList<QByteArray> data)
         else    setDontAnnounceGame(false);
         break;
 
-    case TEAM_1_TAG_REPORT:
-    case TEAM_2_TAG_REPORT:
-    case TEAM_3_TAG_REPORT:
+	case TEAM_1_TAG_REPORT:			//P65
+	case TEAM_2_TAG_REPORT:			//P66
+	case TEAM_3_TAG_REPORT:			//P67
         game                = extract(data);
         teamAndPlayer       = extract(data);
         playersInReportByte = extract(data);
@@ -811,6 +811,7 @@ void LttoComms::processPacket(QList<QByteArray> data)
 	case 10:
 	case 11:
 	case 12:
+	case 49:
 	case 129:
 		qDebug() << "LttoComms::processPacket() - Host packet received - P" << command << data;
 		setDontAnnounceGame(false);

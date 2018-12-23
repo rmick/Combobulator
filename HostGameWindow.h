@@ -20,7 +20,7 @@ class HostGameWindow : public QDialog
     Q_OBJECT
 
 public:
-    explicit HostGameWindow(QWidget *parent = 0);
+	explicit HostGameWindow(QWidget *parent = nullptr);
     ~HostGameWindow();
 
     void hideEvent(QHideEvent *hideEvent);  //Used to disable SerialPort when the window is hidden instead of closed
@@ -85,6 +85,8 @@ private slots:
 
 	void UpdateBatteryDisplay(QString volts);
 
+	void resetScores();
+
 private:
     //pointers
     Ui::HostGameWindow      *ui;
@@ -121,6 +123,7 @@ private:
     bool    sendingCommsActive;
     bool    rehostingActive;
     int     assignPlayerFailCount;
+	int		beaconType;
     //bool    dontAnnounceFailedSignal;
     //bool    firstPassThisPlayer;
 

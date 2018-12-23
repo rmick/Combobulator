@@ -39,11 +39,16 @@ Game::Game()
     team2rank = 0;
     team3rank = 0;
 
-    CountDownTime   = DEFAULT_COUNTDOWN_TIME;
+#ifdef  QT_DEBUG
+	CountDownTime   = DEBUG_COUNTDOWN_TIME;
+#else
+	CountDownTime   = DEFAULT_COUNTDOWN_TIME;
+#endif
+
     isThisPlayerInTheGame[0] = true;        //this is required so that Announce continues after all Taggers are hosted.
-    for (int x= 1; x<25; x++)
+	for (int index= 1; index <= MAX_PLAYERS; index++)
     {
-        isThisPlayerInTheGame[x] = false;
+		isThisPlayerInTheGame[index] = false;
     }
     for (int index = 1; index < 3; index++)
     {
@@ -270,6 +275,7 @@ void Game::streamToFile(QTextStream &out)
     out << "SpyTeamTagsActive:"<< isSpiesTeamTagActive << endl;
     out << "LTARmode:"         << isLTARGame        << endl;
     out << "ReSpawnEnabled:"   << isReSpawnGame     << endl;
+	out << "CumulativeScores:"  << cumulativeScoreMode << endl;
     out << "PointsPerTagLanded:"         << pointsPerTagLanded           << endl;
     out << "PointsPerTagLandedNegative:" << pointsPerTagLandedNegative   << endl;
     out << "PointsPerTagTaken:"          << pointsPerTagTaken            << endl;
@@ -322,6 +328,7 @@ void Game::streamFromFile(QTextStream &in)
             else if (descriptorG.contains("SpyTeamTagsActive:") )   isSpiesTeamTagActive    = extractInteger(descriptorG);
             else if (descriptorG.contains("LTARmode:") )            isLTARGame              = extractInteger(descriptorG);
 			else if (descriptorG.contains("ReSpawnEnabled:") )      isReSpawnGame           = extractInteger(descriptorG);
+			else if (descriptorG.contains("CumulativeScores:") )	cumulativeScoreMode		= extractInteger(descriptorG);
             else if (descriptorG.contains("PointsPerTagLanded:") )          pointsPerTagLanded          = extractInteger(descriptorG);
             else if (descriptorG.contains("PointsPerTagLandedNegative:") )  pointsPerTagLandedNegative  = extractInteger(descriptorG);
             else if (descriptorG.contains("PointsPerTagTaken:") )           pointsPerTagTaken           = extractInteger(descriptorG);
@@ -571,6 +578,16 @@ bool Game::getIsIndoorViewMode() const
 void Game::setIsIndoorViewMode(bool value)
 {
     isIndoorViewMode = value;
+}
+
+bool Game::getCumulativeScoreMode() const
+{
+    return cumulativeScoreMode;
+}
+
+void Game::setCumulativeScoreMode(bool value)
+{
+    cumulativeScoreMode = value;
 }
 
 int Game::extractInteger(QString &dG)

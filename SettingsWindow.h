@@ -41,6 +41,8 @@ private slots:
 
 	void refreshDisplay();
 
+	void on_btn_CumulativeScores_clicked();
+
 signals:
 	void	adjustScoring();
 	void	saveFile();

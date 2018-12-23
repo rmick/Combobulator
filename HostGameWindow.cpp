@@ -81,6 +81,7 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
     sound_Countdown         ->setLoopCount(5);
 
 	gameInfo.setGameID(host->getRandomNumber(1,255));
+	beaconType = 0;
 
 	ui->listWidget_Status->setVisible(false);
 }
@@ -851,6 +852,7 @@ bool HostGameWindow::resetPlayersForNewGame()
 	if (gameInfo.getGameType() == Game::Kings3)  host->pickTheKing();
 
     //Reset a few game variables
+	resetScores();
     countDownTimeRemaining = DEFAULT_COUNTDOWN_TIME;
     remainingGameTime = gameInfo.getGameLength()*60;
     sendingCommsActive = false;
@@ -957,7 +959,7 @@ void HostGameWindow::TaggerReHost()
     hostCurrentPlayer();                                //HostGameWindow::AddPlayer starts the CountDownTimer if(rehostingActive == true).
 }
 
-int beaconType = 0;
+
 void HostGameWindow::BeaconSignal()
 {
 	qDebug() << "\tHostGameWindow::BeaconSignal() triggered";
@@ -1117,4 +1119,25 @@ void HostGameWindow::UpdateBatteryDisplay(QString volts)
 		ui->label_BattVolts->setText("<html><span style = font-size:18pt;>Battery = " + volts + "v </span></html>");
 	}
 
+}
+
+void HostGameWindow::resetScores()
+{
+	qDebug() << "HostGameWindow::resetScores()";
+	for(int index = 1; index <= MAX_PLAYERS; index++)
+	{
+		playerInfo[index].setGameScore(0);
+
+		if(gameInfo.getCumulativeScoreMode() == false)
+		{
+			for (int subIndex = 0; subIndex <= MAX_PLAYERS; subIndex++)
+			{
+				playerInfo[index].setTagsTaken(subIndex, 0);
+			}
+			playerInfo[index].setZoneTimeMinutes(0);
+			playerInfo[index].setZoneTimeSeconds(0);
+			playerInfo[index].setSurvivalTimeMinutes(0);
+			playerInfo[index].setSurvivalTimeSeconds(0);
+		}
+	}
 }
