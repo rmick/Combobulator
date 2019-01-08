@@ -26,9 +26,6 @@ DeBrief::DeBrief(QObject *parent) : QObject(parent)
 	//BUG	Team Debrief is not correct
 	//		No team info givem
 
-	//BUG	Debrief with 4 players is wrong, some players get ranked at 22
-	//		Have seen the same with just players 1+24
-
     switch (gameInfo.getNumberOfTeams())
     {
     case 0:
@@ -138,7 +135,9 @@ void DeBrief::RequestTagReports()
 
 void DeBrief::ReceiveTagSummary(int game, int teamAndPlayer, int tagsTaken, int survivedMinutes, int survivedSeconds, int zoneTimeMinutes, int zoneTimeSeconds, int flags)
 {
-    qDebug() << "\n\tDeBrief::ReceiveTagSummary() from Player:" << currentPlayer;
+	if(isSummaryTagReportReceived) return;
+
+	qDebug() << "\n\tDeBrief::ReceiveTagSummary() from Player:" << currentPlayer;
     emit SendToHGWlistWidget("\tReceived TagSummary from Player:" + QString::number(currentPlayer));
 
     if(gameInfo.getGameID() != game)
@@ -188,7 +187,8 @@ void DeBrief::ReceiveTagSummary(int game, int teamAndPlayer, int tagsTaken, int 
 
 void DeBrief::Team1TagReportReceived(int game, int teamAndPlayer, int tagsP1, int tagsP2, int tagsP3, int tagsP4, int tagsP5, int tagsP6, int tagsP7, int tagsP8)
 {
-    if(gameInfo.getGameID() != game) return;
+	if(isTeam1TagReportReceived)	 return;
+	if(gameInfo.getGameID() != game) return;
     // Check if TeamAndPlayer matches currentPlayer and bail if not.
     if (decodeTeamAndPlayer(teamAndPlayer) == false) return;
 
@@ -220,7 +220,8 @@ void DeBrief::Team1TagReportReceived(int game, int teamAndPlayer, int tagsP1, in
 
 void DeBrief::Team2TagReportReceived(int game, int teamAndPlayer, int tagsP1, int tagsP2, int tagsP3, int tagsP4, int tagsP5, int tagsP6, int tagsP7, int tagsP8)
 {
-    if(gameInfo.getGameID() != game) return;
+	if(isTeam2TagReportReceived)	 return;
+	if(gameInfo.getGameID() != game) return;
     // Check if TeamAndPlayer matches currentPlayer and bail if not.
     if (decodeTeamAndPlayer(teamAndPlayer) == false) return;
 
@@ -243,7 +244,8 @@ void DeBrief::Team2TagReportReceived(int game, int teamAndPlayer, int tagsP1, in
 
 void DeBrief::Team3TagReportReceived(int game, int teamAndPlayer, int tagsP1, int tagsP2, int tagsP3, int tagsP4, int tagsP5, int tagsP6, int tagsP7, int tagsP8)
 {
-    if(gameInfo.getGameID() != game) return;
+	if(isTeam3TagReportReceived)	 return;
+	if(gameInfo.getGameID() != game) return;
     // Check if TeamAndPlayer matches currentPlayer and bail if not.
     if (decodeTeamAndPlayer(teamAndPlayer) == false) return;
 

@@ -4,6 +4,7 @@
 #include <QPixmap>
 #include <QSoundEffect>
 #include "Defines.h"
+#import <IOKit/pwr_mgt/IOPMLib.h>
 
 void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
@@ -95,7 +96,6 @@ int main(int argc, char *argv[])
 	QSoundEffect    sound_PowerUp;
     QPixmap         pixmap(":/resources/images/Combobulator Logo.jpg");
     QSplashScreen   splashScreen(pixmap);
-
 #ifndef QT_DEBUG
 	sound_PowerUp.setVolume(100);
 	sound_PowerUp.setSource(QUrl::fromLocalFile(":/resources/audio/stinger-power-on.wav"));

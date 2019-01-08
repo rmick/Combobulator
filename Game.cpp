@@ -220,6 +220,7 @@ QString Game::getGameName() const
 void Game::setGameName(QString value)
 {
     GameName = value;
+	qInfo() << "Game::setGameName() -" << value;
 }
 
 bool Game::getIsThisPlayerInTheGame(int index) const

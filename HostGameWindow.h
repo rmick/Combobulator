@@ -87,6 +87,10 @@ private slots:
 
 	void resetScores();
 
+	void removePhantomTeam3players();
+
+	void sendGameSettingsToLog();
+
 private:
     //pointers
     Ui::HostGameWindow      *ui;
@@ -128,6 +132,7 @@ private:
     //bool    firstPassThisPlayer;
 
     //methods
+	void	disableHostSleep(bool state);
 	void	setPromptText(QString text);
 	void	setNextPlayerText(QString text);
     void    hostCurrentPlayer();

@@ -68,8 +68,8 @@ androiddeployqt
 
 
 //  Build Number
-const QString	BUILD_NUMBER	= "r18.12.24";
-const QString	VERSION_NUMBER	= "v1.09";
+const QString	BUILD_NUMBER	= "r19.1.09";
+const QString	VERSION_NUMBER	= "v1.10";
 
 //Maximum number of players
 //--------------------------

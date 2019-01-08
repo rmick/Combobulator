@@ -2,6 +2,7 @@
 #include "ui_SettingsWindow.h"
 #include "Game.h"
 #include "Defines.h"
+#include <QMessageBox>
 #include <QDebug>
 #include <QTimer>
 
@@ -26,7 +27,7 @@ SettingsWindow::SettingsWindow(QWidget *parent) :
 
 	ui->btn_About->setText("About\n" + VERSION_NUMBER + " - " + BUILD_NUMBER);
 
-	ui->btn_CumulativeScores->setVisible(false);
+	//ui->btn_CumulativeScores->setVisible(false);
 }
 
 SettingsWindow::~SettingsWindow()
@@ -62,11 +63,13 @@ void SettingsWindow::on_btn_About_clicked()
 void SettingsWindow::on_radioButton_NormalMode_clicked()
 {
 	emit setLtarMode(false);
+	qInfo() << "SettingsWindow::on_radioButton_NormalMode_clicked() - Normal Mode Active";
 }
 
 void SettingsWindow::on_radioButton_LtarMode_clicked()
 {
 	emit setLtarMode(true);
+	qInfo() << "SettingsWindow::on_radioButton_LtarMode_clicked() - LTAR Mode Active";
 }
 
 void SettingsWindow::on_radioButton_IndoorMode_clicked()
@@ -120,4 +123,13 @@ void SettingsWindow::on_btn_CumulativeScores_clicked()
 {
 	if(ui->btn_CumulativeScores->isChecked())	gameInfo.setCumulativeScoreMode(true);
 	else										gameInfo.setCumulativeScoreMode(false);
+
+	if(gameInfo.getCumulativeScoreMode())	qInfo() << "SettingsWindow::on_btn_CumulativeScores_clicked() - Cumulative Scoring is Active";
+	else									qInfo() << "SettingsWindow::on_btn_CumulativeScores_clicked() - Cumulative Scoring is Disabled";
+}
+
+void SettingsWindow::on_btn_DoNotPressThisButton_clicked()
+{
+	//I always wanted to add this homage to HHGG into a product, so here it is.
+	QMessageBox::critical(this,"WARNING","Please do not press this button again.");
 }

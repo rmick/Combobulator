@@ -43,6 +43,8 @@ private slots:
 
 	void on_btn_CumulativeScores_clicked();
 
+	void on_btn_DoNotPressThisButton_clicked();
+
 signals:
 	void	adjustScoring();
 	void	saveFile();

@@ -84,6 +84,10 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
 	beaconType = 0;
 
 	ui->listWidget_Status->setVisible(false);
+
+	removePhantomTeam3players();
+	sendGameSettingsToLog();
+	disableHostSleep(true);
 }
 
 HostGameWindow::~HostGameWindow()
@@ -96,6 +100,7 @@ HostGameWindow::~HostGameWindow()
     timerReHost->stop();
 	timerBeacon->stop();
 	lttoComms->setHostingCommsActive(false);
+	disableHostSleep(false);
     delete ui;
 }
 
@@ -109,6 +114,7 @@ void HostGameWindow::hideEvent(QHideEvent *)
     timerGameTimeRemaining->stop();
     timerReHost->stop();
 	timerBeacon->stop();
+	disableHostSleep(false);
 	lttoComms->setHostingCommsActive(false);
 }
 
@@ -654,12 +660,13 @@ void HostGameWindow::closeHostGameWindow()
 	lttoComms->sendLCDtext("new Game"  , 3,  true);
 	lttoComms->nonBlockingDelay(TEXT_SENT_DELAY);
 	lttoComms->nonBlockingDelay(500);
-	//qDebug() << " _____ HostGameWindow::closeHostGameWindow() - Restarting ESP";
-	//lttoComms->sendPing("ESP-Please Restart");
-	//lttoComms->sendEspRestart();
-	//lttoComms->sendPing("ESP-Please Restart"); //required to get the reset to work.
-	//lttoComms->nonBlockingDelay(500);
+	qDebug() << " _____ HostGameWindow::closeHostGameWindow() - Restarting ESP";
+	lttoComms->sendPing("ESP-Please Restart");
+	lttoComms->sendEspRestart();
+	lttoComms->sendPing("ESP-Please Restart"); //required to get the reset to work.
+	lttoComms->nonBlockingDelay(500);
 	lttoComms->closePorts();
+	disableHostSleep(false);
 
 	closingWindow = true;
     ui->btn_Cancel->setEnabled(false);
@@ -1077,6 +1084,13 @@ void HostGameWindow::deBriefTaggers()
     }
 }
 
+void HostGameWindow::disableHostSleep(bool state)
+{
+	qWarning() << "HostGameWindow::disableHostSleep() - " << state;
+	qWarning() << "Nothing to see here !";
+	//TODO: Add code for disabling sleep of host device. This will be OS specific.
+}
+
 void HostGameWindow::setPromptText(QString text)
 {
 	QString _textToSet = text;
@@ -1127,17 +1141,75 @@ void HostGameWindow::resetScores()
 	for(int index = 1; index <= MAX_PLAYERS; index++)
 	{
 		playerInfo[index].setGameScore(0);
+//		if(gameInfo.getCumulativeScoreMode() == false)
+//		{
+//			for (int subIndex = 0; subIndex <= MAX_PLAYERS; subIndex++)
+//			{
+//				playerInfo[index].setTagsTaken(subIndex, 0);
+//			}
+//			playerInfo[index].setZoneTimeMinutes(0);
+//			playerInfo[index].setZoneTimeSeconds(0);
+//			playerInfo[index].setSurvivalTimeMinutes(0);
+//			playerInfo[index].setSurvivalTimeSeconds(0);
+//		}
+	}
+}
 
-		if(gameInfo.getCumulativeScoreMode() == false)
+void HostGameWindow::removePhantomTeam3players()
+{
+	if(gameInfo.getNumberOfTeams() == 2)
 		{
-			for (int subIndex = 0; subIndex <= MAX_PLAYERS; subIndex++)
+		qDebug() << "HostGameWindow::removePhantomTeam3players()";
+		for(int index = 17; index <= MAX_PLAYERS; index++)
 			{
-				playerInfo[index].setTagsTaken(subIndex, 0);
+				if(gameInfo.getIsThisPlayerInTheGame(index))
+				{
+					gameInfo.setIsThisPlayerInTheGame(index, false);
+					qDebug() << "HostGameWindow::removePhantomTeam3players() - Removing player" << index;
+				}
 			}
-			playerInfo[index].setZoneTimeMinutes(0);
-			playerInfo[index].setZoneTimeSeconds(0);
-			playerInfo[index].setSurvivalTimeMinutes(0);
-			playerInfo[index].setSurvivalTimeSeconds(0);
+		}
+}
+
+void HostGameWindow::sendGameSettingsToLog()
+{
+	qInfo() << endl;
+	qInfo() << "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^";
+	qInfo() << "HostGameWindow::sendGameSettingsToLog()";
+	if (gameInfo.getIsLTARGame())	qInfo() << "This is an LTAR mode game";
+	else							qInfo() << "This is an normal mode game";
+	if (gameInfo.getCumulativeScoreMode())	qInfo() << "Scores are cumultative";
+	else									qInfo() << "Scores reset with each game";
+	qInfo() << "GameType:\t\t"				<< gameInfo.getGameType() << gameInfo.getGameName();
+	qInfo() << "Number of teams:\t"		<< gameInfo.getNumberOfTeams();
+	qInfo() << "Number of players:\t"	<< gameInfo.getNumberOfPlayersInGame();
+	qInfo() << "Number of Spies:\t"		<< gameInfo.getNumberOfSpies();
+	if (gameInfo.getIsSpiesTeamTagActive())	qInfo() << "Spies have TeamTags Active";
+	else									qInfo() << "Spies have TeamTags Disabled";
+	if(gameInfo.getIsReSpawnGame())			qInfo() << "Respwan is Active";
+	else									qInfo() << "Respawn is Disabled";
+	if(playerInfo[0].getMedicMode())		qInfo() << "Global MedicMode is Active";
+	else									qInfo() << "Global MedicMode is Disabled";
+	if(playerInfo[0].getTeamTags())			qInfo() << "Global TeamTags are Active";
+	else									qInfo() << "Global TeamTags are Disabled";
+	if(playerInfo[0].getSlowTags())			qInfo() << "Global SlowTags are Active";
+	else									qInfo() << "Global SlowTags are Disabled";
+	qInfo() << "Global Flags 1:  " << QString::number(playerInfo[0].getPackedFlags1(), 2);
+	qInfo() << "Global Flags 2:  " << QString::number(playerInfo[0].getPackedFlags2(), 2);
+	if(gameInfo.getIsLTARGame())  qInfo() << "Global Flags 3:  " << QString::number(playerInfo[0].getPackedFlags3(), 2);
+	for (int index = 1; index <= MAX_PLAYERS; index++)
+	{
+		if(gameInfo.getIsThisPlayerInTheGame(index))
+		{
+			qInfo() << "     Player" << index << "-" << playerInfo[index].getPlayerName();
+			qInfo() << "\tMedicMode:\t" <<	playerInfo[index].getMedicMode();
+			qInfo() << "\tTeamTags:\t" <<	playerInfo[index].getTeamTags();
+			qInfo() << "\tSlowTags:\t" <<	playerInfo[index].getSlowTags();
+			qInfo() << "\tFlags 1:\t" << QString::number(playerInfo[index].getPackedFlags1(), 2);
+			qInfo() << "\tFlags 2:\t" << QString::number(playerInfo[index].getPackedFlags2(), 2);
+			if(gameInfo.getIsLTARGame())  qInfo() << "\tFlags 3:\t" << QString::number(playerInfo[index].getPackedFlags3(), 2);
 		}
 	}
+	qInfo() << "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^";
+	qInfo() << endl;
 }

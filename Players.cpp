@@ -540,7 +540,8 @@ int Players::getTagsTaken(int playerNumber) const
 
 void Players::setTagsTaken(int playerNumber, int value)
 {
-	tagsTaken[playerNumber] = value;
+	if(gameInfo.getCumulativeScoreMode())	tagsTaken[playerNumber] += value;
+	else									tagsTaken[playerNumber] = value;
 }
 
 int Players::getSurvivalTimeMinutes() const
@@ -550,7 +551,8 @@ int Players::getSurvivalTimeMinutes() const
 
 void Players::setSurvivalTimeMinutes(int value)
 {
-	survivalTimeMinutes = value;
+	if(gameInfo.getCumulativeScoreMode())	survivalTimeMinutes += value;
+	else									survivalTimeMinutes = value;
 }
 
 int Players::getSurvivalTimeSeconds() const
@@ -560,7 +562,8 @@ int Players::getSurvivalTimeSeconds() const
 
 void Players::setSurvivalTimeSeconds(int value)
 {
-	survivalTimeSeconds = value;
+	if(gameInfo.getCumulativeScoreMode())	survivalTimeSeconds += value;
+	else									survivalTimeSeconds = value;
 }
 
 int Players::getZoneTimeMinutes() const
@@ -570,7 +573,8 @@ int Players::getZoneTimeMinutes() const
 
 void Players::setZoneTimeMinutes(int value)
 {
-	zoneTimeMinutes = value;
+	if(gameInfo.getCumulativeScoreMode())	zoneTimeMinutes += value;
+	else									zoneTimeMinutes = value;
 }
 
 int Players::getZoneTimeSeconds() const
@@ -580,7 +584,8 @@ int Players::getZoneTimeSeconds() const
 
 void Players::setZoneTimeSeconds(int value)
 {
-	zoneTimeSeconds = value;
+	if(gameInfo.getCumulativeScoreMode())	zoneTimeSeconds += value;
+	else									zoneTimeSeconds = value;
 }
 
 int Players::getReportFlags() const

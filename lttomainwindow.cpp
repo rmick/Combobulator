@@ -84,13 +84,12 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
 	ui->btn_Debug->setVisible(true);
 #else
     QMainWindow::showFullScreen();
-#endif
-
 	QEventLoop loop;
 	QTimer::singleShot(500, &loop, SLOT(quit()));
 	loop.exec();
 	QMessageBox::critical(this,"WARNING","Have you disabled ALL power saving on this device?\n\nThe host device must stay awake at all times during the game, otherwise the Combobulator will not function !");
 
+#endif
 }
 
 LttoMainWindow::~LttoMainWindow()
@@ -191,14 +190,14 @@ void LttoMainWindow::on_btn_SelectPlayers_clicked()
 	ui->btn_StartGame->setEnabled(true);
 
 	//remove phantom Team 3 players from 2 team games
-	if(gameInfo.getNumberOfTeams() == 2)
-	{
-		for(int index = 17; index <= 24; index++)
-		{
-			gameInfo.setIsThisPlayerInTheGame(index, false);
-			//qDebug() << "LttoMainWindow::on_btn_StartGame_clicked() - Removing player" << index;
-		}
-	}
+//	if(gameInfo.getNumberOfTeams() == 2)
+//	{
+//		for(int index = 17; index <= 24; index++)
+//		{
+//			gameInfo.setIsThisPlayerInTheGame(index, false);
+//			//qDebug() << "LttoMainWindow::on_btn_StartGame_clicked() - Removing player" << index;
+//		}
+//	}
 
 	if(!playersWindow)  playersWindow = new PlayersWindow(this);
 #ifdef QT_DEBUG
@@ -224,6 +223,7 @@ void LttoMainWindow::on_btn_SlowTags_clicked()
         ui->btn_SlowTags->setText("Slow Tags OFF");
         setSlowTags(false);
     }
+	qInfo() << "LttoMainWindow::on_btn_SlowTags_clicked() -" << getSlowTags();
 }
 
 //--------------------------------------------------------
@@ -240,6 +240,7 @@ void LttoMainWindow::on_btn_MedicMode_clicked()
         ui->btn_MedicMode->setText("Medic Mode OFF");
         setMedicMode(false);
     }
+	qInfo() << "LttoMainWindow::on_btn_MedicMode_clicked() -" << getMedicMode();
 }
 
 //--------------------------------------------------------
@@ -256,6 +257,7 @@ void LttoMainWindow::on_btn_TeamTags_clicked()
         ui->btn_TeamTags->setText("Team Tags OFF");
         setTeamTags(false);
     }
+	qInfo() << "LttoMainWindow::on_btn_TeamTags_clicked() -" << getTeamTags();
 }
 
 //--------------------------------------------------------
@@ -286,6 +288,7 @@ void LttoMainWindow::on_btn_ReSpawn_clicked()
 			playerInfo[index].setBitFlags2(SUPPLY_ZONES_REVIVE_FLAG,	false);
         }
     }
+	qInfo() << "LttoMainWindow::on_btn_ReSpawn_clicked() -" << gameInfo.getIsReSpawnGame();
 }
 /// //////////////////////////////////////////////////////////////////////////////////
 /// //////////////////////////////////////////////////////////////////////////////////
@@ -440,6 +443,7 @@ void LttoMainWindow::on_btn_NoTeams_clicked()
         gameInfo.setGameType(Game::Custom);
         break;
     }
+	qInfo() << "LttoMainWindow::on_btn_NoTeams_clicked()";
 }
 
 void LttoMainWindow::on_btn_TwoTeams_clicked()              // Find the current gameType and change it to the 2Teams variant.
@@ -471,6 +475,7 @@ void LttoMainWindow::on_btn_TwoTeams_clicked()              // Find the current 
         gameInfo.setGameType(Game::Custom);
         break;
     }
+	qInfo() << "LttoMainWindow::on_btn_TwoTeams_clicked()";
 }
 
 void LttoMainWindow::on_btn_ThreeTeams_clicked()            // Find the current gameType and change it to the 2Teams variant.
@@ -501,6 +506,7 @@ void LttoMainWindow::on_btn_ThreeTeams_clicked()            // Find the current 
         gameInfo.setGameType(Game::Custom);
         break;
     }
+	qInfo() << "LttoMainWindow::on_btn_ThreeTeams_clicked()";
 }
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -592,6 +598,7 @@ void LttoMainWindow::on_btn_Spies_clicked()
             gameInfo.setNumberOfSpies(0);
         }
     }
+	qInfo() << "LttoMainWindow::on_btn_Spies_clicked() - Number of Spies =" << gameInfo.getNumberOfSpies();
 }
 
 //////////////////////////////////////////////////////////////////
@@ -979,6 +986,7 @@ void LttoMainWindow::on_btn_Flags_clicked()
 #else
 	flagsWindow->showFullScreen();
 #endif
+	qInfo() << "**** LttoMainWindow::on_btn_Flags_clicked() ****";
 }
 
 void LttoMainWindow::on_actionAbout_triggered()
