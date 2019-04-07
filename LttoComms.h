@@ -35,6 +35,7 @@ public:
 	void		sendHeartBeat();
 	void		sendEspRestart();
 	void		sendDisconnectClient();
+	void		sendGetFirmwareVersion();
 
     bool        getUseLazerSwarm() const;
     void        setUseLazerSwarm(bool value);
@@ -93,6 +94,7 @@ signals:
 	void		OtaReceived(QString response);
 	void		HbAckReceived(QString response);
 	void		BattVoltsReceived(QString battVolts);
+	void		FirmwareVersionReceived(QString firmwareVersion);
 
 private slots:
     void        receivePacket(QByteArray RxData);

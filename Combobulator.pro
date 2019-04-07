@@ -14,7 +14,7 @@ TEMPLATE = app
 #RC_FILE = Combobulator.rc
 ICON	= Combobulator.icns
 
-QMAKE_MAC_SDK = macosx10.13
+QMAKE_MAC_SDK = macosx10.14
 
 SOURCES +=  \
     main.cpp\

@@ -59,6 +59,7 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
 	connect(lttoComms,              SIGNAL(AckPlayerAssignment(int,int, bool) ),  this, SLOT(AddPlayerToGame(int,int, bool))	);
 	connect(host,                   SIGNAL(AddToHostWindowListWidget(QString) ),  this, SLOT(InsertToListWidget(QString))		);
 	connect(lttoComms,				SIGNAL(BattVoltsReceived(QString) ),		  this, SLOT(UpdateBatteryDisplay(QString))		);
+	connect(lttoComms,				SIGNAL(FirmwareVersionReceived(QString) ),	  this, SLOT(checkFirmwareVersion(QString))		);
 
     timerAnnounce->start(HOST_TIMER_MSEC);
 	lttoComms->setHostingCommsActive(true);
@@ -81,6 +82,7 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
     sound_Countdown         ->setLoopCount(5);
 
 	gameInfo.setGameID(host->getRandomNumber(1,255));
+	firmWareVersionReceived = false;
 	beaconType = 0;
 
 	ui->listWidget_Status->setVisible(false);
@@ -134,8 +136,6 @@ void HostGameWindow::announceGame()
 	sendingCommsActive = true;                                                              // Used to stop the class being destructed, if the Timer triggered.
 
     //Set Base Station LED status
-
-	//TODO set LED to RED if not connected to Combob network.
 	if (lttoComms->getTcpCommsConnected() == false)
     {
         ui->led_Status->setStyleSheet(myStyleSheet.getYellowButtonCss());
@@ -151,6 +151,7 @@ void HostGameWindow::announceGame()
 		//qDebug() << "HostGameWindow::announceGame() - checkIPaddress failed.";
 		setPromptText("Connect WiFi to Combobulator");
 		setNextPlayerText("Password = Lasertag42");
+		ui->led_Status->setStyleSheet(myStyleSheet.getRedButtonCss());
 		return;
 	}
 
@@ -660,11 +661,11 @@ void HostGameWindow::closeHostGameWindow()
 	lttoComms->sendLCDtext("new Game"  , 3,  true);
 	lttoComms->nonBlockingDelay(TEXT_SENT_DELAY);
 	lttoComms->nonBlockingDelay(500);
-	qDebug() << " _____ HostGameWindow::closeHostGameWindow() - Restarting ESP";
-	lttoComms->sendPing("ESP-Please Restart");
-	lttoComms->sendEspRestart();
-	lttoComms->sendPing("ESP-Please Restart"); //required to get the reset to work.
-	lttoComms->nonBlockingDelay(500);
+//	qDebug() << " _____ HostGameWindow::closeHostGameWindow() - Restarting ESP";
+//	lttoComms->sendPing("ESP-Please Restart");
+//	lttoComms->sendEspRestart();
+//	lttoComms->sendPing("ESP-Please Restart"); //required to get the reset to work.
+//	lttoComms->nonBlockingDelay(500);
 	lttoComms->closePorts();
 	disableHostSleep(false);
 
@@ -1114,6 +1115,8 @@ void HostGameWindow::on_showLog_clicked()
 
 void HostGameWindow::UpdateBatteryDisplay(QString volts)
 {
+	if(firmWareVersionReceived != true) ui->label_FirmwareStatus->setText("<html><head/><body><p><span style= color:#fc0107; font-size:18pt;>The Base station firmware is out of date.</span></p></body></html>");
+
 	//qDebug() << "HostGameWindow::UpdateBatteryDisplay() - " << volts.toFloat();
 	if(volts.endsWith("@")) volts.remove(4, 2);
 
@@ -1213,3 +1216,14 @@ void HostGameWindow::sendGameSettingsToLog()
 	qInfo() << "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^";
 	qInfo() << endl;
 }
+
+void HostGameWindow::checkFirmwareVersion(QString fWareVersion)
+{
+	firmWareVersionReceived = true;
+	qDebug() << "HostGameWindow::checkFirmwareVersion()  Firmware = " << fWareVersion;
+	fWareVersion.remove(4,2);
+	qDebug() << "Truncated version =" << fWareVersion.toDouble() << CURRENT_BASESTATION_FIRMWARE;
+	if(fWareVersion.toDouble() < CURRENT_BASESTATION_FIRMWARE)	ui->label_FirmwareStatus->setText("<html><head/><body><p><span style= color:#fc0107; font-size:18pt;>The Base station firmware is out of date.</span></p></body></html>");
+	else														ui->label_FirmwareStatus->setText("");
+}
+

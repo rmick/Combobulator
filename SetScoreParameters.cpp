@@ -44,13 +44,13 @@ void SetScoreParameters::loadDefaults()
 
 void SetScoreParameters::updateScores()
 {
-    ui->spinBox_TagsLandedPoints->setValue(gameInfo.getPointsPerTagLanded() );
-    ui->spinBox_TaggedOwnTeamPoints->setValue(gameInfo.getPointsPerTagLandedNegative() );
-    ui->spinBox_TagsTakenPoints->setValue(gameInfo.getPointsPerTagTaken() );
-    ui->spinBox_SurvivalMinutePoints->setValue(gameInfo.getPointsPerSurvivalMinute() );
-    ui->spinBox_ZoneTimePoints->setValue(gameInfo.getPointsPerZoneMinute() );
-    ui->spinBox_HitTheKingPoints->setValue(gameInfo.getPointsPerKingHit() );
-    ui->spinBox_HitOwnKingPoints->setValue(gameInfo.getPointsPerKingHitNegative() );
+	gameInfo.setPointsPerTagLanded(ui->spinBox_TagsLandedPoints->value());
+	gameInfo.setPointsPerTagLandedNegative(ui->spinBox_TaggedOwnTeamPoints->value());
+	gameInfo.setPointsPerTagTaken(ui->spinBox_TagsTakenPoints->value());
+	gameInfo.setPointsPerSurvivalMinute(ui->spinBox_SurvivalMinutePoints->value());
+	gameInfo.setPointsPerZoneMinute(ui->spinBox_ZoneTimePoints->value());
+	gameInfo.setPointsPerKingHit(ui->spinBox_HitTheKingPoints->value());
+	gameInfo.setPointsPerKingHitNegative(ui->spinBox_HitOwnKingPoints->value());
 }
 
 void SetScoreParameters::on_btn_ResetDefaults_clicked()

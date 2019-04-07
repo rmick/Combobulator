@@ -26,9 +26,9 @@ LttoComms::LttoComms(QObject *parent) : QObject(parent)
 
 	connect(this,			SIGNAL(sendSerialData(QByteArray)),     serialUSBcomms,	SLOT(sendPacket(QByteArray)) );
 	connect(serialUSBcomms,	SIGNAL(newSerialUSBdata(QByteArray)),   this,			SLOT(receivePacket(QByteArray)) );
-	connect(tcpComms,		SIGNAL(TcpCommsConnectionStatus(bool)), this,			SLOT(setTcpCommsConnected(bool)));
+	connect(tcpComms,		SIGNAL(TcpCommsConnectionStatus(bool)), this,			SLOT(setTcpCommsConnected(bool)) );
 	connect(this,			SIGNAL(sendSerialData(QByteArray)),		tcpComms,       SLOT(sendPacket(QByteArray)) );
-	connect(tcpComms,		SIGNAL(newTCPdata(QByteArray)),     this,				SLOT(receivePacket(QByteArray)) );
+	connect(tcpComms,		SIGNAL(newTCPdata(QByteArray)),			this,			SLOT(receivePacket(QByteArray)) );
 }
 
 LttoComms *LttoComms::getInstance()
@@ -287,6 +287,12 @@ void LttoComms::sendDisconnectClient()
 	tcpComms->sendPacket("DISCONNECT\r\n");
 }
 
+void LttoComms::sendGetFirmwareVersion()
+{
+	qDebug() << "LttoComms::sendGetFirmwareVersion()";
+	tcpComms->sendPacket("FIRMWARE_REPORT\r\n");
+}
+
 QString LttoComms::createIRstring(int data)
 {
     QString createdPacket;
@@ -378,6 +384,14 @@ void LttoComms::receivePacket(QByteArray RxData)
 		{
 			emit BattVoltsReceived(irDataIn.remove(0,5));
 			qDebug() << "LttoComms::receivePacket - Battery Volts: " << irDataIn;
+			irDataIn.clear();
+			return;
+		}
+
+		else if (irDataIn.startsWith("FIRMWARE"))
+		{
+			emit FirmwareVersionReceived(irDataIn.remove(0,9));
+			qDebug() << "LttoComms::receivePacket - Firmware: " << irDataIn;
 			irDataIn.clear();
 			return;
 		}
@@ -530,6 +544,7 @@ void LttoComms::setTcpCommsConnected(bool value)
 	tcpCommsConnected = value;
     setUseLongDataPacketsOverTCP(value);                        // Activated/Deactivated here !!!!
 	setUseLazerSwarm(!value);
+	if(value) sendGetFirmwareVersion();
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -845,7 +860,8 @@ int LttoComms::ConvertDecToBCD(int dec)
     if(gameInfo.getIsLTARGame())    return dec;     //LTAR hosting protocol does not use BCD
 
     if (dec == 100) return 0xFF;
-    return (int) (((dec/10) << 4) | (dec %10) );
+	//return static_cast<int>(((dec/10) << 4) | (dec %10) );
+	return (int) (((dec/10) << 4) | (dec %10) );
 }
 
 int LttoComms::ConvertBCDtoDec(int bcd)
@@ -853,7 +869,8 @@ int LttoComms::ConvertBCDtoDec(int bcd)
     if(gameInfo.getIsLTARGame())    return bcd;     //LTAR hosting protocol does not use BCD
 
     if (bcd == 0xFF) return bcd;
-    return (int) (((bcd >> 4) & 0xF) *10) + (bcd & 0xF);
+	//return static_cast<int>(((bcd >> 4) & 0xF) *10) + (bcd & 0xF);
+	return (int) (((bcd >> 4) & 0xF) *10) + (bcd & 0xF);
 }
 
 void LttoComms::nonBlockingDelay(int mSec)

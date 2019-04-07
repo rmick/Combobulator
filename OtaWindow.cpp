@@ -13,6 +13,12 @@ OtaWindow::OtaWindow(QWidget *parent) :
 	pswdText = "";
 
 	ui->btn_Ok->setEnabled(false);
+	ui->btn_Ok->setEnabled(false);
+	ui->label_PSWD->setVisible(false);
+	ui->label_SSID->setVisible(false);
+	ui->lineEdit_password->setVisible(false);
+	ui->lineEdit_ssidName->setVisible(false);
+	ui->label_Instructions->setVisible(false);
 
 	timerHeartBeat = new QTimer(this);
 	connect(timerHeartBeat,	SIGNAL(timeout() ),	this,	SLOT(heartBeat()) );
@@ -75,12 +81,20 @@ void OtaWindow::heartBeat()
 	{
 		ui->btn_Ok->setEnabled(true);
 		ui->label_Connecting->setText("");
-
+		ui->label_PSWD->setVisible(true);
+		ui->label_SSID->setVisible(true);
+		ui->lineEdit_password->setVisible(true);
+		ui->lineEdit_ssidName->setVisible(true);
+		ui->label_Instructions->setVisible(true);
 	}
 	else
 	{
 		ui->btn_Ok->setEnabled(false);
-
+		ui->label_PSWD->setVisible(false);
+		ui->label_SSID->setVisible(false);
+		ui->lineEdit_password->setVisible(false);
+		ui->lineEdit_ssidName->setVisible(false);
+		ui->label_Instructions->setVisible(false);
 		if (toggle)
 		{
 			toggle = !toggle;
@@ -89,7 +103,7 @@ void OtaWindow::heartBeat()
 		else
 		{
 			toggle = !toggle;
-			ui->label_Connecting->setText("<html><head/><body><p><span style= font-size:48pt; font-weight:600;>Connecting to Base Station</span></p></body></html>");
+			ui->label_Connecting->setText("<html><head/><body><p><span style= font-size:48pt; font-weight:600;>Please connect to Combobulator</span></p></body></html>");
 		}
 	}
 }

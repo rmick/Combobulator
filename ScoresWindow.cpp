@@ -47,7 +47,6 @@ void ScoresWindow::sendRankReports()
 	lttoComms->sendLCDtext("Over"				, 3,  true);
 
 	ui->btn_Close->setEnabled(true);
-
 }
 
 ScoresWindow::~ScoresWindow()

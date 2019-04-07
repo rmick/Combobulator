@@ -91,6 +91,8 @@ private slots:
 
 	void sendGameSettingsToLog();
 
+	void checkFirmwareVersion(QString fWareVersion);
+
 private:
     //pointers
     Ui::HostGameWindow      *ui;
@@ -128,6 +130,7 @@ private:
     bool    rehostingActive;
     int     assignPlayerFailCount;
 	int		beaconType;
+	bool	firmWareVersionReceived;
     //bool    dontAnnounceFailedSignal;
     //bool    firstPassThisPlayer;
 

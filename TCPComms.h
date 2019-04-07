@@ -11,7 +11,7 @@ class TCPComms : public QObject
     Q_OBJECT
 
 public:
-	explicit	TCPComms(QObject *parent = 0);
+	explicit	TCPComms(QObject *parent = nullptr);
 
 	bool		ConnectTCP();
 	bool		DisconnectTCP();

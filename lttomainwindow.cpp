@@ -39,7 +39,7 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
     QCoreApplication::setOrganizationName("Bush And Beyond");
     QCoreApplication::setOrganizationDomain("www.bushandbeyond.com.au");
     QCoreApplication::setApplicationName("Combobulator");
-    myStyleSheet.setCurrentCSS(myStyleSheet.CssDark);
+	myStyleSheet.setCurrentCSS(myStyleSheet.CssDark);
     loadSettings();
 
     this->setWindowTitle("Lasertag Combobulator");

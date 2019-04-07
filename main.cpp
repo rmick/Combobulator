@@ -4,7 +4,6 @@
 #include <QPixmap>
 #include <QSoundEffect>
 #include "Defines.h"
-#import <IOKit/pwr_mgt/IOPMLib.h>
 
 void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
