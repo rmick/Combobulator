@@ -9,8 +9,8 @@ class StyleSheet
 private:
     int         currentCSS;
 
-    QString     CssInside;
-    QString     CssOutside;
+	QString     CssInside;
+	QString     CssOutside;
     QString     YellowButtonCss;
     QString     GreenButtonCss;
 	QString		RedButtonCss;
@@ -33,18 +33,21 @@ private:
     QString     CssInsideButtonPressedLast;
 
 	int			fontSizeForLabels;
-	int			fontSizeforButtons;
+	int			fontSizeForButtons;
+	int			fontSizeForRadioButtons;
+	int			fontSizeForFileNames;
 	int			fontSizeForTableHeaders;
 	int			fontSizeForTableWidget;
 
 	QString		qLabelFont;
 	QString		qToolButtonFont;
 	QString		qPushButtonFont;
+	QString		qRadioButtonFont;
+	QString		qFileNameFont;
 	QString		qTableWidgetFont;
 	QString		qTableHeaderFont;
 
     void        setSpecials(int value);
-	void		setFontSizes();
 	void		calculateFontSizes();
 
 public:
@@ -65,6 +68,9 @@ public:
     QString getYellowButtonCss() const;
     QString getGreenButtonCss() const;
 	QString getRedButtonCss() const;
+	void	setFontSizes();
+	void	updateStyleSheet();
+	int		getFontSizeForFileNames() const;
 };
 
 extern StyleSheet myStyleSheet;

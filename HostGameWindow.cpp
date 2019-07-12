@@ -313,6 +313,7 @@ void HostGameWindow::hostCurrentPlayer()
     // Send the message.
 	lttoComms->sendPacket(PACKET,   GamePacket                );
 	lttoComms->sendPacket(DATA,     gameInfo.getGameID()      );
+qDebug() << "HostGameWindow::hostCurrentPlayer(): gameID =" << gameInfo.getGameID();
 	lttoComms->sendPacket(DATA,     gameTime,              BCD);
 	lttoComms->sendPacket(DATA,     playerInfo[currentPlayer].handicapAdjust(playerInfo[currentPlayer].getHealthTags()), BCD);
 
@@ -808,13 +809,19 @@ void HostGameWindow::updateGameTimeRemaining()
     QString remainingSeconds = QString::number(remainingGameTime % 60);
     if (remainingMinutes.length() == 1) remainingMinutes.prepend("0");
     if (remainingSeconds.length() == 1) remainingSeconds.prepend("0");
-    if (rehostingActive == false)
+
+	if (rehostingActive == false)
     {
 		setPromptText("Game Time Remaining\n\n" + remainingMinutes + ":" + remainingSeconds);
-		lttoComms->sendLCDtext("Game Time"                                , 1, false);
-		lttoComms->sendLCDtext(remainingMinutes + ":" + remainingSeconds  , 3,  true);
-		lttoComms->nonBlockingDelay(TEXT_SENT_DELAY);
-		qDebug() << "HostGameWindow::updateGameTimeRemaining()" << remainingMinutes << ":" << remainingSeconds;
+
+		if(gameInfo.getPowerSaveMode() == false)
+		//if PowerSaving is true, then don't send gametime, to reduce WiFi traffic.
+		{
+			lttoComms->sendLCDtext("Game Time"                                , 1, false);
+			lttoComms->sendLCDtext(remainingMinutes + ":" + remainingSeconds  , 3,  true);
+			lttoComms->nonBlockingDelay(TEXT_SENT_DELAY);
+		}
+		else qDebug() << "HostGameWindow::BeaconSignal() - Disabled !	PowerSaveMode is active.";
     }
     if (remainingGameTime == 0)
     {
@@ -979,8 +986,13 @@ void HostGameWindow::BeaconSignal()
     else beaconType = 2;         // Contested Zone, No Team
 
     //Send Beacon;
-	lttoComms->sendPacket(BEACON, beaconType);
-	qDebug() << "\t\tHostGameWindow::BeaconSignal() - Type =" << beaconType;
+	if(gameInfo.getPowerSaveMode() == false)
+	//if PowerSaving is true, then don't send beacon, to reduce WiFi traffic.
+	{
+		lttoComms->sendPacket(BEACON, beaconType);
+		qDebug() << "\t\tHostGameWindow::BeaconSignal() - Type =" << beaconType;
+	}
+	else qDebug() << "HostGameWindow::BeaconSignal() - Disabled !	PowerSaveMode is active.";
 }
 
 ///////////////////------------------------------
@@ -1012,7 +1024,6 @@ void HostGameWindow::endGame()
 		return;
 	}
 
-	//deBrief = new DeBrief(this);
 	deBrief	= DeBrief::getInstance();
 
 	connect(deBrief, SIGNAL(SendToHGWlistWidget(QString)), this, SLOT(InsertToListWidget(QString)) );
@@ -1037,39 +1048,93 @@ void HostGameWindow::endGame()
 
 void HostGameWindow::deBriefTaggers()
 {
-    //Work out if player is debriefed
-    deBrief->checkIfPlayerIsDebriefed();
-    if(deBrief->getIsPlayerDeBriefed())
-    {
-        // the current player has been debriefed
-        currentPlayer++;
-        while (isThisPlayerHosted[currentPlayer] == false) currentPlayer++;
-        if(currentPlayer < 25)
-        {
-            deBrief->prepareNewPlayerToDebrief(currentPlayer);
+
+////////////////////
+#define	LINEAR_DEBUG	true
+////////////////////
+
+#ifdef	LINEAR_DEBUG
+	qDebug() << "HostGameWindow::deBriefTaggers() - Linear Debrief Mode";
+	deBrief->checkIfPlayerIsDebriefed();
+	if(deBrief->getIsPlayerDeBriefed())
+	{
+		// the current player has been debriefed
+		currentPlayer++;
+		while (isThisPlayerHosted[currentPlayer] == false) currentPlayer++;
+		if(currentPlayer < 25)
+		{
+			deBrief->prepareNewPlayerToDebrief(currentPlayer);
 			setPromptText("Debriefing " + playerInfo[currentPlayer].getPlayerName());
 			lttoComms->sendLCDtext("De"										, 1, false);
 			lttoComms->sendLCDtext("Briefing"								, 2, false);
 			lttoComms->sendLCDtext(playerInfo[currentPlayer].getPlayerName(), 4,  true);
 			lttoComms->nonBlockingDelay(TEXT_SENT_DELAY);
-        }
-    }
+		}
+	}
 
-    // If currentPlayer is valid - send the message
-    if (currentPlayer < 25)
-    {
-        deBrief->RequestTagReports();
-    }
-    else
-    // All players are debriefed
-    {
-        timerDeBrief->stop();
-        currentPlayer = 0;
+	// If currentPlayer is valid - send the message
+	if (currentPlayer < 25)
+	{
+		qDebug() << "HostGameWindow::deBriefTaggers() - Request Tag Reports for Player " << currentPlayer;
+		deBrief->RequestTagReports();
+	}
+	else
+		// All players are debriefed
+	{
+		currentPlayer = -1;
+	}
+#else
+	//ReWork for non-linear deBriefing
+	//This is required for large field games where Player1 might take
+	//ten minutes to return and all the other players are waiting.
+
+	qDebug() << "\t....(nonLinearDebriefing)...HostGameWindow::deBriefTaggers()";
+	qDebug() << "currentPlayer:" << currentPlayer;
+	if(deBrief->getIsPlayerDebriefing() == false)
+	{
+		static uint8_t passCount = 0;
+		if(passCount++ < 2)return;
+
+		qDebug() << "\t........no reply to Debriefing request from Player:" <<
+		currentPlayer++;
+		while (isThisPlayerHosted[currentPlayer] == false) currentPlayer++;
+		passCount = 0;
+	}
+
+	// If currentPlayer is valid - send the message
+	if (currentPlayer < 25)
+	{
+		deBrief->prepareNewPlayerToDebrief(currentPlayer);
+		setPromptText("Debriefing " + playerInfo[currentPlayer].getPlayerName());
+		lttoComms->sendLCDtext("De"										, 1, false);
+		lttoComms->sendLCDtext("Briefing"								, 2, false);
+		lttoComms->sendLCDtext(playerInfo[currentPlayer].getPlayerName(), 4,  true);
+		lttoComms->nonBlockingDelay(TEXT_SENT_DELAY);
+
+		deBrief->RequestTagReports();
+
+	}
+	else if (deBrief->checkIfAllPlayersAreDebriefed() == false)
+	// Go back around and try again for skipped players.
+	{
+		currentPlayer = 0;
+	}
+	else
+	// All players are debriefed
+	{
+		currentPlayer = -1;
+	}
+#endif
+
+	if(currentPlayer == -1)
+	{
+		// All players are debriefed
+		timerDeBrief->stop();
 		setPromptText("Finalising scores");
 		lttoComms->sendLCDtext("All"                , 1, false);
 		lttoComms->sendLCDtext("Players"            , 2, false);
 		lttoComms->sendLCDtext("Reported"           , 3,  true);
-        //Sit and wait to allow time for slow messages to appear
+		//Sit and wait to allow time for slow messages to appear
 		lttoComms->nonBlockingDelay(1500);
 
 		// Calculate scores and sendRankReport
@@ -1082,7 +1147,7 @@ void HostGameWindow::deBriefTaggers()
 		connect(scoresWindow,	SIGNAL(closingScoresWindow()),	this,	SLOT(closeHostGameWindow()) );
 
 		scoresWindow->showFullScreen();
-    }
+	}
 }
 
 void HostGameWindow::disableHostSleep(bool state)
@@ -1226,4 +1291,5 @@ void HostGameWindow::checkFirmwareVersion(QString fWareVersion)
 	if(fWareVersion.toDouble() < CURRENT_BASESTATION_FIRMWARE)	ui->label_FirmwareStatus->setText("<html><head/><body><p><span style= color:#fc0107; font-size:18pt;>The Base station firmware is out of date.</span></p></body></html>");
 	else														ui->label_FirmwareStatus->setText("");
 }
+
 

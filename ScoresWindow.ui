@@ -20,7 +20,7 @@
    <string>Dialog</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0" colspan="3">
+   <item row="0" column="0" colspan="5">
     <widget class="QTableWidget" name="scoreTable">
      <property name="font">
       <font>
@@ -55,14 +55,14 @@
      <attribute name="horizontalHeaderCascadingSectionResizes">
       <bool>false</bool>
      </attribute>
+     <attribute name="horizontalHeaderMinimumSectionSize">
+      <number>10</number>
+     </attribute>
      <attribute name="horizontalHeaderDefaultSectionSize">
       <number>25</number>
      </attribute>
      <attribute name="horizontalHeaderHighlightSections">
       <bool>false</bool>
-     </attribute>
-     <attribute name="horizontalHeaderMinimumSectionSize">
-      <number>10</number>
      </attribute>
      <attribute name="horizontalHeaderStretchLastSection">
       <bool>false</bool>
@@ -70,17 +70,30 @@
      <attribute name="verticalHeaderVisible">
       <bool>false</bool>
      </attribute>
+     <attribute name="verticalHeaderMinimumSectionSize">
+      <number>5</number>
+     </attribute>
      <attribute name="verticalHeaderDefaultSectionSize">
       <number>30</number>
      </attribute>
      <attribute name="verticalHeaderHighlightSections">
       <bool>false</bool>
      </attribute>
-     <attribute name="verticalHeaderMinimumSectionSize">
-      <number>5</number>
-     </attribute>
      <row/>
      <column/>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QPushButton" name="btn_ReduceFont">
+     <property name="maximumSize">
+      <size>
+       <width>75</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>Dec</string>
+     </property>
     </widget>
    </item>
    <item row="1" column="0">
@@ -90,14 +103,14 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="2">
+   <item row="1" column="4">
     <widget class="QPushButton" name="btn_Close">
      <property name="text">
       <string>Close</string>
      </property>
     </widget>
    </item>
-   <item row="1" column="1">
+   <item row="1" column="3">
     <widget class="QPushButton" name="btn_NameNumberMode">
      <property name="font">
       <font>
@@ -109,6 +122,19 @@
      </property>
      <property name="checkable">
       <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="2">
+    <widget class="QPushButton" name="btn_EnlargeFont">
+     <property name="maximumSize">
+      <size>
+       <width>75</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>Inc</string>
      </property>
     </widget>
    </item>

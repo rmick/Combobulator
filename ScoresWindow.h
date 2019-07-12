@@ -31,11 +31,15 @@ signals:
 private slots:
     void on_btn_Close_clicked();
 
-    void on_btn_ViewMode_clicked();
+	void on_btn_ViewMode_clicked(bool refreshOnly = false);
 
 	void sendRankReports();
 
 	void on_btn_NameNumberMode_clicked();
+
+	void on_btn_EnlargeFont_clicked();
+
+	void on_btn_ReduceFont_clicked();
 
 private:
     Ui::ScoresWindow *ui;

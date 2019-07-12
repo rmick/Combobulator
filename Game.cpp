@@ -12,7 +12,10 @@ Game::Game()
 {
     qDebug() << "Game::Game() - Constructing.......";
 
-    GameType        = DEFAULT_GAME_TYPE;
+	powerSaveMode	= true;
+	fontSize		= 28;
+
+	GameType        = DEFAULT_GAME_TYPE;
     GameID          = DEFAULT_GAME_ID;
     GameLength      = DEFAULT_GAME_LENGTH;
     NumberOfPlayers = 24;
@@ -591,7 +594,57 @@ void Game::setCumulativeScoreMode(bool value)
     cumulativeScoreMode = value;
 }
 
+bool Game::getPowerSaveMode() const
+{
+	return powerSaveMode;
+}
+
+void Game::setPowerSaveMode(bool value)
+{
+	powerSaveMode = value;
+}
+
+int Game::getFontSize()
+{
+	return fontSize;
+}
+
+void Game::setFontSize(int value)
+{
+	fontSize = value;
+}
+
+QString Game::getCurrentGameFileName() const
+{
+	return currentGameFileName;
+}
+
+void Game::setCurrentGameFileName(const QString &value)
+{
+	currentGameFileName = value;
+}
+
+int Game::getScoreHeaderFontSize() const
+{
+	return scoreHeaderFontSize;
+}
+
+void Game::setScoreHeaderFontSize(int value)
+{
+	scoreHeaderFontSize = value;
+}
+
+int Game::getScoreTableFontSize() const
+{
+	return scoreTableFontSize;
+}
+
+void Game::setScoreTableFontSize(int value)
+{
+	scoreTableFontSize = value;
+}
+
 int Game::extractInteger(QString &dG)
 {
-    return dG.right((dG.length() - (dG.indexOf(":")+1) )).toInt();      //extracts all the chars to right of the ":" and convert to an Int
+	return dG.right((dG.length() - (dG.indexOf(":")+1) )).toInt();      //extracts all the chars to right of the ":" and convert to an Int
 }

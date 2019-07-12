@@ -37,10 +37,11 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
 	textEditLogFile = new QTextEdit;
 
     QCoreApplication::setOrganizationName("Bush And Beyond");
-    QCoreApplication::setOrganizationDomain("www.bushandbeyond.com.au");
+	QCoreApplication::setOrganizationDomain("bushandbeyond.com.au");
     QCoreApplication::setApplicationName("Combobulator");
-	myStyleSheet.setCurrentCSS(myStyleSheet.CssDark);
-    loadSettings();
+	loadSettings();
+	//myStyleSheet.setFontSizes();
+	//myStyleSheet.setCurrentCSS(myStyleSheet.CssDark);
 
     this->setWindowTitle("Lasertag Combobulator");
     this->setWindowFlags(windowFlags() & ~Qt::FramelessWindowHint);
@@ -777,7 +778,7 @@ void LttoMainWindow::saveFile()
 	}
 }
 
-void LttoMainWindow:: loadFile()
+void LttoMainWindow::loadFile()
 {
 	if (!fileLoadSave) fileLoadSave = new FileLoadSave(LOAD_MODE, this);
 	connect(fileLoadSave, SIGNAL(fileNameUpdated(QString)),	this, SLOT(updateFileName(QString)));
@@ -786,7 +787,11 @@ void LttoMainWindow:: loadFile()
 
 	delete(fileLoadSave);
 
+	openTheFile();
+}
 
+void LttoMainWindow::openTheFile()
+{
 	if (fileLoadSaveName.isEmpty())		// this means the [cancel] button was pressed.
 	{
 		return;
@@ -810,6 +815,7 @@ void LttoMainWindow:: loadFile()
 
 		//Check for Players, if there are at least two players, enable the Start button.
 		if (gameInfo.getTotalNumberOfPlayersInGame() > 1) ui->btn_StartGame->setEnabled(true);
+		gameInfo.setCurrentGameFileName(fileLoadSaveName);
 		fileToLoad.close();
 	}
 }
@@ -820,17 +826,39 @@ void LttoMainWindow::loadSettings()
 	//TODO: Move this to gameInfo::StreamfromFile
 	ui->btn_SpyTeamTags->setChecked(settings.value("SpiesTeamTagMode", true).toBool());
 
-    myStyleSheet.setCurrentCSS(settings.value("ColourScheme", myStyleSheet.CssDark).toInt());
-    if(myStyleSheet.getCurrentCSS() == myStyleSheet.CssLight)
-    {
-        ui->actionOutdoorMode->setChecked(true);
-        setStyleSheet(myStyleSheet.getCurrentCSSstring());
-    }
-    else
-    {
-        ui->actionOutdoorMode->setChecked(false);
-        setStyleSheet(myStyleSheet.getCurrentCSSstring());
-    }
+	gameInfo.setPowerSaveMode(settings.value("PowerSaveMode", false).toBool());			//N.B. this is not saved into the Game show file !
+
+	gameInfo.setFontSize(settings.value("FontSize").toInt());
+	gameInfo.setScoreHeaderFontSize(settings.value("ScoreHeaderFontSize").toInt());
+	gameInfo.setScoreTableFontSize(settings.value("ScoreTableFontSize").toInt());
+	myStyleSheet.setFontSizes();
+	myStyleSheet.updateStyleSheet();
+
+	myStyleSheet.setCurrentCSS(settings.value("ColourScheme", myStyleSheet.CssDark).toInt());
+	if(myStyleSheet.getCurrentCSS() == myStyleSheet.CssLight)
+	{
+		ui->actionOutdoorMode->setChecked(true);
+		setStyleSheet(myStyleSheet.getCurrentCSSstring());
+	}
+	else
+	{
+		ui->actionOutdoorMode->setChecked(false);
+		setStyleSheet(myStyleSheet.getCurrentCSSstring());
+	}
+
+
+	gameInfo.setCurrentGameFileName(settings.value("CurrentGameName").toString());
+	qDebug() << "LttoMainWindow::loadSettings() - CurrentGameName =" << gameInfo.getCurrentGameFileName();
+
+	if(gameInfo.getCurrentGameFileName() != "")
+
+	loadLastGame = QMessageBox::question(this,"Load Last Game?", "Do you want to load the game: " + gameInfo.getCurrentGameFileName() + "?", QMessageBox::Yes|QMessageBox::No);
+	if (loadLastGame == QMessageBox::Yes)
+	{
+		fileLoadSaveName = gameInfo.getCurrentGameFileName();
+		openTheFile();
+	}
+	else gameInfo.setCurrentGameFileName("");
 
 #ifdef QT_DEBUG
 	show();
@@ -854,6 +882,12 @@ void LttoMainWindow::saveSettings()
     QSettings settings;
     settings.setValue("SpiesTeamTagMode", gameInfo.getIsSpiesTeamTagActive());
     settings.setValue("ColourScheme", myStyleSheet.getCurrentCSS());
+	settings.setValue("CurrentGameName", gameInfo.getCurrentGameFileName());
+	settings.setValue("FontSize", gameInfo.getFontSize());
+	settings.setValue("ScoreHeaderFontSize", gameInfo.getScoreHeaderFontSize());
+	settings.setValue("ScoreTableFontSize", gameInfo.getScoreTableFontSize());
+	settings.setValue("PowerSaveMode", gameInfo.getPowerSaveMode());
+
 #ifdef QT_DEBUG
     settings.beginGroup("MainWindow");
     settings.setValue("size", size());
@@ -1173,7 +1207,10 @@ void LttoMainWindow::on_actionUpdate_Firmware_triggered()
 
 void LttoMainWindow::on_btn_Settings_clicked()
 {
-	if(!settingsWindow) settingsWindow = new SettingsWindow(this);
+	qDebug() << "Settings button clicked";
+	//if(!settingsWindow)
+	settingsWindow = new SettingsWindow(this);
+	//else qDebug() << "settingsWindowExists";
 
 	connect(settingsWindow, SIGNAL(adjustScoring()),		this, SLOT(on_actionEdit_Scoring_triggered())			);
 	connect(settingsWindow, SIGNAL(saveFile()),				this, SLOT(on_actionSave_triggered())					);
@@ -1182,6 +1219,7 @@ void LttoMainWindow::on_btn_Settings_clicked()
 	connect(settingsWindow,	SIGNAL(exitApp()),				this, SLOT(on_actionExit_triggered())					);
 	connect(settingsWindow, SIGNAL(setLtarMode(bool)),		this, SLOT(setLTARmode(bool))							);
 	connect(settingsWindow, SIGNAL(setOutdoorMode(bool)),	this, SLOT(setOutdoorViewMode(bool))					);
+//	connect(settingsWindow, SIGNAL(setFontSize()),			this, SLOT(setFontSize())								);
 
 #ifdef QT_DEBUG
 	settingsWindow->show();
@@ -1203,6 +1241,11 @@ void LttoMainWindow::setOutdoorViewMode(bool state)
 
 	emit on_actionOutdoorMode_triggered();
 }
+
+//void LttoMainWindow::setFontSize()
+//{
+
+//}
 
 void LttoMainWindow::setLTARmode(bool state)
 {

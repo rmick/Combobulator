@@ -45,6 +45,12 @@ private slots:
 
 	void on_btn_DoNotPressThisButton_clicked();
 
+	void on_btn_IncFont_clicked();
+
+	void on_btn_DecFont_clicked();
+
+	void on_btn_PowerSaveMode_clicked();
+
 signals:
 	void	adjustScoring();
 	void	saveFile();

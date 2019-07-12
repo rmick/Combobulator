@@ -54,7 +54,7 @@ void Players::setHandicap(int value)
 
 QString Players::getPlayerName() const
 {
-    return PlayerName;
+	return PlayerName; //.trimmed();
 }
 
 void Players::setPlayerName(const QString &value)
@@ -354,6 +354,7 @@ void Players::streamFromFile(QTextStream &in)
             else if (descriptorP.contains("SleepTimeOut:") )    playerInfo[playerID].SleepTimeOut = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
 			else if (descriptorP.contains("PlayerIndex:") )		playerInfo[playerID].PlayerIndex  = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
     }   while (descriptorP != "END_OF_PLAYER_SETTINGS");
+	//playerInfo[playerID].PlayerName = playerInfo[playerID].PlayerName.trimmed();
 	qDebug() << "Players::StreamFromFile has left the building" << endl << endl;
 }
 
@@ -412,12 +413,12 @@ void Players::setPlayerIndex(int value)
 
 int Players::getPackedFlags1() const
 {
-	return PackedFlags1;
+    return PackedFlags1;
 }
 
 void Players::setBitFlags1(int bitNumber, bool state)
 {
-	PackedFlags1 ^= (-state ^ PackedFlags1) & (1 << bitNumber);
+    PackedFlags1 ^= (-state ^ PackedFlags1) & (1 << bitNumber);
     //qDebug() << "\tFlags1: " << "\tBinary = " << displayBinary(PackedFlags1, 8);
 }
 

@@ -2,6 +2,7 @@
 #include "ui_SettingsWindow.h"
 #include "Game.h"
 #include "Defines.h"
+#include "StyleSheet.h"
 #include <QMessageBox>
 #include <QDebug>
 #include <QTimer>
@@ -22,12 +23,13 @@ SettingsWindow::SettingsWindow(QWidget *parent) :
 	if(gameInfo.getCumulativeScoreMode())	ui->btn_CumulativeScores	->setChecked(true);
 	else									ui->btn_CumulativeScores	->setChecked(false);
 
+	if(gameInfo.getPowerSaveMode())			ui->btn_PowerSaveMode		->setChecked(true);
+	else									ui->btn_PowerSaveMode		->setChecked(false);
+
 	int timeOutValue = gameInfo.getCountDownTime();
 	ui->sldr_CountDownTime->setValue(timeOutValue);
 
 	ui->btn_About->setText("About\n" + VERSION_NUMBER + " - " + BUILD_NUMBER);
-
-	//ui->btn_CumulativeScores->setVisible(false);
 }
 
 SettingsWindow::~SettingsWindow()
@@ -79,7 +81,6 @@ void SettingsWindow::on_radioButton_IndoorMode_clicked()
 	QTimer::singleShot(100, this, SLOT(refreshDisplay( )));
 }
 
-
 void SettingsWindow::on_radioButton_OutdoorMode_clicked()
 {
 	emit setOutdoorMode(true);
@@ -115,7 +116,7 @@ void SettingsWindow::on_btn_ShutDown_clicked()
 
 void SettingsWindow::refreshDisplay()
 {
-	qDebug() << "Updated";
+	qDebug() << "SettingsWindow::refreshDisplay() called";
 	QWidget::update();
 }
 
@@ -132,4 +133,30 @@ void SettingsWindow::on_btn_DoNotPressThisButton_clicked()
 {
 	//I always wanted to add this homage to HHGG into a product, so here it is.
 	QMessageBox::critical(this,"WARNING","Please do not press this button again.");
+}
+
+void SettingsWindow::on_btn_IncFont_clicked()
+{
+	gameInfo.setFontSize((gameInfo.getFontSize()+5));
+	myStyleSheet.setFontSizes();
+	myStyleSheet.updateStyleSheet();
+	myStyleSheet.setCurrentCSS(myStyleSheet.getCurrentCSS());
+	if (myStyleSheet.getCurrentCSS() == myStyleSheet.CssDark)	emit setOutdoorMode(false);
+	else														emit setOutdoorMode(true);
+}
+
+void SettingsWindow::on_btn_DecFont_clicked()
+{
+	gameInfo.setFontSize(gameInfo.getFontSize()-5);
+	myStyleSheet.setFontSizes();
+	myStyleSheet.updateStyleSheet();
+	myStyleSheet.setCurrentCSS(myStyleSheet.getCurrentCSS());
+	if (myStyleSheet.getCurrentCSS() == myStyleSheet.CssDark)	emit setOutdoorMode(false);
+	else														emit setOutdoorMode(true);
+}
+
+void SettingsWindow::on_btn_PowerSaveMode_clicked()
+{
+	if(ui->btn_PowerSaveMode->isChecked())	gameInfo.setPowerSaveMode(true);
+	else									gameInfo.setPowerSaveMode(false);
 }

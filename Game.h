@@ -123,10 +123,31 @@ public:
 	bool getCumulativeScoreMode() const;
 	void setCumulativeScoreMode(bool value);
 
+	bool getPowerSaveMode() const;
+	void setPowerSaveMode(bool value);
+
+	int getFontSize();
+	void setFontSize(int value);
+
+	QString getCurrentGameFileName() const;
+	void setCurrentGameFileName(const QString &value);
+
+	int getScoreHeaderFontSize() const;
+	void setScoreHeaderFontSize(int value);
+
+	int getScoreTableFontSize() const;
+	void setScoreTableFontSize(int value);
+
 signals:
 	void    NumberOfTeamsHasChanged(int NumTeams);
 
 private:
+	bool	powerSaveMode;
+	int		fontSize;
+	int		scoreHeaderFontSize;
+	int		scoreTableFontSize;
+	QString	currentGameFileName;
+
 	int     GameType;
     int     GameID;
     int     GameLength;

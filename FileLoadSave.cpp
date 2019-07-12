@@ -6,6 +6,7 @@
 #include <QStringListModel>
 #include <QMessageBox>
 #include "Defines.h"
+#include "StyleSheet.h"
 
 FileLoadSave::FileLoadSave(int loadSaveMode, QWidget *parent) :
 	QDialog(parent),
@@ -15,6 +16,10 @@ FileLoadSave::FileLoadSave(int loadSaveMode, QWidget *parent) :
 
 	setWorkingDirectory();
 	populateFileList();
+	QFont fileNameFont;
+	fileNameFont.setPointSize(myStyleSheet.getFontSizeForFileNames());
+	//ui->label_FileName->setFont(fileNameFont);
+	ui->lineEdit_FileName->setFont(fileNameFont);
 
 	if(loadSaveMode == SAVE_MODE)
 	{
@@ -52,7 +57,7 @@ void FileLoadSave::setWorkingDirectory()
 void FileLoadSave::populateFileList()
 {
 	QFont thisFont;
-	thisFont.setPointSize(16);
+	thisFont.setPointSize(myStyleSheet.getFontSizeForFileNames());
 
 	fileExtensions << "*.lto";
 	fileModel = new QFileSystemModel(this);

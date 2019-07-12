@@ -95,17 +95,18 @@ void ScoresWindow::calibrateScreen(int modus)
         break;
     }
 
-
+	//tableFont.setPointSize(gameInfo.getScoreTableFontSize());
+	//headerFont.setPointSize(gameInfo.getScoreHeaderFontSize());
     //TODO: Set font size more accurately
-//    if(columnWidth < 25)                        tableFont.setPointSize(8);
-//    if(columnWidth > 24 && columnWidth < 50)    tableFont.setPointSize(12);
-//    if(columnWidth > 49 && columnWidth < 75)    tableFont.setPointSize(16);
-//    if(columnWidth > 74 && columnWidth < 100)   tableFont.setPointSize(20);
-//    if(columnWidth > 100)                       tableFont.setPointSize(32);
+	if(columnWidth < 25)                        tableFont.setPointSize(8);
+	if(columnWidth > 24 && columnWidth < 50)    tableFont.setPointSize(12);
+	if(columnWidth > 49 && columnWidth < 75)    tableFont.setPointSize(16);
+	if(columnWidth > 74 && columnWidth < 100)   tableFont.setPointSize(20);
+	if(columnWidth > 100)                       tableFont.setPointSize(32);
 
     ui->scoreTable->setRowCount(gameInfo.getNumberOfPlayersInGame());
-	//tableFont.setFamily("Verdana");
-	//headerFont.setPointSize(12);
+	tableFont.setFamily("Verdana");
+	headerFont.setPointSize(12);
 }
 
 void ScoresWindow::addColumnLabels(int modus)
@@ -115,14 +116,14 @@ void ScoresWindow::addColumnLabels(int modus)
     int columnIndex = 0;
 
     QTableWidgetItem *playerID = new QTableWidgetItem("ID");
-	//playerID->setFont(headerFont);
+	playerID->setFont(headerFont);
     ui->scoreTable->setHorizontalHeaderItem(columnIndex++, playerID);
     if (modus != SUMMARY_VIEW)  ui->scoreTable->setColumnWidth(columnIndex-1, columnWidth / 1.5);
     else                        ui->scoreTable->setColumnWidth(columnIndex-1, columnWidth / 3.0);
 
 
     QTableWidgetItem *PlayersName = new QTableWidgetItem("Players\nName");
-	//PlayersName->setFont(headerFont);
+	PlayersName->setFont(headerFont);
     ui->scoreTable->setHorizontalHeaderItem(columnIndex++, PlayersName);
 	int sizeAdjust = screenWidth - ((gameInfo.getNumberOfPlayersInGame()+2)*columnWidth);  // adds any spare pixels into the PlayerName column
     if (modus != SUMMARY_VIEW)  ui->scoreTable->setColumnWidth(columnIndex-1, (columnWidth * 1.3) + sizeAdjust);
@@ -134,35 +135,38 @@ void ScoresWindow::addColumnLabels(int modus)
         else if (modus == ALL_IN_ONE_VIEW) ui->scoreTable->setColumnCount(COLUMNS_IN_SUMMARY + gameInfo.getNumberOfPlayersInGame());
 
         QTableWidgetItem *Rank = new QTableWidgetItem("Rank");
-		//Rank->setFont(headerFont);
+		Rank->setFont(headerFont);
         ui->scoreTable->setHorizontalHeaderItem(columnIndex++, Rank);
         ui->scoreTable->setColumnWidth(columnIndex-1, columnWidth);
 
         QTableWidgetItem *Score = new QTableWidgetItem("Score");
-		//Score->setFont(headerFont);
+		Score->setFont(headerFont);
         ui->scoreTable->setHorizontalHeaderItem(columnIndex++, Score);
         ui->scoreTable->setColumnWidth(columnIndex-1, columnWidth);
 
         QTableWidgetItem *HitsTaken = new QTableWidgetItem("Hits\nTaken");
-		//HitsTaken->setFont(headerFont);
+		HitsTaken->setFont(headerFont);
         ui->scoreTable->setHorizontalHeaderItem(columnIndex++, HitsTaken);
         ui->scoreTable->setColumnWidth(columnIndex-1, columnWidth);
 
         QTableWidgetItem *HitsLanded = new QTableWidgetItem("Hits\nLanded");
-		//HitsLanded->setFont(headerFont);
+		HitsLanded->setFont(headerFont);
         ui->scoreTable->setHorizontalHeaderItem(columnIndex++, HitsLanded);
         ui->scoreTable->setColumnWidth(columnIndex-1, columnWidth);
 
         QTableWidgetItem *SurvivalTime = new QTableWidgetItem("Survival\nTime");
-		//SurvivalTime->setFont(headerFont);
+		SurvivalTime->setFont(headerFont);
         ui->scoreTable->setHorizontalHeaderItem(columnIndex++, SurvivalTime);
         ui->scoreTable->setColumnWidth(columnIndex-1, columnWidth);
 
         QTableWidgetItem *ZoneTime = new QTableWidgetItem("Zone\nTime");
-		//ZoneTime->setFont(headerFont);
+		ZoneTime->setFont(headerFont);
         ui->scoreTable->setHorizontalHeaderItem(columnIndex++, ZoneTime);
         ui->scoreTable->setColumnWidth(columnIndex-1, columnWidth);
     }
+
+	ui->scoreTable->horizontalHeader()->setFont(headerFont);
+	ui->scoreTable->horizontalHeader()->setStyleSheet("QHeaderView { font-size: " + QString::number(headerFont.pointSize()) + "pt; }");
 
     if (modus != SUMMARY_VIEW)
     {
@@ -174,7 +178,7 @@ void ScoresWindow::addColumnLabels(int modus)
             if(gameInfo.getIsThisPlayerInTheGame(index) == true)
             {
 				if(playerNameDisplayInsteadOfNumber)
-				{
+				{	
 					ui->scoreTable->setHorizontalHeaderItem(columnIndex++, new QTableWidgetItem(playerInfo[index].getPlayerName()));
 				}
 				else
@@ -334,10 +338,15 @@ void ScoresWindow::setOrder(int modus)
     ui->scoreTable->setSortingEnabled(true);
 }
 
-void ScoresWindow::on_btn_ViewMode_clicked()
+void ScoresWindow::on_btn_ViewMode_clicked(bool refreshOnly)
 {
-    //Swap view from Summary to Player Grid
-    if(displayMode == PLAYER_GRID_VIEW)
+	if(refreshOnly)
+	{
+		if		(displayMode == SUMMARY_VIEW)		displayMode = PLAYER_GRID_VIEW;
+		else if	(displayMode == PLAYER_GRID_VIEW)	displayMode = SUMMARY_VIEW;
+	}
+
+	if		(displayMode == PLAYER_GRID_VIEW)
     {
         ui->scoreTable->setSortingEnabled(false);
         calibrateScreen(SUMMARY_VIEW);
@@ -345,11 +354,11 @@ void ScoresWindow::on_btn_ViewMode_clicked()
         addPlayerRows();
         populateScores(SUMMARY_VIEW);
         setOrder(SUMMARY_VIEW);
-        displayMode = SUMMARY_VIEW;
+		displayMode = SUMMARY_VIEW;
         ui->btn_ViewMode->setText("Player Grid View");
 		ui->btn_NameNumberMode->setVisible(false);
     }
-    else
+	else if (displayMode == SUMMARY_VIEW)
     {
         ui->scoreTable->setSortingEnabled(false);
         calibrateScreen(PLAYER_GRID_VIEW);
@@ -357,7 +366,7 @@ void ScoresWindow::on_btn_ViewMode_clicked()
         addPlayerRows();
         populateScores(PLAYER_GRID_VIEW);
         setOrder(PLAYER_GRID_VIEW);
-        displayMode = PLAYER_GRID_VIEW;
+		displayMode = PLAYER_GRID_VIEW;
         ui->btn_ViewMode->setText("Summary View");
 		ui->btn_NameNumberMode->setVisible(true);
     }
@@ -370,7 +379,23 @@ void ScoresWindow::on_btn_NameNumberMode_clicked()
 	else playerNameDisplayInsteadOfNumber = false;
 	qDebug() << "ScoresWindow::on_btn_NameNumberMode_clicked()" << playerNameDisplayInsteadOfNumber;
 	//redraw the display without changing the mode :-)
-	if		(displayMode == PLAYER_GRID_VIEW) displayMode = SUMMARY_VIEW;
-	else if	(displayMode == SUMMARY_VIEW)	  displayMode = PLAYER_GRID_VIEW;
-	emit on_btn_ViewMode_clicked();
+	on_btn_ViewMode_clicked(true);
+}
+
+void ScoresWindow::on_btn_EnlargeFont_clicked()
+{
+	tableFont.setPointSize(tableFont.pointSize()+5);
+	headerFont.setPointSize(headerFont.pointSize()+5);
+	gameInfo.setScoreTableFontSize(tableFont.pointSize());
+	gameInfo.setScoreHeaderFontSize(headerFont.pointSize());
+	on_btn_ViewMode_clicked(true);
+}
+
+void ScoresWindow::on_btn_ReduceFont_clicked()
+{
+	tableFont.setPointSize(tableFont.pointSize()-5);
+	headerFont.setPointSize(headerFont.pointSize()-5);
+	gameInfo.setScoreTableFontSize(tableFont.pointSize());
+	gameInfo.setScoreHeaderFontSize(headerFont.pointSize());
+	on_btn_ViewMode_clicked(true);
 }

@@ -18,12 +18,16 @@ public:
 
 	bool		getIsPlayerDeBriefed() const;
 	void		setIsPlayerDeBriefed(bool value);
+	bool		getIsPlayerDebriefing() const;
+	void		setIsPlayerDebriefing(bool value);
 
 	void		prepareNewPlayerToDebrief(int playerToDebrief);
 	bool		checkIfPlayerIsDebriefed();
+	bool		checkIfAllPlayersAreDebriefed();
 	void		RequestTagReports();
 	void		calculateScores();                      // calculate the scores using POINTS_FOR_XXX in Defines.h
 	void		calculateRankings();                    // assign rankings to each player
+
 
 
 signals:
@@ -47,6 +51,7 @@ private:
 	int			currentPlayer;              // the player index for playerInfo[] - 1 thru 24
 	int			deBriefMessageType;         // what message are we asking for (TAG_SUMMARY, TEAM_1_TAG_REPORT, TEAM_2_TAG_REPORT, TEAM_3_TAG_REPORT)
 	bool		isPlayerDeBriefed;          // set true when player has replied to all mesage requests.
+	bool		isPlayerDebriefing;			// set tue whenag Summary received. Used for non-linear debriefing.
 	bool		awaitingDeBriefPackets;     // Set true when a RequestDebrief message is sent. Cancelled after 3 seconds.
 	int			timeOutCount;               // Used to count 3 seconds for above.....
 	int			currentTeamAndPlayerByte;	// The TeamAndPlayerByte of the current player. Generating in RequesTeamTagSummary and used in isPlayerDebriefed for LTAR mode.

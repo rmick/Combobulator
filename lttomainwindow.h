@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QPointer>
 #include <QSoundEffect>
+#include <QMessageBox>
 #include <QTextEdit>
 #include "Defines.h"
 #include "PlayersWindow.h"
@@ -124,12 +125,15 @@ private slots:
 
 	void setOutdoorViewMode (bool state);
 
+//	void setFontSize();
+
 	void setLTARmode (bool state);
 
 	void heartBeat();
 
 private:
     Ui::LttoMainWindow      *ui;
+	QMessageBox::StandardButton		loadLastGame;
 	QPointer<PlayersWindow>			playersWindow;
 	QPointer<HostGameWindow>		hostGameWindow;
 	QPointer<FlagsWindow>			flagsWindow;
@@ -154,6 +158,7 @@ private:
     void    setLtarControls(bool state);
     void    saveFile();
     void    loadFile();
+	void	openTheFile();
     void    loadSettings();
     void    saveSettings();
 	void	sendLogFile();

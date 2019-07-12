@@ -37,9 +37,12 @@ public:
     bool getAwaitingDeBriefPackets() const;
     void setAwaitingDeBriefPackets(bool value);
 
+	bool getCurrentPlayerResponding() const;
+	void setCurrentPlayerResponding(bool value);
+
 public slots:
 
-    void AssignPlayer(int Game, int Tagger, int Flags, bool isLtar);   //Connects to RequestJoinGame signal
+	void AssignPlayer(int Game, int Tagger, int Flags, bool isLtar);   //Connects to RequestJoinGame signal
 
     //void EnhancedAssignPlayer(int Game, int Tagger, int Flags, int TaggerInfo, int SmartDeviceInfo); //Connects to EnhancedRequestJoinGame signal
 
