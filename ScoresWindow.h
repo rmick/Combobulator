@@ -5,6 +5,7 @@
 #include <QTableWidget>
 #include <QTableWidgetItem>
 #include <QTimer>
+#include <QPointer>
 
 #include "Game.h"
 #include "Players.h"

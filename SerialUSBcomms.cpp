@@ -1,7 +1,7 @@
 #include "SerialUSBcomms.h"
 #include "LttoComms.h"
 
-//SerialUSBcomms serialUSBcomms;
+SerialUSBcomms serialUSBcomms;
 
 SerialUSBcomms::SerialUSBcomms(QObject *parent) :
     QObject(parent)
@@ -19,7 +19,7 @@ void SerialUSBcomms::findSerialPort()
 #ifdef INCLUDE_SERIAL_USB
     foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts())
     {
-        qDebug() << "SerialUSBcomms::findSerialPort() - Found a port:" << info.portName();
+        //qDebug() << "SerialUSBcomms::findSerialPort() - Found a port:" << info.portName();
 		if (info.manufacturer().contains("Spark") || info.manufacturer().contains("Arduino")
 				|| info.portName().contains("usbmodem") || info.portName().contains("COM")
 				|| info.description().contains("freetronics") )
@@ -57,7 +57,7 @@ void SerialUSBcomms::setUpSerialPort()
         }
         else
         {
-            qDebug() << "SerialUSBcomms::setUpSerialPort()" << serialUSB->portName() << " failed to open..." << endl;
+            //qDebug() << "SerialUSBcomms::setUpSerialPort()" << serialUSB->portName() << " failed to open..." << endl;
             setSerialCommsConnected(false);
         }
 #endif
@@ -106,9 +106,12 @@ void SerialUSBcomms::sendPacket(QByteArray packet)
         serialUSB->write(packet);
         serialUSB->flush();
     }
+	else
+	{
+        serialUSBcomms.setUpSerialPort();
+	}
 #else
     packet.clear();        // to silence Compiler warning!
-    serialUSBcomms.setUpSerialPort();
 #endif
 }
 
@@ -136,9 +139,11 @@ void SerialUSBcomms::setSerialCommsConnected(bool value)
 void SerialUSBcomms::initialiseUSBsignalsAndSlots()
 {
     //Needs to be done here not in constructor because lttoComms is a static and may not exist when this static is created.
-    qDebug() << "SerialUSBcomms::initialiseUSBsignalsAndSlots() - Triggered";
+#ifdef INCLUDE_SERIAL_USB
+	qDebug() << "SerialUSBcomms::initialiseUSBsignalsAndSlots() - Triggered";
     connect(serialUSB,  SIGNAL(readyRead()),                    this,       SLOT(receivePacket()) );
     setIsUSBinitialised(true);
+#endif
 }
 
 

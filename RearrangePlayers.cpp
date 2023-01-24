@@ -113,6 +113,8 @@ void RearrangePlayers::assignPlayersToTeams(bool isRandom)
 	// Randomise only selected players
 	// Check Team1/2/3 numbers are correct, if not force some to move.
 
+	//BUG: Rearrange to default also clears Players Names !!!!!
+
 	uint8_t	numberOfPlayersToShuffle = MAX_PLAYERS;
 	if(gameInfo.getNumberOfTeams() == 2) numberOfPlayersToShuffle = 16;
 

@@ -62,8 +62,9 @@ private:
     void updatePlayerFlags1(int bit, bool state);
     void updatePlayerFlags2(int bit, bool state);
     void updatePlayerFlags3(int bit, bool state);
+    void setSuperSimpleMode();
 
-    void hideLtarControls(bool state);
+    void setLtarControls(bool state);
 
     int currentPlayer;
     int firstPlayer;

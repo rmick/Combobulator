@@ -92,15 +92,15 @@ bool TCPComms::checkIPaddress()
 	 }
 	 return result;
 
-	 foreach (const QNetworkInterface &netInterface, QNetworkInterface::allInterfaces()) {
-		 QNetworkInterface::InterfaceFlags flags = netInterface.flags();
-		 if( (bool)(flags & QNetworkInterface::IsRunning) && !(bool)(flags & QNetworkInterface::IsLoopBack)){
-			 foreach (const QNetworkAddressEntry &address, netInterface.addressEntries()) {
-				 if(address.ip().protocol() == QAbstractSocket::IPv4Protocol)
-					 qDebug() << address.ip().toString();
-			 }
-		 }
-	 }
+//	 foreach (const QNetworkInterface &netInterface, QNetworkInterface::allInterfaces()) {
+//		 QNetworkInterface::InterfaceFlags flags = netInterface.flags();
+//		 if( (bool)(flags & QNetworkInterface::IsRunning) && !(bool)(flags & QNetworkInterface::IsLoopBack)){
+//			 foreach (const QNetworkAddressEntry &address, netInterface.addressEntries()) {
+//				 if(address.ip().protocol() == QAbstractSocket::IPv4Protocol)
+//					 qDebug() << address.ip().toString();
+//			 }
+//		 }
+//	 }
 }
 
 void TCPComms::connected()
@@ -130,7 +130,7 @@ void TCPComms::sendPacket(QByteArray data)
 {
 	if (tcpSocket->state() == QAbstractSocket::ConnectedState)
     {
-		//qDebug() << "TCPComms::sendPacket(QByteArray data)" << data;
+        //qDebug() << "TCPComms::sendPacket(QByteArray data)" << data;
 		tcpSocket->write(data);
     }
 	else

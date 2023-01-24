@@ -65,7 +65,9 @@ void ReHostTagger::SetActivePlayers()
     {
         if (gameInfo.getIsThisPlayerInTheGame(index) )
         {
-			playerButtons[index]->setText(playerInfo[index].getPlayerName());
+            QString teamNumText     = "Team " + QString::number(((index-1)/8)+1);
+            if(gameInfo.getNumberOfTeams() == 0) teamNumText = "";
+            playerButtons[index]->setText(teamNumText + playerInfoTemp[index].getPlayerName());
 			playerButtons[index]->setEnabled(true);
             playerButtons[index]->setChecked(true);
             playerButtons[index]->setStyleSheet(myStyleSheet.getButtonSelectedCss());
@@ -93,10 +95,14 @@ void ReHostTagger::SetActivePlayers()
 
 void ReHostTagger::playerButtonPressed(int playerNumber)
 {
+    QString teamNumText     = "Team " + QString::number(((playerNumber-1)/8)+1) + ", ";
+    if(gameInfo.getNumberOfTeams() == 0) teamNumText = "";
+
     qDebug() << "Rehosting Player " << playerNumber;
-	ui->label->setText("Rehosting Player " + playerInfo[playerNumber].getPlayerName() + " - Please standby.");
-	lttoComms->sendLCDtext("Re-Hosting"                             , 1, false);
-	lttoComms->sendLCDtext(playerInfo[playerNumber].getPlayerName() , 2, false);
+    ui->label->setText("Rehosting Team " + teamNumText + playerInfoTemp[playerNumber].getPlayerName() + " - Please standby.");
+    lttoComms->sendLCDtext("Re-Hosting"                                 , 1, false);
+    lttoComms->sendLCDtext(teamNumText                                  , 2, false);
+    lttoComms->sendLCDtext(playerInfoTemp[playerNumber].getPlayerName() , 3,  true);
 
     gameInfo.setPlayerToReHost(playerNumber);
     deleteLater();

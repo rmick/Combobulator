@@ -125,6 +125,9 @@ public:
 	int		getPlayerIndex() const;
 	void	setPlayerIndex(int value);
 
+	bool	getIsDebriefed() const;
+	void	setIsDebriefed(bool value);
+
 private:
 	// Player settings - stored in saved games
 	int		PlayerIndex;
@@ -158,6 +161,7 @@ private:
     int     zoneTimeMinutes;
     int     zoneTimeSeconds;
     int     reportFlags;
+	bool	isDebriefed;
 };
 
 extern Players playerInfo[MAX_PLAYERS+1];

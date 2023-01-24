@@ -7,7 +7,7 @@
 
 #ifdef  INCLUDE_SERIAL_USB
     #include <QtSerialPort/QSerialPortInfo>
-    #include <QtSerialPort>
+	#include <QSerialPort>
 #endif
 
 class SerialUSBcomms : public QObject
@@ -15,7 +15,7 @@ class SerialUSBcomms : public QObject
     Q_OBJECT
 
 public:
-    explicit SerialUSBcomms(QObject *parent = 0);
+	explicit SerialUSBcomms(QObject *parent = nullptr);
 
     //void readUSBdata();
 

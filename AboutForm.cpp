@@ -26,4 +26,5 @@ void AboutForm::on_btn_UpdateFirmware_clicked()
 #else
 	otaWindow->showFullScreen();
 #endif
+	close();
 }

@@ -38,7 +38,10 @@ FileLoadSave::FileLoadSave(int loadSaveMode, QWidget *parent) :
 
 	connect(ui->treeView_FileTree, SIGNAL(clicked(QModelIndex)), this, SLOT(upDateFileName(QModelIndex)));
 
-	this->setWindowState(Qt::WindowFullScreen);
+
+#ifndef QT_DEBUG
+    this->setWindowState(Qt::WindowFullScreen);
+#endif
 }
 
 FileLoadSave::~FileLoadSave()
@@ -52,6 +55,7 @@ void FileLoadSave::setWorkingDirectory()
 	thisDir.setPath(filePath);
 	if (!thisDir.exists()) thisDir.mkpath(filePath);
 	QDir::setCurrent(filePath);
+    qDebug() << "QDir = " + filePath;
 }
 
 void FileLoadSave::populateFileList()

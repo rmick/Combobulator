@@ -120,9 +120,13 @@ void DeBrief::RequestTagReports()
     {
         teamAndPlayerByte = (deBriefTeam << 4) + deBriefPlayer;
     }
+
+    QString teamNumText     = "Team " + QString::number(((currentPlayer-1)/8)+1) + "\n";
+    if(gameInfo.getNumberOfTeams() == 0) teamNumText = "";
+
 	//qDebug() << "\nDeBrief::RequestTagReports() -" << currentPlayer << playerToDeBrief << ":" << deBriefTeam << deBriefPlayer << "MessageType" << deBriefMessageType;
-	emit SendToHGWlistWidget("Debriefing Player = " + QString::number(currentPlayer) + ", MessageType:" + QString::number(deBriefMessageType));
-	qInfo() << "Debriefing Player = " + QString::number(currentPlayer) + ", MessageType:" + QString::number(deBriefMessageType);
+    emit SendToHGWlistWidget("Debriefing Player = " + teamNumText + playerInfoTemp[currentPlayer].getPlayerName() + ", MessageType:" + QString::number(deBriefMessageType));
+    qInfo() << "Debriefing Player = " + teamNumText + playerInfoTemp[currentPlayer].getPlayerName() + ", MessageType:" + QString::number(deBriefMessageType);
 
 	lttoComms->sendPacket(PACKET, REQUEST_TAG_REPORT);
 	lttoComms->sendPacket(DATA, gameInfo.getGameID());
@@ -330,6 +334,11 @@ void DeBrief::sendRankReport()
     }
 }
 
+int DeBrief::getDeBriefMessageType() const
+{
+	return deBriefMessageType;
+}
+
 bool DeBrief::getIsPlayerDebriefing() const
 {
 	return isPlayerDebriefing;
@@ -509,12 +518,13 @@ void DeBrief::calculateRankings()
 
 bool DeBrief::getIsPlayerDeBriefed() const
 {
-    return isPlayerDeBriefed;
+	return isPlayerDeBriefed;
 }
 
 void DeBrief::setIsPlayerDeBriefed(bool value)
 {
     isPlayerDeBriefed = value;
+	playerInfo[currentPlayer].setIsDebriefed(value);
 	if(value == true) isPlayerDebriefing = false;
 }
 
@@ -524,17 +534,21 @@ void DeBrief:: prepareNewPlayerToDebrief(int playerToDebrief)
     emit SendToHGWlistWidget("Preparing to debrief next player");
     currentPlayer = playerToDebrief;
 
-    isPlayerDeBriefed           = false;
-    isTeam1TagReportDue         = false;
-    isTeam2TagReportDue         = false;
-    isTeam3TagReportDue         = false;
-    isTeam1TagReportReceived    = false;
-    isTeam2TagReportReceived    = false;
-    isTeam3TagReportReceived    = false;
-    isSummaryTagReportReceived  = false;
-    timeOutCount                = 0;
-    deBriefMessageType = REQUEST_ALL_DEBRIEF_BITS;
-	isPlayerDebriefing			= false;
+	if(playerInfo[playerToDebrief].getIsDebriefed() == false)
+	{
+		isPlayerDeBriefed           = false;
+		isTeam1TagReportDue         = false;
+		isTeam2TagReportDue         = false;
+		isTeam3TagReportDue         = false;
+		isTeam1TagReportReceived    = false;
+		isTeam2TagReportReceived    = false;
+		isTeam3TagReportReceived    = false;
+		isSummaryTagReportReceived  = false;
+		timeOutCount                = 0;
+		deBriefMessageType = REQUEST_ALL_DEBRIEF_BITS;
+		isPlayerDebriefing			= false;
+	}
+
 }
 
 bool DeBrief::checkIfPlayerIsDebriefed()
@@ -577,10 +591,10 @@ bool DeBrief::checkIfPlayerIsDebriefed()
     }
 
     //calculate the debrief message based on what we have received
-    if(isSummaryTagReportReceived == false) deBriefMessageType += REQUEST_TAG_SUMMARY_BIT;
-    if(isTeam1TagReportReceived == false)   deBriefMessageType += REQUEST_TEAM1_REPORT_BIT;
-    if(isTeam2TagReportReceived == false)   deBriefMessageType += REQUEST_TEAM2_REPORT_BIT;
-    if(isTeam3TagReportReceived == false)   deBriefMessageType += REQUEST_TEAM3_REPORT_BIT;
+	if(isSummaryTagReportReceived == false)	  deBriefMessageType += REQUEST_TAG_SUMMARY_BIT;
+	if(isTeam1TagReportReceived	  == false)   deBriefMessageType += REQUEST_TEAM1_REPORT_BIT;
+	if(isTeam2TagReportReceived   == false)   deBriefMessageType += REQUEST_TEAM2_REPORT_BIT;
+	if(isTeam3TagReportReceived   == false)   deBriefMessageType += REQUEST_TEAM3_REPORT_BIT;
 
 	return result;
 }
@@ -590,7 +604,9 @@ bool DeBrief::checkIfAllPlayersAreDebriefed()
 	bool allDebriefed = true;
 	for(int playerNum = 1; playerNum <= MAX_PLAYERS; playerNum++)
 	{
-		if(checkIfPlayerIsDebriefed() == false) allDebriefed = false;
+		if(playerInfo[playerNum].getIsDebriefed() == false && gameInfo.getIsThisPlayerInTheGame(playerNum) == true) allDebriefed = false;
+		qDebug() << "\t*** DeBrief::checkIfAllPlayersAreDebriefed(), Player " << playerNum << playerInfo[playerNum].getIsDebriefed();
 	}
+	qDebug() << "\t\t*** DeBrief::checkIfAllPlayersAreDebriefed() = " << allDebriefed;
 	return allDebriefed;
 }

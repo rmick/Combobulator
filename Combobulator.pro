@@ -4,7 +4,9 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui\
+
+CONFIG	+= sdk_no_version_check
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets network multimedia serialport  # REMOVE the hash before the word serialport to enable USB for Lazerswarm
 TARGET = Combobulator
@@ -14,7 +16,8 @@ TEMPLATE = app
 #RC_FILE = Combobulator.rc
 ICON	= Combobulator.icns
 
-QMAKE_MAC_SDK = macosx10.14
+#QMAKE_MAC_SDK = macosx10.14
+#!host_build:QMAKE_MAC_SDK = macosx
 
 SOURCES +=  \
     main.cpp\

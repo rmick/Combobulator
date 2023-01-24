@@ -138,11 +138,14 @@ public:
 	int getScoreTableFontSize() const;
 	void setScoreTableFontSize(int value);
 
+    bool getIsSuperSimpleMode() const;
+    void setIsSuperSimpleMode(bool value);
+
 signals:
-	void    NumberOfTeamsHasChanged(int NumTeams);
+    void    NumberOfTeamsHasChanged(int NumTeams);
 
 private:
-	bool	powerSaveMode;
+    bool	powerSaveMode;
 	int		fontSize;
 	int		scoreHeaderFontSize;
 	int		scoreTableFontSize;
@@ -168,7 +171,8 @@ private:
     bool    isLTARGame;
     bool    isReSpawnGame;
 	bool	cumulativeScoreMode = false;
-	bool	isIndoorViewMode; //not saved with game. It is here so that it is public to other classes.
+    bool	isIndoorViewMode;           //not saved with game. It is here so that it is public to other classes.
+    bool    superSimpleMode = false;    //Gert Mode
 
     int     pointsPerTagLanded;
     int     pointsPerTagLandedNegative;

@@ -14,25 +14,28 @@ macdeployqt terminal command (copy into terminal window to build a .dmg)
 
 	  3)	Copy/paste the following line into the terminal window and wait....
 
-			  /Users/Richie/Qt511/5.11.0/clang_64/bin/macdeployqt Combobulator.app -dmg
+              /Users/Richie/Qt/5.12.12/clang_64/bin/macdeployqt Combobulator.app -dmg
 
-			  IF YOU GET AN ERROR - check that you have not upgraded to a newer version of Qt (e.g. 5.12)
+              IF YOU GET AN ERROR - check that you have not upgraded to a newer version of Qt (e.g. 5.13)
 
-	  Here is the current build directory	Qt_projects\build-Combobulator_Mac-Release
+      Here is the current build directory	Qt_projects\build-Combobulator_Mac/release
 
 
 windeployqt
 	  1)	Copy the Combobulator.exe
-               from the        Qt_projects\build-Combobulator_Windows32-Release\
-               to the          Qt_projects\build-Combobulator_Windows32-Release\Combobulator
+               from the        Qt_projects\build-Combobulator_Windows\release\
+               to the          Qt_projects\build-Combobulator_Windows\release\Combobulator
 
 	  2)	Open CMD.exe prompt
 			   cd\
-			   W:
+               W:  or   C:
 
 	  3)	STOP !!!!! (Did you do step 1 above - copy the file to a new location first !!!!
 
-      4)	cd Qt_projects\build-Combobulator_Windows32-Release\Combobulator
+      4)	cd C:\Users\Mickan-Dropbox\Dropbox\Qt_projects\build-Combobulator_Windows64\release\Combobulator
+                W:\Users\richie\Dropbox\Qt_projects\build-Combobulator_Windows64\release\Combobulator>
+
+            C:\Qt\5.12.12\mingw73_64\bin\windeployqt Combobulator.exe
 			C:\Qt\5.11.0\mingw53_32\bin\windeployqt Combobulator.exe
 
             Copy the missing DLL files from C:\Qt\5.11.0\mingw53_32\bin to Combob folder
@@ -68,10 +71,10 @@ androiddeployqt
 
 
 //  Build Number
-const QString	BUILD_NUMBER					= "r19.7.06";
-const QString	VERSION_NUMBER					= "v1.14 Beta 4";
+const QString	BUILD_NUMBER					= "r2212.18";
+const QString	VERSION_NUMBER					= "v1.17f (gertBuild v6)";
 
-const double	CURRENT_BASESTATION_FIRMWARE	= 1.14;
+const double	CURRENT_BASESTATION_FIRMWARE	= 1.15;
 
 //Maximum number of players
 //--------------------------
@@ -94,8 +97,8 @@ const char	LTAR_BEACON = 'E';
 
 //Internal timers (in mSec)
 const int   INTERPACKET_DELAY_MSEC		= 50;
-const int   HOST_TIMER_MSEC				= 1200;
-const int   DEBRIEF_TIMER_MSEC			= 1200;
+const int   HOST_TIMER_MSEC				= 1500;     //1500 is the standard, 1200 is fast (but causes issues with some LTAR taggers)
+const int   DEBRIEF_TIMER_MSEC			= 1500;     //1500 is the standard
 const int   TEXT_SENT_DELAY				= 15;
 const int   PRESS_AND_HOLD_TIME			= 500;
 const int   BEACON_TIMER_MSEC			= 500;

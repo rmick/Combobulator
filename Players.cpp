@@ -177,7 +177,7 @@ void Players::setMedicMode(bool value)
 {
     MedicMode = value;
     setBitFlags1(MEDIC_MODE_FLAG, value);
-	//setBitFlags1(NEUTRALISE_10_FLAG, value);
+    //setBitFlags1(NEUTRALISE_10_FLAG, value);
 }
 
 int Players::getStartingAmmo() const
@@ -411,14 +411,24 @@ void Players::setPlayerIndex(int value)
 	PlayerIndex = value;
 }
 
+bool Players::getIsDebriefed() const
+{
+	return isDebriefed;
+}
+
+void Players::setIsDebriefed(bool value)
+{
+	isDebriefed = value;
+}
+
 int Players::getPackedFlags1() const
 {
-    return PackedFlags1;
+	return PackedFlags1;
 }
 
 void Players::setBitFlags1(int bitNumber, bool state)
 {
-    PackedFlags1 ^= (-state ^ PackedFlags1) & (1 << bitNumber);
+	PackedFlags1 ^= (-state ^ PackedFlags1) & (1 << bitNumber);
     //qDebug() << "\tFlags1: " << "\tBinary = " << displayBinary(PackedFlags1, 8);
 }
 

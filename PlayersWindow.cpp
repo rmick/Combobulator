@@ -32,6 +32,11 @@ PlayersWindow::PlayersWindow(QWidget *parent) :
 	LoadPlayerSettings(0);      // 0 = Global Player
 	SetActivePlayers();
 	RenamePlayerTeamButtons(gameInfo.getNumberOfTeams());
+
+    if(gameInfo.getIsSuperSimpleMode() == true)
+    {
+        setSuperSimpleControls();
+    }
 }
 
 PlayersWindow::~PlayersWindow()
@@ -266,6 +271,7 @@ void PlayersWindow::RenamePlayerTeamButtons(int numTeams)
             {
                 PlayerButtons[index]->setText(playerInfo[index].getPlayerName());
             }
+            playerInfoTemp[index].setPlayerName(PlayerButtons[index]->text());
         }
         ui->label_Team1->setText("Players");
         ui->label_Team2->setVisible(false);
@@ -287,7 +293,10 @@ void PlayersWindow::RenamePlayerTeamButtons(int numTeams)
             {
                 PlayerButtons[index]->setText(playerInfo[index].getPlayerName());
             }
+            //The next line uses playerInfoTemp to workaround the Players 9-24 problem when using 2/3 teams
+            playerInfoTemp[index].setPlayerName(PlayerButtons[index]->text());
         }
+
         ui->label_Team1->setText("Team 1");
 //        ui->label_Team2->setText("Team 2");
 //        ui->label_Team3->setText("Team 3");
@@ -400,7 +409,25 @@ void PlayersWindow::updatePlayerButtons()
 	{
 		if (PlayerButtons[x]->isChecked() ) PlayerButtons[x]->setStyleSheet(myStyleSheet.getButtonCheckedCss());
 		else                                PlayerButtons[x]->setStyleSheet(myStyleSheet.getButtonUnCheckedCss());
-	}
+    }
+}
+
+void PlayersWindow::setSuperSimpleControls()
+{
+    ui->btn_Flags->hide();
+    ui->btn_SelectedPlayerSlowTags->hide();
+    ui->btn_SelectedPlayerTeamTags->hide();
+    ui->btn_EditMode->hide();
+    ui->btn_ChangePlayers->hide();
+    ui->slider_Handicap->hide();
+    ui->label_SlowTags->hide();
+    ui->label_TeamTags->hide();
+    ui->label_StartingAmmo->hide();
+    ui->label_MegaTags->hide();
+    ui->label_Handicap->hide();
+    ui->label_Health->hide();
+    ui->label_Reloads->hide();
+    ui->label_Shields->hide();
 }
 
 void PlayersWindow::closeTheWindow()
@@ -442,6 +469,8 @@ void PlayersWindow::RenamePlayer(int player)
 
 void PlayersWindow::AdjustSettingsForHandicap(int currentPlayer)
 {
+    if(gameInfo.getIsSuperSimpleMode()) return;
+
     int health      = playerInfo[currentPlayer].getHealthTags();
     int shields     = playerInfo[currentPlayer].getShieldTime();
     int megas       = playerInfo[currentPlayer].getMegaTags();

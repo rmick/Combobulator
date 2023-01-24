@@ -4,7 +4,7 @@
 #include "Game.h"
 
 //#define LOCAL_DEBUG_RX
-#define LOCAL_DEBUG_TX
+//#define LOCAL_DEBUG_TX
 //#define LCD_DISABLED
 
 LttoComms::LttoComms(QObject *parent) : QObject(parent)
@@ -161,10 +161,10 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
             packet.append(" \r\n");
             emit sendSerialData(packet);
             #ifdef LOCAL_DEBUG_TX
-				//if		(packet.contains("P02"))	qDebug() << "lttoComms::sendPacket() - P02";
-				//else if	(packet.contains("P129"))	qDebug() << "lttoComms::sendPacket() - P129";
-				//else
-														qDebug() << "lttoComms::sendPacket() - Full Packet = " << packet;
+                if		(packet.contains("P02"))	qDebug() << "lttoComms::sendPacket() - P02";
+                else if	(packet.contains("P129"))	qDebug() << "lttoComms::sendPacket() - P129";
+                else
+                                                    //qDebug() << "lttoComms::sendPacket() - Full Packet = " << packet;
             #endif
             fullTCPpacketToSend = false;
             packet.clear();
@@ -180,7 +180,9 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
 			packet.append(lazerSwarm->translateCommand(packetToTranslate) );
             packet.append(" \r\n");
         }
-        else packet.append(":");
+        else
+            packet.append(":");
+
         //qDebug() << "lttoComms::sendPacket() LazerSwarm Mode- " << packet;
         emit sendSerialData(packet);            //Connects to TCPComms::sendPacket slot && SerialUSBcomms::sendPacket slot
 		tcpComms->sendPacket(packet);
@@ -709,7 +711,7 @@ void LttoComms::processPacket(QList<QByteArray> data)
         checksum        = extract(data);
 
 		if(isCheckSumCorrect(command, game, tagger, taggerInfo, smartDeviceInfo, checksum)) emit RequestJoinGame(game, tagger, 0, true);
-		//else                                                                                setDontAnnounceGame(false);
+		else  qDebug() << "\tLttoComms::processPacket - REQUEST_JOIN_LTAR_GAME **** CheckSum Error";                                                                             //setDontAnnounceGame(false);
         break;
 
     case ACK_PLAYER_ASSIGN:         //P17

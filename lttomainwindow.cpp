@@ -11,6 +11,7 @@
 #include <QTime>
 #include <QDesktopServices>
 #include <QFileInfo>
+
 #include "Game.h"
 #include "Players.h"
 #include "Defines.h"
@@ -36,12 +37,13 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
 	lttoComms = LttoComms::getInstance();
 	textEditLogFile = new QTextEdit;
 
+    setUiMode();
+
     QCoreApplication::setOrganizationName("Bush And Beyond");
 	QCoreApplication::setOrganizationDomain("bushandbeyond.com.au");
     QCoreApplication::setApplicationName("Combobulator");
+
 	loadSettings();
-	//myStyleSheet.setFontSizes();
-	//myStyleSheet.setCurrentCSS(myStyleSheet.CssDark);
 
     this->setWindowTitle("Lasertag Combobulator");
     this->setWindowFlags(windowFlags() & ~Qt::FramelessWindowHint);
@@ -53,7 +55,6 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
 	gameInfo.setCumulativeScoreMode(false);
 
 	timerHeartBeat = new QTimer(this);
-	//timerHeartBeat->start(1000);
 	connect(timerHeartBeat,	SIGNAL(timeout() ),	this,	SLOT(heartBeat())	);
 
 	ui->mainToolBar->setVisible(false);
@@ -69,10 +70,8 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
 
 	this->setWindowTitle("The Combobulator " + VERSION_NUMBER);
 
-	//serialUSBcomms.setIsUSBinitialised(false);
-	//tcpComms.initialiseTCPsignalsAndSlots();
-
     qsrand(static_cast<uint>(QTime::currentTime().msec()));
+
     for (int index = 1; index < 25; index++)    playerInfo[index].setPlayerName("Player " + QString::number(index));
 
     sound_Powerdown = new QSoundEffect(this);
@@ -447,7 +446,7 @@ void LttoMainWindow::on_btn_NoTeams_clicked()
 	qInfo() << "LttoMainWindow::on_btn_NoTeams_clicked()";
 }
 
-void LttoMainWindow::on_btn_TwoTeams_clicked()              // Find the current gameType and change it to the 2Teams variant.
+void LttoMainWindow::   on_btn_TwoTeams_clicked()              // Find the current gameType and change it to the 2Teams variant.
 {
     gameInfo.setNumberOfTeams(2);
     SetSpiesButtonState(true);
@@ -898,7 +897,7 @@ void LttoMainWindow::saveSettings()
 
 void LttoMainWindow::sendLogFile()
 {
-	QString filePath = QStandardPaths::standardLocations( QStandardPaths::AppDataLocation ).value(0);
+	QString filePath = QStandardPaths::standardLocations( QStandardPaths::DocumentsLocation ).value(0);
 	QDir thisDir;
 	thisDir.setPath(filePath);
 	if (!thisDir.exists()) thisDir.mkpath(filePath);
@@ -907,9 +906,7 @@ void LttoMainWindow::sendLogFile()
 	QString filePathAndFileName;
 	filePathAndFileName = filePath + "/Combobulator_Log.txt";
 
-	filePathAndFileName = "/Users/Richie/Desktop/Makefile";
-
-	qDebug() << "LttoMainWindow::sendLogFile()" << filePathAndFileName;
+	qDebug() << "*****\n" << "LttoMainWindow::sendLogFile()" << filePathAndFileName << "*****\n";
 
 QFileInfo check_file(filePathAndFileName);
 // check if file exists and if yes: Is it really a file and no directory?
@@ -918,7 +915,57 @@ else											qDebug() <<"LttoMainWindow::sendLogFile() - FALSE ???? ";
 
 	QUrl mailString = "mailto:richie@bushandbeyond.com.au?subject=Combobulator%20Log%20File &attachment="+ filePathAndFileName;
 	QDesktopServices::openUrl(mailString);
-	qDebug() << "LttoMainWindow::sendLogFile()" << mailString;
+    qDebug() << "LttoMainWindow::sendLogFile()" << mailString;
+}
+
+void LttoMainWindow::setSuperSimpleControls()
+{
+    qDebug() << "Gert Mode is active";
+    //set Gert defaults
+    setLTARmode(true);
+
+    //set the LTAR flags to off.
+    for(int index = 0; index <= MAX_PLAYERS; index++)
+    {
+        playerInfo[index].setPackedFlags3(0);
+    }
+
+    ui->btn_CustomGame->setChecked(true);
+    ui->slider_MegaTags->setValue(0);
+    ui->slider_StartAmmo->setValue(10);
+    ui->btn_Flags->setEnabled(true);
+
+    //hide some controls
+    ui->btn_Kings->hide();
+    ui->btn_HideAndSeek->hide();
+    ui->btn_OwnTheZone->hide();
+    ui->btn_Ltag->hide();
+    ui->btn_CustomGame->hide();
+    ui->btn_MedicMode->hide();
+    ui->btn_SlowTags->hide();
+    ui->btn_Spies->hide();
+    ui->btn_SpyTeamTags->hide();
+    ui->btn_TeamTags->hide();
+    ui->btn_ThreeTeams->hide();
+
+    ui->label_MegaTags->hide();
+    ui->slider_MegaTags->hide();
+    ui->label_SleepTime->hide();
+    ui->slider_SleepTime->hide();
+    ui->label_StartingAmmo->hide();
+    ui->slider_StartAmmo->hide();
+
+    ui->menuFile->hide();
+    ui->menuBar->hide();
+    ui->menuBar->setVisible(false);
+
+    ui->btn_Settings->setText("Shut\nDown");
+
+    gameInfo.setPointsPerSurvivalMinute(0);
+    gameInfo.setPointsPerZoneMinute(0);
+    gameInfo.setPointsPerKingHit(0);
+    gameInfo.setPointsPerKingHitNegative(0);
+    gameInfo.setPointsPerTagLandedNegative(0);
 }
 
 void LttoMainWindow::on_actionExit_triggered()
@@ -982,16 +1029,16 @@ void LttoMainWindow::on_actionSet_CountDown_Time_triggered()
 
 	bool ok = false;
 
-	int time = gameInfo.getCountDownTime();
+    //int time = gameInfo.getCountDownTime();
 
 //	ok = countDownTimeDialog.exec();
 
 //	qDebug() << " LttoMainWindow::on_actionSet_CountDown_Time_triggered()" << time;
 
 
-	time = QInputDialog::getInt(this, "CountDown Time", "Enter Countdown Time (5-30 sec)", gameInfo.getCountDownTime(), 5, 30, 1, &ok);
-	if(ok) gameInfo.setCountDownTime(time);
-	qDebug() << " LttoMainWindow::on_actionSet_CountDown_Time_triggered()" << time;
+    int cdTime = QInputDialog::getInt(this, "CountDown Time", "Enter Countdown Time (5-30 sec)", gameInfo.getCountDownTime(), 5, 30, 1, &ok);
+    if(ok) gameInfo.setCountDownTime(cdTime);
+    qDebug() << " LttoMainWindow::on_actionSet_CountDown_Time_triggered()" << cdTime;
 }
 
 void LttoMainWindow::on_actionuse_LazerSwarm_triggered()
@@ -1208,7 +1255,14 @@ void LttoMainWindow::on_actionUpdate_Firmware_triggered()
 void LttoMainWindow::on_btn_Settings_clicked()
 {
 	qDebug() << "Settings button clicked";
-	//if(!settingsWindow)
+
+    if(gameInfo.getIsSuperSimpleMode())
+    {
+        on_actionExit_triggered();
+        return;
+    }
+
+    //if(!settingsWindow)
 	settingsWindow = new SettingsWindow(this);
 	//else qDebug() << "settingsWindowExists";
 
@@ -1267,4 +1321,34 @@ void LttoMainWindow::heartBeat()
 	if(lttoComms->getHostingCommsActive() == true)	return;
 	lttoComms->sendHeartBeat();
 	qDebug() << "LttoMainWindow::HeartBeatSignal() - SENT *********************";
+}
+
+void LttoMainWindow::on_actiongert_Mode_triggered()
+{
+    qDebug() << "Gert Mode is now active";
+
+    setSuperSimpleControls();
+
+    gameInfo.setIsSuperSimpleMode(true);
+}
+
+void LttoMainWindow::setUiMode()
+{
+    QStringList arguments = QApplication::arguments();
+    bool isSimpleUI = true;
+    QStringList results = arguments.filter("gert", Qt::CaseInsensitive);
+    if (results.isEmpty()) isSimpleUI = false;
+
+    if(isSimpleUI)
+    {
+        qDebug() << "Activating Super Simple UI (Gert) Mode";
+        gameInfo.setIsSuperSimpleMode(true);
+    }
+    else
+    {
+        qDebug() <<"Activating Normal UI Mode";
+        gameInfo.setIsSuperSimpleMode(false);
+    }
+
+    if(gameInfo.getIsSuperSimpleMode())  setSuperSimpleControls();
 }

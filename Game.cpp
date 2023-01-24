@@ -35,6 +35,15 @@ Game::Game()
     pointsPerKingHit            = POINTS_PER_KING_HIT;
     pointsPerKingHitNegative    = POINTS_PER_OWN_KING_HIT;
 
+    if(gameInfo.getIsSuperSimpleMode() == true)
+    {
+        pointsPerTagLandedNegative  = 0;
+        pointsPerSurvivalMinute     = 0;
+        pointsPerZoneMinute         = 0;
+        pointsPerKingHit            = 0;
+        pointsPerKingHitNegative    = 0;
+    }
+
     PlayerToReHost = 0;
     isSpiesTeamTagActive = false;
 
@@ -644,7 +653,17 @@ void Game::setScoreTableFontSize(int value)
 	scoreTableFontSize = value;
 }
 
+bool Game::getIsSuperSimpleMode() const
+{
+    return superSimpleMode;
+}
+
+void Game::setIsSuperSimpleMode(bool value)
+{
+    superSimpleMode = value;
+}
+
 int Game::extractInteger(QString &dG)
 {
-	return dG.right((dG.length() - (dG.indexOf(":")+1) )).toInt();      //extracts all the chars to right of the ":" and convert to an Int
+    return dG.right((dG.length() - (dG.indexOf(":")+1) )).toInt();      //extracts all the chars to right of the ":" and convert to an Int
 }

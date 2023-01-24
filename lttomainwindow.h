@@ -131,6 +131,10 @@ private slots:
 
 	void heartBeat();
 
+    void on_actiongert_Mode_triggered();
+
+    void setUiMode();
+
 private:
     Ui::LttoMainWindow      *ui;
 	QMessageBox::StandardButton		loadLastGame;
@@ -162,6 +166,7 @@ private:
     void    loadSettings();
     void    saveSettings();
 	void	sendLogFile();
+    void    setSuperSimpleControls();
 
 	QString QSS_Inside =	"QWidget{background-color:black; font:white;} QSpinBox{color:white;}";
 	QString	QSS_Outside =   "QWidget{background-color:yellow; font:purple;} QPushbutton{background-color:white;}";

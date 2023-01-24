@@ -14,7 +14,7 @@ class OtaWindow : public QDialog
 	Q_OBJECT
 
 public:
-	explicit OtaWindow(QWidget *parent = 0);
+	explicit OtaWindow(QWidget *parent = nullptr);
 	~OtaWindow();
 
 private slots:

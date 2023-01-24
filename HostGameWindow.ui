@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Hosting WIndow</string>
   </property>
   <property name="styleSheet">
    <string notr="true"/>
@@ -259,7 +259,6 @@ Player</string>
      </property>
      <property name="font">
       <font>
-       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -700,7 +699,6 @@ Tagger</string>
       <font>
        <family>Verdana</family>
        <pointsize>60</pointsize>
-       <weight>75</weight>
        <bold>true</bold>
        <kerning>false</kerning>
       </font>

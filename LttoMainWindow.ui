@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>898</width>
-    <height>613</height>
+    <height>600</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -23,9 +23,7 @@
    </size>
   </property>
   <property name="font">
-   <font>
-    <family>Verdana</family>
-   </font>
+   <font/>
   </property>
   <property name="windowTitle">
    <string>LaserTag Combobulator</string>
@@ -147,9 +145,7 @@
        </palette>
       </property>
       <property name="font">
-       <font>
-        <family>Verdana</family>
-       </font>
+       <font/>
       </property>
       <property name="text">
        <string>Medic Mode OFF</string>
@@ -265,9 +261,7 @@
        </palette>
       </property>
       <property name="font">
-       <font>
-        <family>Verdana</family>
-       </font>
+       <font/>
       </property>
       <property name="autoFillBackground">
        <bool>false</bool>
@@ -606,9 +600,7 @@
        </palette>
       </property>
       <property name="font">
-       <font>
-        <family>Verdana</family>
-       </font>
+       <font/>
       </property>
       <property name="autoFillBackground">
        <bool>false</bool>
@@ -673,9 +665,7 @@
        </size>
       </property>
       <property name="font">
-       <font>
-        <family>Verdana</family>
-       </font>
+       <font/>
       </property>
       <property name="text">
        <string>Spy TeamTags ON</string>
@@ -794,9 +784,7 @@
        </palette>
       </property>
       <property name="font">
-       <font>
-        <family>Verdana</family>
-       </font>
+       <font/>
       </property>
       <property name="text">
        <string>NEXT</string>
@@ -812,9 +800,7 @@
        <bool>true</bool>
       </property>
       <property name="font">
-       <font>
-        <family>Verdana</family>
-       </font>
+       <font/>
       </property>
       <property name="text">
        <string>DeBug</string>
@@ -964,9 +950,7 @@
        </palette>
       </property>
       <property name="font">
-       <font>
-        <family>Verdana</family>
-       </font>
+       <font/>
       </property>
       <property name="text">
        <string>Flags</string>
@@ -1079,9 +1063,7 @@
        </palette>
       </property>
       <property name="font">
-       <font>
-        <family>Verdana</family>
-       </font>
+       <font/>
       </property>
       <property name="text">
        <string>Slow Tags OFF</string>
@@ -1200,9 +1182,7 @@
        </palette>
       </property>
       <property name="font">
-       <font>
-        <family>Verdana</family>
-       </font>
+       <font/>
       </property>
       <property name="autoFillBackground">
        <bool>false</bool>
@@ -1340,9 +1320,7 @@
        </palette>
       </property>
       <property name="font">
-       <font>
-        <family>Verdana</family>
-       </font>
+       <font/>
       </property>
       <property name="text">
        <string>Two Teams</string>
@@ -1505,9 +1483,7 @@
        </palette>
       </property>
       <property name="font">
-       <font>
-        <family>Verdana</family>
-       </font>
+       <font/>
       </property>
       <property name="text">
        <string>Team Tags OFF</string>
@@ -1576,9 +1552,7 @@
        </sizepolicy>
       </property>
       <property name="font">
-       <font>
-        <family>Verdana</family>
-       </font>
+       <font/>
       </property>
       <property name="text">
        <string>Respawn OFF</string>
@@ -1694,9 +1668,7 @@
        </palette>
       </property>
       <property name="font">
-       <font>
-        <family>Verdana</family>
-       </font>
+       <font/>
       </property>
       <property name="autoFillBackground">
        <bool>false</bool>
@@ -1818,9 +1790,7 @@
        </palette>
       </property>
       <property name="font">
-       <font>
-        <family>Verdana</family>
-       </font>
+       <font/>
       </property>
       <property name="text">
        <string>Spies = 0</string>
@@ -1939,9 +1909,7 @@
        </palette>
       </property>
       <property name="font">
-       <font>
-        <family>Verdana</family>
-       </font>
+       <font/>
       </property>
       <property name="text">
        <string>Three Teams</string>
@@ -2082,9 +2050,7 @@
        </palette>
       </property>
       <property name="font">
-       <font>
-        <family>Verdana</family>
-       </font>
+       <font/>
       </property>
       <property name="text">
        <string>No Teams</string>
@@ -2203,9 +2169,7 @@
        </palette>
       </property>
       <property name="font">
-       <font>
-        <family>Verdana</family>
-       </font>
+       <font/>
       </property>
       <property name="text">
        <string>Start Game</string>
@@ -2374,9 +2338,7 @@
        </palette>
       </property>
       <property name="font">
-       <font>
-        <family>Verdana</family>
-       </font>
+       <font/>
       </property>
       <property name="text">
        <string>Custom</string>
@@ -2470,7 +2432,7 @@
      <x>0</x>
      <y>0</y>
      <width>898</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -2485,6 +2447,7 @@
     <addaction name="actionLTAR_Mode"/>
     <addaction name="actionEdit_Scoring"/>
     <addaction name="actionOutdoorMode"/>
+    <addaction name="actiongert_Mode"/>
     <addaction name="separator"/>
     <addaction name="actionUpdate_Firmware"/>
     <addaction name="separator"/>
@@ -2594,6 +2557,11 @@
    </property>
    <property name="visible">
     <bool>false</bool>
+   </property>
+  </action>
+  <action name="actiongert_Mode">
+   <property name="text">
+    <string>gert Mode</string>
    </property>
   </action>
  </widget>

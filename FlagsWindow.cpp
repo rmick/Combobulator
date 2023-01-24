@@ -32,8 +32,8 @@ FlagsWindow::~FlagsWindow()
 void FlagsWindow::setButtonStates(int playerNumber)
 {
     qDebug() << "FlagsWindow::setButtonStates = Player " << playerNumber;
-    if(gameInfo.getIsLTARGame())    hideLtarControls(true);
-    else                            hideLtarControls(false);
+    if(gameInfo.getIsLTARGame())    setLtarControls(true);
+    else                            setLtarControls(false);
 
     if(playerInfo[playerNumber].getBitFlags1(NEUTRALISE_10_FLAG))               ui->btn_Neutralise->setChecked(true);
     else                                                                        ui->btn_Neutralise->setChecked(false);
@@ -85,6 +85,8 @@ void FlagsWindow::setButtonStates(int playerNumber)
 
     if(playerInfo[playerNumber].getBitFlags3(ALLOW_FULL_AUTO_FIRE))             ui->btn_LtarFullAutoMode->setChecked(true);
     else                                                                        ui->btn_LtarFullAutoMode->setChecked(false);
+
+    if(gameInfo.getIsSuperSimpleMode())     setSuperSimpleMode();
 }
 
 void FlagsWindow::updatePlayerFlags1(int bit, bool state)
@@ -114,7 +116,30 @@ void FlagsWindow::updatePlayerFlags3(int bit, bool state)
     }
 }
 
-void FlagsWindow::hideLtarControls(bool state)
+void FlagsWindow::setSuperSimpleMode()
+{
+    qDebug() << "Flags - Super Simple Mode active";
+    ui->btn_ContestedZones->hide();
+    ui->btn_ZonesWithTeams->hide();
+    ui->btn_HuntThePrey->hide();
+    ui->btn_ContestedZones->hide();
+    ui->btn_LtarSupplyZonesRefillAmmo->hide();
+    ui->btn_LtarSupplyZonesRefillShields->hide();
+    ui->btn_LtarAutoReload->hide();
+    ui->btn_LtarShieldButtonMode->hide();
+    ui->btn_LtarFullAutoMode->hide();
+    ui->btn_SupplyZonesRefillTags->hide();
+    ui->btn_SupplyZonesReSpawn->hide();
+    ui->btn_ContestedZones->hide();
+    ui->btn_HostileZones->hide();
+    ui->btn_Neutralise->hide();
+    ui->btn_ReverseHuntDirection->hide();
+    ui->btn_NeutraliseWhenTagged->hide();
+    ui->label->hide();
+
+}
+
+void FlagsWindow::setLtarControls(bool state)
 {
     ui->btn_LtarAutoReload->setVisible(state);
     ui->btn_LtarEnhancedBeacons->setVisible(state);

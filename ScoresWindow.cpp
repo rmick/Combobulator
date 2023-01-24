@@ -177,9 +177,12 @@ void ScoresWindow::addColumnLabels(int modus)
         {
             if(gameInfo.getIsThisPlayerInTheGame(index) == true)
             {
-				if(playerNameDisplayInsteadOfNumber)
+                QString teamNumText     = "Team " + QString::number(((index-1)/8)+1) + "\n";
+                if(gameInfo.getNumberOfTeams() == 0) teamNumText = "";
+
+                if(playerNameDisplayInsteadOfNumber)
 				{	
-					ui->scoreTable->setHorizontalHeaderItem(columnIndex++, new QTableWidgetItem(playerInfo[index].getPlayerName()));
+                    ui->scoreTable->setHorizontalHeaderItem(columnIndex++, new QTableWidgetItem(teamNumText + playerInfoTemp[index].getPlayerName()));
 				}
 				else
 				{
@@ -241,7 +244,9 @@ void ScoresWindow::addPlayerRows()
 			ui->scoreTable->setItem(thisRow, 0, playerNumber[index]);
 
             //add player name
-            playerTaggerName[index] = new QTableWidgetItem(playerInfo[index].getPlayerName());
+            QString teamNumText     = "Team " + QString::number(((index-1)/8)+1) + ", ";
+            if(gameInfo.getNumberOfTeams() == 0) teamNumText = "";
+            playerTaggerName[index] = new QTableWidgetItem(teamNumText + playerInfoTemp[index].getPlayerName());
             playerTaggerName[index]->setTextAlignment(Qt::AlignCenter);
             playerTaggerName[index]->setFont(tableFont);
             ui->scoreTable->setItem(thisRow, 1, playerTaggerName[index]);
