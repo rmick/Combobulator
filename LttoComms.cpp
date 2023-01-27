@@ -545,7 +545,7 @@ void LttoComms::setTcpCommsConnected(bool value)
 	//qDebug() << "LttoComms::setTcpCommsConnected() triggered";
 	tcpCommsConnected = value;
     setUseLongDataPacketsOverTCP(value);                        // Activated/Deactivated here !!!!
-	setUseLazerSwarm(!value);
+    setUseLazerSwarm(!value);
 	if(value) sendGetFirmwareVersion();
 }
 

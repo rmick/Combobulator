@@ -65,7 +65,7 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
 	ui->btn_StartGame	->setEnabled(false);
 	ui->btn_Debug		->setVisible(false);
 	ui->btn_StartGame	->setVisible(false);
-	ui->label_BuildNumber->setVisible(false);
+    ui->label_BuildNumber->setVisible(false);
 	setLtarControls(false);
 
 	this->setWindowTitle("The Combobulator " + VERSION_NUMBER);
@@ -77,18 +77,18 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
     sound_Powerdown = new QSoundEffect(this);
     sound_Powerdown->setSource(QUrl::fromLocalFile(":/resources/audio/shut-down.wav"));
 
-#ifdef  QT_DEBUG
+#ifndef  QT_DEBUG
+//    QMainWindow::showFullScreen();
+//    QEventLoop loop;
+//    QTimer::singleShot(500, &loop, SLOT(quit()));
+//    loop.exec();
+    QMessageBox::critical(this,"WARNING","Have you disabled ALL power saving on this device?\n\nThe host device must stay awake at all times during the game, otherwise the Combobulator will not function !");
+
+#else
     gameInfo.setIsThisPlayerInTheGame( 1, true);
     gameInfo.setIsThisPlayerInTheGame(24, true);
     ui->btn_StartGame->setEnabled(true);
-	ui->btn_Debug->setVisible(true);
-#else
-    QMainWindow::showFullScreen();
-	QEventLoop loop;
-	QTimer::singleShot(500, &loop, SLOT(quit()));
-	loop.exec();
-	QMessageBox::critical(this,"WARNING","Have you disabled ALL power saving on this device?\n\nThe host device must stay awake at all times during the game, otherwise the Combobulator will not function !");
-
+    ui->btn_Debug->setVisible(true);
 #endif
 }
 
@@ -966,6 +966,19 @@ void LttoMainWindow::setSuperSimpleControls()
     gameInfo.setPointsPerKingHit(0);
     gameInfo.setPointsPerKingHitNegative(0);
     gameInfo.setPointsPerTagLandedNegative(0);
+
+    ui->gridLayout->addWidget(ui->slider_Reloads,    8,3,1,2);
+    ui->gridLayout->addWidget(ui->btn_NoTeams,       0,0,3,2);
+    ui->gridLayout->addWidget(ui->btn_TwoTeams,      0,3,3,2);
+    ui->gridLayout->addWidget(ui->btn_ReSpawn,       4,0,2,2);
+    ui->gridLayout->addWidget(ui->btn_Flags,         4,3,2,2);
+    ui->gridLayout->addWidget(ui->slider_GameTime,  11,3,1,2);
+    ui->gridLayout->addWidget(ui->label_GameTime,   10,3,1,1);
+    ui->gridLayout->addWidget(ui->label_Reloads,     7,3,1,1);
+    ui->gridLayout->addWidget(ui->btn_SelectPlayers,15,3,4,1);
+    ui->gridLayout->addWidget(ui->btn_Settings,     17,0,2,1);
+
+    ui->gridLayout->addWidget(ui->label_BlankSpacer, 7,2,1,1);
 }
 
 void LttoMainWindow::on_actionExit_triggered()
@@ -996,8 +1009,6 @@ void LttoMainWindow::on_actionExit_triggered()
 	ui->slider_Shields	->setEnabled(false);
 	ui->slider_SleepTime->setEnabled(false);
 	ui->slider_StartAmmo->setEnabled(false);
-
-
 
 	lttoComms->closePorts();
 	saveSettings();

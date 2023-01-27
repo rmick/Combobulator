@@ -28,17 +28,15 @@ windeployqt
 
 	  2)	Open CMD.exe prompt
 			   cd\
-               W:  or   C:
+               W:
 
 	  3)	STOP !!!!! (Did you do step 1 above - copy the file to a new location first !!!!
 
-      4)	cd C:\Users\Mickan-Dropbox\Dropbox\Qt_projects\build-Combobulator_Windows64\release\Combobulator
-                W:\Users\richie\Dropbox\Qt_projects\build-Combobulator_Windows64\release\Combobulator>
+      4)	cd Qt_projects\build-Combobulator_Windows64\release\Combobulator
 
             C:\Qt\5.12.12\mingw73_64\bin\windeployqt Combobulator.exe
-			C:\Qt\5.11.0\mingw53_32\bin\windeployqt Combobulator.exe
 
-            Copy the missing DLL files from C:\Qt\5.11.0\mingw53_32\bin to Combob folder
+            Copy the missing DLL files from C:\Qt\5.12.0\mingw53_64\bin to Combob folder
 
 	  5)	Zip up the folder and publish to Dropbox
 
@@ -71,8 +69,8 @@ androiddeployqt
 
 
 //  Build Number
-const QString	BUILD_NUMBER					= "r2212.18";
-const QString	VERSION_NUMBER					= "v1.17f (gertBuild v6)";
+const QString	BUILD_NUMBER					= "r2301.27";
+const QString	VERSION_NUMBER					= "v1.18rc2";
 
 const double	CURRENT_BASESTATION_FIRMWARE	= 1.15;
 
