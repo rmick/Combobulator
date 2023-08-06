@@ -302,30 +302,31 @@ void Players::setPlayerNumberInThisGame(int value)
 ///
 void Players::streamToFile(QTextStream &out)
 {
-    out << "------------------------" << endl;
+    out << "------------------------"                               << Qt::endl;
     for (int index = 0; index < 25; index++)
     {
-        out << "PlayerID:" << index << endl;
-        out << "Handicap: "     << playerInfo[index].Handicap << endl;
-        out << "HealthTags: "   << playerInfo[index].HealthTags << endl;
-        out << "MedicMode: "    << playerInfo[index].MedicMode << endl;
-        out << "MegaTags: "     << playerInfo[index].MegaTags << endl;
-        out << "PlayerName: "   << playerInfo[index].PlayerName << endl;
-        out << "Reloads: "      << playerInfo[index].Reloads << endl;
-        out << "Reloads2: "     << playerInfo[index].Reloads2 << endl;
-        out << "ShieldTime: "   << playerInfo[index].ShieldTime << endl;
-        out << "SlowTags: "     << playerInfo[index].SlowTags << endl;
-        out << "TeamTags: "     << playerInfo[index].TeamTags << endl;
-        out << "Flags1:"        << playerInfo[index].PackedFlags1 << endl;
-        out << "Flags2:"        << playerInfo[index].PackedFlags2 << endl;
-        out << "Flags3:"        << playerInfo[index].PackedFlags3 << endl;
-        out << "StartingAmmo: " << playerInfo[index].StartingAmmo << endl;
-		out << "SleepTimeOut:"	<< playerInfo[index].SleepTimeOut << endl;
-		out << "PlayerIndex:"	<< playerInfo[index].PlayerIndex << endl;
-        out << "------------------------" << endl;
+        out << "PlayerID:"      << index                            << Qt::endl;
+        out << "Handicap: "     << playerInfo[index].Handicap       << Qt::endl;
+        out << "HealthTags: "   << playerInfo[index].HealthTags     << Qt::endl;
+        out << "MedicMode: "    << playerInfo[index].MedicMode      << Qt::endl;
+        out << "MegaTags: "     << playerInfo[index].MegaTags       << Qt::endl;
+        out << "PlayerName: "   << playerInfo[index].PlayerName     << Qt::endl;
+        out << "Reloads: "      << playerInfo[index].Reloads        << Qt::endl;
+        out << "Reloads2: "     << playerInfo[index].Reloads2       << Qt::endl;
+        out << "ShieldTime: "   << playerInfo[index].ShieldTime     << Qt::endl;
+        out << "SlowTags: "     << playerInfo[index].SlowTags       << Qt::endl;
+        out << "TeamTags: "     << playerInfo[index].TeamTags       << Qt::endl;
+        out << "Flags1:"        << playerInfo[index].PackedFlags1   << Qt::endl;
+        out << "Flags2:"        << playerInfo[index].PackedFlags2   << Qt::endl;
+        out << "Flags3:"        << playerInfo[index].PackedFlags3   << Qt::endl;
+        out << "StartingAmmo: " << playerInfo[index].StartingAmmo   << Qt::endl;
+        out << "SleepTimeOut:"	<< playerInfo[index].SleepTimeOut   << Qt::endl;
+        out << "PlayerIndex:"	<< playerInfo[index].PlayerIndex    << Qt::endl;
+        out << "------------------------"                           << Qt::endl;
     }
-    out << "END_OF_PLAYER_SETTINGS" << endl;
-	qDebug() << "Players::StreamToFile has left the building" << endl << endl;
+    out << "END_OF_PLAYER_SETTINGS"                                 << Qt::endl;
+    qDebug() << "Players::StreamToFile has left the building"       << Qt::endl
+                                                                    << Qt::endl;
 }
 
 void Players::streamFromFile(QTextStream &in)
@@ -355,7 +356,7 @@ void Players::streamFromFile(QTextStream &in)
 			else if (descriptorP.contains("PlayerIndex:") )		playerInfo[playerID].PlayerIndex  = descriptorP.right((descriptorP.length() - (descriptorP.indexOf(":")+1) )).toInt();
     }   while (descriptorP != "END_OF_PLAYER_SETTINGS");
 	//playerInfo[playerID].PlayerName = playerInfo[playerID].PlayerName.trimmed();
-	qDebug() << "Players::StreamFromFile has left the building" << endl << endl;
+    qDebug() << "Players::StreamFromFile has left the building" << Qt::endl << Qt::endl;
 }
 
 void Players::copyPlayerSettings(int copyFrom, int copyTo)

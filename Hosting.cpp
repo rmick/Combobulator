@@ -2,6 +2,7 @@
 #include <QDebug>
 #include <QMessageBox>
 #include <QTime>
+#include <QRandomGenerator>
 
 #include "HostGameWindow.h"
 
@@ -125,7 +126,9 @@ bool Hosting::pickTheKing()
 
 int Hosting::getRandomNumber(int min, int max)
 {
-    return ((qrand() % ((max + 1) - min)) + min);
+    int randX = QRandomGenerator::global()->generate();
+    return ((randX % ((max + 1) - min)) + min);
+    //return ((qrand() % ((max + 1) - min)) + min);     //qrand is deprecated in Qt5.15
 }
 
 ////////////////////////////////////////////////////////////////////////////

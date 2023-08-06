@@ -142,7 +142,7 @@ private:
 	QPointer<HostGameWindow>		hostGameWindow;
 	QPointer<FlagsWindow>			flagsWindow;
 	QPointer<ScoresWindow>			scoresWindow;
-	QPointer<FileLoadSave>			fileLoadSave;
+    QPointer<FileLoadSave>			fileLoadSave;
 	QPointer<SetScoreParameters>	setScoreParameters;
 	QPointer<OtaWindow>				otaWindow;
 	QPointer<AboutForm>             aboutForm;

@@ -8,7 +8,8 @@ QT       += core gui\
 
 CONFIG	+= sdk_no_version_check
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets network multimedia serialport  # REMOVE the hash before the word serialport to enable USB for Lazerswarm
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets network multimedia #serialport  # REMOVE the hash before the word serialport to enable USB for Lazerswarm
+                                                                                # ALSO disable #define INCLUDE_SERIAL (line 68 defines.h)
 TARGET = Combobulator
 DEPLOYMENT.display_name = Combobulator
 TEMPLATE = app
@@ -89,6 +90,10 @@ FORMS    += \
     SettingsWindow.ui \
     Logger.ui
 
+# Default rules for deployment.
+qnx: target.path = /tmp/$${TARGET}/bin
+else: unix:!android: target.path = /opt/$${TARGET}/bin
+!isEmpty(target.path): INSTALLS += target
 
 RESOURCES += \
     Resources.qrc
@@ -123,6 +128,6 @@ DISTFILES += \
     android/gradle/wrapper/gradle-wrapper.properties \
     android/gradlew.bat
 
-ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
+#ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 
-DESTDIR = ./
+#DESTDIR = ./

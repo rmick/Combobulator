@@ -277,32 +277,32 @@ void Game::setPlayersInTeamByte(int TeamNumber, int PlayerNumber, bool state)
 
 void Game::streamToFile(QTextStream &out)
 {
-    out << "GameID:"           << GameID           << endl;
-    out << "GameLength:"       << GameLength       << endl;
-    out << "GameName:"         << GameName         << endl;
-    out << "GameType:"         << GameType         << endl;
-    out << "NumberOfPlayers:"  << NumberOfPlayers  << endl;
-    out << "NumberOfTeams:"    << NumberOfTeams    << endl;
-    out << "NumberOfSpies:"    << NumberOfSpies    << endl;
-    out << "CountDownTime:"    << CountDownTime    << endl;
-    out << "SpyTeamTagsActive:"<< isSpiesTeamTagActive << endl;
-    out << "LTARmode:"         << isLTARGame        << endl;
-    out << "ReSpawnEnabled:"   << isReSpawnGame     << endl;
-	out << "CumulativeScores:"  << cumulativeScoreMode << endl;
-    out << "PointsPerTagLanded:"         << pointsPerTagLanded           << endl;
-    out << "PointsPerTagLandedNegative:" << pointsPerTagLandedNegative   << endl;
-    out << "PointsPerTagTaken:"          << pointsPerTagTaken            << endl;
-    out << "PointsPerSurvivalMinute:"    << pointsPerSurvivalMinute      << endl;
-    out << "PointsPerZoneMinute:"        <<   pointsPerZoneMinute        << endl;
-    out << "PointsPerKingHit:"           <<   pointsPerKingHit           << endl;
-    out << "PointsPermingHitNegative:"   <<   pointsPerKingHitNegative   << endl;
+    out << "GameID:"                     << GameID                      << Qt::endl;
+    out << "GameLength:"                 << GameLength                  << Qt::endl;
+    out << "GameName:"                   << GameName                    << Qt::endl;
+    out << "GameType:"                   << GameType                    << Qt::endl;
+    out << "NumberOfPlayers:"            << NumberOfPlayers             << Qt::endl;
+    out << "NumberOfTeams:"              << NumberOfTeams               << Qt::endl;
+    out << "NumberOfSpies:"              << NumberOfSpies               << Qt::endl;
+    out << "CountDownTime:"              << CountDownTime               << Qt::endl;
+    out << "SpyTeamTagsActive:"          << isSpiesTeamTagActive        << Qt::endl;
+    out << "LTARmode:"                   << isLTARGame                  << Qt::endl;
+    out << "ReSpawnEnabled:"             << isReSpawnGame               << Qt::endl;
+    out << "CumulativeScores:"           << cumulativeScoreMode         << Qt::endl;
+    out << "PointsPerTagLanded:"         << pointsPerTagLanded          << Qt::endl;
+    out << "PointsPerTagLandedNegative:" << pointsPerTagLandedNegative  << Qt::endl;
+    out << "PointsPerTagTaken:"          << pointsPerTagTaken           << Qt::endl;
+    out << "PointsPerSurvivalMinute:"    << pointsPerSurvivalMinute     << Qt::endl;
+    out << "PointsPerZoneMinute:"        <<   pointsPerZoneMinute       << Qt::endl;
+    out << "PointsPerKingHit:"           <<   pointsPerKingHit          << Qt::endl;
+    out << "PointsPermingHitNegative:"   <<   pointsPerKingHitNegative  << Qt::endl;
     for (int x=0; x< 25; x++)
     {
-        if      (x < 10) out << " Player0" << x << ":" << isThisPlayerInTheGame[x] << endl;
-        else             out << " Player"  << x << ":" << isThisPlayerInTheGame[x] << endl;;
+        if      (x < 10) out << " Player0" << x << ":" << isThisPlayerInTheGame[x] << Qt::endl;
+        else             out << " Player"  << x << ":" << isThisPlayerInTheGame[x] << Qt::endl;;
     }
 
-    out << "END_OF_GAME_SETTINGS" << endl;
+    out << "END_OF_GAME_SETTINGS" << Qt::endl;
 
 //	qDebug() << "GameID:"           << GameID;
 //	qDebug() << "GameLength:"       << GameLength;
@@ -329,19 +329,19 @@ void Game::streamFromFile(QTextStream &in)
     {
             descriptorG = in.readLine();
             //qDebug() << descriptorG << descriptorG.indexOf(":");
-            if      (descriptorG.contains("GameID:") )              GameID                  = extractInteger(descriptorG);
-            else if (descriptorG.contains("GameLength:") )          GameLength              = extractInteger(descriptorG);
-            else if (descriptorG.contains("GameType:") )            GameType                = extractInteger(descriptorG);
-            else if (descriptorG.contains("NumberOfPlayers:") )     NumberOfPlayers         = extractInteger(descriptorG);
-            else if (descriptorG.contains("NumberOfTeams:") )       NumberOfTeams           = extractInteger(descriptorG);
-            else if (descriptorG.contains("NumberOfSpies:") )       NumberOfSpies           = extractInteger(descriptorG);
-            else if (descriptorG.contains("GameName:") )            GameName                = descriptorG;
-            else if (descriptorG.contains(" Player") )              isThisPlayerInTheGame[descriptorG.mid(7,2).toInt()] = descriptorG.right(1).toInt();
-            else if (descriptorG.contains("CountDownTime:") )       CountDownTime           = extractInteger(descriptorG);
-            else if (descriptorG.contains("SpyTeamTagsActive:") )   isSpiesTeamTagActive    = extractInteger(descriptorG);
-            else if (descriptorG.contains("LTARmode:") )            isLTARGame              = extractInteger(descriptorG);
-			else if (descriptorG.contains("ReSpawnEnabled:") )      isReSpawnGame           = extractInteger(descriptorG);
-			else if (descriptorG.contains("CumulativeScores:") )	cumulativeScoreMode		= extractInteger(descriptorG);
+            if      (descriptorG.contains("GameID:") )                      GameID                      = extractInteger(descriptorG);
+            else if (descriptorG.contains("GameLength:") )                  GameLength                  = extractInteger(descriptorG);
+            else if (descriptorG.contains("GameType:") )                    GameType                    = extractInteger(descriptorG);
+            else if (descriptorG.contains("NumberOfPlayers:") )             NumberOfPlayers             = extractInteger(descriptorG);
+            else if (descriptorG.contains("NumberOfTeams:") )               NumberOfTeams               = extractInteger(descriptorG);
+            else if (descriptorG.contains("NumberOfSpies:") )               NumberOfSpies               = extractInteger(descriptorG);
+            else if (descriptorG.contains("GameName:") )                    GameName                    = descriptorG;
+            else if (descriptorG.contains(" Player") )                      isThisPlayerInTheGame[descriptorG.mid(7,2).toInt()] = descriptorG.right(1).toInt();
+            else if (descriptorG.contains("CountDownTime:") )               CountDownTime               = extractInteger(descriptorG);
+            else if (descriptorG.contains("SpyTeamTagsActive:") )           isSpiesTeamTagActive        = extractInteger(descriptorG);
+            else if (descriptorG.contains("LTARmode:") )                    isLTARGame                  = extractInteger(descriptorG);
+            else if (descriptorG.contains("ReSpawnEnabled:") )              isReSpawnGame               = extractInteger(descriptorG);
+            else if (descriptorG.contains("CumulativeScores:") )            cumulativeScoreMode         = extractInteger(descriptorG);
             else if (descriptorG.contains("PointsPerTagLanded:") )          pointsPerTagLanded          = extractInteger(descriptorG);
             else if (descriptorG.contains("PointsPerTagLandedNegative:") )  pointsPerTagLandedNegative  = extractInteger(descriptorG);
             else if (descriptorG.contains("PointsPerTagTaken:") )           pointsPerTagTaken           = extractInteger(descriptorG);

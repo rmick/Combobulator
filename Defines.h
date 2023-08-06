@@ -14,9 +14,9 @@ macdeployqt terminal command (copy into terminal window to build a .dmg)
 
 	  3)	Copy/paste the following line into the terminal window and wait....
 
-              /Users/Richie/Qt/5.12.12/clang_64/bin/macdeployqt Combobulator.app -dmg
+              /Users/Richie/Qt/5.15.2/clang_64/bin/macdeployqt Combobulator.app -dmg
 
-              IF YOU GET AN ERROR - check that you have not upgraded to a newer version of Qt (e.g. 5.13)
+              IF YOU GET AN ERROR - check that you have not upgraded to a newer version of Qt (e.g. 5.16)
 
       Here is the current build directory	Qt_projects\build-Combobulator_Mac/release
 
@@ -33,10 +33,10 @@ windeployqt
 	  3)	STOP !!!!! (Did you do step 1 above - copy the file to a new location first !!!!
 
       4)	cd Qt_projects\build-Combobulator_Windows64\release\Combobulator
+            cd \\.psf\Home\Library\CloudStorage\Dropbox\Qt_projects\Combobulator\build-Windows64\App
+            C:\Qt\5.15.2\mingw81_64\bin\windeployqt Combobulator.exe
 
-            C:\Qt\5.12.12\mingw73_64\bin\windeployqt Combobulator.exe
-
-            Copy the missing DLL files from C:\Qt\5.12.0\mingw53_64\bin to Combob folder
+            Copy the missing DLL files from C:\Qt\5.15.2\mingw81_64\bin to Combob folder
 
 	  5)	Zip up the folder and publish to Dropbox
 
@@ -65,14 +65,14 @@ androiddeployqt
 
 
 // If enabling this #define, also remove the # from the command 'serialport' in line 9 of the LTTO_host.pro file
-#define INCLUDE_SERIAL_USB
+// #define INCLUDE_SERIAL_USB
 
 
 //  Build Number
-const QString	BUILD_NUMBER					= "r2301.27";
-const QString	VERSION_NUMBER					= "v1.18rc2";
+const QString	BUILD_NUMBER					= "r2303.11";
+const QString	VERSION_NUMBER					= "v1.18rc3";
 
-const double	CURRENT_BASESTATION_FIRMWARE	= 1.15;
+const double	CURRENT_BASESTATION_FIRMWARE	= 1.14;
 
 //Maximum number of players
 //--------------------------
@@ -96,7 +96,7 @@ const char	LTAR_BEACON = 'E';
 //Internal timers (in mSec)
 const int   INTERPACKET_DELAY_MSEC		= 50;
 const int   HOST_TIMER_MSEC				= 1500;     //1500 is the standard, 1200 is fast (but causes issues with some LTAR taggers)
-const int   DEBRIEF_TIMER_MSEC			= 1500;     //1500 is the standard
+const int   DEBRIEF_TIMER_MSEC			= 1800;     //1500 is the standard
 const int   TEXT_SENT_DELAY				= 15;
 const int   PRESS_AND_HOLD_TIME			= 500;
 const int   BEACON_TIMER_MSEC			= 500;

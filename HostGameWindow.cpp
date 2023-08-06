@@ -1100,7 +1100,7 @@ void HostGameWindow::deBriefTaggers()
 {
 
 ////////////////////
-//#define	LINEAR_DEBUG	true
+//#define	LINEAR_DEBUG
 ////////////////////
 
 #ifdef	LINEAR_DEBUG

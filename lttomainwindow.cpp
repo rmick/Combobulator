@@ -77,18 +77,19 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
     sound_Powerdown = new QSoundEffect(this);
     sound_Powerdown->setSource(QUrl::fromLocalFile(":/resources/audio/shut-down.wav"));
 
-#ifndef  QT_DEBUG
-//    QMainWindow::showFullScreen();
-//    QEventLoop loop;
-//    QTimer::singleShot(500, &loop, SLOT(quit()));
-//    loop.exec();
-    QMessageBox::critical(this,"WARNING","Have you disabled ALL power saving on this device?\n\nThe host device must stay awake at all times during the game, otherwise the Combobulator will not function !");
-
-#else
+#ifdef  QT_DEBUG
     gameInfo.setIsThisPlayerInTheGame( 1, true);
     gameInfo.setIsThisPlayerInTheGame(24, true);
     ui->btn_StartGame->setEnabled(true);
     ui->btn_Debug->setVisible(true);
+#else
+    //Without this delay, the QMessagebox prevents the mainWindow from drawing full screen.
+    QEventLoop loop;
+    QTimer::singleShot(500, &loop, SLOT(quit()));
+    loop.exec();
+    //processEvents();
+    QMessageBox::critical(this,"WARNING","Please disable ALL power saving on this device?\n\nThe device must stay awake at all times during the game, otherwise the Combobulator will not function !");
+
 #endif
 }
 
@@ -98,7 +99,6 @@ LttoMainWindow::~LttoMainWindow()
 	lttoComms->closePorts();
 	lttoComms->nonBlockingDelay(500);
 	delete ui;
-
 }	
 
 //////////////////////////////////////////////////////////////////////////////////
