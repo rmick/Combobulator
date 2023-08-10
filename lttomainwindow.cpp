@@ -204,7 +204,6 @@ void LttoMainWindow::on_btn_SelectPlayers_clicked()
 	playersWindow->show();
 #else
 	playersWindow->showFullScreen();
-	//playersWindow->show();
 #endif
 }
 
@@ -771,8 +770,8 @@ void LttoMainWindow::saveFile()
 
 		gameInfo.streamToFile(gameDataOut);
 		playerInfo[0].streamToFile(gameDataOut);            //index 0 is a dummy, the class saves the entire array.
-		gameDataOut << "<><><><><><><><><>" << endl;
-		gameDataOut << "EOF" << endl;
+        gameDataOut << "<><><><><><><><><>" << Qt::endl;
+        gameDataOut << "EOF" << Qt::endl;
 		fileToSave.close();
 	}
 }

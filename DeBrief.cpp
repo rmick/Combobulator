@@ -584,7 +584,7 @@ bool DeBrief::checkIfPlayerIsDebriefed()
 			setIsPlayerDeBriefed(true);
 			setIsPlayerDebriefing(false);
             deBriefMessageType = REQUEST_ALL_DEBRIEF_BITS;
-            qDebug() << "\t---------------------" << endl;
+            qDebug() << "\t---------------------" << Qt::endl;
 			lttoComms->setDontAnnounceGame(false);
             result = true;
         }

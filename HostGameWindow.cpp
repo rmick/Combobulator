@@ -236,8 +236,8 @@ void HostGameWindow::hostCurrentPlayer()
         //TODO: Test if this fixes the lockup when clicking Cancel when in this loop.
         if (closingWindow)
         {
-			qDebug() << endl << "HostGameWindow::hostCurrentPlayer() - closingWindow == TRUE";
-			qDebug() << "but we are still locking up........" << endl;
+            qDebug() << Qt::endl << "HostGameWindow::hostCurrentPlayer() - closingWindow == TRUE";
+            qDebug() << "but we are still locking up........" << Qt::endl;
 			assignPlayerFailCount = 5;
 			lttoComms->setDontAnnounceGame(false);
             return;
@@ -434,7 +434,7 @@ void HostGameWindow::AssignPlayer(int Game, int Tagger, int Flags, bool isLtar)
         expectingAckPlayerAssignment = true;
 
 		InsertToListWidget ("   AssignPlayer()" + QString::number(currentPlayer) + ", Tagger ID:" + QString::number(Tagger) );
-		qDebug() << "\t\tHostGameWindow::AssignPlayer() " << currentPlayer << Game << Tagger << calculatePlayerTeam5bits(Flags) << isLtar << endl;
+        qDebug() << "\t\tHostGameWindow::AssignPlayer() " << currentPlayer << Game << Tagger << calculatePlayerTeam5bits(Flags) << isLtar << Qt::endl;
         if (closingWindow) deleteLater();   // Delete the window, as the cancel button has been pressed.
 
         QString teamNumText     = "Team " + QString::number(((currentPlayer-1)/8)+1);
@@ -470,7 +470,7 @@ void HostGameWindow::AddPlayerToGame(int Game, int Tagger, bool isLtar)
 
     if(isLtar)
     {
-		qDebug() << "\t\tHostGameWindow::AddPlayerToGame() - LTAR MODE " << endl;
+        qDebug() << "\t\tHostGameWindow::AddPlayerToGame() - LTAR MODE " << Qt::endl;
 		InsertToListWidget ("HostGameWindow::AddPlayerToGame() - LTAR MODE");
 		//Send LTAR_RELEASE message.
 		lttoComms->sendPacket(PACKET, ASSIGN_LTAR_PLAYER_OK);
@@ -481,7 +481,7 @@ void HostGameWindow::AddPlayerToGame(int Game, int Tagger, bool isLtar)
     }
     else
     {
-		qDebug() << "\t\tHostGameWindow::AddPlayerToGame()" << currentPlayer << endl;
+        qDebug() << "\t\tHostGameWindow::AddPlayerToGame()" << currentPlayer << Qt::endl;
     }
 
 	timerAckNotReceived->stop();
@@ -1311,7 +1311,7 @@ void HostGameWindow::removePhantomTeam3players()
 
 void HostGameWindow::sendGameSettingsToLog()
 {
-	qInfo() << endl;
+    qInfo() << Qt::endl;
 	qInfo() << "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^";
 	qInfo() << "HostGameWindow::sendGameSettingsToLog()";
 	if (gameInfo.getIsLTARGame())	qInfo() << "This is an LTAR mode game";
@@ -1349,7 +1349,7 @@ void HostGameWindow::sendGameSettingsToLog()
 		}
 	}
 	qInfo() << "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^";
-	qInfo() << endl;
+    qInfo() << Qt::endl;
 }
 
 void HostGameWindow::checkFirmwareVersion(QString fWareVersion)

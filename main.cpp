@@ -59,7 +59,7 @@ void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QS
     if(good)
     {
         QTextStream ts(&outFile);
-        ts << logMessage << endl;
+        ts << logMessage << Qt::endl;
         outFile.close();
     }
     else qDebug() << "main::myMessageOutput() - Cannot create file" << thisDir << ":" << outFile;
@@ -75,22 +75,22 @@ void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QS
 
 int main(int argc, char *argv[])
 {
-	QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 	QCoreApplication::setApplicationName( QString("Combobulator") );
-    QApplication::setDesktopSettingsAware(true);
+    QApplication::setDesktopSettingsAware(false);
     qInstallMessageHandler(myMessageOutput);
     QApplication    theApp(argc, argv);
 
-    qDebug() << "----------------------------------------------------------------------------" << endl;
-    qDebug() << "----------------------------------------------------------------------------" << endl;
+    qDebug() << "----------------------------------------------------------------------------" << Qt::endl;
+    qDebug() << "----------------------------------------------------------------------------" << Qt::endl;
 	qDebug() << "                        Starting the main application.";
-	qDebug() << "                           " << BUILD_NUMBER << "-" << VERSION_NUMBER << endl;
+    qDebug() << "                           " << BUILD_NUMBER << "-" << VERSION_NUMBER         << Qt::endl;
 	qDebug() << "\t" << QDateTime::currentDateTime();
-    qDebug() << "----------------------------------------------------------------------------" << endl;
-    qDebug() << "----------------------------------------------------------------------------" << endl;
-    qDebug() << "----------------------------------------------------------------------------" << endl;
-    qDebug() << "----------------------------------------------------------------------------" << endl;
-    qDebug() << "----------------------------------------------------------------------------" << endl;
+    qDebug() << "----------------------------------------------------------------------------" << Qt::endl;
+    qDebug() << "----------------------------------------------------------------------------" << Qt::endl;
+    qDebug() << "----------------------------------------------------------------------------" << Qt::endl;
+    qDebug() << "----------------------------------------------------------------------------" << Qt::endl;
+    qDebug() << "----------------------------------------------------------------------------" << Qt::endl;
     qDebug() << "Creating main windoow";
 
 

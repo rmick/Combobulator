@@ -14,9 +14,14 @@ RearrangePlayers::RearrangePlayers(QWidget *parent) :
 	numberOfPlayersInEachTeam = MAX_PLAYERS/3;
     populateListWithPlayers();
 
-	//ui->btn_SetDefaultTeams->setVisible(false);
-//    ui->label_TheBench->setVisible(false);
-//    ui->list_Bench->setVisible(false);
+    if(gameInfo.getNumberOfTeams() == 2)
+    {
+        ui->list_Team3->setVisible(false);
+        ui->label_Team3->setVisible(false);
+    }
+
+    ui->label_TheBench->setVisible(false);
+    ui->list_Bench->setVisible(false);
 }
 
 RearrangePlayers::~RearrangePlayers()
@@ -82,8 +87,8 @@ void RearrangePlayers::populateListWithPlayers()
 
 void RearrangePlayers::reSizeListWidgetButtonWidth()
 {
-	int minSize = (ui->list_Bench->width() / numberOfPlayersInEachTeam ) - 11;
-	//reduce the size slightly so that you can a bit of any excess players in a team.
+    int minSize = (ui->list_Team1->width() / numberOfPlayersInEachTeam ) - 11;
+    //reduce the size slightly so that you can see a bit of any excess players in a team.
 	minSize--;
 
 	for(int index = 0; index < ui->list_Team1->count(); index++)
@@ -113,17 +118,15 @@ void RearrangePlayers::assignPlayersToTeams(bool isRandom)
 	// Randomise only selected players
 	// Check Team1/2/3 numbers are correct, if not force some to move.
 
-	//BUG: Rearrange to default also clears Players Names !!!!!
-
-	uint8_t	numberOfPlayersToShuffle = MAX_PLAYERS;
+    int	numberOfPlayersToShuffle = MAX_PLAYERS;
 	if(gameInfo.getNumberOfTeams() == 2) numberOfPlayersToShuffle = 16;
 
+    //	Create an array and initialise all as Zer0.
+    std::vector<int> newPlayerNumber(numberOfPlayersToShuffle + 1);
 
-	//	Create an array and initialise all as Zer0.
-	int newPlayerNumber[MAX_PLAYERS+1];
 	for(int index = 1; index <= numberOfPlayersToShuffle; index++)
 	{
-		newPlayerNumber[index] = index;
+        newPlayerNumber[index] = index;
 	}
 
 	//Shuffle the array
@@ -163,7 +166,7 @@ void RearrangePlayers::reAssignPlayerData()
 
 void RearrangePlayers::on_btn_Randomise_clicked()
 {
-	assignPlayersToTeams(true);
+    assignPlayersToTeams(true);
 }
 
 void RearrangePlayers::on_btn_SetDefaultTeams_clicked()

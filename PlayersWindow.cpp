@@ -357,7 +357,7 @@ void PlayersWindow::on_btn_SelectedPlayerTeamTags_clicked()
 
 void PlayersWindow::playerButtonPressed(int value)
 {
-	value++;        //to silence compiler warning
+    (void)value;        //to silence compiler warning
     elapsedTime.start();
 }
 
