@@ -1,15 +1,18 @@
 #include "HostGameWindow.h"
+#include "QtCore/qobjectdefs.h"
 #include "ui_HostGameWindow.h"
 #include <QMessageBox>
 #include <QDebug>
 #include <QApplication>
 #include <QInputDialog>
+#include <QShortcut>
 #include "Defines.h"
 #include "Game.h"
 #include "Players.h"
 #include "LttoComms.h"
 #include "StyleSheet.h"
 #include "FileLoadSave.h"
+#include "LttoMainWindow.h"
 
 int playerDebugNum = 0;
 
@@ -47,19 +50,20 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
 
 	host = new Hosting(this);
 
-	connect(timerAnnounce,          SIGNAL(timeout() ),							  this, SLOT(announceGame())					);
-	connect(timerCountDown,         SIGNAL(timeout() ),							  this, SLOT(sendCountDown())					);
-	connect(timerDeBrief,           SIGNAL(timeout() ),							  this, SLOT(deBriefTaggers())					);
-	connect(timerAssignFailed,      SIGNAL(timeout() ),							  this, SLOT(sendAssignFailedMessage())			);
-	connect(timerGameTimeRemaining, SIGNAL(timeout() ),							  this, SLOT(updateGameTimeRemaining())			);
-	connect(timerReHost,            SIGNAL(timeout() ),							  this, SLOT(TaggerReHost())					);
-	connect(timerBeacon,            SIGNAL(timeout() ),							  this, SLOT(BeaconSignal())					);
-	connect(timerAckNotReceived,    SIGNAL(timeout() ),							  this, SLOT(assignPlayerFailed())				);
-    connect(lttoComms,              SIGNAL(RequestJoinGame(int,int,int,bool) ),   this, SLOT(AssignPlayer(int,int,int,bool))	);
-    connect(lttoComms,              SIGNAL(AckPlayerAssignment(int,int,bool) ),   this, SLOT(AddPlayerToGame(int,int,bool))     );
-	connect(host,                   SIGNAL(AddToHostWindowListWidget(QString) ),  this, SLOT(InsertToListWidget(QString))		);
-	connect(lttoComms,				SIGNAL(BattVoltsReceived(QString) ),		  this, SLOT(UpdateBatteryDisplay(QString))		);
-	connect(lttoComms,				SIGNAL(FirmwareVersionReceived(QString) ),	  this, SLOT(checkFirmwareVersion(QString))		);
+    connect(timerAnnounce,          SIGNAL(timeout() ),							  this, SLOT(announceGame() )					);
+    connect(timerCountDown,         SIGNAL(timeout() ),							  this, SLOT(sendCountDown() )					);
+    connect(timerDeBrief,           SIGNAL(timeout() ),							  this, SLOT(deBriefTaggers() )					);
+    connect(timerAssignFailed,      SIGNAL(timeout() ),							  this, SLOT(sendAssignFailedMessage() )		);
+    connect(timerGameTimeRemaining, SIGNAL(timeout() ),							  this, SLOT(updateGameTimeRemaining() )        );
+    connect(timerReHost,            SIGNAL(timeout() ),							  this, SLOT(TaggerReHost() )					);
+    connect(timerBeacon,            SIGNAL(timeout() ),							  this, SLOT(BeaconSignal() )					);
+    connect(timerAckNotReceived,    SIGNAL(timeout() ),							  this, SLOT(assignPlayerFailed() )				);
+    connect(lttoComms,              SIGNAL(RequestJoinGame(int,int,int,bool) ),   this, SLOT(AssignPlayer(int,int,int,bool) )	);
+    connect(lttoComms,              SIGNAL(AckPlayerAssignment(int,int,bool) ),   this, SLOT(AddPlayerToGame(int,int,bool) )    );
+    connect(host,                   SIGNAL(AddToHostWindowListWidget(QString) ),  this, SLOT(InsertToListWidget(QString) )		);
+    connect(lttoComms,				SIGNAL(BattVoltsReceived(QString) ),		  this, SLOT(UpdateBatteryDisplay(QString) )	);
+    connect(lttoComms,				SIGNAL(FirmwareVersionReceived(QString) ),	  this, SLOT(checkFirmwareVersion(QString) )	);
+    connect(new QShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::ALT + Qt::Key_X), this), &QShortcut::activated, this, &HostGameWindow::shutDown);
 
     timerAnnounce->start(HOST_TIMER_MSEC);
 	lttoComms->setHostingCommsActive(true);
@@ -81,9 +85,15 @@ HostGameWindow::HostGameWindow(QWidget *parent) :
     sound_PlayerAdded       ->setSource(QUrl::fromLocalFile(":/resources/audio/hosting-join-complete.wav"));
     sound_Countdown         ->setLoopCount(5);
 
+    //TODO  Why do we get gameID errors sometimes.
 	gameInfo.setGameID(host->getRandomNumber(1,255));
+    if(gameInfo.getGameID() < 0)
+    {
+        gameInfo.setGameID(DEFAULT_GAME_ID);
+        qWarning() << "\t.....GameID was negative. Forced to 0x42";
+    }
+
 	firmWareVersionReceived = false;
-	beaconType = 0;
 
 	ui->listWidget_Status->setVisible(false);
 
@@ -154,7 +164,10 @@ void HostGameWindow::announceGame()
 		setPromptText("Connect WiFi to Combobulator");
 		setNextPlayerText("Password = Lasertag42");
 		ui->led_Status->setStyleSheet(myStyleSheet.getRedButtonCss());
-		return;
+
+#ifndef QT_DEBUG
+    return;
+#endif
 	}
 
 	hostCurrentPlayer();
@@ -505,7 +518,7 @@ void HostGameWindow::AddPlayerToGame(int Game, int Tagger, bool isLtar)
         lttoComms->sendLCDtext(playerInfoTemp[currentPlayer].getPlayerName() , 3,  true);
 		lttoComms->nonBlockingDelay(TEXT_SENT_DELAY);
 
-        countDownTimeRemaining = (DEFAULT_COUNTDOWN_TIME + 5);
+        countDownTimeRemaining = (gameInfo.getCountDownTime());
         ui->btn_StartGame->setEnabled(true);
         //ui->btn_StartGame->setText("End\nGame");
         ui->btn_Rehost->setText("Rehost Tagger");
@@ -724,6 +737,12 @@ void HostGameWindow::on_btn_StartGame_clicked()
         timerCountDown->start(1000);
         countDownTimeRemaining = gameInfo.getCountDownTime();
         ui->btn_StartGame->setEnabled(false);
+
+        for (int index= 1; index <= MAX_PLAYERS; index++)
+        {
+            playerInfo[index].setIsDebriefed(false);
+        }
+
 		if(gameInfo.getNumberOfPlayersInGame() == 0)
 		{
 			QMessageBox::critical(nullptr,"Error","There are no players in the game.\n\nThis is illogical.\n\nContinuing for Demo purposes only");
@@ -761,7 +780,9 @@ void HostGameWindow::sendCountDown()
 			InsertToListWidget("Game commencing !!!");
 			setPromptText("Game Commencing !!!");
 			qDebug() << "hostGameWindow::sendCountDown() - Game Commencing";
-			timerBeacon->start(BEACON_TIMER_MSEC);
+
+            //setUpBeacons();
+            timerBeacon->start(BEACON_TIMER_MSEC);
         }
         else
         {
@@ -1000,40 +1021,21 @@ void HostGameWindow::TaggerReHost()
 
 void HostGameWindow::BeaconSignal()
 {
-	qDebug() << "\tHostGameWindow::BeaconSignal() triggered";
-	if (lttoComms->getDontAnnounceGame()) return;
-    if (rehostingActive) return;
-    //Check Game Type.
-    //TODO: Set Beacon to match game type
-	if(gameInfo.getIsReSpawnGame()) beaconType = 3;
-    else beaconType = 2;         // Contested Zone, No Team
+    static int beaconDebugCounter = 1;
 
-	//Beta
-	if(playerInfo->getBitFlags2(SUPPLY_ZONES_REFILL_TAGS_FLAG)) beaconType = 3;
-	qDebug() << "\t___HostGameWindow::BeaconSignal() - playerInfo->getBitFlags2(SUPPLY_ZONES_REFILL_TAGS_FLAG) =" << playerInfo->getBitFlags2(SUPPLY_ZONES_REFILL_TAGS_FLAG);
+    if(beaconDebugCounter <5)       qDebug() << "\tHostGameWindow::BeaconSignal() triggered";
 
-    if(playerInfo->getBitFlags2(HOSTILE_ZONES_FLAG)) beaconType = 99;
-    qDebug() << "\t___HostGameWindow::BeaconSignal() - playerInfo->getBitFlags2(HOSTILE_ZONES_FLAG) =" << playerInfo->getBitFlags2(HOSTILE_ZONES_FLAG);
+    if (lttoComms->getDontAnnounceGame())   return;
+    if (rehostingActive)                    return;
+    if (gameInfo.getPowerSaveMode())        return;
 
-    if(gameInfo.getIsLTARGame())
-	{
-		if(playerInfo->getBitFlags3(SUPPLY_ZONES_REFILL_AMMO))		beaconType = 3;
-		if(playerInfo->getBitFlags3(SUPPLY_ZONES_REFILL_SHIELDS))	beaconType = 3;
-		qDebug() << "\t___HostGameWindow::BeaconSignal() - playerInfo->getBitFlags3(SUPPLY_ZONES_REFILL_AMMO) =" << playerInfo->getBitFlags3(SUPPLY_ZONES_REFILL_AMMO);
-		qDebug() << "\t___HostGameWindow::BeaconSignal() - playerInfo->getBitFlags3(SUPPLY_ZONES_REFILL_SHIELDS) =" << playerInfo->getBitFlags3(SUPPLY_ZONES_REFILL_SHIELDS);
-	}
+    if(beaconDebugCounter++ <5)       qDebug() << "\tHostGameWindow::Beacon Sent;";
 
-    //Send Beacon;
-	if(gameInfo.getPowerSaveMode() == false)
-	//if PowerSaving is true, then don't send beacon, to reduce WiFi traffic.
-	{
- //UPTO HERE       if (beaconType == 99)   lttoComms->sendPacket(TAG, )
- //           else                lttoComms->sendPacket(BEACON, beaconType);    
-        lttoComms->sendPacket(BEACON, beaconType);
+    lttoComms->sendPacket(BEACON, BEACON_CONTESTED);
 
-		qDebug() << "\t\tHostGameWindow::BeaconSignal() - Type =" << beaconType;
-	}
-	else qDebug() << "HostGameWindow::BeaconSignal() - Disabled !	PowerSaveMode is active.";
+    lttoComms->nonBlockingDelay(25);
+
+    lttoComms->sendPacket(BEACON, BEACON_SUPPLY_ZONE);
 }
 
 ///////////////////------------------------------
@@ -1100,7 +1102,7 @@ void HostGameWindow::deBriefTaggers()
 {
 
 ////////////////////
-//#define	LINEAR_DEBUG
+#define	LINEAR_DEBUG
 ////////////////////
 
 #ifdef	LINEAR_DEBUG
@@ -1250,8 +1252,6 @@ void HostGameWindow::on_showLog_clicked()
 
 void HostGameWindow::UpdateBatteryDisplay(QString volts)
 {
-	if(firmWareVersionReceived != true) ui->label_FirmwareStatus->setText("<html><head/><body><p><span style= color:#fc0107; font-size:18pt;>The Base station firmware is out of date.</span></p></body></html>");
-
 	//qDebug() << "HostGameWindow::UpdateBatteryDisplay() - " << volts.toFloat();
 	if(volts.endsWith("@")) volts.remove(4, 2);
 
@@ -1354,12 +1354,21 @@ void HostGameWindow::sendGameSettingsToLog()
 
 void HostGameWindow::checkFirmwareVersion(QString fWareVersion)
 {
-	firmWareVersionReceived = true;
+    return;
+    //ToDo: Reenable this when the next version of Firmware is released>
+    //      This is currently on hold due to the ESP OTA bricking the ESP32
+    firmWareVersionReceived = true;
 	qDebug() << "HostGameWindow::checkFirmwareVersion()  Firmware = " << fWareVersion;
 	fWareVersion.remove(4,2);
 	qDebug() << "Truncated version =" << fWareVersion.toDouble() << CURRENT_BASESTATION_FIRMWARE;
 	if(fWareVersion.toDouble() < CURRENT_BASESTATION_FIRMWARE)	ui->label_FirmwareStatus->setText("<html><head/><body><p><span style= color:#fc0107; font-size:18pt;>The Base station firmware is out of date.</span></p></body></html>");
     else														ui->label_FirmwareStatus->setText("");
+}
+
+void HostGameWindow::shutDown()
+{
+    qDebug() << "\n\n@@@@@\nSHUT_DOWN - HostGameWindow::shutDown() - Triggered\n@@@@@\n";
+    QCoreApplication::quit();
 }
 
 

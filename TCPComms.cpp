@@ -11,8 +11,7 @@ TCPComms::TCPComms(QObject *parent) :
 {
     qDebug() << "TCPComms::TCPComms() - Constructing.......";
     tcpSocket = new QTcpSocket(this);
-	//lttoComms.setTcpCommsConnected(false);
-	emit TcpCommsConnectionStatus(false);
+    emit TcpCommsConnectionStatus(false);
     setIsTCPinitialised(false);
     isConnected = false;
 }
@@ -21,7 +20,8 @@ bool TCPComms::ConnectTCP()
 {
 	bool result = false;
 
-	connectToCombobulatorWiFi();
+    connectToCombobulatorWiFi();
+
 
 	if(checkIPaddress() != true)
 	{
@@ -33,6 +33,7 @@ bool TCPComms::ConnectTCP()
 		tcpSocket->connectToHost(HOST_IP_ADDRESS,TCP_IP_PORT);
 		result = true;
 	}
+
 	return result;
 }
 
@@ -40,7 +41,6 @@ bool TCPComms::DisconnectTCP()
 {
     tcpSocket->disconnectFromHost();
     qDebug() << "TCPComms::DisconnectTCP() - Disconnected !!!";
-	//lttoComms.setTcpCommsConnected(false);
 	emit TcpCommsConnectionStatus(false);
 	return false;
 }
@@ -49,26 +49,28 @@ bool TCPComms::connectToCombobulatorWiFi()
 {
 	return false;
 
-	qDebug() << "TCPComms::connectToCombobulatorWiFi()";
-	bool result = false;
-	QNetworkConfiguration networkConfig;
-	QNetworkConfigurationManager networkManager;
-	auto networkConnection = networkManager.allConfigurations();
+    qDebug() << "TCPComms::connectToCombobulatorWiFi()";
+//    bool result = false;
+//    QNetworkInterface networkInterface;
+//    QNetworkConfiguration networkConfig;
+//    QNetworkConfigurationManager networkManager;
+//    auto networkConnection = networkManager.allConfigurations();
 
-	for (auto &networkFound : networkConnection)
-	{
-		if (networkFound.bearerType() == QNetworkConfiguration::BearerWLAN)
-		{
-			qDebug() << "TCPComms::connectToCombobulatorWiFi() - Network found: " << networkFound.name();
-			if (networkFound.name() == "Combobulator")
-			networkConfig = networkFound;
-			result = true;
-		}
-	}
-	auto session = new QNetworkSession(networkConfig, this);
-	session->open();
-	qDebug() << "TCPComms::connectToCombobulatorWiFi() - " << result;
-	return result;
+//    for (auto &networkFound : networkConnection)
+//    {
+//        if (networkFound.bearerType() == QNetworkConfiguration::BearerWLAN)
+//        {
+//            qDebug() << "TCPComms::connectToCombobulatorWiFi() - Network found: " << networkFound.name();
+//            if (networkFound.name() == "Combobulator")
+//            networkConfig = networkFound;
+//            result = true;
+//        }
+//    }
+//    auto session = new QNetworkSession(networkConfig, this);
+//    session->open();
+//    qDebug() << "TCPComms::connectToCombobulatorWiFi() - " << result;
+
+//  return result;
 }
 
 bool TCPComms::checkIPaddress()

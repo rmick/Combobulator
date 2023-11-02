@@ -9,7 +9,7 @@
 #include "ReHostTagger.h"
 #include "DeBrief.h"
 #include "ScoresWindow.h"
-#include "LttoComms.h"
+//#include "LttoComms.h"
 
 namespace Ui {
 class HostGameWindow;
@@ -56,6 +56,8 @@ signals:
 
 	void closingHostGameWindow();
 
+    void forceShutDown();
+
 private slots:
 
     void announceGame();
@@ -96,6 +98,8 @@ private slots:
 
 	void checkFirmwareVersion(QString fWareVersion);
 
+    void shutDown();
+
 private:
     //pointers
     Ui::HostGameWindow      *ui;
@@ -132,7 +136,7 @@ private:
     bool    sendingCommsActive;
     bool    rehostingActive;
     int     assignPlayerFailCount;
-	int		beaconType;
+    //int		beaconType;
 	bool	firmWareVersionReceived;
     //bool    dontAnnounceFailedSignal;
     //bool    firstPassThisPlayer;

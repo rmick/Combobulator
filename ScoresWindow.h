@@ -42,6 +42,8 @@ private slots:
 
 	void on_btn_ReduceFont_clicked();
 
+    void displayTeamRanks();
+
 private:
     Ui::ScoresWindow *ui;
 

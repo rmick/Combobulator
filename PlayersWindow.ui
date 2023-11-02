@@ -2338,7 +2338,6 @@ Player</string>
      <property name="font">
       <font>
        <pointsize>18</pointsize>
-       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -3940,7 +3939,6 @@ All Players</string>
      </property>
      <property name="font">
       <font>
-       <weight>75</weight>
        <italic>true</italic>
        <bold>true</bold>
       </font>
@@ -3969,7 +3967,6 @@ All Players</string>
      </property>
      <property name="font">
       <font>
-       <weight>75</weight>
        <italic>true</italic>
        <bold>true</bold>
       </font>
@@ -4035,7 +4032,6 @@ All Players</string>
      </property>
      <property name="font">
       <font>
-       <weight>75</weight>
        <italic>true</italic>
        <bold>true</bold>
       </font>

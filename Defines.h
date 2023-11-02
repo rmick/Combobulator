@@ -8,7 +8,7 @@ macdeployqt terminal command (copy into terminal window to build a .dmg)
           Source - https://dragly.org/2012/01/13/deploy-qt-applications-for-mac-os-x/
 
 	  1)	Navigate to the QT Build directory for the App.
-			   (e.g. Qt_projects\build-Combobulator_Mac-Release..........)
+               (e.g. Qt_projects\Combobulator\build-Combobulator_Mac-Release..........)
 
 	  2)	Right click on the folder and go to 'services', then 'New Terminal At Folder'.
 
@@ -23,17 +23,19 @@ macdeployqt terminal command (copy into terminal window to build a .dmg)
 
 windeployqt
 	  1)	Copy the Combobulator.exe
-               from the        Qt_projects\build-Combobulator_Windows\release\
-               to the          Qt_projects\build-Combobulator_Windows\release\Combobulator
+               from the
+                           X:\Qt_projects\Combobulator\build-Combobulator-Desktop_Qt_5_15_2_MinGW_64_bit-Release\release
+               to the
+                           X:\Qt_projects\Combobulator\build-Combobulator-Desktop_Qt_5_15_2_MinGW_64_bit-Release\release\Publish
 
 	  2)	Open CMD.exe prompt
 			   cd\
-               W:
+               X:
 
 	  3)	STOP !!!!! (Did you do step 1 above - copy the file to a new location first !!!!
 
-      4)	cd Qt_projects\build-Combobulator_Windows64\release\Combobulator
-            cd \\.psf\Home\Library\CloudStorage\Dropbox\Qt_projects\Combobulator\build-Windows64\App
+      4)	cd X:\Qt_projects\Combobulator\build-Combobulator-Desktop_Qt_5_15_2_MinGW_64_bit-Release\release\Publish
+
             C:\Qt\5.15.2\mingw81_64\bin\windeployqt Combobulator.exe
 
             Copy the missing DLL files from C:\Qt\5.15.2\mingw81_64\bin to Combob folder
@@ -62,17 +64,18 @@ androiddeployqt
 
 
 
-
-
-// If enabling this #define, also remove the # from the command 'serialport' in line 9 of the LTTO_host.pro file
-// #define INCLUDE_SERIAL_USB
+#ifndef QT_IOS
+    #define INCLUDE_SERIAL_USB
+#else
+    int Nully = 0;
+#endif
 
 
 //  Build Number
-const QString	BUILD_NUMBER					= "r2308.10";
-const QString	VERSION_NUMBER					= "v1.18rc4";
+const QString	BUILD_NUMBER					= "r2311.01";
+const QString	VERSION_NUMBER					= "v1.18rc9";
 
-const double	CURRENT_BASESTATION_FIRMWARE	= 1.14;
+const double	CURRENT_BASESTATION_FIRMWARE	= 1.13;
 
 //Maximum number of players
 //--------------------------
@@ -229,6 +232,10 @@ const int	LOAD_MODE						= 2;
 const int   LTTO_MAIN_WINDOW                = 2;
 const int   PLAYERS_WINDOW                  = 3;
 
+//Beacon Mode Data
+const int   BEACON_CONTESTED                = 2;
+const int   BEACON_SUPPLY_ZONE              = 3;
+
 //RGB LED Colours
 const QString		RED						= "1,0,0";
 const QString		GREEN					= "0,1,0";
@@ -237,5 +244,7 @@ const QString		CYAN					= "0,1,1";
 const QString		MAGENTA					= "1,0,1";
 const QString		YELLOW					= "1,1,0";
 const QString		WHITE					= "1,1,1";
+
+const int           DEFAULT_FONT_SIZE       = 14;
 
 #endif // DEFINES_H

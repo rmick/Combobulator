@@ -1,5 +1,5 @@
 #include "SerialUSBcomms.h"
-#include "LttoComms.h"
+#include <QDebug>
 
 SerialUSBcomms serialUSBcomms;
 
@@ -52,7 +52,7 @@ void SerialUSBcomms::setUpSerialPort()
         if (serialUSB->isReadable()) qDebug() << "SerialUSBcomms::setUpSerialPort() -" << serialUSB->portName() << "is READABLE :-)";
         if (serialUSB->isOpen() && serialUSB->isWritable())
         {
-            qDebug() << "SerialUSBcomms::setUpSerialPort()" << serialUSB->portName() << " is Ready..." << endl;
+        qDebug() << "SerialUSBcomms::setUpSerialPort()" << serialUSB->portName() << " is Ready..." << Qt::endl;
             setSerialCommsConnected(true);
         }
         else

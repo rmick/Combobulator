@@ -152,7 +152,7 @@ private:
 	QString	currentGameFileName;
 
 	int     GameType;
-    int     GameID;
+    uint8_t GameID;
     int     GameLength;
     int     NumberOfPlayers;
     int     NumberOfTeams;

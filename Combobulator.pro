@@ -6,19 +6,25 @@
 
 QT       += core gui\
 
-CONFIG	+= sdk_no_version_check
+CONFIG  += c++11 sdk_no_version_check
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets network multimedia #serialport  # REMOVE the hash before the word serialport to enable USB for Lazerswarm
-                                                                                # ALSO disable #define INCLUDE_SERIAL (line 68 defines.h)
+#greaterThan(QT_MAJOR_VERSION, 4): QT += widgets network multimedia
+
+iphoneos{greaterThan(QT_MAJOR_VERSION, 4): QT += widgets network multimedia}
+else    {greaterThan(QT_MAJOR_VERSION, 4): QT += widgets network multimedia serialport}
+
 TARGET = Combobulator
 DEPLOYMENT.display_name = Combobulator
 TEMPLATE = app
 
 #RC_FILE = Combobulator.rc
 ICON	= Combobulator.icns
+#RC_ICONS = Combobulator.ico
 
-#QMAKE_MAC_SDK = macosx10.14
-#!host_build:QMAKE_MAC_SDK = macosx
+QMAKE_MAC_SDK = macosx13.4
+!host_build:QMAKE_MAC_SDK = macosx
+#QMAKE_APPLE_DEVICE_ARCHS = x86_64 arm64
+
 
 SOURCES +=  \
     main.cpp\
@@ -128,6 +134,7 @@ DISTFILES += \
     android/gradle/wrapper/gradle-wrapper.properties \
     android/gradlew.bat
 
+#Uncommenting this breaks the Android build with :-1: error: Could not determine java version from '11.0.20'.
 #ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 
 #DESTDIR = ./

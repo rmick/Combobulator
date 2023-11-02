@@ -1,5 +1,6 @@
 #include "LttoMainWindow.h"
 #include "ui_LttoMainWindow.h"
+
 #include <QMessageBox>
 #include <QDebug>
 #include <QStandardPaths>
@@ -11,12 +12,14 @@
 #include <QTime>
 #include <QDesktopServices>
 #include <QFileInfo>
+#include <QShortcut>
+#include <QThread>
 
 #include "Game.h"
 #include "Players.h"
 #include "Defines.h"
 #include "LttoComms.h"
-#include "Hosting.h"
+//#include "Hosting.h"
 #include "StyleSheet.h"
 #include "FileLoadSave.h"
 
@@ -70,16 +73,22 @@ LttoMainWindow::LttoMainWindow(QWidget *parent) :
 
 	this->setWindowTitle("The Combobulator " + VERSION_NUMBER);
 
-    qsrand(static_cast<uint>(QTime::currentTime().msec()));
+    //QRandomGenerator randomNumber;
+
+    //qsrand(static_cast<uint>(QTime::currentTime().msec()));
 
     for (int index = 1; index < 25; index++)    playerInfo[index].setPlayerName("Player " + QString::number(index));
 
     sound_Powerdown = new QSoundEffect(this);
     sound_Powerdown->setSource(QUrl::fromLocalFile(":/resources/audio/shut-down.wav"));
 
+    connect(new QShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::ALT + Qt::Key_X), this), &QShortcut::activated, this, &LttoMainWindow::shutDown);
+
 #ifdef  QT_DEBUG
     gameInfo.setIsThisPlayerInTheGame( 1, true);
     gameInfo.setIsThisPlayerInTheGame(24, true);
+    for (int index = 1; index < 25; index++)        gameInfo.setIsThisPlayerInTheGame(index, true);
+
     ui->btn_StartGame->setEnabled(true);
     ui->btn_Debug->setVisible(true);
 #else
@@ -130,6 +139,12 @@ void LttoMainWindow::SetSpiesButtonState(int NumTeams)
         ui->btn_Spies->setEnabled(true);
         ui->btn_SpyTeamTags->setEnabled(true);
     }
+}
+
+void LttoMainWindow::shutDown()
+{
+    qDebug() << "\n\n*****\nSHUT_DOWN - LttoMainWindow::shutDown() - Triggered\n*****\n";
+    emit on_actionExit_triggered();
 }
 
 //--------------------------------------------------------
@@ -825,8 +840,8 @@ void LttoMainWindow::loadSettings()
 	ui->btn_SpyTeamTags->setChecked(settings.value("SpiesTeamTagMode", true).toBool());
 
 	gameInfo.setPowerSaveMode(settings.value("PowerSaveMode", false).toBool());			//N.B. this is not saved into the Game show file !
-
-	gameInfo.setFontSize(settings.value("FontSize").toInt());
+    gameInfo.setFontSize(settings.value("FontSize").toInt());
+    qDebug() << "\t.....FontSize =" << gameInfo.getFontSize();
 	gameInfo.setScoreHeaderFontSize(settings.value("ScoreHeaderFontSize").toInt());
 	gameInfo.setScoreTableFontSize(settings.value("ScoreTableFontSize").toInt());
 	myStyleSheet.setFontSizes();
@@ -1139,101 +1154,14 @@ void LttoMainWindow::on_actionOutdoorMode_triggered()
 #endif
 }
 
-#include <QNetworkConfiguration>
-#include <QNetworkConfigurationManager>
-#include <QNetworkSession>
-
 void LttoMainWindow::on_btn_Debug_clicked()
 {
-	if(!scoresWindow) scoresWindow = new ScoresWindow(this);
-	else qDebug() << "Idiot!";
-	scoresWindow->showFullScreen();
+    qDebug() << "LttoMainWindow::on_btn_Debug_clicked()";
 
-return;
+    scoresWindow = new ScoresWindow(this);
 
+    scoresWindow->showFullScreen();
 
-	qDebug() << "LttoMainWindow::on_btn_Debug_clicked()";
-	//int foundCount;
-	QNetworkConfiguration netcfg;
-	QStringList WiFisList;
-	QList<QNetworkConfiguration> netcfgList;
-
-	QNetworkConfigurationManager ncm;
-	netcfgList = ncm.allConfigurations();
-	WiFisList.clear();
-	for (auto &x : netcfgList)
-	{
-		qDebug() << "Bearer Type" << x.bearerTypeName();
-		if (x.bearerType() == QNetworkConfiguration::BearerWLAN)
-		{
-			if(x.name() == "")
-				WiFisList << "Unknown(Other Network)";
-			else
-				WiFisList << x.name();
-
-			qDebug() << x.type();
-		}
-	}
-	for(int i=0; i<WiFisList.size(); i++)
-	{
-//		bool exist = false;
-//        QTreeWidgetItem * item = new QTreeWidgetItem();
-//        for(int j=0; j<ui->treeWidgetWiFis->topLevelItemCount(); j++)
-//        {
-//            QTreeWidgetItem *index = ui->treeWidgetWiFis->topLevelItem(j);
-//            QString str = index->text(1);
-//            if(str == WiFisList[i])
-//            {
-//                exist = true;
-//                break;
-//            }
-//        }
-//        if(!exist)
-//        {
-//            item->setTextAlignment(0,Qt::AlignVCenter);
-//            item->setTextAlignment(1,Qt::AlignHCenter);
-//            item->setText(0,QString::number(++foundCount));
-//            item->setText(1,WiFisList[i]);
-//            ui->treeWidgetWiFis->addTopLevelItem(item);
-//        }
-	}
-
-
-
-	return;
-
-
-
-
-	bool result = false;
-	QNetworkConfiguration networkConfig;
-	QNetworkConfigurationManager networkManager;
-	auto networkConnection = networkManager.allConfigurations();
-
-	for (auto &networkFound : networkConnection)
-	{
-		if (networkFound.bearerType() == QNetworkConfiguration::BearerWLAN)
-		{
-			qDebug() << "TCPComms::connectToCombobulatorWiFi() - Network found: " << networkFound.name();
-			if (networkFound.name() == "Combobulator")
-			networkConfig = networkFound;
-			result = true;
-		}
-	}
-	auto session = new QNetworkSession(networkConfig, this);
-	session->open();
-	qDebug() << "TCPComms::connectToCombobulatorWiFi() - " << result;
-
-
-
-	//sendLogFile();
-
-//	scoresWindow = new ScoresWindow(this);
-//#ifdef QT_DEBUG
-//	scoresWindow->showFullScreen();
-//#else
-//	scoresWindow->showFullScreen();
-//#endif
 }
 
 void LttoMainWindow::updateFileName(QString newFileName)

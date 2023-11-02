@@ -128,6 +128,8 @@ public:
 	bool	getIsDebriefed() const;
 	void	setIsDebriefed(bool value);
 
+    QString getExtendedPlayerName();
+
 private:
 	// Player settings - stored in saved games
 	int		PlayerIndex;
@@ -162,6 +164,7 @@ private:
     int     zoneTimeSeconds;
     int     reportFlags;
 	bool	isDebriefed;
+    QString extendedPlayerName;
 };
 
 extern Players playerInfo[MAX_PLAYERS+1];

@@ -72,7 +72,6 @@ void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QS
 }
 
 
-
 int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -114,7 +113,12 @@ int main(int argc, char *argv[])
 
     LttoMainWindow  lttoMainWindow;
     lttoMainWindow.setWindowIcon(QIcon(":/resources/images/Combobulator.ico"));
+
+#ifndef QT_DEBUG
     lttoMainWindow.showFullScreen();
+#else
+     lttoMainWindow.show();
+#endif
 
     return theApp.exec();
 }

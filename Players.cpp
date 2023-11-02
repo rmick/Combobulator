@@ -419,7 +419,20 @@ bool Players::getIsDebriefed() const
 
 void Players::setIsDebriefed(bool value)
 {
-	isDebriefed = value;
+    isDebriefed = value;
+}
+
+QString Players::getExtendedPlayerName()
+{
+    QString teamId = "Tm";
+
+    if      (PlayerIndex <=8)  teamId += "1 ";
+    else if (PlayerIndex <=16) teamId += "2 ";
+    else if (PlayerIndex <=24) teamId += "3 ";
+
+    if (gameInfo.getNumberOfTeams() == 0) teamId = "";
+
+    return teamId + PlayerName;
 }
 
 int Players::getPackedFlags1() const

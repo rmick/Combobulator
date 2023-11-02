@@ -4,7 +4,6 @@
 #include <QObject>
 #include <QTcpSocket>
 #include <QAbstractSocket>
-#include "Defines.h"
 
 class TCPComms : public QObject
 {

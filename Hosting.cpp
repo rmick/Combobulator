@@ -11,7 +11,7 @@
 Hosting::Hosting(QObject *parent) : QObject(parent)
 {
     qDebug() << "Hosting::Hosting() - Constructing.......";
-    qsrand(static_cast<uint>(QTime::currentTime().msec()));
+    //qsrand(static_cast<uint>(QTime::currentTime().msec()));
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -126,9 +126,11 @@ bool Hosting::pickTheKing()
 
 int Hosting::getRandomNumber(int min, int max)
 {
-    int randX = QRandomGenerator::global()->generate();
-    return ((randX % ((max + 1) - min)) + min);
-    //return ((qrand() % ((max + 1) - min)) + min);     //qrand is deprecated in Qt5.15
+    int randX = QRandomGenerator::global()->bounded(min, max);
+    qDebug() << "int Hosting::getRandomNumber(int min, int max) =" << randX;
+    //int randX = QRandomGenerator::global()->generate();
+    //return ((randX % ((max + 1) - min)) + min);
+    return randX;
 }
 
 ////////////////////////////////////////////////////////////////////////////

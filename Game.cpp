@@ -248,23 +248,29 @@ void Game::setIsThisPlayerInTheGame(int index, int value)
 int Game::getPlayersInTeam(int TeamNumber) const
 {
     //TODO: This is BROKEN. Please fix it!
+    int retVal = 0;
     if (gameInfo.getIsLTARGame())
     {
         qDebug() << "Game::getPlayersInTeam() - LTAR Mode - PlayersInTeamByte =" << PlayersInTeamByte[TeamNumber];
-        //return PlayersInTeamByte[TeamNumber];
-        return 255;
+        //retVal = PlayersInTeamByte[TeamNumber];
+        retVal = 255;
     }
-    int numberOfPlayersInThisTeam = 0;
-    int startingPlayer = 1 + (8*(TeamNumber-1));
-    int endingPlayer = 1+(8*TeamNumber);
-    for (int index = startingPlayer; index < endingPlayer; index++)
+    else
     {
-        if (gameInfo.getIsThisPlayerInTheGame(index) == true) numberOfPlayersInThisTeam++;
-    }
-    //qDebug() << "Game::getPlayersInTeam() - Number of players =" << numberOfPlayersInThisTeam << "in Team" << TeamNumber;
+        int numberOfPlayersInThisTeam = 0;
+        Q_UNUSED(numberOfPlayersInThisTeam);
+        int startingPlayer = 1 + (8*(TeamNumber-1));
+        int endingPlayer = 1+(8*TeamNumber);
+        for (int index = startingPlayer; index < endingPlayer; index++)
+        {
+            if (gameInfo.getIsThisPlayerInTheGame(index) == true) numberOfPlayersInThisTeam++;
+        }
+        //qDebug() << "Game::getPlayersInTeam() - Number of players =" << numberOfPlayersInThisTeam << "in Team" << TeamNumber;
 
-    //return numberOfPlayersInThisTeam;
-    return 8;
+        //retVal = numberOfPlayersInThisTeam;
+        retVal = 8;
+    }
+    return retVal;
 }
 
 void Game::setPlayersInTeamByte(int TeamNumber, int PlayerNumber, bool state)
@@ -620,7 +626,12 @@ int Game::getFontSize()
 
 void Game::setFontSize(int value)
 {
-	fontSize = value;
+    if (value == 0)
+    {
+        value = DEFAULT_FONT_SIZE;
+        qWarning() << "setFontSize.value == 0     OVERIDE =" << DEFAULT_FONT_SIZE;
+    }
+    fontSize = value;
 }
 
 QString Game::getCurrentGameFileName() const
@@ -640,7 +651,12 @@ int Game::getScoreHeaderFontSize() const
 
 void Game::setScoreHeaderFontSize(int value)
 {
-	scoreHeaderFontSize = value;
+    if (value <= 0)
+    {
+        value = DEFAULT_FONT_SIZE;
+        qWarning() << "setScoreHeaderFontSize.value == 0     OVERIDE =" << DEFAULT_FONT_SIZE;
+    }
+    scoreHeaderFontSize = value;
 }
 
 int Game::getScoreTableFontSize() const
@@ -650,7 +666,12 @@ int Game::getScoreTableFontSize() const
 
 void Game::setScoreTableFontSize(int value)
 {
-	scoreTableFontSize = value;
+    if (value <= 0)
+    {
+        value = DEFAULT_FONT_SIZE;
+        qWarning() << "setScoreTableFontSize.value == 0     OVERIDE =" << DEFAULT_FONT_SIZE;
+    }
+    scoreTableFontSize = value;
 }
 
 bool Game::getIsSuperSimpleMode() const

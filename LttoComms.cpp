@@ -101,7 +101,7 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
             packetString = createIRstring(data);
             packetString.prepend('P');
 			if(getUseLongDataPacketsOverTCP()) packetString.prepend("ltto:");
-            packet.append(packetString);
+            packet.append(packetString.toUtf8());
             //qDebug() << "lttoComms::sendPacket() - Packet =    " << data << "\t:" << packetString;
             break;
         case DATA:
@@ -111,7 +111,7 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
                 data = ConvertDecToBCD(data);
                 packetString = createIRstring(data);
                 packetString.prepend('D');
-                packet.append(packetString);
+                packet.append(packetString.toUtf8());
                 //qDebug() << "lttoComms::sendPacket() - BCD Data = " << data << "\t:" << packetString << "\tBCD=" << dataFormat;
             }
             else
@@ -119,7 +119,7 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
                 calculatedCheckSumTx += data;
                 packetString = createIRstring(data);
                 packetString.prepend('D');
-                packet.append(packetString);
+                packet.append(packetString.toUtf8());
                 //qDebug() << "lttoComms::sendPacket() - Dec Data = " << data << "\t:" << packetString << "\tBCD=" << dataFormat;
             }
             break;
@@ -128,7 +128,7 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
             calculatedCheckSumTx = calculatedCheckSumTx | 256;      // Set the required 9th MSB bit to 1 to indicate it is a checksum
             packetString = createIRstring(calculatedCheckSumTx);
             packetString.prepend('C');
-            packet.append(packetString);
+            packet.append(packetString.toUtf8());
             fullTCPpacketToSend = true;
             //qDebug() << "lttoComms::sendPacket() - CheckSum = \t" << packetString;
             break;
@@ -136,7 +136,7 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
             packetString = createIRstring(data);
             packetString.prepend('T');
 			if(getUseLongDataPacketsOverTCP()) packetString.prepend("ltto:");
-            packet.append(packetString);
+            packet.append(packetString.toUtf8());
             fullTCPpacketToSend = true;
             //qDebug() << "lttoComms::sendPacket() - Tag = \t" << packetString << endl << endl;
             break;
@@ -144,7 +144,7 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
             packetString = createIRstring(data);
 			packetString.prepend('Z');
 			if(getUseLongDataPacketsOverTCP()) packetString.prepend("ltto:");
-            packet.append(packetString);
+            packet.append(packetString.toUtf8());
             fullTCPpacketToSend = true;
             break;
         default:
@@ -177,7 +177,7 @@ bool LttoComms::sendPacket(char type, int data, bool dataFormat)
             QByteArray packetToTranslate;
             packetToTranslate.append(packet);
             packet.clear();
-            packet.append(lazerSwarm->translateCommand(packetToTranslate) );
+            packet.append(lazerSwarm->translateCommand(packetToTranslate).toUtf8());
             packet.append(" \r\n");
         }
         else
@@ -202,7 +202,7 @@ void LttoComms::sendLCDtext(QString textToSend, int lineNumber, bool drawScreen)
 	//if(!tcpCommsConnected) return;      // USB means it is a Lazerswarm, which does not accept TXT.
 	QByteArray textBA;
     textToSend.prepend("TXT" + QString::number(lineNumber)+ ":");
-    textBA.append(textToSend + ":" + QString::number(drawScreen) + "\r\n");
+    textBA.append(textToSend.toUtf8() + ":" + QString::number(drawScreen).toUtf8() + "\r\n");
 	tcpComms->sendPacket(textBA);
 	//qDebug() << "LttoComms::sendLCDtext() - " << textBA;
     //lttoComms.nonBlockingDelay(TEXT_SENT_DELAY);
@@ -219,7 +219,7 @@ void LttoComms::sendLCDtext(int xCursor, int yCursor, QString text, int fontSize
     QByteArray textBA;
     QString textToSend = "";
 	textToSend.prepend("DSP," + QString::number(xCursor) + "," + QString::number(yCursor) + "," + text + "," +  QString::number(fontSize) + "," + QString::number(colour) + "," + QString::number(clearDisp) + "," + QString::number(drawDisplay));
-    textBA.append(textToSend + "\r\n");
+    textBA.append(textToSend.toUtf8() + "\r\n");
 	tcpComms->sendPacket(textBA);
 	//lttoComms.nonBlockingDelay(TEXT_SENT_DELAY);
 }
@@ -230,7 +230,7 @@ void LttoComms::sendLEDcolour(int Red, int Green, int Blue)
 	QByteArray textBA;
 	QString textToSend = "";
 	textToSend.prepend("LED," + QString::number(Red) + "," + QString::number(Green) + "," +  QString::number(Blue));
-    textBA.append(textToSend + "\r\n");
+    textBA.append(textToSend.toUtf8() + "\r\n");
 	//qDebug() << "LttoComms::sendLEDcolour() -" << textBA;
 	tcpComms->sendPacket(textBA);
 }
@@ -241,7 +241,7 @@ void LttoComms::sendLEDcolour(QString colour)
 	QByteArray textBA;
 	QString textToSend = "";
 	textToSend.prepend("LED," + colour);
-    textBA.append(textToSend + "\r\n");
+    textBA.append(textToSend.toUtf8() + "\r\n");
 	//qDebug() << "LttoComms::sendLEDcolour() -" << textBA;
 	tcpComms->sendPacket(textBA);
 }
@@ -253,7 +253,7 @@ void LttoComms::sendOTAtext(QString ssidText, QString pswdText)
 	QByteArray textBA;
     QString textToSend = "";
 	textToSend.prepend("OTA," + ssidText + "," + pswdText);
-    textBA.append(textToSend + "\r\n");
+    textBA.append(textToSend.toUtf8() + "\r\n");
 	//qDebug() << "LttoComms::sendOTAtext() -" << textBA;
 	tcpComms->sendPacket(textBA);
 }
@@ -263,7 +263,7 @@ void LttoComms::sendPing(QString pingText)
 	QByteArray textBA;
 	QString textToSend = "";
 	textToSend.prepend("PING," + pingText);
-    textBA.append(textToSend + "\r\n");
+    textBA.append(textToSend.toUtf8() + "\r\n");
 	qDebug() << "LttoComms::sendPing() -" << textBA;
 	tcpComms->sendPacket(textBA);
 }
@@ -272,7 +272,7 @@ void LttoComms::sendHeartBeat()
 {
 	QByteArray textBA;
 	QString textToSend = "HEARTBEAT";
-    textBA.append(textToSend + "\r\n");
+    textBA.append(textToSend.toUtf8() + "\r\n");
 	//qDebug() << "LttoComms::sendHeartBeat()-";
 	tcpComms->sendPacket(textBA);
 }

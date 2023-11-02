@@ -110,6 +110,5 @@ void ReHostTagger::playerButtonPressed(int playerNumber)
 
 void ReHostTagger::on_btn_Close_clicked()
 {
-    //setClosedWithoutSelectingPlayer(true);
     deleteLater();
 }

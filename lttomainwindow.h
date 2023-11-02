@@ -47,6 +47,8 @@ public:
 public slots:
     void SetSpiesButtonState(int NumTeams);
 
+    void shutDown();
+
 private slots:
 
     void on_btn_SelectPlayers_clicked();

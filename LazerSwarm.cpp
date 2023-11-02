@@ -84,7 +84,7 @@ QByteArray LazerSwarm::decodeCommand(QString messageIn)
         else                                                    packetTypeIn = '_';     // Indicates an error.
 
         decodedMessage.append(packetTypeIn);
-        decodedMessage.append(QString::number(packetDataIn, 10).toUpper() );
+        decodedMessage.append(QString::number(packetDataIn, 10).toUpper().toUtf8() );
         //qDebug() << "LazerSwarm::decodeCommand() - Decoded Message = " << decodedMessage;
     }
     else
