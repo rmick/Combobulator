@@ -91,28 +91,28 @@ void FlagsWindow::setButtonStates(int playerNumber)
 
 void FlagsWindow::updatePlayerFlags1(int bit, bool state)
 {
+    qDebug() << "FlagsWindow::updatePlayerFlags1 - Bit:" << bit << "Bool:" << state;
     for(int index = firstPlayer; index <= lastPlayer; index++)
     {
-        playerInfo[index].setBitFlags1(bit, state);
-        qDebug() << "FlagsWindow::updatePlayerFlags1 - Player" << index;
+        playerInfo[index].setBitFlags1(bit, state); 
     }
 }
 
 void FlagsWindow::updatePlayerFlags2(int bit, bool state)
 {
+    qDebug() << "FlagsWindow::updatePlayerFlags2 - Bit:" << bit << "Bool:" << state;
     for(int index = firstPlayer; index <= lastPlayer; index++)
     {
         playerInfo[index].setBitFlags2(bit, state);
-        qDebug() << "FlagsWindow::updatePlayerFlags2 - Player" << index;
     }
 }
 
 void FlagsWindow::updatePlayerFlags3(int bit, bool state)
 {
+    qDebug() << "FlagsWindow::updatePlayerFlags1 - Bit:" << bit << "Bool:" << state;
     for(int index = firstPlayer; index <= lastPlayer; index++)
     {
         playerInfo[index].setBitFlags3(bit, state);
-        qDebug() << "FlagsWindow::updatePlayerFlags3 - Player" << index;
     }
 }
 
@@ -265,10 +265,49 @@ void FlagsWindow::on_btn_LtarAutoReload_clicked()
 
 void FlagsWindow::on_btn_Close_clicked()
 {
+    qDebug() << "FlagsWindow::Closing - Flags states";
+    qDebug() << "Flags1:" << Qt::bin << playerInfo[0].getPackedFlags1();
+    qDebug() << "Flags2:" << Qt::bin << playerInfo[0].getPackedFlags2();
+    qDebug() << "Flags3:" << Qt::bin << playerInfo[0].getPackedFlags3();
+
+    qDebug() << "\n\t-----------------------------------";
+    qDebug() << "Flags 1, Bit 7 — Neutralize mode"                                  << playerInfo[0].getBitFlags1(7);
+    qDebug() << "Flags 2, Bit 5 — Neutralize players for 15 seconds when tagged"    << playerInfo[0].getBitFlags2(5);
+    qDebug() << "Flags 2, Bit 4 — Supply zones unneutralize players"                << playerInfo[0].getBitFlags2(4);
+    qDebug() << "-----------------------------------";
+
+//    for (int i = 0; i < 8; i++)
+//    {
+//        qDebug() << "Flags1 - Bit:" << i << "Bool:" << playerInfo[i].getBitFlags1(i);
+//    }
+//    for (int i = 0; i < 8; i++)
+//    {
+//        qDebug() << "Flags2 - Bit:" << i << "Bool:" << playerInfo[i].getBitFlags2(i);
+//    }
+//    for (int i = 0; i < 8; i++)
+//    {
+//        qDebug() << "Flags3 - Bit:" << i << "Bool:" << playerInfo[i].getBitFlags3(i);
+//    }
     deleteLater();
 }
 
 
+/*
+ * Single shot Respawn.
+ * Flag1 Bit7   false
+ * Flag2 Bit5   false or true
+ * Flag2 Bit4   true
+ *
+PData6—Flags 1
+    Bit 7—Neutralize mode
+        0—Neutralize players when tagged once
+        1—Neutralize players when tagged 10 times
+            Bit 5 of Flags 2 must be set.
 
+PData7—Flags 2
+    Bit 5—Neutralize players for 15 seconds when tagged
+    Bit 4—Supply zones unneutralize players
+        If this is set, players will not be unneutralized automatically after 15 seconds, only by being in a zone.
+*/
 
 

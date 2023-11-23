@@ -54,7 +54,21 @@ void Players::setHandicap(int value)
 
 QString Players::getPlayerName() const
 {
-	return PlayerName; //.trimmed();
+    QString retVal = "";
+
+    if(gameInfo.getNumberOfTeams() == 0) retVal = PlayerName;
+    else
+    {
+        if(PlayerName.startsWith("Player"))
+        {
+            if      (PlayerIndex < 9)     retVal = "Player-" + QString::number(PlayerIndex);
+            else if (PlayerIndex < 17)    retVal = "Player-" + QString::number(PlayerIndex-8);
+            else if (PlayerIndex < 25)    retVal = "Player-" + QString::number(PlayerIndex-16);
+        }
+        else      retVal = PlayerName;
+    }
+
+    return retVal;
 }
 
 void Players::setPlayerName(const QString &value)
@@ -422,17 +436,41 @@ void Players::setIsDebriefed(bool value)
     isDebriefed = value;
 }
 
-QString Players::getExtendedPlayerName()
+QString Players::getTeamAndPlayerName(bool fullName)
 {
-    QString teamId = "Tm";
+   // return PlayerName;
 
-    if      (PlayerIndex <=8)  teamId += "1 ";
-    else if (PlayerIndex <=16) teamId += "2 ";
-    else if (PlayerIndex <=24) teamId += "3 ";
+    QString retVal = "";
 
-    if (gameInfo.getNumberOfTeams() == 0) teamId = "";
+    if      (gameInfo.getNumberOfTeams() < 2)   retVal = PlayerName;
+    else if (fullName)                          retVal = getTeamName(cFullName)  + " " + getPlayerName();
+    else                                        retVal = getTeamName(cShortName) + ":" + getPlayerName();
 
-    return teamId + PlayerName;
+    return retVal;
+}
+
+QString Players::getTeamName(bool fullName)
+{
+    QString teamName = "";
+
+    if (gameInfo.getNumberOfTeams() < 2)
+    {
+        teamName = "";
+    }
+    else if(fullName)
+    {
+        if      (PlayerIndex <=8)   teamName += "Team 1";
+        else if (PlayerIndex <=16)  teamName += "Team 2";
+        else if (PlayerIndex <=24)  teamName += "Team 3";
+    }
+    else
+    {
+        if      (PlayerIndex <=8)   teamName += "Tm1";
+        else if (PlayerIndex <=16)  teamName += "Tm2";
+        else if (PlayerIndex <=24)  teamName += "Tm3";
+    }
+
+    return teamName;
 }
 
 int Players::getPackedFlags1() const

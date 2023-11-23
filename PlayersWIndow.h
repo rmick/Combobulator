@@ -26,7 +26,7 @@ public:
     int getSelectedPlayer() const;
     void setSelectedPlayer(int value);
 
-    void RenamePlayerTeamButtons(int numTeams);
+    void RenamePlayerTeamButtons();
 
 private slots:
     void on_btn_ClosePlayerWindow_clicked();

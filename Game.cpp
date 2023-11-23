@@ -19,7 +19,7 @@ Game::Game()
     GameID          = DEFAULT_GAME_ID;
     GameLength      = DEFAULT_GAME_LENGTH;
     NumberOfPlayers = 24;
-    isReSpawnGame   = false;
+    isReSpawnGame   = 0;
     isLTARGame      = false;
     GameName        ="LTTO";
     NameChar1       = 67;  // C
@@ -469,12 +469,12 @@ void Game::setIsLTARGame(bool value)
     isLTARGame = value;
 }
 
-bool Game::getIsReSpawnGame() const
+int  Game::getIsReSpawnGame() const
 {
     return isReSpawnGame;
 }
 
-void Game::setIsReSpawnGame(bool value)
+void Game::setIsReSpawnGame(int value)
 {
     isReSpawnGame = value;
 }

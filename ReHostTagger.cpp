@@ -65,9 +65,7 @@ void ReHostTagger::SetActivePlayers()
     {
         if (gameInfo.getIsThisPlayerInTheGame(index) )
         {
-            QString teamNumText     = "Team " + QString::number(((index-1)/8)+1);
-            if(gameInfo.getNumberOfTeams() == 0) teamNumText = "";
-            playerButtons[index]->setText(teamNumText + playerInfoTemp[index].getPlayerName());
+            playerButtons[index]->setText(playerInfo[index].getTeamAndPlayerName(playerInfo[0].cFullName));
 			playerButtons[index]->setEnabled(true);
             playerButtons[index]->setChecked(true);
             playerButtons[index]->setStyleSheet(myStyleSheet.getButtonSelectedCss());
@@ -95,14 +93,14 @@ void ReHostTagger::SetActivePlayers()
 
 void ReHostTagger::playerButtonPressed(int playerNumber)
 {
-    QString teamNumText     = "Team " + QString::number(((playerNumber-1)/8)+1) + ", ";
-    if(gameInfo.getNumberOfTeams() == 0) teamNumText = "";
+    //QString teamNumText     = "Team " + QString::number(((playerNumber-1)/8)+1) + ", ";
+   // if(gameInfo.getNumberOfTeams() == 0) teamNumText = "";
 
     qDebug() << "Rehosting Player " << playerNumber;
-    ui->label->setText("Rehosting Team " + teamNumText + playerInfoTemp[playerNumber].getPlayerName() + " - Please standby.");
-    lttoComms->sendLCDtext("Re-Hosting"                                 , 1, false);
-    lttoComms->sendLCDtext(teamNumText                                  , 2, false);
-    lttoComms->sendLCDtext(playerInfoTemp[playerNumber].getPlayerName() , 3,  true);
+    ui->label->setText("Rehosting Team " + playerInfo[playerNumber].getTeamAndPlayerName(playerInfo[0].cFullName) + " - Please standby.");
+    lttoComms->sendLCDtext("Re-Hosting",                                                        1, false);
+    lttoComms->sendLCDtext(playerInfo[playerNumber].getTeamName(playerInfo[0].cFullName),       2, false);
+    lttoComms->sendLCDtext(playerInfo[playerNumber].getPlayerName(),                            3,  true);
 
     gameInfo.setPlayerToReHost(playerNumber);
     deleteLater();

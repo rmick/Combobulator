@@ -128,7 +128,12 @@ public:
 	bool	getIsDebriefed() const;
 	void	setIsDebriefed(bool value);
 
-    QString getExtendedPlayerName();
+    QString getTeamAndPlayerName(bool fullName);
+
+    QString getTeamName(bool fullName);
+
+    static const bool cFullName  = true;
+    static const bool cShortName = false;
 
 private:
 	// Player settings - stored in saved games

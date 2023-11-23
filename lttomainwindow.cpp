@@ -278,29 +278,58 @@ void LttoMainWindow::on_btn_TeamTags_clicked()
 
 void LttoMainWindow::on_btn_ReSpawn_clicked()
 {
-	if      (gameInfo.getIsReSpawnGame() == false)
+    switch(gameInfo.getIsReSpawnGame())
     {
-		QMessageBox::critical(this,"Info","In a Respawn game, the taggers are Neutralised after every 10 hits\n\nOnce Neutralised the tagger must return to the Combobulator to be respawned\n\nIt is recommended that the Health slider be set to 99.\n\n\nN.B. Respawn may not work with all games in LTAR mode, due to limitations in the LTAR taggers.");
+    case 0:
+        #ifndef QT_DEBUG
+        QMessageBox::critical(this,"Info","In a Respawn game, the taggers are Neutralised after every 1/10 hit/s\n\nOnce Neutralised the tagger must return to the Combobulator to be respawned, or wait 15 seconds to auto-respawn.\n\nIt is recommended that the Health slider be set to a larger number.\n\n\nN.B. Respawn may not work with all games in LTAR mode, due to limitations in the LTAR taggers.");
+        #endif
+        ui->btn_ReSpawn->setText("Respawn ON\nAfter 10 hits");
+        ui->btn_ReSpawn->setChecked(true);
+        gameInfo.setIsReSpawnGame(1);
+        for(int index = 0; index <= MAX_PLAYERS; index++)
+        {
+            playerInfo[index].setBitFlags1(NEUTRALISE_10_FLAG,			 true);
+            playerInfo[index].setBitFlags2(NEUTRALISE_15s_TAGGED_FLAG,	 true);
+            playerInfo[index].setBitFlags2(SUPPLY_ZONES_REVIVE_FLAG,	 true);
+        }
+        break;
 
-		ui->btn_ReSpawn->setText("Respawn ON");
-        gameInfo.setIsReSpawnGame(true);
-        for(int index = 0; index < 25; index++)
+    case 1:
+        ui->btn_ReSpawn->setText("Respawn ON\nAfter 1 hit");
+        ui->btn_ReSpawn->setChecked(true);
+        gameInfo.setIsReSpawnGame(2);
+        for(int index = 0; index <= MAX_PLAYERS; index++)
         {
-			playerInfo[index].setBitFlags1(NEUTRALISE_10_FLAG,			true);
-			playerInfo[index].setBitFlags2(NEUTRALISE_15s_TAGGED_FLAG,	true);
-			playerInfo[index].setBitFlags2(SUPPLY_ZONES_REVIVE_FLAG,	true);
+            playerInfo[index].setBitFlags1(NEUTRALISE_10_FLAG,			false);
+            playerInfo[index].setBitFlags2(NEUTRALISE_15s_TAGGED_FLAG,	 true);
+            playerInfo[index].setBitFlags2(SUPPLY_ZONES_REVIVE_FLAG,	 true);
         }
-    }
-    else if (gameInfo.getIsReSpawnGame() == true)
-    {
-		ui->btn_ReSpawn->setText("Respawn OFF");
-        gameInfo.setIsReSpawnGame(false);
-        for(int index = 0; index < 25; index++)
+        break;
+
+    case 2:
+        ui->btn_ReSpawn->setText("Respawn ON\nNeut for 15s");
+        ui->btn_ReSpawn->setChecked(true);
+        gameInfo.setIsReSpawnGame(3);
+        for(int index = 0; index <= MAX_PLAYERS; index++)
         {
-			playerInfo[index].setBitFlags1(NEUTRALISE_10_FLAG,			false);
-			playerInfo[index].setBitFlags2(NEUTRALISE_15s_TAGGED_FLAG,	false);
-			playerInfo[index].setBitFlags2(SUPPLY_ZONES_REVIVE_FLAG,	false);
+            playerInfo[index].setBitFlags1(NEUTRALISE_10_FLAG,			false);
+            playerInfo[index].setBitFlags2(NEUTRALISE_15s_TAGGED_FLAG,	 true);
+            playerInfo[index].setBitFlags2(SUPPLY_ZONES_REVIVE_FLAG,	false);
         }
+        break;
+
+    case 3:
+        ui->btn_ReSpawn->setText("Respawn OFF");
+        ui->btn_ReSpawn->setChecked(false);
+        gameInfo.setIsReSpawnGame(0);
+        for(int index = 0; index <= MAX_PLAYERS; index++)
+        {
+            playerInfo[index].setBitFlags1(NEUTRALISE_10_FLAG,			false);
+            playerInfo[index].setBitFlags2(NEUTRALISE_15s_TAGGED_FLAG,	false);
+            playerInfo[index].setBitFlags2(SUPPLY_ZONES_REVIVE_FLAG,	false);
+        }
+        break;
     }
 	qInfo() << "LttoMainWindow::on_btn_ReSpawn_clicked() -" << gameInfo.getIsReSpawnGame();
 }
@@ -394,11 +423,12 @@ void LttoMainWindow::on_btn_OwnTheZone_clicked()
 
 void LttoMainWindow::on_btn_CustomGame_clicked()
 {
-	QMessageBox::warning(this, "Warning", "Custom Games are not fully supported by the Lasertaggers.\n\nUse this option at your own risk."
+#ifndef  QT_DEBUG
+    QMessageBox::warning(this, "Warning", "Custom Games are not fully supported by the Lasertaggers.\n\nUse this option at your own risk."
 										  "\n\nIf no taggers join the game then your settings are invalid and you will need to try again."
 										  "\n\nIf you find specific settings that do/don't work please send the details to: combobulator@bushandbeyond.com.au"
 										  "\nwith the details so that the software can be improved.");
-
+#endif
 	gameInfo.setGameName("CUST");
     ui->btn_NoTeams->setEnabled(true);
     ui->btn_Flags->setEnabled(true);

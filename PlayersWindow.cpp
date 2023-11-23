@@ -31,7 +31,7 @@ PlayersWindow::PlayersWindow(QWidget *parent) :
 	LoadPlayersForTeams();
 	LoadPlayerSettings(0);      // 0 = Global Player
 	SetActivePlayers();
-	RenamePlayerTeamButtons(gameInfo.getNumberOfTeams());
+    RenamePlayerTeamButtons();
 
     if(gameInfo.getIsSuperSimpleMode() == true)
     {
@@ -257,22 +257,16 @@ void PlayersWindow::setSelectedPlayer(int value)
     SetPlayerControls(true, CURRENT_MODE);
 }
 
-void PlayersWindow::RenamePlayerTeamButtons(int numTeams)
+void PlayersWindow::RenamePlayerTeamButtons()
 {
-    switch(numTeams)
+    for (int index = 1; index < 25; index++)
+    {
+        PlayerButtons[index]->setText(playerInfo[index].getPlayerName());
+    }
+
+    switch(gameInfo.getNumberOfTeams())
     {
     case 0:
-        for (int index = 1; index < 25; index++)
-        {
-            PlayerButtons[index]->setText("Player " + QString::number(index) );
-
-            //Rename player buttons if they do NOT have the default name
-            if (playerInfo[index].getPlayerName() != "Player " + QString::number(index))
-            {
-                PlayerButtons[index]->setText(playerInfo[index].getPlayerName());
-            }
-            playerInfoTemp[index].setPlayerName(PlayerButtons[index]->text());
-        }
         ui->label_Team1->setText("Players");
         ui->label_Team2->setVisible(false);
         ui->label_Team3->setVisible(false);
@@ -281,39 +275,20 @@ void PlayersWindow::RenamePlayerTeamButtons(int numTeams)
         ui->line_2->setVisible(false);
         break;
     case 2:
-    case 3:
-        for (int index = 1; index < 25; index++)
-        {
-            if      (index < 9)     PlayerButtons[index]->setText("Player " + QString::number(index) );
-            else if (index < 17)    PlayerButtons[index]->setText("Player " + QString::number(index-8) );
-            else if (index < 25)    PlayerButtons[index]->setText("Player " + QString::number(index-16) );
-
-            //Rename player buttons if they do NOT have the default name
-            if (playerInfo[index].getPlayerName() != "Player " + QString::number(index))
-            {
-                PlayerButtons[index]->setText(playerInfo[index].getPlayerName());
-            }
-            //The next line uses playerInfoTemp to workaround the Players 9-24 problem when using 2/3 teams
-            playerInfoTemp[index].setPlayerName(PlayerButtons[index]->text());
-        }
-
         ui->label_Team1->setText("Team 1");
-//        ui->label_Team2->setText("Team 2");
-//        ui->label_Team3->setText("Team 3");
-        ui->line_1->setVisible(true);
         ui->line_2->setVisible(true);
         ui->label_Team1->setVisible(true);
         ui->label_Team2->setVisible(true);
-        if(gameInfo.getNumberOfTeams() == 2)
-        {
-            ui->label_Team3->setVisible(false);
-            ui->line_2->setVisible(false);
-        }
-        else
-        {
-            ui->label_Team3->setVisible(true);
-            ui->line_2->setVisible(true);
-        }
+        ui->label_Team3->setVisible(false);
+        ui->line_2->setVisible(false);
+
+    case 3:
+        ui->label_Team1->setText("Team 1");
+        ui->line_2->setVisible(true);
+        ui->label_Team1->setVisible(true);
+        ui->label_Team2->setVisible(true);
+        ui->label_Team3->setVisible(true);
+        ui->line_2->setVisible(true);
         break;
     }
 }
@@ -367,17 +342,18 @@ void PlayersWindow::playerButtonReleased(int value)
     {
         RenamePlayer(value);
         PlayerButtons[value]->setChecked(false);
-        if(playerInfo[value].getPlayerName() == "")
-        {
-            if (gameInfo.getNumberOfTeams() == 0)
-            {
-                PlayerButtons[value]->setText("Player " + QString::number(value));
-                return;
-            }
-            if (value > 0)  PlayerButtons[value]->setText("Player " + QString::number(value)    );
-            if (value > 8)  PlayerButtons[value]->setText("Player " + QString::number(value - 8));
-            if (value > 16) PlayerButtons[value]->setText("Player " + QString::number(value -16));
-        }
+//        if(playerInfo[value].getPlayerName() == "")
+//        {
+//            //TODO PlayerName
+//            if (gameInfo.getNumberOfTeams() == 0)
+//            {
+//                PlayerButtons[value]->setText("Player " + QString::number(value));
+//                return;
+//            }
+//            if (value > 0)  PlayerButtons[value]->setText("Player " + QString::number(value)    );
+//            if (value > 8)  PlayerButtons[value]->setText("Player " + QString::number(value - 8));
+//            if (value > 16) PlayerButtons[value]->setText("Player " + QString::number(value -16));
+//        }
     }
     else
     {
@@ -402,7 +378,7 @@ void PlayersWindow::playerButtonReleased(int value)
 void PlayersWindow::updatePlayerButtons()
 {
 	LoadPlayerSettings(0);      // 0 = Global Player
-	RenamePlayerTeamButtons(gameInfo.getNumberOfTeams());
+    RenamePlayerTeamButtons();
 	SetActivePlayers();
 	//Redraw all buttons
 	for (int x = 1; x < 25; x++)
@@ -439,30 +415,9 @@ void PlayersWindow::closeTheWindow()
 void PlayersWindow::RenamePlayer(int player)
 {
     QString text = QInputDialog::getText(this, tr("Rename Player"), tr("Enter Player name:"), QLineEdit::Normal, playerInfo[player].getPlayerName());
-    if (text == "")
-    {
-        text = "Player " + QString::number(player);
-        playerInfo[player].setPlayerName(text);
-
-        if(gameInfo.getNumberOfTeams() > 1)
-        {
-            if(player >   8) text = "Player " + QString::number(player- 8);
-            if (player > 16) text = "Player " + QString::number(player-16);
-
-        }
-    }
-    PlayerButtons[player]->setText(text);
+    if (text == "") text = "Player " + QString::number(player);
     playerInfo[player].setPlayerName(text);
-
-//    //Rename player buttons if they have the default name
-//    if (playerInfo[player].getPlayerName() == "Player " + QString::number(player))
-//    {
-//        if(gameInfo.getNumberOfTeams() > 1)
-//        {
-//            if(player > 8)          PlayerButtons[player]->setText("Player " + QString::number(player-8) );
-//            else if (player > 16)   PlayerButtons[player]->setText("Player " + QString::number(player-16));
-//        }
-//    }
+    PlayerButtons[player]->setText(playerInfo[player].getPlayerName());
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -517,7 +472,7 @@ void PlayersWindow::on_btn_EditMode_clicked()
         SetPlayerControls(true, EDIT_SETTINGS_MODE);
 		ui->btn_EditMode->setText("Edit\nHandicap");
     }
-            else
+    else
     {
         SetPlayerControls(true, HANDICAP_MODE);
 		ui->btn_EditMode->setText("Edit\nSettings");

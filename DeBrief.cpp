@@ -121,12 +121,9 @@ void DeBrief::RequestTagReports()
         teamAndPlayerByte = (deBriefTeam << 4) + deBriefPlayer;
     }
 
-    QString teamNumText     = "Team " + QString::number(((currentPlayer-1)/8)+1) + "\n";
-    if(gameInfo.getNumberOfTeams() == 0) teamNumText = "";
-
 	//qDebug() << "\nDeBrief::RequestTagReports() -" << currentPlayer << playerToDeBrief << ":" << deBriefTeam << deBriefPlayer << "MessageType" << deBriefMessageType;
-    emit SendToHGWlistWidget("Debriefing Player = " + teamNumText + playerInfoTemp[currentPlayer].getPlayerName() + ", MessageType:" + QString::number(deBriefMessageType));
-    qInfo() << "Debriefing Player = " + teamNumText + playerInfoTemp[currentPlayer].getPlayerName() + ", MessageType:" + QString::number(deBriefMessageType);
+    emit SendToHGWlistWidget("Debriefing Player = " + playerInfo[currentPlayer].getTeamAndPlayerName(playerInfo[0].cFullName) + ", MessageType:" + QString::number(deBriefMessageType));
+    qInfo() <<               "Debriefing Player = " + playerInfo[currentPlayer].getTeamAndPlayerName(playerInfo[0].cFullName) + ", MessageType:" + QString::number(deBriefMessageType);
 
 	lttoComms->sendPacket(PACKET, REQUEST_TAG_REPORT);
 	lttoComms->sendPacket(DATA, gameInfo.getGameID());

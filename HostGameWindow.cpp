@@ -188,21 +188,16 @@ void HostGameWindow::announceGame()
 		{
 			if (currentPlayer < 25)
 			{
-                QString teamNumText     = "Team " + QString::number(((currentPlayer-1)/8)+1);
-                QString nextTeamNumText = "Team " + QString::number(((nextPlayer-1)/8)+1);
-
-                if(gameInfo.getNumberOfTeams() ==  0) teamNumText = "";
-
-                setPromptText("Prepare to Host :<br>" + teamNumText + " " + playerInfoTemp[currentPlayer].getPlayerName() );
-                lttoComms->sendLCDtext("Hosting"                                    , 1, false);
-                lttoComms->sendLCDtext(teamNumText                                  , 2, false);
-                lttoComms->sendLCDtext(playerInfoTemp[currentPlayer].getPlayerName(), 3, false);
+                setPromptText("Prepare to Host :<br>" + playerInfo[currentPlayer].getTeamAndPlayerName(playerInfo[0].cFullName) );
+                lttoComms->sendLCDtext("Hosting",                                                       1, false);
+                lttoComms->sendLCDtext(playerInfo[currentPlayer].getTeamName(playerInfo[0].cFullName),  2, false);
+                lttoComms->sendLCDtext(playerInfo[currentPlayer].getPlayerName(),                       3, false);
 
 				lttoComms->nonBlockingDelay(TEXT_SENT_DELAY);
 				if(nextPlayer < 25)
 				{
-                    setNextPlayerText       ("Next Up : " + nextTeamNumText + " " + playerInfoTemp[nextPlayer].getPlayerName() );
-                    lttoComms->sendLCDtext(0, 55, "Next:" + nextTeamNumText + " " + playerInfoTemp[nextPlayer].getPlayerName(), 1, 1, false, true);
+                    setNextPlayerText       ("Next Up : "  + playerInfo[nextPlayer].getTeamAndPlayerName(playerInfo[0].cFullName) );
+                    lttoComms->sendLCDtext(0, 55, "Next:"  + playerInfo[nextPlayer].getTeamAndPlayerName(playerInfo[0].cShortName), 1, 1, false, true);
 				}
 				else
 				{
@@ -450,11 +445,9 @@ void HostGameWindow::AssignPlayer(int Game, int Tagger, int Flags, bool isLtar)
         qDebug() << "\t\tHostGameWindow::AssignPlayer() " << currentPlayer << Game << Tagger << calculatePlayerTeam5bits(Flags) << isLtar << Qt::endl;
         if (closingWindow) deleteLater();   // Delete the window, as the cancel button has been pressed.
 
-        QString teamNumText     = "Team " + QString::number(((currentPlayer-1)/8)+1);
-
-        lttoComms->sendLCDtext("Adding"                                      , 1, false);
-        lttoComms->sendLCDtext(teamNumText                                   , 2, false);
-        lttoComms->sendLCDtext(playerInfoTemp[currentPlayer].getPlayerName() , 3,  true);
+        lttoComms->sendLCDtext("Adding",                                                   1, false);
+        lttoComms->sendLCDtext(playerInfo[currentPlayer].getTeamName(Players::cFullName),  2, false);
+        lttoComms->sendLCDtext(playerInfo[currentPlayer].getPlayerName(),                  3,  true);
 		lttoComms->nonBlockingDelay(TEXT_SENT_DELAY);
 
 		lttoComms->sendPacket(PACKET,  AssignPlayerPacket);
@@ -475,10 +468,9 @@ void HostGameWindow::AddPlayerToGame(int Game, int Tagger, bool isLtar)
 		lttoComms->setDontAnnounceGame(false);
 		return;
 	}
-    QString teamNumText     = "Team " + QString::number(((currentPlayer-1)/8)+1);
-    lttoComms->sendLCDtext(teamNumText                                  , 1, false);
-    lttoComms->sendLCDtext(playerInfoTemp[currentPlayer].getPlayerName(), 2, false);
-    lttoComms->sendLCDtext("Joined"                                     , 3,  true);
+    lttoComms->sendLCDtext(playerInfo[currentPlayer].getTeamName(Players::cFullName),  1, false);
+    lttoComms->sendLCDtext(playerInfo[currentPlayer].getPlayerName(),                  2, false);
+    lttoComms->sendLCDtext("Joined",                                                   3,  true);
 	lttoComms->nonBlockingDelay(TEXT_SENT_DELAY);
 
     if(isLtar)
@@ -513,12 +505,13 @@ void HostGameWindow::AddPlayerToGame(int Game, int Tagger, bool isLtar)
         //gameInfo.setPlayerToReHost(0);
 		setPromptText(playerInfo[currentPlayer].getPlayerName() + " has joined.");
 
-		lttoComms->sendLCDtext("Re-hosting"                                  , 1, false);
-        lttoComms->sendLCDtext(teamNumText                                   , 2, false);
-        lttoComms->sendLCDtext(playerInfoTemp[currentPlayer].getPlayerName() , 3,  true);
+        lttoComms->sendLCDtext("Re-hosting",                                               1, false);
+        lttoComms->sendLCDtext(playerInfo[currentPlayer].getTeamName(Players::cFullName),  2, false);
+        lttoComms->sendLCDtext(playerInfo[currentPlayer].getPlayerName(),                  3,  true);
 		lttoComms->nonBlockingDelay(TEXT_SENT_DELAY);
 
         countDownTimeRemaining = (gameInfo.getCountDownTime());
+        if(countDownTimeRemaining < 10) countDownTimeRemaining = 10;  //Needs at least this long for taggers to start listening for Countdown.
         ui->btn_StartGame->setEnabled(true);
         //ui->btn_StartGame->setText("End\nGame");
         ui->btn_Rehost->setText("Rehost Tagger");
@@ -1002,11 +995,10 @@ void HostGameWindow::TaggerReHost()
         currentPlayer = gameInfo.getPlayerToReHost();
         isThisPlayerHosted[currentPlayer] = false;
         rehostingActive = true;
-        QString teamNumText     = "Team " + QString::number(((currentPlayer-1)/8)+1);
-        setPromptText("ReHosting " + playerInfoTemp[currentPlayer].getPlayerName());
-        lttoComms->sendLCDtext("ReHosting"                                  , 1, false);
-        lttoComms->sendLCDtext(teamNumText                                  , 2, false);
-        lttoComms->sendLCDtext(playerInfoTemp[currentPlayer].getPlayerName(), 3,  true);
+        setPromptText("ReHosting " + playerInfo[currentPlayer].getPlayerName());
+        lttoComms->sendLCDtext("ReHosting",                                                1, false);
+        lttoComms->sendLCDtext(playerInfo[currentPlayer].getTeamName(Players::cFullName),  2, false);
+        lttoComms->sendLCDtext(playerInfo[currentPlayer].getPlayerName(),                  3,  true);
 		lttoComms->nonBlockingDelay(TEXT_SENT_DELAY);
 		lttoComms->setDontAnnounceGame(false);
         firstPass = false;
@@ -1088,12 +1080,12 @@ void HostGameWindow::endGame()
 	//ui->btn_Cancel->setEnabled(true);
     ui->btn_SkipPlayer->setVisible(true);
     ui->btn_SkipPlayer->setEnabled(true);
-    QString teamNumText     = "Team " + QString::number(((currentPlayer-1)/8)+1);
-    setPromptText("DeBriefing " + teamNumText + playerInfoTemp[currentPlayer].getPlayerName());
-    lttoComms->sendLCDtext("De"                                         , 1, false);
-    lttoComms->sendLCDtext("Briefing"                                   , 2, false);
-    lttoComms->sendLCDtext(teamNumText                                  , 3, false);
-    lttoComms->sendLCDtext(playerInfoTemp[currentPlayer].getPlayerName(), 4,  true);
+
+    setPromptText("DeBriefing " + playerInfo[currentPlayer].getTeamName(Players::cFullName) + playerInfo[currentPlayer].getPlayerName());
+    lttoComms->sendLCDtext("De",                                                       1, false);
+    lttoComms->sendLCDtext("Briefing",                                                 2, false);
+    lttoComms->sendLCDtext(playerInfo[currentPlayer].getTeamName(Players::cFullName),  3, false);
+    lttoComms->sendLCDtext(playerInfo[currentPlayer].getPlayerName(),                  4,  true);
 	lttoComms->nonBlockingDelay(TEXT_SENT_DELAY);
     deBrief->prepareNewPlayerToDebrief(currentPlayer);
 }
@@ -1115,14 +1107,12 @@ void HostGameWindow::deBriefTaggers()
 		while (isThisPlayerHosted[currentPlayer] == false) currentPlayer++;
 		if(currentPlayer < 25)
 		{
-            QString teamNumText     = "Team " + QString::number(((currentPlayer-1)/8)+1);
-
             deBrief->prepareNewPlayerToDebrief(currentPlayer);
-            setPromptText("Debriefing " + teamNumText + playerInfoTemp[currentPlayer].getPlayerName());
-            lttoComms->sendLCDtext("De"                                         , 1, false);
-            lttoComms->sendLCDtext("Briefing"                                   , 2, false);
-            lttoComms->sendLCDtext(teamNumText                                  , 3, false);
-            lttoComms->sendLCDtext(playerInfoTemp[currentPlayer].getPlayerName(), 4,  true);
+            setPromptText("Debriefing " + playerInfo[currentPlayer].getTeamName(Players::cFullName) + playerInfo[currentPlayer].getPlayerName());
+            lttoComms->sendLCDtext("De",                                                        1, false);
+            lttoComms->sendLCDtext("Briefing",                                                  2, false);
+            lttoComms->sendLCDtext(playerInfo[currentPlayer].getTeamName(Players::cFullName),   3, false);
+            lttoComms->sendLCDtext(playerInfo[currentPlayer].getPlayerName(),                   4,  true);
 			lttoComms->nonBlockingDelay(TEXT_SENT_DELAY);
 		}
 	}
@@ -1167,16 +1157,15 @@ void HostGameWindow::deBriefTaggers()
 	}
 
 	if (currentPlayer < 25)
-	// If currentPlayer is valid - send the message
-	{
-        QString teamNumText     = "Team " + QString::number(((currentPlayer-1)/8)+1);
-
+    // If currentPlayer is valid - send the message
+    {
         deBrief->prepareNewPlayerToDebrief(currentPlayer);
-        setPromptText("Debriefing " + teamNumText + " " + playerInfoTemp[currentPlayer].getPlayerName());
-        lttoComms->sendLCDtext("De"                                         , 1, false);
-        lttoComms->sendLCDtext("Briefing"                                   , 2, false);
-        lttoComms->sendLCDtext(teamNumText                                  , 3, false);
-        lttoComms->sendLCDtext(playerInfoTemp[currentPlayer].getPlayerName(), 4,  true);
+
+        setPromptText("Debriefing " + playerInfo[currentPlayer].getTeamName(Players::cFullName) + " " + playerInfo[currentPlayer].getPlayerName() );
+        lttoComms->sendLCDtext("De",                                                        1, false);
+        lttoComms->sendLCDtext("Briefing",                                                  2, false);
+        lttoComms->sendLCDtext(playerInfo[currentPlayer].getTeamName(Players::cFullName),   3, false);
+        lttoComms->sendLCDtext(playerInfo[currentPlayer].getPlayerName(),                   4,  true);
 		lttoComms->nonBlockingDelay(TEXT_SENT_DELAY);
 
 		deBrief->RequestTagReports();

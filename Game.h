@@ -82,8 +82,8 @@ public:
     bool    getIsLTARGame() const;
     void    setIsLTARGame(bool value);
 
-    bool getIsReSpawnGame() const;
-    void setIsReSpawnGame(bool value);
+    int     getIsReSpawnGame() const;
+    void    setIsReSpawnGame(int value);
 
     int getNumberOfPlayersInGame();
 
@@ -169,7 +169,7 @@ private:
     int     PlayersInTeamByte[3];
     int     PlayerToReHost;
     bool    isLTARGame;
-    bool    isReSpawnGame;
+    int     isReSpawnGame;              //0 = false, 1 = 10hits, 2 = 1hit
 	bool	cumulativeScoreMode = false;
     bool	isIndoorViewMode;           //not saved with game. It is here so that it is public to other classes.
     bool    superSimpleMode = false;    //Gert Mode

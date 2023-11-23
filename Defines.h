@@ -72,8 +72,8 @@ androiddeployqt
 
 
 //  Build Number
-const QString	BUILD_NUMBER					= "r2311.01";
-const QString	VERSION_NUMBER					= "v1.18rc9";
+const QString	BUILD_NUMBER					= "r2311.23";
+const QString	VERSION_NUMBER					= "v1.18rc10";
 
 const double	CURRENT_BASESTATION_FIRMWARE	= 1.13;
 
